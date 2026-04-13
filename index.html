@@ -733,7 +733,8 @@ function vibeCalc(transits){
   let p=0,n=0;
   for(const t of transits){const v=t.importance/20;
     if(t.aspect.type==='easy')p+=v;else if(t.aspect.type==='hard')n+=v;else p+=v*.3;}
-  let s=Math.round(5+(p-n)*1.5);s=Math.max(1,Math.min(10,s));
+  const avg=(p-n)/transits.length;
+  let s=Math.round(5+avg*12);s=Math.max(1,Math.min(10,s));
   return{score:s};
 }
 

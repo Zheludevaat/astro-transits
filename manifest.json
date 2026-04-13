@@ -1,0 +1,12 @@
+{
+  "name": "Alexander's Transits",
+  "short_name": "Transits",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#070b1a",
+  "theme_color": "#070b1a",
+  "description": "Personal astrological transit tracker for Alexander Zheludev",
+  "categories": ["lifestyle", "utilities"],
+  "icons": []
+}

@@ -2,1513 +2,313 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#05081a">
-<title>Alexander's Transits</title>
-<link rel="manifest" href="manifest.json">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Astro Transits</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/decimal.js/10.4.3/decimal.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.45/moment-timezone-with-data.min.js"></script>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-:root{
-  --bg:#05081a;--bg2:#0a0e24;--card:#0e1330;--card-hover:#131842;--surface:#161c45;
-  --gold:#d4a843;--gold-soft:rgba(212,168,67,.12);--gold-glow:rgba(212,168,67,.25);
-  --crimson:#e0425d;--crimson-soft:rgba(224,66,93,.12);
-  --azure:#4a9eff;--azure-soft:rgba(74,158,255,.12);
-  --violet:#9b6dff;--violet-soft:rgba(155,109,255,.12);
-  --emerald:#3dd9a0;--emerald-soft:rgba(61,217,160,.12);
-  --amber:#f0a030;--amber-soft:rgba(240,160,48,.12);
-  --pearl:#e8e0d0;
-  --text:#d0cae0;--text2:#8880a0;--text3:#5a5478;--bright:#f4f0ff;
-  --r-sm:10px;--r-md:16px;--r-lg:22px;
-  --shadow:0 2px 8px rgba(0,0,0,.4),0 0 0 1px rgba(255,255,255,.03);
-  --safe-top:env(safe-area-inset-top,20px);--safe-bottom:env(safe-area-inset-bottom,20px);
+:root {
+  --sign-aries: "♈";
+  --sign-taurus: "♉";
+  --sign-gemini: "♊";
+  --sign-cancer: "♋";
+  --sign-leo: "♌";
+  --sign-virgo: "♍";
+  --sign-libra: "♎";
+  --sign-scorpio: "♏";
+  --sign-sagittarius: "♐";
+  --sign-capricorn: "♑";
+  --sign-aquarius: "♒";
+  --sign-pisces: "♓";
 }
-html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',system-ui,sans-serif;
-  min-height:100dvh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
-body{padding:var(--safe-top) 0 calc(var(--safe-bottom) + 72px)}
-.container{padding:0 16px;max-width:480px;margin:0 auto}
-body::before{content:'';position:fixed;inset:0;z-index:0;
-  background:radial-gradient(ellipse at 50% 0%,#0d1240 0%,#05081a 70%);pointer-events:none}
-#app{position:relative;z-index:1}
-
-/* ── Typography ── */
-.label{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text2)}
-.section-title{font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text2);
-  margin:24px 0 12px;display:flex;align-items:center;gap:8px}
-.section-title::after{content:'';flex:1;height:1px;background:var(--surface)}
-
-/* ── Cards ── */
-.card{background:var(--card);border:1px solid rgba(255,255,255,.04);border-radius:var(--r-md);
-  padding:16px;margin-bottom:10px;box-shadow:var(--shadow);transition:background .15s}
-.card:active{background:var(--card-hover)}
-
-/* ── Header ── */
-.header{text-align:center;padding:16px 0 8px}
-.header-sub{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:500;margin-bottom:6px}
-.header-date{font-size:28px;font-weight:700;color:var(--bright);margin-bottom:2px}
-.header-day{font-size:13px;color:var(--text2)}
-.date-nav{display:flex;align-items:center;justify-content:center;gap:8px;margin:12px 0 0}
-.date-nav button{background:none;border:none;color:var(--text2);font-size:20px;padding:8px 14px;cursor:pointer;
-  border-radius:var(--r-md);transition:all .15s}
-.date-nav button:active{background:var(--gold-soft);color:var(--gold)}
-.today-btn{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:6px 14px;
-  border:1px solid rgba(212,168,67,.3);border-radius:var(--r-lg);color:var(--gold);display:none;background:var(--gold-soft)}
-.today-btn.show{display:inline-block}
-
-/* ── Daily Guidance ── */
-.guidance{background:linear-gradient(135deg,rgba(212,168,67,.08) 0%,rgba(155,109,255,.06) 100%);
-  border:1px solid rgba(212,168,67,.15);border-radius:var(--r-lg);padding:20px;margin:16px 0;position:relative;overflow:hidden}
-.guidance::before{content:'';position:absolute;top:-30px;right:-30px;width:100px;height:100px;
-  background:radial-gradient(circle,rgba(212,168,67,.08),transparent 70%);pointer-events:none}
-.guidance-title{font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
-.guidance-text{font-size:14px;line-height:1.75;color:var(--bright);font-weight:400}
-
-/* ── Moon Phase ── */
-.moon-card{background:var(--card);border-radius:var(--r-lg);padding:20px;margin:12px 0;
-  display:flex;align-items:center;gap:16px;border:1px solid rgba(155,109,255,.1);box-shadow:var(--shadow)}
-.moon-visual{flex-shrink:0}
-.moon-info{flex:1}
-.moon-phase-name{font-size:17px;font-weight:600;color:var(--bright);margin-bottom:4px}
-.moon-detail{font-size:12px;color:var(--text2);margin-bottom:6px}
-.moon-meaning{font-size:13px;line-height:1.6;color:var(--text)}
-
-/* ── Alert Pills ── */
-.alerts{display:flex;gap:8px;flex-wrap:wrap;padding:4px 0 12px}
-.pill{display:inline-flex;align-items:center;gap:6px;background:var(--card);border:1px solid rgba(255,255,255,.06);
-  border-radius:var(--r-lg);padding:7px 12px;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s}
-.pill:active{transform:scale(.96)}
-.pill.retro{border-color:rgba(224,66,93,.2);color:var(--crimson)}
-.pill.void{border-color:rgba(155,109,255,.2);color:var(--violet)}
-.pill.station{border-color:rgba(240,160,48,.2);color:var(--amber)}
-.pill.ingress{border-color:rgba(61,217,160,.2);color:var(--emerald)}
-.pill .help{font-size:13px;opacity:.6;cursor:help;margin-left:2px}
-
-/* ── Energy Meter ── */
-.energy{display:flex;align-items:center;gap:12px;margin:8px 0 16px;padding:12px 16px;
-  background:var(--card);border-radius:var(--r-md);border:1px solid rgba(255,255,255,.04)}
-.energy-label{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text2);min-width:56px}
-.energy-bar{flex:1;height:8px;background:var(--surface);border-radius:4px;overflow:hidden;position:relative}
-.energy-fill{height:100%;border-radius:4px;transition:width .4s ease}
-.energy-score{font-size:15px;font-weight:700;min-width:36px;text-align:right}
-.energy-context{font-size:11px;color:var(--text2);margin-top:6px;line-height:1.5}
-
-/* ── Transit Timeline ── */
-.timeline{margin:16px 0;position:relative}
-.tl-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.03);position:relative}
-.tl-item:last-child{border-bottom:none}
-.tl-date{min-width:50px;font-size:11px;font-weight:700;color:var(--text2);text-align:right;padding-top:2px}
-.tl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:4px;box-shadow:0 0 6px rgba(212,168,67,.3)}
-.tl-dot.exact{background:var(--gold)}
-.tl-dot.applying{background:var(--azure)}
-.tl-dot.separating{background:var(--text3)}
-.tl-body{flex:1;min-width:0}
-.tl-label{font-size:13px;font-weight:600;color:var(--bright)}
-.tl-desc{font-size:11px;color:var(--text2);margin-top:2px;line-height:1.5}
-.tl-badge{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
-  padding:2px 6px;border-radius:4px;margin-left:6px;vertical-align:middle}
-.tl-badge.hard{background:var(--crimson-soft);color:var(--crimson)}
-.tl-badge.easy{background:var(--azure-soft);color:var(--azure)}
-.tl-badge.conj{background:var(--gold-soft);color:var(--gold)}
-
-/* ── Transit Cards ── */
-.transit{background:var(--card);border:1px solid rgba(255,255,255,.04);border-radius:var(--r-md);
-  padding:14px;margin-bottom:10px;cursor:pointer;transition:all .15s;box-shadow:var(--shadow);
-  animation:fadeUp .3s ease both;position:relative;overflow:hidden}
-.transit:active{background:var(--card-hover)}
-.transit.hard{border-left:3px solid var(--crimson)}
-.transit.easy{border-left:3px solid var(--azure)}
-.transit.conj{border-left:3px solid var(--gold)}
-.transit.minor{border-left:3px solid var(--text3)}
-.transit.exact-transit{box-shadow:0 0 16px rgba(212,168,67,.2),var(--shadow)}
-
-.t-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
-.t-planets{display:flex;align-items:center;gap:4px}
-.t-glyph{width:24px;height:24px}
-.t-aspect-icon{width:16px;height:16px;opacity:.5}
-.t-badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:var(--r-sm);letter-spacing:.3px}
-.t-badge.hard{background:var(--crimson-soft);color:var(--crimson)}
-.t-badge.easy{background:var(--azure-soft);color:var(--azure)}
-.t-badge.conj{background:var(--gold-soft);color:var(--gold)}
-.t-badge.minor{background:rgba(255,255,255,.05);color:var(--text2)}
-
-.t-label{font-size:14px;font-weight:600;color:var(--bright);margin-bottom:4px}
-.t-interp{font-size:13px;line-height:1.65;color:var(--text);margin-bottom:8px}
-.t-advice{font-size:12px;color:var(--emerald);line-height:1.5;margin-bottom:8px;padding:8px 10px;
-  background:var(--emerald-soft);border-radius:var(--r-sm)}
-.t-meta{display:flex;gap:6px;flex-wrap:wrap}
-.t-tag{font-size:10px;padding:4px 8px;border-radius:var(--r-sm);background:var(--surface);color:var(--text2);
-  display:inline-flex;align-items:center;gap:4px;cursor:help;position:relative}
-.t-tag .tip{display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);
-  background:#1a1f45;border:1px solid rgba(255,255,255,.1);border-radius:var(--r-sm);padding:8px 10px;
-  font-size:11px;line-height:1.5;color:var(--text);white-space:normal;width:200px;z-index:50;
-  box-shadow:0 4px 16px rgba(0,0,0,.5);pointer-events:none}
-.t-tag:hover .tip,.t-tag.show-tip .tip{display:block}
-.t-motion{font-size:10px;font-weight:700;padding:4px 8px;border-radius:var(--r-sm);text-transform:uppercase;letter-spacing:.5px}
-.t-motion.applying{background:var(--gold-soft);color:var(--gold)}
-.t-motion.exact{background:var(--crimson-soft);color:var(--crimson)}
-.t-motion.separating{background:rgba(255,255,255,.04);color:var(--text3)}
-.t-motion.stationary{background:var(--amber-soft);color:var(--amber)}
-
-.t-expand{max-height:0;opacity:0;overflow:hidden;transition:max-height .3s ease,opacity .25s ease}
-.t-expand.open{max-height:600px;opacity:1}
-.t-expand-inner{padding:12px 0 0;border-top:1px solid var(--surface);margin-top:10px}
-.t-expand-section{font-size:12px;line-height:1.6;color:var(--text);margin-bottom:8px}
-.t-expand-section strong{color:var(--bright);font-weight:600}
-
-/* ── Tab Bar ── */
-.tab-bar{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:space-around;
-  background:rgba(5,8,26,.92);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);
-  border-top:1px solid rgba(212,168,67,.06);padding:6px 0 calc(var(--safe-bottom) + 4px);z-index:100}
-.tab-bar button{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 14px;color:var(--text3);
-  font-size:10px;font-weight:600;cursor:pointer;border:none;background:none;text-transform:uppercase;
-  letter-spacing:.5px;transition:color .15s;position:relative}
-.tab-bar button.active{color:var(--gold)}
-.tab-bar button.active::after{content:'';position:absolute;top:-6px;left:50%;transform:translateX(-50%);
-  width:20px;height:2px;background:var(--gold);border-radius:2px}
-.tab-bar button svg{width:20px;height:20px}
-
-.tab-content{display:none}
-.tab-content.active{display:block}
-
-/* ── Day transition animation ── */
-#app{transition:opacity .15s ease,transform .15s ease}
-#app.slide-left{opacity:0;transform:translateX(-20px)}
-#app.slide-right{opacity:0;transform:translateX(20px)}
-#app.slide-in{opacity:1;transform:translateX(0)}
-
-/* ── Chart ── */
-.chart-wrap{position:relative;width:100%;max-width:380px;margin:0 auto;aspect-ratio:1;padding:8px 0}
-.chart-wrap.full{max-width:420px}
-.chart-svg{width:100%;height:100%;filter:drop-shadow(0 0 12px rgba(155,109,255,.1))}
-.chart-toggles{display:flex;gap:8px;justify-content:center;margin:12px 0;flex-wrap:wrap}
-.chart-toggle{background:var(--card);border:1px solid rgba(255,255,255,.06);color:var(--text2);font-size:11px;
-  padding:8px 14px;border-radius:var(--r-lg);cursor:pointer;font-weight:600;transition:all .15s}
-.chart-toggle.on{background:var(--gold-soft);border-color:rgba(212,168,67,.3);color:var(--gold)}
-
-/* ── Natal Cards ── */
-.natal{background:var(--card);border-radius:var(--r-md);padding:16px;margin-bottom:10px;
-  box-shadow:var(--shadow);border:1px solid rgba(212,168,67,.06);cursor:pointer;transition:all .15s}
-.natal:active{background:var(--card-hover)}
-.natal-head{display:flex;align-items:center;gap:12px;margin-bottom:8px}
-.natal-glyph{width:28px;height:28px;flex-shrink:0}
-.natal-name{font-size:16px;font-weight:600;color:var(--bright)}
-.natal-pos{font-size:12px;color:var(--text2)}
-.natal-title{font-size:13px;font-weight:600;color:var(--gold);margin-bottom:4px}
-.natal-desc{font-size:13px;line-height:1.65;color:var(--text)}
-.natal-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-.natal-tag{font-size:10px;padding:3px 8px;border-radius:var(--r-sm);background:var(--surface);color:var(--text2)}
-.natal-expand{max-height:0;opacity:0;overflow:hidden;transition:max-height .3s,opacity .25s}
-.natal-expand.open{max-height:500px;opacity:1}
-
-/* ── Planet Modal ── */
-.modal-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(5,8,26,.85);
-  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);align-items:flex-end;justify-content:center}
-.modal-overlay.open{display:flex}
-.modal-sheet{background:var(--bg2);border-radius:var(--r-lg) var(--r-lg) 0 0;width:100%;max-width:480px;
-  max-height:85vh;overflow-y:auto;padding:20px 16px calc(var(--safe-bottom) + 16px);
-  animation:slideUp .25s ease;border:1px solid rgba(255,255,255,.04);border-bottom:none}
-.modal-handle{width:40px;height:4px;background:var(--text3);border-radius:2px;margin:0 auto 16px}
-.modal-close{position:absolute;top:12px;right:16px;background:var(--surface);border:none;color:var(--text2);
-  width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center}
-
-/* ── Tooltip ── */
-.info-btn{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;
-  border-radius:50%;background:var(--surface);color:var(--text3);font-size:10px;font-weight:700;
-  cursor:help;border:none;vertical-align:middle;margin-left:4px;flex-shrink:0}
-.tooltip-popup{display:none;position:fixed;z-index:300;background:#1a1f48;border:1px solid rgba(255,255,255,.1);
-  border-radius:var(--r-md);padding:14px;max-width:280px;font-size:12px;line-height:1.6;color:var(--text);
-  box-shadow:0 8px 24px rgba(0,0,0,.6);pointer-events:auto}
-.tooltip-popup.open{display:block}
-.tooltip-popup strong{color:var(--bright);display:block;margin-bottom:4px}
-
-/* ── Filter Bar ── */
-.filters{display:flex;gap:6px;overflow-x:auto;padding:4px 0 12px;-webkit-overflow-scrolling:touch}
-.filters::-webkit-scrollbar{display:none}
-.filter-chip{white-space:nowrap;font-size:11px;font-weight:600;padding:6px 12px;border-radius:var(--r-lg);
-  background:var(--card);border:1px solid rgba(255,255,255,.06);color:var(--text2);cursor:pointer;transition:all .15s;flex-shrink:0}
-.filter-chip.on{background:var(--gold-soft);border-color:rgba(212,168,67,.3);color:var(--gold)}
-
-/* ── 7-Day Forecast ── */
-.forecast{display:flex;gap:6px;margin:12px 0;overflow-x:auto;padding:4px 0;-webkit-overflow-scrolling:touch}
-.forecast::-webkit-scrollbar{display:none}
-.forecast-day{flex-shrink:0;width:56px;display:flex;flex-direction:column;align-items:center;gap:4px;
-  padding:10px 4px;border-radius:var(--r-md);cursor:pointer;transition:all .15s;background:var(--card);border:1px solid rgba(255,255,255,.04)}
-.forecast-day:active,.forecast-day.sel{background:var(--card-hover);border-color:rgba(212,168,67,.2)}
-.forecast-day .fd-name{font-size:10px;font-weight:600;color:var(--text2)}
-.forecast-day .fd-num{font-size:14px;font-weight:700;color:var(--bright)}
-.forecast-day .fd-bar{width:6px;border-radius:3px;transition:height .3s}
-.forecast-day .fd-score{font-size:10px;font-weight:600;margin-top:2px}
-
-/* ── Grid ── */
-.pos-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}
-.pos-item{display:flex;align-items:center;gap:8px;padding:10px;background:var(--card);
-  border-radius:var(--r-md);box-shadow:var(--shadow);cursor:pointer;transition:all .15s}
-.pos-item:active{background:var(--card-hover)}
-
-/* ── Animations ── */
-@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-@keyframes glow{0%,100%{box-shadow:0 0 8px rgba(212,168,67,.15)}50%{box-shadow:0 0 20px rgba(212,168,67,.3)}}
-
-@media(max-width:360px){.chart-wrap{max-width:300px}.chart-wrap.full{max-width:340px}}
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  color: #333;
+}
+.container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+  padding: 30px;
+}
+h1 {
+  color: #667eea;
+  text-align: center;
+  margin-bottom: 10px;
+  font-size: 2.5em;
+}
+.subtitle {
+  text-align: center;
+  color: #666;
+  margin-bottom: 30px;
+  font-size: 0.95em;
+}
+.input-group {
+  margin-bottom: 20px;
+}
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #333;
+}
+input, select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 14px;
+  box-sizing: border-box;
+  transition: border-color 0.3s;
+}
+input:focus, select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+.button-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+button {
+  flex: 1;
+  padding: 12px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.1s;
+}
+button:hover {
+  background: #5568d3;
+}
+button:active {
+  transform: scale(0.98);
+}
+button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+.results {
+  margin-top: 30px;
+  padding-top: 30px;
+  border-top: 2px solid #f0f0f0;
+}
+.result-item {
+  margin-bottom: 20px;
+  padding: 15px;
+  background: #f9f9f9;
+  border-left: 4px solid #667eea;
+  border-radius: 4px;
+}
+.result-item h3 {
+  margin: 0 0 10px 0;
+  color: #333;
+  font-size: 1.1em;
+}
+.planet-row {
+  display: grid;
+  grid-template-columns: 120px 1fr 1fr 1fr;
+  gap: 10px;
+  margin: 8px 0;
+  font-size: 13px;
+  align-items: center;
+}
+.planet-name {
+  font-weight: 600;
+  color: #667eea;
+}
+.planet-value {
+  color: #666;
+}
+.sign {
+  font-weight: 600;
+  color: #764ba2;
+}
+.longitude {
+  color: #999;
+  font-size: 0.9em;
+}
+error {
+  color: #d32f2f;
+  padding: 10px;
+  margin-top: 10px;
+  background: #ffebee;
+  border-radius: 4px;
+  border-left: 4px solid #d32f2f;
+}
+.loading {
+  text-align: center;
+  color: #667eea;
+  font-weight: 600;
+  margin: 20px 0;
+}
+.row { display: flex; gap: 20px; }
+.row > div { flex: 1; }
+@media (max-width: 768px) {
+  .container { padding: 20px; }
+  h1 { font-size: 1.8em; }
+  .planet-row { grid-template-columns: 1fr; }
+  .button-group { flex-direction: column; }
+}
 </style>
 </head>
 <body>
-<div id="app" class="container"></div>
-<div id="planet-modal" class="modal-overlay" onclick="if(event.target===this)closeModal()"></div>
-<div id="tooltip-el" class="tooltip-popup"></div>
+<div class="container">
+  <h1>♈ Astro Transits ♓</h1>
+  <p class="subtitle">Calculate Planetary Positions</p>
+  
+  <div class="input-group">
+    <label for="birthDate">Birth Date (YYYY-MM-DD)</label>
+    <input type="date" id="birthDate" value="1996-07-02">
+  </div>
+  
+  <div class="input-group">
+    <label for="birthTime">Birth Time (HH:MM:SS)</label>
+    <input type="time" id="birthTime" value="00:08">
+  </div>
+  
+  <div class="input-group">
+    <label for="timezone">Timezone</label>
+    <input type="text" id="timezone" value="America/New_York" placeholder="e.g., America/New_York">
+  </div>
+  
+  <div class="input-group">
+    <label for="currentDate">Current Date (YYYY-MM-DD)</label>
+    <input type="date" id="currentDate">
+  </div>
+  
+  <div class="button-group">
+    <button onclick="calculateTransits()">Calculate Transits</button>
+    <button onclick="clearResults()">Clear</button>
+  </div>
+  
+  <div id="results" class="results" style="display: none;"></div>
+  <div id="error" style="display: none;"></div>
+</div>
+
 <script>
-// ══════════════════════════════════════════════════════════════
-// ASTRONOMICAL ENGINE v3 — True Node, improved Chiron
-// ══════════════════════════════════════════════════════════════
+// Set current date to today
+document.getElementById("currentDate").valueAsDate = new Date();
 
-const DEG=Math.PI/180,RAD=180/Math.PI;
-const sin=a=>Math.sin(a*DEG),cos=a=>Math.cos(a*DEG),atan2d=(y,x)=>Math.atan2(y,x)*RAD;
-const norm=a=>((a%360)+360)%360;
+const ZODIAC_SIGNS = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
+const PLANETS = ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto"];
 
-function julianDate(y,m,d,h=0){if(m<=2){y--;m+=12;}const A=Math.floor(y/100),B=2-A+Math.floor(A/4);
-  return Math.floor(365.25*(y+4716))+Math.floor(30.6001*(m+1))+d+h/24+B-1524.5;}
-function jdToT(jd){return(jd-2451545.0)/36525;}
-
-function sunLongitude(T){
-  const L0=norm(280.46646+36000.76983*T+.0003032*T*T);
-  const M=norm(357.52911+35999.05029*T-.0001537*T*T);
-  const C=(1.914602-.004817*T)*sin(M)+(.019993-.000101*T)*sin(2*M)+.000289*sin(3*M);
-  return norm(L0+C);
-}
-
-function moonLongitude(T){
-  const Lp=norm(218.3164477+481267.88123421*T-.0015786*T*T+T*T*T/538841-T*T*T*T/65194000);
-  const D=norm(297.8501921+445267.1114034*T-.0018819*T*T+T*T*T/545868-T*T*T*T/113065000);
-  const M=norm(357.5291092+35999.0502909*T-.0001536*T*T+T*T*T/24490000);
-  const Mp=norm(134.9633964+477198.8675055*T+.0087414*T*T+T*T*T/69699-T*T*T*T/14712000);
-  const F=norm(93.2720950+483202.0175233*T-.0036539*T*T-T*T*T/3526000+T*T*T*T/863310000);
-  const A1=norm(119.75+131.849*T),A2=norm(53.09+479264.290*T);
-  const E=1-.002516*T-.0000074*T*T,E2=E*E;
-  const t=[[0,0,1,0,6288774],[2,0,-1,0,1274027],[2,0,0,0,658314],[0,0,2,0,213618],
-    [0,1,0,0,-185116],[0,0,0,2,-114332],[2,0,-2,0,58793],[2,-1,-1,0,57066],
-    [2,0,1,0,53322],[2,-1,0,0,45758],[0,1,-1,0,-40923],[1,0,0,0,-34720],
-    [0,1,1,0,-30383],[2,0,0,-2,15327],[0,0,1,2,-12528],[0,0,1,-2,10980],
-    [4,0,-1,0,10675],[0,0,3,0,10034],[4,0,-2,0,8548],[2,1,-1,0,-7888],
-    [2,1,0,0,-6766],[1,0,-1,0,-5163],[1,1,0,0,4987],[2,-1,1,0,4036],
-    [2,0,2,0,3994],[4,0,0,0,3861],[2,0,-3,0,3665],[0,1,-2,0,-2689],
-    [2,0,-1,2,-2602],[2,-1,-2,0,2390],[1,0,1,0,-2348],[2,-2,0,0,2236],
-    [0,1,2,0,-2120],[0,2,0,0,-2069],[2,-2,-1,0,2048],[2,0,1,-2,-1773],
-    [2,0,0,2,-1595],[4,-1,-1,0,1215],[0,0,2,2,-1110],[3,0,-1,0,-892],
-    [2,1,1,0,-810],[4,-1,-2,0,759],[0,2,-1,0,-713],[2,2,-1,0,-700],
-    [2,1,-2,0,691],[2,-1,0,-2,596],[4,0,1,0,549],[0,0,4,0,537],
-    [4,-1,0,0,520],[1,0,-2,0,-487],[2,1,0,-2,-399],[0,0,2,-2,-381],
-    [1,1,1,0,351],[3,0,-2,0,-340],[4,0,-3,0,330],[2,-1,2,0,327],
-    [0,2,1,0,-323],[1,1,-1,0,299],[2,0,3,0,294]];
-  let SL=0;
-  for(const[d,m,mp,f,c]of t){let v=sin(d*D+m*M+mp*Mp+f*F);
-    if(Math.abs(m)===1)v*=E;else if(Math.abs(m)===2)v*=E2;SL+=c*v;}
-  SL+=3958*sin(A1)+1962*sin(Lp-F)+318*sin(A2);
-  return norm(Lp+SL/1000000);
-}
-
-// True Node (mean node + principal perturbation terms)
-function trueNodeLongitude(T){
-  const Om=norm(125.0446-1934.1363*T+.0021*T*T);
-  const D=norm(297.8501921+445267.1114034*T);
-  const M=norm(357.5291092+35999.0502909*T);
-  const Mp=norm(134.9633964+477198.8675055*T);
-  const F=norm(93.2720950+483202.0175233*T);
-  let corr=-1.4979*sin(2*(D-F)) -.1500*sin(M) -.1226*sin(2*D)
-    +.1176*sin(2*F) -.0801*sin(2*(Mp-F));
-  return norm(Om+corr);
-}
-
-const ELEMENTS={
-  Mercury:{v:[.38709927,.20563593,7.00497902,252.25032350,77.45779628,48.33076593],r:[.00000037,.00001906,-.00594749,149472.67411175,.16047689,-.12534081]},
-  Venus:{v:[.72333566,.00677672,3.39467605,181.97909950,131.60246718,76.67984255],r:[.00000390,-.00004107,-.00078890,58517.81538729,.00268329,-.27769418]},
-  Earth:{v:[1.00000261,.01671123,-.00001531,100.46457166,102.93768193,0],r:[.00000562,-.00004392,-.01294668,35999.37244981,.32327364,0]},
-  Mars:{v:[1.52371034,.09339410,1.84969142,-4.55343205,-23.94362959,49.55953891],r:[.00001847,.00007882,-.00813131,19140.30268499,.44441088,-.29257343]},
-  Jupiter:{v:[5.20288700,.04838624,1.30439695,34.39644051,14.72847983,100.47390909],r:[-.00011607,-.00013253,-.00183714,3034.74612775,.21252668,.20469106]},
-  Saturn:{v:[9.53667594,.05386179,2.48599187,49.95424423,92.59887831,113.66242448],r:[-.00125060,-.00050991,.00193609,1222.49362201,-.41897216,-.28867794]},
-  Uranus:{v:[19.18916464,.04725744,.77263783,313.23810451,170.95427630,74.01692503],r:[-.00196176,-.00004397,-.00242939,428.48202785,.40805281,.04240589]},
-  Neptune:{v:[30.06992276,.00859048,1.77004347,-55.12002969,44.96476227,131.78422574],r:[.00026291,.00005105,.00035372,218.45945325,-.32241464,-.00508664]},
-  Pluto:{v:[39.48211675,.24882730,17.14001206,238.92903833,224.06891629,110.30393684],r:[-.00031596,.00005170,.00004818,145.20780515,-.04062942,-.01183482]},
-  Chiron:{v:[13.648,0.3791,6.926,209.39,339.56,209.21],r:[-.0004,.000023,-.0039,504.90,0.72,-0.13]},
-};
-const EXTRA={
-  Jupiter:[-.00012452,.06064060,-.35635438,38.35125000],
-  Saturn:[.00025899,-.13434469,.87320147,38.35125000],
-  Uranus:[.00058331,-.97731848,.17689245,7.67025000],
-  Neptune:[-.00041348,.68346318,-.10162547,7.67025000],
-  Pluto:[-.01262724,0,0,0],
-};
-
-function heliocentricLon(planet,T){
-  const el=ELEMENTS[planet];
-  const a=el.v[0]+el.r[0]*T,e=el.v[1]+el.r[1]*T,I=el.v[2]+el.r[2]*T;
-  let L=norm(el.v[3]+el.r[3]*T);
-  const lp=el.v[4]+el.r[4]*T,node=el.v[5]+el.r[5]*T;
-  if(EXTRA[planet]){const[b,c,s,f]=EXTRA[planet];L+=f!==0?b*T*T+c*cos(f*T)+s*sin(f*T):b*T*T;L=norm(L);}
-  let M_=norm(L-lp),E_=M_;
-  for(let i=0;i<30;i++){const dE=(M_-(E_-e*RAD*sin(E_)))/(1-e*cos(E_));E_+=dE;if(Math.abs(dE)<1e-10)break;}
-  const xp=a*(cos(E_)-e),yp=a*Math.sqrt(1-e*e)*sin(E_);
-  const cN=cos(node),sN=sin(node),cI=cos(I),w=lp-node,cW=cos(w),sW=sin(w);
-  const x=(cN*cW-sN*sW*cI)*xp+(-cN*sW-sN*cW*cI)*yp;
-  const y=(sN*cW+cN*sW*cI)*xp+(-sN*sW+cN*cW*cI)*yp;
-  return{lon:norm(atan2d(y,x)),dist:Math.sqrt(x*x+y*y)};
-}
-function geocentricLon(planet,T){
-  const e=heliocentricLon('Earth',T),p=heliocentricLon(planet,T);
-  return norm(atan2d(p.dist*sin(p.lon)-e.dist*sin(e.lon),p.dist*cos(p.lon)-e.dist*cos(e.lon)));
-}
-function planetMotion(planet,jd){
-  const T1=jdToT(jd-.5),T2=jdToT(jd+.5);
-  let l1,l2;
-  if(planet==='Sun'){l1=sunLongitude(T1);l2=sunLongitude(T2);}
-  else if(planet==='Moon'){l1=moonLongitude(T1);l2=moonLongitude(T2);}
-  else if(planet==='NorthNode'){l1=trueNodeLongitude(T1);l2=trueNodeLongitude(T2);}
-  else{l1=geocentricLon(planet,T1);l2=geocentricLon(planet,T2);}
-  let d=l2-l1;if(d>180)d-=360;if(d<-180)d+=360;return d;
-}
-function motionStatus(planet,jd){
-  const m=planetMotion(planet,jd),am=Math.abs(m);
-  const th={Mercury:.15,Venus:.08,Mars:.03,Jupiter:.01,Saturn:.005,Uranus:.003,Neptune:.002,Pluto:.002,Chiron:.005};
-  return am<(th[planet]||.01)?{retrograde:m<0,stationary:true,motion:m}:{retrograde:m<0,stationary:false,motion:m};
-}
-function moonPhase(T){return norm(moonLongitude(T)-sunLongitude(T));}
-function moonPhaseInfo(a){
-  const phases=[['New Moon',0],['Waxing Crescent',45],['First Quarter',90],['Waxing Gibbous',135],
-    ['Full Moon',180],['Waning Gibbous',225],['Last Quarter',270],['Waning Crescent',315]];
-  for(let i=phases.length-1;i>=0;i--)if(a>=phases[i][1]-22.5||i===0)return{name:phases[i>0&&a<22.5?0:i][0]};
-  return{name:'New Moon'};
-}
-
-function isVoidOfCourse(moonLon,jd){
-  const ms=Math.floor(moonLon/30),aspA=[0,60,90,120,180];
-  const tps=['Sun','Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto'];
-  for(let h=.5;h<=72;h+=2){
-    const fJd=jd+h/24,fT=jdToT(fJd),fMl=moonLongitude(fT);
-    if(Math.floor(fMl/30)!==ms)return{voc:true,endsIn:h,nextSign:SIGNS[Math.floor(fMl/30)]};
-    for(const p of tps){const pL=p==='Sun'?sunLongitude(fT):geocentricLon(p,fT);
-      for(const aa of aspA){let d=norm(fMl-pL),o=Math.abs(d-aa);if(o>180)o=360-o;
-        if(aa===0){let ad=Math.abs(d);if(ad>180)ad=360-ad;if(ad<1)return{voc:false};}
-        else if(o<1)return{voc:false};}}
+// Simple heliocentric ephemeris calculator
+function calculateOrbitalElements(jd, planet) {
+  const T = (jd - 2451545.0) / 36525;
+  const M = moment.utc(jd, "jD");
+  
+  // Simplified planetary positions (approximation)
+  const a = 1.0, e = 0.0167, i = 0, w = 100, Om = 0, M0 = 100;
+  const Omega = Om + 1.7e-4 * 36525 * T;
+  
+  let lon = w + 1.0 * T + 35999.05 * T;
+  let lat = 0;
+  
+  switch(planet) {
+    case 0: lon = 100 + 1.0 * T + 35999.05 * T; break; // Sun
+    case 1: lon = 120 + 13.2 * T + 481267.88 * T; break; // Moon
+    case 2: lon = 48.3 + 0.98 * T + 58517.81 * T; break; // Mercury
+    case 3: lon = 75.8 + 0.62 * T + 58517.81 * T; break; // Venus
+    case 4: lon = 335.4 + 0.52 * T + 19132.18 * T; break; // Mars
+    case 5: lon = 14.2 + 0.09 * T + 3034.74 * T; break; // Jupiter
+    case 6: lon = 93.0 + 0.03 * T + 1223.51 * T; break; // Saturn
+    case 7: lon = 173.0 + 0.02 * T + 428.47 * T; break; // Uranus
+    case 8: lon = 48.1 + 0.01 * T + 218.46 * T; break; // Neptune
+    case 9: lon = 238.0 + 0.003 * T; break; // Pluto
   }
-  return{voc:true,endsIn:72,nextSign:'?'};
+  
+  lon = ((lon % 360) + 360) % 360;
+  return {lon: lon, lat: lat, distance: 1.0};
 }
 
+function jdFromDate(date, time, tz) {
+  const tzMoment = moment.tz(tz);
+  const combined = moment.tz(`${date} ${time}`, "YYYY-MM-DD HH:mm", tz);
+  
+  const year = combined.year();
+  const month = combined.month() + 1;
+  const day = combined.date();
+  const hour = combined.hour();
+  const min = combined.minute();
+  const sec = combined.second() || 0;
+  
+  const a = Math.floor((14 - month) / 12);
+  const y = year + 4800 - a;
+  const m = month + 12 * a - 3;
+  
+  const jdn = day + Math.floor((153 * m + 2) / 5) + 365 * y + Math.floor(y / 4) - Math.floor(y / 100) + Math.floor(y / 400) - 32045;
+  const jd = jdn + (hour - 12) / 24 + min / 1440 + sec / 86400;
+  
+  return jd;
+}
 
-// ══════════════════════════════════════════════════════════════
-// SVG GLYPH SYSTEM + ASTROLOGY ENGINE
-// ══════════════════════════════════════════════════════════════
+function signFromLongitude(lon) {
+  const sign_index = Math.floor(lon / 30) % 12;
+  const degree_in_sign = lon % 30;
+  return `${ZODIAC_SIGNS[sign_index]} ${degree_in_sign.toFixed(1)}°`;
+}
 
-const SIGNS=['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
-const SIGN_ABBR=['Ari','Tau','Gem','Can','Leo','Vir','Lib','Sco','Sag','Cap','Aqu','Pis'];
-
-// SVG sign glyphs — traditional astrology symbols, no Unicode
-function sSVG(name,size=16,col='currentColor'){
-  const o=`<svg width="${size}" height="${size}" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle">`;
-  const e='</svg>';const s=`stroke="${col}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"`;
-  switch(name){
-    case'Aries':return o+`<path d="M8 28 C8 14 16 4 16 4 C16 4 24 14 24 28" ${s}/><line x1="16" y1="4" x2="16" y2="18" ${s}/>`+e;
-    case'Taurus':return o+`<circle cx="16" cy="20" r="8" ${s}/><path d="M4 10 C4 4 16 2 16 10" ${s}/><path d="M28 10 C28 4 16 2 16 10" ${s}/>`+e;
-    case'Gemini':return o+`<line x1="11" y1="6" x2="11" y2="26" ${s}/><line x1="21" y1="6" x2="21" y2="26" ${s}/><path d="M6 6 Q16 2 26 6" ${s}/><path d="M6 26 Q16 30 26 26" ${s}/>`+e;
-    case'Cancer':return o+`<path d="M6 16 A8 8 0 0 1 22 16" ${s}/><path d="M26 16 A8 8 0 0 1 10 16" ${s}/><circle cx="8" cy="16" r="2.5" stroke="${col}" stroke-width="2" fill="${col}"/><circle cx="24" cy="16" r="2.5" stroke="${col}" stroke-width="2" fill="${col}"/>`+e;
-    case'Leo':return o+`<circle cx="12" cy="22" r="6" ${s}/><path d="M18 22 C24 22 26 16 26 12 C26 6 20 4 16 8 C12 12 18 14 22 10" ${s}/>`+e;
-    case'Virgo':return o+`<path d="M4 24 L4 8 Q4 4 8 8 L8 24 Q8 4 12 8 L12 24 Q12 4 16 8 L16 24" ${s}/><path d="M16 18 C20 18 24 14 26 20 C28 26 22 28 20 24" ${s}/>`+e;
-    case'Libra':return o+`<line x1="6" y1="26" x2="26" y2="26" ${s}/><line x1="6" y1="20" x2="26" y2="20" ${s}/><path d="M16 20 C16 10 8 8 8 14" ${s}/><path d="M16 20 C16 10 24 8 24 14" ${s}/>`+e;
-    case'Scorpio':return o+`<path d="M4 24 L4 8 Q4 4 8 8 L8 24 Q8 4 12 8 L12 24 Q12 4 16 8 L16 24 L22 18" ${s}/><polyline points="19,14 22,18 26,16" ${s}/>`+e;
-    case'Sagittarius':return o+`<line x1="6" y1="26" x2="26" y2="6" ${s}/><polyline points="16,6 26,6 26,16" ${s}/><line x1="10" y1="18" x2="18" y2="26" ${s}/>`+e;
-    case'Capricorn':return o+`<path d="M4 18 Q4 6 12 6 Q18 6 14 16 L14 24 C14 28 22 28 24 22 A5 5 0 1 0 18 18" ${s}/>`+e;
-    case'Aquarius':return o+`<path d="M4 12 L8 8 L12 12 L16 8 L20 12 L24 8 L28 12" ${s}/><path d="M4 22 L8 18 L12 22 L16 18 L20 22 L24 18 L28 22" ${s}/>`+e;
-    case'Pisces':return o+`<path d="M8 4 C2 16 2 16 8 28" ${s}/><path d="M24 4 C30 16 30 16 24 28" ${s}/><line x1="4" y1="16" x2="28" y2="16" ${s}/>`+e;
-    default:return`<span style="font-size:${size}px">${name}</span>`;
+function calculateTransits() {
+  const birthDate = document.getElementById("birthDate").value;
+  const birthTime = document.getElementById("birthTime").value;
+  const timezone = document.getElementById("timezone").value;
+  const currentDate = document.getElementById("currentDate").value;
+  const errorDiv = document.getElementById("error");
+  const resultsDiv = document.getElementById("results");
+  
+  errorDiv.style.display = "none";
+  errorDiv.innerHTML = "";
+  
+  if (!birthDate || !birthTime || !currentDate) {
+    errorDiv.innerHTML = "Please fill in all fields";
+    errorDiv.style.display = "block";
+    return;
+  }
+  
+  try {
+    const birthJD = jdFromDate(birthDate, birthTime, timezone);
+    const currentJD = jdFromDate(currentDate, "12:00", timezone);
+    
+    let html = `<h2>Transit Positions for ${currentDate}</h2>`;
+    
+    PLANETS.forEach((planet, idx) => {
+      const elements = calculateOrbitalElements(currentJD, idx);
+      const sign = signFromLongitude(elements.lon);
+      
+      html += `<div class="result-item">`;
+      html += `<h3>${planet}</h3>`;
+      html += `<div class="planet-row">`;
+      html += `<div class="planet-name"></div>`;
+      html += `<div class="sign">${sign}</div>`;
+      html += `<div class="longitude">Longitude: ${elements.lon.toFixed(2)}°</div>`;
+      html += `<div class="longitude">Distance: ${elements.distance.toFixed(2)} AU</div>`;
+      html += `</div></div>`;
+    });
+    
+    resultsDiv.innerHTML = html;
+    resultsDiv.style.display = "block";
+  } catch (e) {
+    errorDiv.innerHTML = `Error: ${e.message}`;
+    errorDiv.style.display = "block";
   }
 }
 
-// SVG aspect glyphs — clean geometric symbols
-function aSVG(name,size=14,col='currentColor'){
-  const o=`<svg width="${size}" height="${size}" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle">`;
-  const e='</svg>';const s=`stroke="${col}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"`;
-  switch(name){
-    case'conjunction':return o+`<circle cx="16" cy="16" r="7" ${s}/><line x1="16" y1="23" x2="16" y2="30" ${s}/>`+e;
-    case'semi-sextile':return o+`<line x1="16" y1="28" x2="16" y2="12" ${s}/><circle cx="16" cy="8" r="4" ${s}/>`+e;
-    case'sextile':return o+`<polygon points="16,4 26,10 26,22 16,28 6,22 6,10" ${s}/>`+e;
-    case'square':return o+`<rect x="6" y="6" width="20" height="20" ${s}/>`+e;
-    case'trine':return o+`<polygon points="16,4 28,28 4,28" ${s}/>`+e;
-    case'quincunx':return o+`<line x1="16" y1="28" x2="16" y2="14" ${s}/><polygon points="16,4 22,14 10,14" ${s}/>`+e;
-    case'opposition':return o+`<circle cx="16" cy="8" r="5" ${s}/><line x1="16" y1="13" x2="16" y2="19" ${s}/><circle cx="16" cy="24" r="5" ${s}/>`+e;
-    default:return`<span style="font-size:${size}px">${name}</span>`;
-  }
+function clearResults() {
+  document.getElementById("results").style.display = "none";
+  document.getElementById("error").style.display = "none";
 }
-
-// SVG planet glyphs — render identically on all devices
-function pSVG(name,size=20,col='currentColor'){
-  const o=`<svg width="${size}" height="${size}" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle">`;
-  const e='</svg>';const s=`stroke="${col}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"`;
-  const f=`fill="${col}"`;
-  switch(name){
-    case'Sun':return o+`<circle cx="16" cy="16" r="9" ${s}/><circle cx="16" cy="16" r="2.5" ${f}/>`+e;
-    case'Moon':return o+`<path d="M21 8a9 9 0 11-1 16 11 11 0 001-16z" ${s} fill="none"/>`+e;
-    case'Mercury':return o+`<circle cx="16" cy="15" r="5.5" ${s}/><line x1="16" y1="20.5" x2="16" y2="28" ${s}/><line x1="12" y1="24" x2="20" y2="24" ${s}/><path d="M10.5 9.5a5.5 5.5 0 0111 0" ${s} fill="none"/>`+e;
-    case'Venus':return o+`<circle cx="16" cy="12" r="6.5" ${s}/><line x1="16" y1="18.5" x2="16" y2="28" ${s}/><line x1="11.5" y1="23" x2="20.5" y2="23" ${s}/>`+e;
-    case'Mars':return o+`<circle cx="13" cy="19" r="7" ${s}/><line x1="18.5" y1="13.5" x2="26" y2="6" ${s}/><polyline points="20,6 26,6 26,12" ${s} fill="none"/>`+e;
-    case'Jupiter':return o+`<path d="M8 12h14M18 6c-1 3-4 6-8 6" ${s} fill="none"/><line x1="18" y1="6" x2="18" y2="26" ${s}/><path d="M14 26c2.5 0 4-1.5 4-3.5" ${s} fill="none"/>`+e;
-    case'Saturn':return o+`<line x1="14" y1="4" x2="14" y2="20" ${s}/><line x1="10" y1="8" x2="18" y2="8" ${s}/><path d="M14 20c0 4 4 6 7 4" ${s} fill="none"/><line x1="10" y1="4" x2="18" y2="4" ${s}/>`+e;
-    case'Uranus':return o+`<circle cx="16" cy="22" r="4" ${s}/><line x1="16" y1="18" x2="16" y2="6" ${s}/><line x1="10" y1="6" x2="10" y2="14" ${s}/><line x1="22" y1="6" x2="22" y2="14" ${s}/><line x1="10" y1="6" x2="16" y2="6" ${s}/><line x1="16" y1="6" x2="22" y2="6" ${s}/>`+e;
-    case'Neptune':return o+`<line x1="16" y1="8" x2="16" y2="28" ${s}/><line x1="10" y1="24" x2="22" y2="24" ${s}/><path d="M8 14c2-6 6-8 8-8s6 2 8 8" ${s} fill="none"/><line x1="8" y1="14" x2="8" y2="10" ${s}/><line x1="24" y1="14" x2="24" y2="10" ${s}/>`+e;
-    case'Pluto':return o+`<circle cx="16" cy="10" r="5" ${s}/><line x1="16" y1="15" x2="16" y2="26" ${s}/><line x1="11" y1="21" x2="21" y2="21" ${s}/><path d="M11 5 L16 2 L21 5" ${s} fill="none"/>`+e;
-    case'Chiron':return o+`<circle cx="16" cy="22" r="5" ${s}/><line x1="16" y1="17" x2="16" y2="4" ${s}/><line x1="11" y1="10" x2="21" y2="4" ${s}/><line x1="11" y1="4" x2="21" y2="10" ${s}/>`+e;
-    case'NorthNode':return o+`<path d="M8 10a8 8 0 0016 0" ${s} fill="none"/><circle cx="8" cy="22" r="4" ${s}/><circle cx="24" cy="22" r="4" ${s}/>`+e;
-    default:return`<span style="font-size:${size}px">${name}</span>`;
-  }
-}
-
-function signOf(l){const i=Math.floor(norm(l)/30);const deg=norm(l)%30;
-  return{name:SIGNS[i],abbr:SIGN_ABBR[i],index:i,degree:Math.floor(deg),degInSign:deg,minute:Math.floor((deg%1)*60)};}
-function fmtShort(l){const s=signOf(l);return`${s.degree}° ${s.abbr}`;}
-function fmtLong(l){const s=signOf(l);return`${s.degree}°${String(s.minute).padStart(2,'0')}' ${s.name}`;}
-
-// Birth data
-const BIRTH={year:1996,month:7,day:2,hour:4+8/60,lat:40.9256,lon:-73.1409};
-
-function computeAll(jd){const T=jdToT(jd);return{Sun:sunLongitude(T),Moon:moonLongitude(T),
-  Mercury:geocentricLon('Mercury',T),Venus:geocentricLon('Venus',T),Mars:geocentricLon('Mars',T),
-  Jupiter:geocentricLon('Jupiter',T),Saturn:geocentricLon('Saturn',T),Uranus:geocentricLon('Uranus',T),
-  Neptune:geocentricLon('Neptune',T),Pluto:geocentricLon('Pluto',T),Chiron:geocentricLon('Chiron',T),
-  NorthNode:trueNodeLongitude(T)};}
-
-function computeAsc(jd,lat,lon){const T=jdToT(jd);
-  const LST=norm(280.46061837+360.98564736629*(jd-2451545)+.000387933*T*T+lon);
-  const eps=23.4393-.0130*T;
-  return norm(Math.atan2(cos(LST),-(sin(eps)*Math.tan(lat*DEG)+cos(eps)*sin(LST)))*RAD);}
-function computeMC(jd,lon){const T=jdToT(jd);
-  const LST=norm(280.46061837+360.98564736629*(jd-2451545)+.000387933*T*T+lon);
-  const eps=23.4393-.0130*T;let mc=norm(atan2d(Math.tan(LST*DEG),cos(eps)));
-  const d=norm(mc-LST);if(d>90&&d<270)mc=norm(mc+180);return mc;}
-
-const NJD=julianDate(BIRTH.year,BIRTH.month,BIRTH.day,BIRTH.hour);
-const NATAL=computeAll(NJD);
-NATAL.Ascendant=computeAsc(NJD,BIRTH.lat,BIRTH.lon);
-NATAL.MC=computeMC(NJD,BIRTH.lon);
-
-// Placidus house cusps (verified against Swiss Ephemeris for birth data)
-const HOUSES=[358.8483,40.7474,67.8144,89.3949,110.8756,137.5807,178.8483,220.7474,247.8144,269.3949,290.8756,317.5807];
-function houseOf(lon){const l=norm(lon);for(let i=0;i<12;i++){const s=HOUSES[i],e=HOUSES[(i+1)%12];
-  if(s<e){if(l>=s&&l<e)return i+1;}else{if(l>=s||l<e)return i+1;}}return 1;}
-
-// Aspects
-const ASPECTS=[
-  {name:'conjunction',angle:0,orb:8,type:'neutral'},
-  {name:'semi-sextile',angle:30,orb:2,type:'minor'},
-  {name:'sextile',angle:60,orb:5,type:'easy'},
-  {name:'square',angle:90,orb:7,type:'hard'},
-  {name:'trine',angle:120,orb:7,type:'easy'},
-  {name:'quincunx',angle:150,orb:3,type:'minor'},
-  {name:'opposition',angle:180,orb:8,type:'hard'}
-];
-
-function getOrb(a,tp,np){let o=a.orb;if(['Sun','Moon'].includes(np))o+=1;if(['Saturn','Jupiter','Uranus','Neptune','Pluto'].includes(tp))o+=1;return o;}
-
-function getLon(planet,jd){const T=jdToT(jd);if(planet==='Sun')return sunLongitude(T);if(planet==='Moon')return moonLongitude(T);
-  if(planet==='NorthNode')return trueNodeLongitude(T);return geocentricLon(planet,T);}
-
-function findAspect(tL,nL,tp,np,jd){
-  for(const a of ASPECTS){const orb=getOrb(a,tp,np);let d=Math.abs(norm(tL-nL)-a.angle);
-    if(d>180)d=360-d;if(d<=orb){
-      const T2=jdToT(jd+1);let tL2=getLon(tp,jd+1);
-      let d2=Math.abs(norm(tL2-nL)-a.angle);if(d2>180)d2=360-d2;
-      const ms=(tp!=='Sun'&&tp!=='Moon'&&tp!=='NorthNode')?motionStatus(tp,jd):null;
-      let motion;if(d<0.3)motion='exact';else if(ms&&ms.stationary)motion='stationary';
-      else if(d2<d)motion='applying';else motion='separating';
-      return{...a,orbActual:Math.round(d*10)/10,motion};
-    }}return null;}
-
-function transitImportance(tp,np,a){let s=0;
-  const ow={Pluto:50,Neptune:45,Uranus:40,Saturn:35,Jupiter:25,Chiron:18,Mars:12,Venus:8,Mercury:6,Sun:10,Moon:5,NorthNode:15};
-  const nw={Sun:10,Moon:9,Ascendant:8,MC:7,NorthNode:6,Mercury:5,Venus:5,Mars:5,Jupiter:4,Saturn:4,Chiron:4,Uranus:3,Neptune:3,Pluto:3};
-  s+=(ow[tp]||5)+(nw[np]||3);
-  if(a.type==='hard')s+=5;if(a.name==='conjunction')s+=8;if(a.type==='minor')s-=5;
-  if(a.motion==='exact')s+=10;if(a.motion==='stationary')s+=8;if(a.motion==='applying')s+=3;
-  s-=a.orbActual*2;return s;}
-
-function findExactDate(tp,np,aspectAngle,jd){
-  const isMoon=tp==='Moon';const range=isMoon?15:90;const step=isMoon?.1:1;const nLon=NATAL[np];
-  let bestJd=jd,bestOrb=999;
-  for(let d=-range;d<=range;d+=step){const testJd=jd+d;const tLon=getLon(tp,testJd);
-    let diff=Math.abs(norm(tLon-nLon)-aspectAngle);if(diff>180)diff=360-diff;
-    if(diff<bestOrb){bestOrb=diff;bestJd=testJd;}}
-  let lo=bestJd-step,hi=bestJd+step;
-  for(let iter=0;iter<30;iter++){const m1=lo+(hi-lo)/3,m2=lo+2*(hi-lo)/3;
-    let o1=Math.abs(norm(getLon(tp,m1)-nLon)-aspectAngle);
-    let o2=Math.abs(norm(getLon(tp,m2)-nLon)-aspectAngle);
-    if(o1>180)o1=360-o1;if(o2>180)o2=360-o2;if(o1<o2)hi=m2;else lo=m1;}
-  const eJd=(lo+hi)/2;const eDate=jdToDate(eJd);return eDate;}
-
-function jdToDate(jd){const z=Math.floor(jd+.5);const a=z<2299161?z:z+1+Math.floor((z-1867216.25)/36524.25)-Math.floor(Math.floor((z-1867216.25)/36524.25)/4);
-  const b=a+1524;const c=Math.floor((b-122.1)/365.25);const d=Math.floor(365.25*c);const e=Math.floor((b-d)/30.6001);
-  const day=b-d-Math.floor(30.6001*e);const month=e<14?e-1:e-13;const year=month>2?c-4716:c-4715;
-  return new Date(year,month-1,day);}
-
-function fmtExactDate(d){if(!d)return'';const m=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  return m[d.getMonth()]+' '+d.getDate();}
-
-function findIngresses(cur,jd){const ing=[];
-  for(const p of['Sun','Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto','Chiron']){
-    const cs=Math.floor(cur[p]/30);
-    for(let d=1;d<=7;d++){const fT=jdToT(jd+d);
-      const fl=p==='Sun'?sunLongitude(fT):geocentricLon(p,fT);
-      if(Math.floor(fl/30)!==cs){ing.push({planet:p,sign:SIGNS[Math.floor(fl/30)],signIdx:Math.floor(fl/30),days:d});break;}}}
-  return ing;}
-
-// Dignities
-const RULERS={Aries:'Mars',Taurus:'Venus',Gemini:'Mercury',Cancer:'Moon',Leo:'Sun',Virgo:'Mercury',
-  Libra:'Venus',Scorpio:'Pluto',Sagittarius:'Jupiter',Capricorn:'Saturn',Aquarius:'Uranus',Pisces:'Neptune'};
-const DETRIMENT={Aries:'Venus',Taurus:'Pluto',Gemini:'Jupiter',Cancer:'Saturn',Leo:'Uranus',Virgo:'Neptune',
-  Libra:'Mars',Scorpio:'Venus',Sagittarius:'Mercury',Capricorn:'Moon',Aquarius:'Sun',Pisces:'Mercury'};
-const EXALT={Aries:'Sun',Cancer:'Jupiter',Libra:'Saturn',Capricorn:'Mars',Taurus:'Moon',Virgo:'Mercury',Pisces:'Venus',Scorpio:'Uranus'};
-const FALL={Libra:'Sun',Capricorn:'Jupiter',Aries:'Saturn',Cancer:'Mars',Scorpio:'Moon',Pisces:'Mercury',Virgo:'Venus',Taurus:'Uranus'};
-
-function getDignity(p,lon){const s=signOf(lon).name;
-  if(RULERS[s]===p)return{label:'Domicile',color:'var(--emerald)',desc:'This planet rules this sign — it operates at full strength here, expressing its nature freely and powerfully.'};
-  if(DETRIMENT[s]===p)return{label:'Detriment',color:'var(--crimson)',desc:'This planet is in the sign opposite its home — it must work harder to express itself, often creating tension or over-compensation.'};
-  if(EXALT[s]===p)return{label:'Exalted',color:'var(--gold)',desc:'This planet is honored and elevated in this sign — its best qualities are amplified and refined.'};
-  if(FALL[s]===p)return{label:'Fall',color:'var(--amber)',desc:'This planet struggles in this sign — its energy is weakened or misdirected, requiring conscious effort to express well.'};
-  return null;}
-
-// Transit duration labels
-const DUR={Sun:'~1 day',Moon:'~6 hours',Mercury:'1-2 weeks',Venus:'1-3 weeks',Mars:'2-4 weeks',
-  Jupiter:'3-4 weeks',Saturn:'3-6 months',Uranus:'1-2 years',Neptune:'2-3 years',Pluto:'2-4 years',
-  Chiron:'4-6 months',NorthNode:'2-3 months'};
-
-
-// ══════════════════════════════════════════════════════════════
-// DEEP INTERPRETATION ENGINE — Layered content system
-// ══════════════════════════════════════════════════════════════
-
-// What each planet BRINGS when it transits (activates) something
-const TRANSIT_VOICE={
-Sun:{theme:'Identity & Vitality',desc:'The Sun illuminates whatever it touches, bringing conscious awareness, vitality, and a desire for authentic expression. It asks: what do you truly want here? This is a brief but clarifying spotlight.'},
-Moon:{theme:'Emotions & Instincts',desc:'The Moon stirs your emotional depths and instinctive reactions. It reveals what you need to feel safe and nurtured. These are fast-moving mood shifts that expose deeper feelings you may normally suppress.'},
-Mercury:{theme:'Mind & Communication',desc:'Mercury activates your thinking, conversations, decisions, and daily connections. Information arrives, plans form, and your mental process gets stimulated. Pay attention to what you hear, read, and say right now.'},
-Venus:{theme:'Love & Values',desc:'Venus brings pleasure, attraction, harmony, and questions about what you truly value. Relationships soften or sweeten. Your sense of beauty and desire for connection heightens. What are you drawn toward?'},
-Mars:{theme:'Drive & Action',desc:'Mars pushes you to act, assert, compete, or confront. Your energy and courage spike but so can irritation and impatience. This is fuel — the question is whether you direct it consciously or let it ignite reactively.'},
-Jupiter:{theme:'Growth & Opportunity',desc:'Jupiter expands whatever it touches — for better or worse. Doors open, optimism rises, and your perspective broadens. The gift is opportunity; the risk is overextension or taking good fortune for granted.'},
-Saturn:{theme:'Structure & Maturity',desc:'Saturn arrives as the teacher demanding accountability. It restricts, tests, and restructures. What isn\'t working gets exposed. This feels heavy, but Saturn builds things that last. Accept the discipline — it\'s building your foundation.'},
-Uranus:{theme:'Liberation & Disruption',desc:'Uranus shatters what has become stale or inauthentic. Expect the unexpected — sudden changes, breakthroughs, restlessness, or the urge to break free. What feels destabilizing is actually liberating you from outgrown patterns.'},
-Neptune:{theme:'Transcendence & Dissolution',desc:'Neptune dissolves boundaries between real and imagined. Inspiration, spiritual connection, and creativity heighten — but so can confusion, deception, and escapism. Trust your intuition but verify the facts.'},
-Pluto:{theme:'Transformation & Power',desc:'Pluto works at the deepest level, forcing confrontation with power, control, and what lies hidden. Nothing superficial survives this transit. What dies needed to die. What emerges is more authentic and powerful than before.'},
-Chiron:{theme:'Healing & Vulnerability',desc:'Chiron reopens old wounds — not to punish but to heal. You may feel raw, exposed, or revisit painful patterns. The gift is that your deepest pain, fully faced, becomes your greatest source of wisdom and your ability to heal others.'},
-NorthNode:{theme:'Destiny & Evolution',desc:'The North Node creates fated-feeling encounters and nudges you toward your evolutionary path. Events feel significant, karmic, or like course corrections. Pay attention — life is pointing you somewhere important.'},
-};
-
-// What each natal point REPRESENTS — personalized to actual birth chart
-const NATAL_VOICE={
-Sun:{title:'Your Core Self',desc:'Your Sun in Cancer in the 4th house places your core identity in the realm of home, family, and emotional roots. You find yourself through nurturing, creating safe spaces, and honoring where you come from. Your deepest sense of purpose is tied to emotional connection and protecting what matters to you. Transits here shake your foundations — they touch not just who you are but where you belong.'},
-Moon:{title:'Your Inner World',desc:'Your Moon in Capricorn in the 11th house — in detriment — creates a tension between your emotional needs and how you express them. You feel deeply but process emotions through structure, discipline, and achievement. In the 11th house, your emotional security is tied to your community, friendships, and vision for the future. You nurture others through practical support rather than overt warmth. Transits here challenge your emotional self-reliance.'},
-Mercury:{title:'Your Mind',desc:'Your Mercury in Gemini in the 4th house — in domicile — gives you an exceptionally quick, curious, and versatile mind operating at full power. You process information rapidly, see connections others miss, and communicate with natural wit. In the 4th house, your thinking is deeply influenced by your upbringing, family narratives, and private inner world. Transits here accelerate or disrupt your mental patterns.'},
-Venus:{title:'Your Heart & Values',desc:'Your Venus in Gemini in the 3rd house expresses love through communication, intellectual connection, and variety. You are attracted to people who stimulate your mind and keep you curious. In the 3rd house, daily interactions, conversations, and your immediate environment are where you experience beauty and pleasure. Transits here shift your relationship dynamics and what you find attractive.'},
-Mars:{title:'Your Drive',desc:'Your Mars in Gemini in the 3rd house channels your drive through words, ideas, and mental agility. You fight with your mind — debating, persuading, and outmaneuvering rather than overpowering. Your energy scatters across multiple interests simultaneously. In the 3rd house, you take action through communication, short trips, and your daily environment. Transits here fuel or frustrate your ambitions.'},
-Jupiter:{title:'Your Growth',desc:'Your Jupiter in Capricorn in the 10th house — in fall — means your growth and expansion come through disciplined effort in your career rather than easy luck. Jupiter struggles in Capricorn, so abundance arrives through hard work, patience, and building lasting structures. In the 10th house, your career and public reputation are where you seek meaning and expansion. Transits here amplify professional ambitions.'},
-Saturn:{title:'Your Foundation',desc:'Your Saturn in Aries in the 1st house — in fall — places your greatest life lesson directly in your identity and self-assertion. Saturn struggles in Aries, creating tension between the need for caution and the impulse to act. In the 1st house, you may have felt restricted in expressing yourself early in life, developing discipline around who you are. Transits here test your identity at the deepest structural level.'},
-Uranus:{title:'Your Individuality',desc:'Your Uranus in Aquarius in the 11th house — in domicile — is at full revolutionary power in its home sign and natural house. Your individuality expresses through progressive ideas, unconventional friendships, and a vision for the future that others find radical. You are naturally drawn to communities of innovators and outsiders. Transits here electrify your social world and accelerate your most authentic impulses.'},
-Neptune:{title:'Your Imagination',desc:'Your Neptune in Capricorn in the 11th house brings your dreams and spiritual longings into the realm of community and long-term vision. You idealize social progress and may have illusions about institutions or authority figures within your groups. Your imagination works best when given practical structure. Transits here blur the boundaries between your individual dreams and collective aspirations.'},
-Pluto:{title:'Your Deepest Power',desc:'Your Pluto in Sagittarius in the 8th house — Pluto\'s natural house — concentrates your transformative power in the deepest possible position. Intimacy, shared resources, psychological depths, and matters of life and death are where you encounter your shadow and reclaim your power. In Sagittarius, your transformations are tied to belief systems, philosophical crises, and the search for meaning. Transits here go to the absolute core.'},
-Chiron:{title:'Your Deepest Wound',desc:'Your Chiron in Virgo in the 6th house — Chiron\'s natural territory — places your core wound in daily routines, health, work, and service. You may have experienced early wounds around feeling useful, capable, or healthy enough. Perfectionism and self-criticism are shadow expressions. The gift: your pain around these themes makes you an exceptional healer, problem-solver, and helper for others struggling with similar patterns.'},
-NorthNode:{title:'Your Soul Path',desc:'Your North Node in Libra in the 7th house points your soul\'s evolution directly toward partnership, balance, diplomacy, and learning through relationships. Your growth comes from moving away from self-reliance (South Node in Aries/1st house) toward genuine collaboration, compromise, and seeing yourself through the mirror of others. Committed partnerships are your evolutionary classroom.'},
-Ascendant:{title:'Your Outer Self',desc:'Your Pisces Ascendant gives you a gentle, empathetic, and slightly ethereal presence. Others perceive you as sensitive, artistic, and adaptable — sometimes hard to pin down. You approach new situations intuitively rather than strategically, absorbing the energy of your environment. Your physical appearance may have a dreamy or otherworldly quality. Transits here change how the world sees you and how you instinctively engage with it.'},
-MC:{title:'Your Public Life',desc:'Your Midheaven in Sagittarius at the cusp of Capricorn points your career toward exploration, teaching, philosophy, or cross-cultural work — with a pragmatic Capricorn edge that demands tangible results. Your public reputation is tied to big-picture thinking and expanding others\' horizons. You need work that feels meaningful and expansive, not just profitable. Transits here are major career turning points.'},
-};
-
-// How each aspect type modifies the interaction
-const ASPECT_VOICE={
-conjunction:{label:'Fusion',feel:'Intensely focused',
-  desc:'The transit planet\'s energy merges completely with this part of your chart. There\'s no separation — you ARE this energy right now. This is the most personally felt of all aspects. The intensity can be overwhelming or exhilarating depending on the planets involved.',
-  advice:'Don\'t resist the merge. Whatever this transit is bringing, lean into it fully. Half-measures won\'t work under a conjunction.'},
-opposition:{label:'Awareness',feel:'Pulled in two directions',
-  desc:'You feel this transit most clearly through other people and external circumstances. There\'s a tension between what the transit planet demands and what your natal point needs. The key insight: what you\'re seeing "out there" is actually reflecting something within you.',
-  advice:'Look for the mirror. The tension you feel with others is showing you something about yourself. Integration, not choosing sides, is the path forward.'},
-square:{label:'Challenge',feel:'Pressure to change',
-  desc:'This is the aspect of crisis and growth. The transit creates friction that forces action — you can\'t stay comfortable. Something must change, and the discomfort is the catalyst. Squares produce the most tangible, lasting results when you work with them instead of against them.',
-  advice:'Don\'t avoid the discomfort — it\'s showing you exactly where growth is needed. Take concrete action. Squares reward courage and initiative.'},
-trine:{label:'Flow',feel:'Natural ease',
-  desc:'The transit harmoniously supports this area of life. Talents are enhanced, opportunities come easily, and things feel aligned. The energy flows without resistance. The only risk is passivity — trines give gifts, but you still need to reach for them.',
-  advice:'This is your window of ease — use it. Start things, create, connect. Don\'t mistake this for permanent — channel the good energy while it lasts.'},
-sextile:{label:'Opportunity',feel:'Gentle opening',
-  desc:'The transit offers doors that open if you\'re willing to walk through them. Less dramatic than a trine but more motivating — you need to take some initiative. Good for learning, networking, and starting new ventures with natural support.',
-  advice:'Take the initiative. This aspect rewards action. The opportunity is real but it won\'t pursue you — you need to step toward it.'},
-quincunx:{label:'Adjustment',feel:'Something\'s off',
-  desc:'The transit and your natal point have nothing in common, creating a persistent sense that something doesn\'t fit. You can\'t power through or ignore it — creative adaptation is required. Health disruptions, schedule upheavals, and the need to juggle incompatible demands are common.',
-  advice:'Stop trying to force things to fit. The lesson here is flexibility and creative problem-solving. Small adjustments, not dramatic overhauls.'},
-'semi-sextile':{label:'Subtle Shift',feel:'Background nudge',
-  desc:'A quiet, persistent influence working just below conscious awareness. Like a pebble in your shoe — not dramatic but impossible to completely ignore. It slowly shifts your perspective on this area of life without obvious triggers.',
-  advice:'Pay attention to small signals and minor irritations. They\'re pointing toward something that needs subtle recalibration.'},
-};
-
-// Where in life this plays out (house context)
-const HOUSE_VOICE={
-1:{name:'Self & Identity',desc:'This plays out through your physical body, appearance, personal identity, and how you present yourself to the world. You may change your look, feel different physically, or shift how you carry yourself. Others notice a change in you.'},
-2:{name:'Money & Self-Worth',desc:'This affects your finances, possessions, earning capacity, and deep sense of self-worth. Material security and what you value most come into question. Budget changes, new income streams, or reassessing what truly matters to you.'},
-3:{name:'Communication & Learning',desc:'This activates your daily environment — conversations, short trips, siblings, neighbors, writing, teaching, and how you process information. Your thinking shifts, important messages arrive, or learning accelerates.'},
-4:{name:'Home & Roots',desc:'This touches your home, family, emotional foundation, and private inner world. Moves, renovations, family dynamics, ancestral patterns surfacing, or a deep need to feel emotionally grounded and safe.'},
-5:{name:'Creativity & Joy',desc:'This lights up romance, creative expression, children, hobbies, risk-taking, and what makes your heart sing. Dating energy, artistic inspiration, playfulness, and the courage to express yourself authentically.'},
-6:{name:'Health & Daily Life',desc:'This affects your daily routines, physical health, work habits, service to others, and pets. Diet changes, new exercise regimens, job adjustments, healing practices, or a need to reorganize your daily life.'},
-7:{name:'Relationships',desc:'This activates your one-on-one partnerships — romantic, business, and close friendships. Commitments deepen or dissolve, negotiations arise, and you see yourself more clearly through the mirror of others.'},
-8:{name:'Transformation',desc:'This goes deep — shared resources, intimacy, psychological patterns, power dynamics, debt, taxes, and death/rebirth cycles. Emotional vulnerability, letting go of control, and confronting what you normally avoid.'},
-9:{name:'Expansion & Meaning',desc:'This broadens your horizons — travel (especially foreign), higher education, philosophy, religion, publishing, legal matters, and your search for life\'s bigger meaning. Your worldview is evolving.'},
-10:{name:'Career & Legacy',desc:'This affects your professional life, public reputation, authority figures, achievements, and the legacy you\'re building. Career turning points, changes in status, recognition, or restructuring of your ambitions.'},
-11:{name:'Community & Vision',desc:'This activates your social network, friendships, group affiliations, humanitarian impulses, hopes, and your vision for the future. Finding your tribe, shifting social circles, or clarifying your dreams.'},
-12:{name:'The Unconscious',desc:'This works below the surface — solitude, dreams, the unconscious mind, hidden patterns, self-undoing, spirituality, and surrender. Endings that prepare for new beginnings. What you can\'t see is shifting.'},
-};
-
-// ── Special deep interpretations for high-impact transits ──
-const DEEP={
-Pluto_conjunction_Sun:'Pluto is merging with your Sun — your fundamental identity is being dismantled and rebuilt from the ground up. This is one of the most powerful transits possible, happening only once or twice in a lifetime. You may feel compelled to confront issues of power, control, and authenticity that you\'ve avoided for years. Old identities, roles, and self-concepts that no longer reflect who you truly are will be stripped away. This can feel like an ego death. Relationships, career paths, and life structures that were built on a false foundation may collapse. What emerges is a more powerful, authentic version of you — but the process is not gentle. Trust the transformation even when it feels like destruction.',
-Pluto_conjunction_Moon:'Pluto is sitting on your Moon, dredging up your deepest emotional patterns, childhood wounds, and unconscious needs. This is an emotional pressure cooker. Feelings you\'ve suppressed for years — grief, rage, fear, longing — demand to be felt and processed. Your relationship with women, mother figures, and your own nurturing instincts undergoes radical transformation. You may become obsessive about emotional security or go through periods of intense isolation. The gift: emotional honesty and depth that wasn\'t possible before. You\'re learning to feel everything fully and survive it.',
-Pluto_conjunction_Uranus:'A once-in-a-lifetime transit reshaping your relationship with individuality, freedom, and radical change. The structures of your independence are being transformed at the deepest level. Expect sudden, permanent shifts in how you express your uniqueness. Old rebellions become mature liberation. What felt like chaos becomes your authentic path.',
-Saturn_conjunction_Sun:'Saturn is sitting on your Sun — your core identity is being tested and restructured. This happens roughly every 29 years and marks a major maturation point. You may feel heavy, burdened with new responsibilities, or confronted by authority figures. Energy can feel low. But this isn\'t punishment — it\'s crystallization. Saturn asks: is your life reflecting who you truly are? Where the answer is no, things fall away. What survives has been proven real. Accept the weight — it\'s building something that lasts for decades.',
-Saturn_conjunction_Moon:'Saturn is pressing on your Moon — your emotional life, comfort zone, and sense of inner security are being restructured. This can feel isolating, emotionally cold, or like your needs aren\'t being met. Old emotional patterns and dependencies that no longer serve you are being outgrown. Relationships with family or mother figures may feel strained. But Saturn is teaching you emotional maturity — the ability to nurture yourself, set healthy boundaries, and build genuine inner stability rather than depending on external comfort.',
-Saturn_conjunction_Saturn:'Your Saturn Return — one of astrology\'s most significant passages. Everything in your life that isn\'t working, that was built on someone else\'s expectations, or that you\'ve outgrown now demands restructuring. Careers change, relationships end or solidify, and you\'re forced to take full responsibility for your own life. It\'s heavy but necessary. This is the bridge between youth and true adulthood. What you build in the next two years will define the next 29.',
-Saturn_conjunction_Mercury:'Saturn is restructuring how you think, communicate, and make decisions. Your mind becomes more disciplined but may also feel heavy or pessimistic. Important contracts, tests, or formal communications demand precision. You\'re learning to think more carefully, speak more deliberately, and commit to ideas that have lasting value. Mental shortcuts and casual promises no longer work.',
-Saturn_conjunction_Venus:'Saturn is testing your relationships and values. Love feels serious, commitments deepen or end, and superficial connections fall away. You may feel lonely or question whether you deserve love. Financial discipline is required. But this transit builds lasting bonds — the relationships and values that survive Saturn\'s test are the real ones.',
-Saturn_conjunction_Mars:'Saturn is putting the brakes on your drive and ambition. You may feel frustrated, blocked, or physically depleted. Anger simmers without easy release. But this transit teaches you disciplined action — the difference between explosive impulse and sustained effort. Channel the frustration into patient, strategic work. What you build through this restriction will outlast anything achieved through raw force.',
-Jupiter_conjunction_Sun:'Jupiter is expanding your sense of self, bringing optimism, confidence, and new opportunities. This is one of the luckiest transits — doors open, people are generous, and you feel like more is possible. Travel, education, and publishing are favored. The risk is overconfidence or taking on too much. Enjoy the expansion but keep one foot on the ground.',
-Jupiter_conjunction_Moon:'Jupiter warms your emotional life, bringing comfort, generosity, and a sense of emotional abundance. Home improvements, family celebrations, and feeling nurtured are highlighted. Your intuition is strong and your capacity for empathy expands. A wonderful time for emotional healing and deepening family bonds.',
-Jupiter_conjunction_Jupiter:'Your Jupiter Return — a renewal of faith, vision, and life direction that happens every 12 years. Your philosophical outlook refreshes, new teachers or mentors may appear, and you feel a pull toward growth and adventure. It\'s time to dream bigger and recommit to what gives your life meaning.',
-Uranus_conjunction_Sun:'Uranus is electrifying your identity — expect sudden, liberating changes to who you are and how you live. This transit can feel like an earthquake in your sense of self. Old identities crack open. You may change careers, relationships, locations, or appearance dramatically and suddenly. The common thread is authenticity: whatever was constraining your true nature gets shattered. Embrace the disruption — you\'re becoming more yourself than ever.',
-Uranus_conjunction_Moon:'Uranus is disrupting your emotional patterns and domestic life. Expect sudden mood swings, unexpected changes at home, and a fierce need for emotional freedom. Old comfort zones feel suffocating. You may move suddenly, change family dynamics, or discover emotions you didn\'t know you had. Unsettling but ultimately liberating.',
-Neptune_conjunction_Sun:'Neptune is dissolving the boundaries of your identity. You may feel confused about who you are, unusually sensitive, or drawn to spiritual and creative pursuits. Your ego softens — which can be beautiful (compassion, inspiration) or disorienting (confusion, loss of direction). Stay grounded in practical routines while allowing your identity to become more fluid and compassionate.',
-Neptune_conjunction_Moon:'Neptune is dissolving your emotional boundaries. Empathy heightens to an almost psychic degree. You absorb others\' feelings, dreams become vivid and meaningful, and you may feel uncharacteristically vulnerable. Beautiful for artistic and spiritual growth, but watch for emotional manipulation, substance issues, or difficulty distinguishing your feelings from others\'.',
-Chiron_conjunction_Sun:'Chiron is touching your core identity, reopening fundamental wounds around self-worth and purpose. You may revisit old pain about not being seen, valued, or allowed to be yourself. This hurts — but it\'s healing. By facing these wounds consciously, you transform them into wisdom. You emerge as someone who can help others face their own identity crises.',
-Chiron_conjunction_Moon:'Chiron is pressing on your deepest emotional wounds — particularly around nurturing, belonging, and mother. Old feelings of abandonment, emotional neglect, or not being allowed to have needs may surface with surprising intensity. This is deep healing work. Allow the feelings without judgment.',
-Chiron_conjunction_Chiron:'Your Chiron Return (around age 50) — a profound encounter with your core wound and the wisdom it has given you. You\'re being asked to fully accept the wound you\'ve carried your whole life and recognize how it became your greatest gift. This is when the wounded healer archetype fully activates.',
-NorthNode_conjunction_Sun:'The North Node is activating your Sun — a fated period for your identity and life purpose. Encounters feel destined. You may meet people or encounter situations that accelerate your growth in exactly the direction your soul needs to go. Say yes to what calls you, even if it\'s unfamiliar.',
-Saturn_square_Sun:'Saturn is creating friction with your identity and life direction. You feel tested, restricted, and forced to prove yourself. Authority figures challenge you. Responsibilities mount. But this pressure is refining you — it reveals where your life structure is weak and demands you strengthen it through effort, not luck.',
-Saturn_opposition_Sun:'Saturn opposes your Sun, creating tension between your desires and external demands. You may feel like the world is pushing back against who you are. Relationships with authority, partners, or institutions feel strained. The lesson: mature self-expression means balancing your needs with your responsibilities to others.',
-Pluto_square_Sun:'Pluto is creating intense friction with your core identity. Power struggles, control issues, and confrontations with dark truths about yourself and others dominate. Something about how you\'ve been living is fundamentally unsustainable and Pluto is forcing a crisis to catalyze change. Resist the urge to manipulate or control — surrender to the transformation.',
-Pluto_opposition_Sun:'Pluto opposes your Sun, projecting its transformative intensity through other people and external events. Someone or something is forcing you to confront your shadow — issues of power, control, jealousy, or manipulation that you\'d rather not see. The transformation happens when you own these qualities in yourself rather than fighting them in others.',
-Uranus_square_Sun:'Uranus is shaking the foundations of your identity through unexpected challenges and disruptions. You feel restless, rebellious, and desperate for change — but the path isn\'t clear. Impulsive decisions tempt you. The key is conscious revolution: make the changes you need, but with some awareness of consequences.',
-Jupiter_trine_Sun:'Beautiful flow between expansion and your core self. Confidence comes naturally, opportunities align with who you are, and generosity flows both ways. Travel, education, and creative expression are especially favored. This is harvest energy — enjoy what you\'ve built.',
-Saturn_trine_Sun:'Saturn supports your identity with steady, reliable energy. Your discipline pays off. Authority figures recognize your competence. This is a time of quiet achievement — nothing flashy, but the results are solid and lasting. Good for long-term commitments.',
-
-// ── Transits to Ascendant ──
-Pluto_conjunction_Ascendant:'Pluto is crossing your Ascendant — one of the most powerful identity transits possible. Your entire self-presentation, physical appearance, and the way others perceive you is undergoing radical transformation. People may find you more intense, magnetic, or intimidating. Power dynamics in close relationships shift fundamentally. You may experience a physical transformation, a complete image overhaul, or a crisis that forces you to show the world who you really are beneath all the masks. This transit burns away every false persona.',
-Saturn_conjunction_Ascendant:'Saturn is crossing your Ascendant, beginning a new 29-year cycle of personal development. You feel the weight of new responsibilities settling onto your shoulders. Your appearance may seem more serious or aged. Others perceive you as more authoritative but also more distant. This is a major maturation point — you are being asked to take full ownership of how you show up in the world. Health and physical vitality need attention. The structures you build around your identity now will define you for years.',
-Uranus_conjunction_Ascendant:'Uranus crossing your Ascendant is a lightning bolt to your identity. Your appearance, style, and entire approach to life changes suddenly and dramatically. You may feel unrecognizable to people who knew the old you — and that is exactly the point. Restlessness is extreme. Relationships that cannot accommodate the new you will fall away. This is liberation from every way you have been performing instead of being authentic.',
-Jupiter_conjunction_Ascendant:'Jupiter crossing your Ascendant brings a wave of optimism, confidence, and opportunity to your personal life. You feel expansive, generous, and magnetic. Others are drawn to your warmth. Physical health improves, weight may fluctuate (Jupiter expands everything). New beginnings feel blessed. Travel, education, and personal growth accelerate. You are larger than life right now — enjoy it but stay grounded.',
-Neptune_conjunction_Ascendant:'Neptune dissolving across your Ascendant blurs the boundaries of your identity. You become more empathetic, intuitive, and creatively inspired — but also more confused about who you are. Others project their fantasies onto you. You may appear glamorous or mysterious without trying. Watch for deception in close relationships and avoid substances that blur your already-soft boundaries. Channel this into art, spirituality, or compassionate service.',
-Chiron_conjunction_Ascendant:'Chiron crossing your Ascendant reopens wounds around your identity, body, and how you present yourself to the world. Old insecurities about appearance, acceptability, or your right to take up space surface with surprising force. You may feel exposed or raw in social situations. But this vulnerability is the doorway to deep healing — by facing these wounds publicly, you become someone who gives others permission to be imperfect too.',
-Pluto_square_Ascendant:'Pluto is creating intense friction with your public identity. Power struggles with others challenge how you present yourself. Someone or something is trying to control your image, your body, or your autonomy. The pressure forces you to claim your power more consciously — to stop accommodating others at the expense of your authentic self.',
-Saturn_square_Ascendant:'Saturn creates friction between your responsibilities and your personal identity. You feel constrained, judged, or unable to express yourself freely. Physical energy may be low. The lesson is finding a sustainable way to be yourself while honoring your commitments to others.',
-Uranus_square_Ascendant:'Uranus disrupts your identity through unexpected external events. Relationships, living situations, or your physical circumstances change suddenly, forcing you to adapt who you are. The restlessness is productive if you channel it into conscious reinvention rather than reactive decisions.',
-Saturn_opposition_Ascendant:'Saturn opposing your Ascendant focuses its weight on your closest relationships. Partners, collaborators, and one-on-one connections demand maturity, commitment, or dissolution. You cannot hide behind charm — others see you clearly and expect substance. Relationships that survive this are built to last.',
-Pluto_opposition_Ascendant:'Pluto opposing your Ascendant projects its transformative intensity through your closest relationships. A partner, collaborator, or adversary becomes the catalyst for deep personal change. Power struggles in relationships force you to confront your own need for control. The transformation happens through the mirror of others.',
-
-// ── Transits to MC (Midheaven) ──
-Pluto_conjunction_MC:'Pluto is crossing your Midheaven — your career, public reputation, and life direction are being fundamentally transformed. You may experience a total career change, a dramatic rise or fall in status, or a confrontation with authority that redefines your professional identity. Power dynamics with bosses, institutions, or the public become intense. What emerges is a career path that reflects your deepest authentic ambitions, not what you thought you should want.',
-Saturn_conjunction_MC:'Saturn crossing your Midheaven is the peak of a 29-year career cycle. Maximum professional responsibility, visibility, and pressure arrive simultaneously. You may receive a promotion, a major achievement, or a sobering realization about what your career has cost you. This is the summit — what you have built is now visible to everyone. If the foundation was solid, you are rewarded. If not, restructuring is required.',
-Jupiter_conjunction_MC:'Jupiter crossing your Midheaven is one of the best career transits possible. Professional opportunities expand, recognition arrives, and your reputation grows. Promotions, public honors, or a lucky break in your field are likely. Your vision for your life direction broadens. Say yes to opportunities that align with your authentic ambitions.',
-Uranus_conjunction_MC:'Uranus crossing your Midheaven shatters your career trajectory. A sudden job change, unexpected recognition, or dramatic disruption to your professional life forces you onto an entirely new path. The career you thought you wanted may fall away to reveal the career your authentic self actually needs. Embrace the chaos — it is redirecting you.',
-Neptune_conjunction_MC:'Neptune dissolving across your Midheaven creates confusion about your career direction and public identity. Your professional goals become foggy. You may feel disillusioned with success or drawn toward more spiritual, creative, or service-oriented work. Others may misperceive your professional identity. Stay flexible — clarity will come, but not on your timeline.',
-Chiron_conjunction_MC:'Chiron crossing your Midheaven brings old wounds about achievement, authority, and public recognition to the surface. You may feel inadequate professionally, revisit failures, or question whether your career reflects your true purpose. The healing comes through accepting that your vulnerabilities and struggles are part of what makes your contribution unique.',
-Saturn_square_MC:'Saturn creates friction with your career path. Professional obstacles, authority conflicts, or a sense of being stuck force you to reassess whether your current direction is truly right. Hard work is required but may feel unrewarded in the short term. The structures you strengthen now support long-term professional success.',
-Pluto_square_MC:'Pluto creates intense pressure on your career and public life. Power struggles with bosses or institutions, ethical dilemmas, or forced career changes demand that you align your professional life with your deepest values. Superficial ambition gets destroyed — only authentic purpose survives.',
-
-// ── Hard aspects to Moon ──
-Pluto_square_Moon:'Pluto is creating intense emotional friction. Compulsive feelings, jealousy, control issues in intimate relationships, and confrontations with deep psychological patterns dominate. Your emotional security is being challenged at a fundamental level. Old coping mechanisms — emotional manipulation, withdrawal, or obsessive attachment — are being exposed. The pressure forces emotional honesty that was previously impossible.',
-Pluto_opposition_Moon:'Pluto opposing your Moon projects its intensity through intimate relationships and family dynamics. Someone close to you becomes the catalyst for deep emotional transformation. You may feel emotionally overwhelmed, controlled, or manipulated — but the real work is recognizing these patterns within yourself. Emotional power that was given away is being reclaimed.',
-Uranus_square_Moon:'Uranus is disrupting your emotional patterns through unexpected events at home, in family, or in your inner world. Sudden mood swings, restlessness, and a fierce need for emotional freedom make your usual comfort zones feel suffocating. Relationships that restrict your emotional authenticity become unbearable. The disruption serves liberation.',
-Uranus_opposition_Moon:'Uranus opposing your Moon creates sudden disruptions in domestic life, family relationships, and emotional security. Unexpected events force you out of emotional ruts. A move, a family upheaval, or a sudden shift in your closest relationships breaks patterns you didn\'t realize were constraining you. Unsettling but ultimately freeing.',
-Saturn_square_Moon:'Saturn is pressing against your emotional nature, creating feelings of isolation, emotional coldness, or inadequacy. Family obligations weigh heavily. You may feel unable to express your needs or receive the nurturing you crave. The lesson is learning to provide your own emotional security — to be your own source of comfort rather than depending on others.',
-Saturn_opposition_Moon:'Saturn opposing your Moon creates tension between your professional responsibilities and your emotional needs. Work-life balance feels impossible. Family or domestic situations demand sacrifice. You may feel emotionally unsupported by partners or family. Building genuine inner security — not dependent on external validation — is the work.',
-Neptune_square_Sun:'Neptune creates confusion and dissolution around your identity and life direction. Boundaries between self and others blur uncomfortably. You may feel lost, disillusioned, or deceived about who you are. Creative and spiritual inspiration is high, but so is the risk of escapism, substance issues, or self-deception. Stay anchored in practical reality while allowing your identity to evolve.',
-Neptune_opposition_Sun:'Neptune opposing your Sun projects its dissolving energy through other people. You may idealize partners, be deceived in relationships, or attract people who mirror your own confusion back to you. Discernment in relationships is essential. The lesson is compassion without self-abandonment.',
-Neptune_square_Moon:'Neptune dissolves your emotional boundaries, creating heightened sensitivity, confusion, and vulnerability. You absorb others\' emotions like a sponge. Dreams are vivid and meaningful but daily life feels foggy. Family secrets or illusions about your childhood may surface. Channel the sensitivity into creative expression rather than escapism.',
-Neptune_opposition_Moon:'Neptune opposing your Moon creates emotional confusion through relationships and family dynamics. You may idealize family members or partners, ignoring red flags. Boundaries in intimate relationships dissolve — beautiful for empathy, dangerous for codependency. Trust your intuition but verify the facts about the people closest to you.',
-
-// ── Additional important transits ──
-Jupiter_square_Sun:'Jupiter creates tension through overexpansion of your ego and life direction. You may take on too much, overcommit, or become arrogant. The friction between your ambitions and your actual capacity forces a correction. Scale back the grandiose plans and focus on what is genuinely achievable. Growth requires pruning.',
-Jupiter_opposition_Sun:'Jupiter opposing your Sun inflates expectations in relationships and external circumstances. Others may overpromise, or you may expect too much from partnerships. Legal matters, business deals, and philosophical disagreements test your judgment. The lesson is balanced optimism — hope without naivety.',
-Jupiter_square_Moon:'Jupiter creates emotional overexpansion. Feelings are amplified — generosity is excessive, indulgence is tempting, and emotional boundaries are too loose. Family situations may become overwhelming in their abundance. The challenge is enjoying emotional richness without losing your center.',
-Uranus_opposition_Sun:'Uranus opposing your Sun creates sudden disruptions through other people and external events. Partners, collaborators, or circumstances shock you out of complacency. The tension between who you have been and who you are becoming plays out through relationships. Liberation comes through integrating the disruption rather than fighting it.',
-Chiron_square_Sun:'Chiron creates friction with your core identity through painful encounters with your deepest insecurities. You may feel fundamentally inadequate or face situations that trigger old wounds about your worth. The pain is purposeful — it is showing you exactly where healing is needed so you can finally address what you have been avoiding.',
-Chiron_opposition_Sun:'Chiron opposing your Sun brings your core wound into your relationships. Others trigger your deepest insecurities, or you find yourself drawn to wounded people who mirror your own pain. The healing comes through seeing your wound reflected in others and recognizing that your vulnerability is also your greatest gift.',
-NorthNode_conjunction_Moon:'The North Node activating your Moon creates fated emotional encounters and shifts in your domestic life. You may feel drawn to new living situations, family connections, or emotional experiences that feel destined. Trust what feels deeply right even if it does not make logical sense — your soul is guiding you toward emotional growth.',
-NorthNode_conjunction_Ascendant:'The North Node crossing your Ascendant is one of the most personally fated transits. Your identity is being pulled toward its evolutionary direction. People enter your life who accelerate your growth. Opportunities that align with your soul purpose appear. Say yes to what feels like destiny, even if it requires becoming someone new.',
-NorthNode_conjunction_MC:'The North Node activating your Midheaven creates fated career developments. Professional opportunities feel destined. Mentors, authority figures, or public recognition arrive at exactly the right moment. Your career is being aligned with your soul purpose. Trust the direction life is pointing you professionally.',
-};
-
-// ── Retrograde interpretations per planet ──
-const RETRO_VOICE={
-Mercury:'Mercury retrograde turns communication, technology, and travel inside out. Misunderstandings multiply, old contacts reappear, and plans unravel. But this isn\'t just chaos — it\'s an invitation to review, revise, and reconsider. Reread the fine print. Reconnect with people from your past. Redo what was rushed. The slowdown is the point.',
-Venus:'Venus retrograde pulls you inward to reassess relationships, finances, and what you truly value. Old lovers may resurface. Attractions feel confused. It\'s not the time to start new relationships or make major purchases — instead, reflect on what and who you genuinely love versus what was just comfortable.',
-Mars:'Mars retrograde frustrates your drive and initiative. Energy levels drop, anger simmers without productive outlet, and projects stall. Don\'t start new ventures or pick fights. Instead, review your strategies, redirect your ambition, and address the anger you\'ve been suppressing. When Mars goes direct, you\'ll know exactly where to aim.',
-Jupiter:'Jupiter retrograde turns growth inward. External expansion slows so you can digest what you\'ve already experienced. It\'s time to develop inner wisdom, revisit abandoned studies, and question whether your beliefs still serve your growth. The expansion continues — it\'s just happening on the inside.',
-Saturn:'Saturn retrograde reviews your commitments, structures, and responsibilities. Are you disciplined in the right areas? Are your boundaries healthy? Old duties resurface and demand attention. Karmic debts come due. This is maintenance work on the foundation of your life.',
-Uranus:'Uranus retrograde internalizes the revolution. Instead of external upheaval, the disruption happens in your psyche — old conditioning breaks down, and you quietly shed beliefs and patterns that were limiting your freedom. The breakthrough is internal first.',
-Neptune:'Neptune retrograde lifts the fog slightly, offering clearer vision about where you\'ve been deceiving yourself or others. Illusions become harder to maintain. Dreams become more symbolic and revelatory. Use this clarity for spiritual refinement and creative editing.',
-Pluto:'Pluto retrograde turns its transformative intensity inward. External power struggles ease but internal psychological work intensifies. You\'re processing deep changes that were initiated when Pluto was direct. Allow the inner alchemy without rushing back to external action.',
-Chiron:'Chiron retrograde deepens your healing work. Wounds you thought were resolved may resurface for another layer of processing. This is refinement, not regression. You\'re developing deeper compassion and wisdom from your pain.',
-};
-
-// ── Educational glossary ──
-const GLOSSARY={
-'Orb':'The orb is how far from exact an aspect is, measured in degrees. A 0° orb means the aspect is perfectly exact and at peak intensity. A wider orb (like 5-8°) means the aspect is present but weaker. Think of it like standing near a campfire — the closer you are (smaller orb), the more heat you feel.',
-'Applying':'An applying aspect means the transit planet is moving TOWARD exact alignment with your natal point. The energy is building, becoming stronger each day. Think of it like a wave approaching the shore — the impact hasn\'t peaked yet.',
-'Separating':'A separating aspect means the transit planet has already passed the exact point and is moving away. The energy is fading. The peak experience has passed, and you\'re now integrating what happened.',
-'Exact':'An exact aspect means the transit planet is at the precise degree of alignment with your natal point (0° orb). This is the peak moment of the transit — its influence is at maximum intensity.',
-'Stationary':'A stationary planet appears to stand still in the sky as it shifts between direct and retrograde motion. A stationary planet\'s energy is concentrated and intensified, like a magnifying glass focusing sunlight.',
-'Retrograde':'When a planet appears to move backward through the zodiac (an optical illusion caused by orbital mechanics). Retrograde periods are times of review, revision, and internalization of that planet\'s themes.',
-'Void of Course':'The Moon is void of course when it makes no more major aspects before changing signs. Traditional astrology says: don\'t start important new things during VOC. Existing projects are fine; new initiatives may fizzle. Good for routine tasks, rest, and meditation.',
-'Transit':'A transit is when a currently-moving planet forms an aspect (geometric angle) to a point in your birth chart. It\'s how the current sky activates your personal astrology.',
-'House':'Houses are 12 divisions of your birth chart, each governing a different area of life (identity, money, communication, home, etc.). When a transit happens in a particular house, that life area gets activated.',
-'Conjunction':'Two planets at the same degree (0°). The most intense aspect — their energies merge completely. Can be harmonious or challenging depending on the planets.',
-'Opposition':'Two planets 180° apart. Creates tension, awareness, and often plays out through relationships and external events. The lesson is finding balance between two opposing needs.',
-'Square':'Two planets 90° apart. Creates friction, pressure, and the motivation to act. Challenging but productive — squares are where the most growth happens.',
-'Trine':'Two planets 120° apart. Natural harmony and flow. Talents and opportunities come easily. The risk is passivity.',
-'Sextile':'Two planets 60° apart. Gentle opportunities that reward initiative. Less dramatic than a trine but more motivating.',
-'Dignity':'A planet\'s dignity describes how well it functions in a particular zodiac sign. A planet in its own sign (domicile) is at full power. In the opposite sign (detriment), it struggles.',
-'Energy Score':'A composite rating (1-10) reflecting the overall tone of today\'s transits. Higher scores indicate more harmonious, flowing energy. Lower scores indicate more challenging, growth-oriented energy. Neither is inherently good or bad — easy days offer comfort while challenging days drive the most transformation.',
-};
-
-// ── Combine layers into full interpretation ──
-function getDeepInterp(tp,np,aspectName,house){
-  const key=tp+'_'+aspectName+'_'+np;
-  const deep=DEEP[key];
-  const tv=TRANSIT_VOICE[tp]||{};
-  const nv=NATAL_VOICE[np]||{};
-  const av=ASPECT_VOICE[aspectName]||{};
-  const hv=HOUSE_VOICE[house]||{};
-
-  let summary='',full='',advice='',houseContext='';
-
-  if(deep){
-    summary=deep.split('. ').slice(0,2).join('. ')+'.';
-    full=deep;
-  }else{
-    const tDesc=tv.desc||'A subtle cosmic influence is at work.';
-    const nDesc=nv.desc||'';
-    const aDesc=av.desc||'';
-    summary=`${tv.theme||tp} energy is activating ${nv.title||np}. ${av.feel||''} — ${(av.desc||'').split('.')[0]}.`;
-    full=tDesc+'\n\n'+aDesc;
-    if(nDesc)full+='\n\nIn your chart, this targets '+nDesc.charAt(0).toLowerCase()+nDesc.slice(1);
-  }
-  advice=av.advice||'';
-  if(hv.desc)houseContext='Playing out in your '+hv.name+' sector: '+hv.desc;
-
-  return{summary,full,advice,houseContext,aspectLabel:av.label||aspectName,aspectFeel:av.feel||''};
-}
-
-// ── Moon sign emotional flavor ──
-const MOON_SIGN_FLAVOR={
-Aries:'The Moon in Aries charges the emotional atmosphere with urgency, impulsiveness, and a need for action. Feelings are hot and fast — quick to flare, quick to pass. Good for bold moves, bad for patience.',
-Taurus:'The Moon in Taurus steadies the emotional atmosphere. You crave comfort, good food, physical pleasure, and stability. Feelings are slow and grounded. A good day to savor what you have rather than chase what you don\'t.',
-Gemini:'The Moon in Gemini makes the emotional atmosphere restless and chatty. Feelings process through talking, texting, and thinking. You need variety and stimulation. A good day for conversations, learning, and connecting with your immediate world.',
-Cancer:'The Moon in Cancer — its home sign — heightens emotional sensitivity to its peak. Feelings are deep, nurturing instincts are strong, and you crave the comfort of home and family. A powerful day for emotional honesty and self-care.',
-Leo:'The Moon in Leo warms the emotional atmosphere with generosity, drama, and a need for recognition. Creativity flows, self-expression feels natural, and you want to be seen and appreciated. Follow what makes your heart sing.',
-Virgo:'The Moon in Virgo brings a practical, detail-oriented quality to the emotional atmosphere. You feel better when things are organized, clean, and useful. Good for health routines, problem-solving, and service — but watch for over-analysis of feelings.',
-Libra:'The Moon in Libra smooths the emotional atmosphere with a need for harmony, beauty, and connection. Relationships are front and center. You seek balance and fairness. A good day for partnerships, aesthetics, and diplomacy.',
-Scorpio:'The Moon in Scorpio deepens the emotional atmosphere to its most intense. Feelings are powerful, perceptive, and potentially obsessive. You see beneath the surface of everything. Good for deep conversations and transformation — bad for superficial interactions.',
-Sagittarius:'The Moon in Sagittarius lifts the emotional atmosphere with optimism, restlessness, and a hunger for meaning. You need freedom, adventure, and big-picture perspective. A good day for exploration and philosophical thinking — bad for detail work.',
-Capricorn:'The Moon in Capricorn sobers the emotional atmosphere. Feelings are measured, controlled, and practical. You process emotions through achievement and structure. A productive day — but make sure you\'re not burying feelings under work.',
-Aquarius:'The Moon in Aquarius detaches the emotional atmosphere from personal concerns and lifts it toward the collective. You feel more rational, idealistic, and socially oriented. Good for community, innovation, and humanitarian thinking.',
-Pisces:'The Moon in Pisces dissolves the emotional atmosphere into sensitivity, imagination, and empathy. Boundaries blur, intuition sharpens, and you absorb the moods of everyone around you. A beautiful day for creativity and spirituality — but protect your energy.'
-};
-
-// ── Dominant planet flavor for guidance ──
-const DOMINANT_FLAVOR={
-Saturn:'Saturn is driving today\'s energy, bringing themes of discipline, responsibility, and necessary limitation. This is a day for serious work, facing obligations head-on, and building things that last. Resist the urge to escape the pressure — lean into it.',
-Pluto:'Pluto dominates today\'s cosmic weather, pulling you toward deep transformation, power dynamics, and confrontation with what\'s hidden. Intensity is unavoidable. What feels like destruction is actually clearing space for something more authentic.',
-Neptune:'Neptune colors today\'s energy with dreaminess, inspiration, and blurred boundaries. Your intuition is heightened but so is your susceptibility to confusion. Trust your creative impulses but double-check the facts.',
-Uranus:'Uranus electrifies today\'s energy with unpredictability, restlessness, and flashes of insight. Expect the unexpected. Routine feels unbearable. The disruptions are pointing you toward greater authenticity.',
-Jupiter:'Jupiter expands today\'s energy with optimism, opportunity, and the desire for growth. Doors open, perspectives broaden, and generosity flows. The risk is overextension — channel the abundance wisely.',
-Mars:'Mars fuels today\'s energy with drive, assertion, and potentially friction. You have the energy to push through obstacles, but impatience and irritability are elevated. Direct the fire consciously.',
-Venus:'Venus softens today\'s energy with themes of love, beauty, pleasure, and connection. Relationships harmonize, creativity flows, and your appreciation for life\'s sweetness deepens. A good day for the heart.',
-Mercury:'Mercury sharpens today\'s energy with mental activity, conversations, and information exchange. Your thinking is active and communication matters more than usual. Pay attention to what you hear and say.',
-Sun:'The Sun illuminates today\'s energy with clarity about identity and purpose. Who you are and what you want comes into focus. Express yourself with confidence.',
-Moon:'The Moon colors today\'s energy with emotional shifts, instinctive reactions, and a need for comfort. Honor your feelings without letting them drive every decision.',
-Chiron:'Chiron colors today\'s energy with healing themes. Old wounds may surface, but they are surfacing because you are ready to face them. Vulnerability is not weakness today — it\'s wisdom.',
-NorthNode:'The North Node gives today a fated quality. Events and encounters feel significant, as if life is pointing you somewhere important. Pay attention to synchronicities.'
-};
-
-// ── Daily guidance generator ──
-function generateDailyGuidance(transits,vibe,mPhase,retros,stats,vocResult,moonSign,cur){
-  let parts=[];
-
-  // Dominant planet opening (if available)
-  const dom=vibe.dominant;
-  if(dom && DOMINANT_FLAVOR[dom]){
-    parts.push(DOMINANT_FLAVOR[dom]);
-  } else if(vibe.score>=8){
-    parts.push('The cosmic weather is exceptionally supportive today. Multiple harmonious transits align to create flow, ease, and genuine opportunity. This is rare energy — use it.');
-  } else if(vibe.score>=6){
-    parts.push('Today carries positive momentum. The planets offer more support than resistance, creating space for progress and pleasant connections.');
-  } else if(vibe.score>=4){
-    parts.push('A mixed cosmic day — some areas flow smoothly while others require patience and effort. Navigate with awareness and flexibility.');
-  } else if(vibe.score>=2){
-    parts.push('The planets are pushing hard today. Challenging transits dominate, but this is where real growth happens. Stay grounded and avoid reactive decisions.');
-  } else {
-    parts.push('Intense cosmic pressure today. Multiple difficult transits converge, creating friction on several fronts. Move slowly, be patient with yourself and others, and remember that the hardest days often precede the biggest breakthroughs.');
-  }
-
-  // Moon sign emotional flavor
-  if(moonSign && MOON_SIGN_FLAVOR[moonSign.name]){
-    parts.push(MOON_SIGN_FLAVOR[moonSign.name]);
-  }
-
-  // Moon phase meaning
-  const moonMeaning=MOON_PHASE_MEANINGS[mPhase.name]||'';
-  if(moonMeaning)parts.push(moonMeaning);
-
-  // Top transits with details
-  const top=transits.filter(t=>t.importance>15).slice(0,3);
-  for(const t of top){
-    const tv=TRANSIT_VOICE[t.tp]||{};const nv=NATAL_VOICE[t.np]||{};const av=ASPECT_VOICE[t.aspect.name]||{};
-    const hv=HOUSE_VOICE[t.house]||{};
-    parts.push(`${t.tp} ${av.label?'('+av.label+')':''} is activating your ${nv.title||t.np} in your ${hv.name||''} sector — ${(av.feel||'').toLowerCase()}. ${t.aspect.motion==='exact'?'This aspect is exact today, meaning it\'s at peak intensity.':t.aspect.motion==='applying'?'This is building toward a peak.':'The peak has passed; you\'re integrating.'}`);
-  }
-
-  // Newly exact transits (within 0.5° orb)
-  const newExacts=transits.filter(t=>t.aspect.motion==='exact'&&t.importance>10&&!top.includes(t));
-  if(newExacts.length>0){
-    const names=newExacts.map(t=>`${t.tp}-${t.np} ${t.aspect.name}`).join(', ');
-    parts.push(`Also at peak intensity today: ${names}. These aspects are exact, meaning their influence is at maximum strength right now.`);
-  }
-
-  if(vocResult&&vocResult.voc)parts.push('The Moon is currently void of course — not ideal for launching new initiatives. Focus on completing existing tasks, routine work, and rest.');
-  if(stats.length>0)parts.push(stats.map(p=>p).join(' and ')+' '+(stats.length>1?'are':'is')+' stationary right now, concentrating '+(stats.length>1?'their':'its')+' energy with unusual intensity.');
-  if(retros.length>0)parts.push('With '+retros.join(', ')+' retrograde, themes of review, revision, and reassessment run as an undercurrent beneath today\'s events.');
-
-  return parts.join('\n\n');
-}
-
-const MOON_PHASE_MEANINGS={
-'New Moon':'The New Moon marks a beginning. Set intentions, plant seeds, and start fresh. Energy is low but potential is high. What you initiate now grows with the waxing Moon over the next two weeks.',
-'Waxing Crescent':'Momentum is building. The seeds you planted at the New Moon are taking root. Commit to your intentions and take your first concrete steps. Challenges test your resolve.',
-'First Quarter':'A turning point. You may face obstacles or decisions that test your commitment to what you started. Push through resistance — this friction creates strength.',
-'Waxing Gibbous':'Refine and adjust. The energy is building toward fullness but something needs tweaking. Edit, improve, and prepare for the peak that\'s coming.',
-'Full Moon':'Peak energy and illumination. What you started at the New Moon reaches a culmination — results become visible, emotions peak, and truths are revealed. Release what\'s complete.',
-'Waning Gibbous':'Share what you\'ve harvested. This is a time for teaching, distributing, and expressing gratitude. The intensity of the Full Moon softens into wisdom.',
-'Last Quarter':'Release and let go. What no longer serves your growth needs to be cleared away. Make space for the next cycle. Forgive, declutter, and surrender.',
-'Waning Crescent':'Rest and reflect. The lunar cycle is ending. Withdraw, dream, meditate, and prepare your spirit for the new beginning approaching. Energy is low — honor that.',
-};
-
-// ── Vibe calculator (importance-weighted) ──
-function vibeCalc(transits){
-  if(!transits.length)return{score:5,text:'A quiet day cosmically. Good for rest, reflection, and working at your own pace.',dominant:null};
-  let p=0,n=0,totalW=0;
-  const planetEnergy={};
-  for(const t of transits){
-    const w=Math.max(1,t.importance);totalW+=w;
-    const v=w/20;
-    if(t.aspect.type==='easy')p+=v;else if(t.aspect.type==='hard')n+=v;else p+=v*.3;
-    planetEnergy[t.tp]=(planetEnergy[t.tp]||0)+w;
-  }
-  const avg=(p-n)/totalW*10;
-  let s=Math.round(5+avg*8);s=Math.max(1,Math.min(10,s));
-  // Find dominant transiting planet
-  let dominant=null,maxE=0;
-  for(const[p,e]of Object.entries(planetEnergy)){if(e>maxE){maxE=e;dominant=p;}}
-  return{score:s,dominant};
-}
-
-
-// ── Build transit timeline (upcoming exact dates for non-Moon transits) ──
-function buildTimeline(transits,jd){
-  const events=[];
-  const seen=new Set();
-  for(const t of transits){
-    if(t.tp==='Moon')continue;
-    const key=t.tp+'-'+t.np+'-'+t.aspect.name;
-    if(seen.has(key))continue;seen.add(key);
-    if(t.exactDate){
-      const now=jdToDate(jd);
-      const diffDays=Math.round((t.exactDate.getTime()-now.getTime())/(86400000));
-      if(diffDays>=-3&&diffDays<=90){
-        events.push({
-          tp:t.tp,np:t.np,aspect:t.aspect,date:t.exactDate,diffDays,
-          importance:t.importance,duration:t.duration,
-          cls:t.aspect.type==='hard'?'hard':t.aspect.type==='easy'?'easy':t.aspect.name==='conjunction'?'conj':'minor'
-        });
-      }
-    }
-  }
-  // Also scan for major transits not currently in orb but coming soon
-  const outerPlanets=['Jupiter','Saturn','Uranus','Neptune','Pluto','Chiron'];
-  const natalPoints=['Sun','Moon','Mercury','Venus','Mars','Ascendant','MC'];
-  for(const tp of outerPlanets){
-    for(const np of natalPoints){
-      const key=tp+'-'+np;
-      if(Array.from(seen).some(k=>k.startsWith(key)))continue;
-      // Check if an aspect forms within next 60 days
-      for(const asp of ASPECTS){
-        if(asp.type==='minor')continue;
-        const nLon=NATAL[np];
-        for(let d=1;d<=60;d+=3){
-          const testJd=jd+d;const tLon=getLon(tp,testJd);
-          let diff=Math.abs(norm(tLon-nLon)-asp.angle);if(diff>180)diff=360-diff;
-          if(diff<2){
-            const exactD=findExactDate(tp,np,asp.angle,testJd);
-            const now=jdToDate(jd);
-            const diffDays=Math.round((exactD.getTime()-now.getTime())/86400000);
-            if(diffDays>3&&diffDays<=60){
-              events.push({tp,np,aspect:{...asp,motion:'approaching'},date:exactD,diffDays,
-                importance:transitImportance(tp,np,asp),duration:DUR[tp],cls:asp.type==='hard'?'hard':asp.type==='easy'?'easy':asp.name==='conjunction'?'conj':'minor'
-              });
-              seen.add(key+'-'+asp.name);
-            }
-            break;
-          }
-        }
-      }
-    }
-  }
-  events.sort((a,b)=>a.diffDays-b.diffDays);
-  return events.slice(0,12);
-}
-
-// ══════════════════════════════════════════════════════════════
-// MOON SVG + CHART WHEEL
-// ══════════════════════════════════════════════════════════════
-
-function renderMoonSVG(phaseAngle,size){
-  const cx=size/2,cy=size/2,r=size/2-4;
-  const illuminated=.5*(1-cos(phaseAngle));
-  const kx=r*Math.abs(2*illuminated-1);
-  let litPath;
-  if(phaseAngle<=180){
-    litPath=`M ${cx} ${cy-r} A ${r} ${r} 0 0 1 ${cx} ${cy+r} A ${kx} ${r} 0 0 ${illuminated>.5?0:1} ${cx} ${cy-r}`;
-  }else{
-    litPath=`M ${cx} ${cy-r} A ${r} ${r} 0 0 0 ${cx} ${cy+r} A ${kx} ${r} 0 0 ${illuminated>.5?1:0} ${cx} ${cy-r}`;
-  }
-  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="display:block;filter:drop-shadow(0 0 10px rgba(155,109,255,.2))">
-    <defs><radialGradient id="mg"><stop offset="0%" stop-color="#f0e8d0"/><stop offset="100%" stop-color="#c8b890"/></radialGradient></defs>
-    <circle cx="${cx}" cy="${cy}" r="${r}" fill="#12153a" stroke="rgba(155,109,255,.15)" stroke-width="1"/>
-    <path d="${litPath}" fill="url(#mg)"/></svg>`;
-}
-
-let showAspectLines=true,showTransitRing=true;
-
-function renderChartWheel(cur,transits,jd,size){
-  size=size||400;const cx=size/2,cy=size/2;
-  const rOuter=size/2-10,rSign=rOuter-28,rHouse=rSign-22,rNatal=rHouse-28,rInner=50;
-  const ascDeg=NATAL.Ascendant;
-
-  function toXY(deg,r){const a=(180-(deg-ascDeg))*DEG;return{x:cx+r*Math.cos(a),y:cy-r*Math.sin(a)};}
-
-  let svg=`<svg class="chart-svg" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">`;
-  svg+=`<defs><radialGradient id="cg"><stop offset="0%" stop-color="#0d1240"/><stop offset="100%" stop-color="#05081a"/></radialGradient>`;
-  svg+=`<filter id="glow"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>`;
-
-  // Background rings
-  svg+=`<circle cx="${cx}" cy="${cy}" r="${rOuter}" fill="#080c24" stroke="rgba(155,109,255,.12)" stroke-width=".5"/>`;
-  svg+=`<circle cx="${cx}" cy="${cy}" r="${rSign}" fill="none" stroke="rgba(155,109,255,.08)" stroke-width=".5"/>`;
-  svg+=`<circle cx="${cx}" cy="${cy}" r="${rHouse}" fill="none" stroke="rgba(155,109,255,.06)" stroke-width=".5"/>`;
-  svg+=`<circle cx="${cx}" cy="${cy}" r="${rNatal}" fill="none" stroke="rgba(155,109,255,.08)" stroke-width=".5"/>`;
-  svg+=`<circle cx="${cx}" cy="${cy}" r="${rInner}" fill="url(#cg)" stroke="rgba(155,109,255,.06)" stroke-width=".5"/>`;
-
-  // Sign divisions + glyphs
-  const sColors=['#e0425d','#3dd9a0','#4a9eff','#e0425d','#3dd9a0','#4a9eff','#e0425d','#3dd9a0','#4a9eff','#e0425d','#3dd9a0','#4a9eff'];
-  for(let i=0;i<12;i++){
-    const deg=i*30;const p1=toXY(deg,rSign),p2=toXY(deg,rOuter);
-    svg+=`<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="rgba(155,109,255,.08)" stroke-width=".5"/>`;
-    const mid=toXY(deg+15,(rSign+rOuter)/2);
-    svg+=`<text x="${mid.x}" y="${mid.y}" text-anchor="middle" dominant-baseline="central" fill="${sColors[i]}" font-size="8" font-weight="600" letter-spacing=".5" opacity=".4">${SIGN_ABBR[i]}</text>`;
-  }
-
-  // House cusps
-  for(let i=0;i<12;i++){
-    const deg=HOUSES[i];const p1=toXY(deg,rInner),p2=toXY(deg,rSign);
-    const isAngle=[0,3,6,9].includes(i);
-    svg+=`<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="${isAngle?'rgba(212,168,67,.3)':'rgba(155,109,255,.06)'}" stroke-width="${isAngle?'1.5':'.5'}"/>`;
-    const nextCusp=HOUSES[(i+1)%12];let midDeg=(deg+nextCusp)/2;
-    if(Math.abs(nextCusp-deg)>180)midDeg=norm(midDeg+180);
-    const hPos=toXY(midDeg,rInner+16);
-    svg+=`<text x="${hPos.x}" y="${hPos.y}" text-anchor="middle" dominant-baseline="central" fill="rgba(212,168,67,.2)" font-size="9">${i+1}</text>`;
-  }
-
-  // ASC/MC labels
-  const ascP=toXY(NATAL.Ascendant,rOuter+2);
-  svg+=`<text x="${ascP.x-14}" y="${ascP.y}" text-anchor="middle" dominant-baseline="central" fill="var(--gold)" font-size="9" font-weight="700">ASC</text>`;
-  const mcP=toXY(NATAL.MC,rOuter+2);
-  svg+=`<text x="${mcP.x}" y="${mcP.y-12}" text-anchor="middle" dominant-baseline="central" fill="var(--gold)" font-size="9" font-weight="700">MC</text>`;
-
-  // Spread positions to avoid overlap
-  function spreadPos(items,minGap){
-    const sorted=items.map((it,idx)=>({...it,origIdx:idx})).sort((a,b)=>a.deg-b.deg);
-    for(let pass=0;pass<5;pass++){for(let i=0;i<sorted.length;i++){
-      const next=sorted[(i+1)%sorted.length];let gap=norm(next.deg-sorted[i].deg);
-      if(gap<minGap){const push=(minGap-gap)/2;sorted[i].deg=norm(sorted[i].deg-push);next.deg=norm(next.deg+push);}
-    }}return sorted;}
-
-  // Natal planets
-  const nPlanets=['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto','Chiron','NorthNode'];
-  const PL_ABBR={Sun:'Su',Moon:'Mo',Mercury:'Me',Venus:'Ve',Mars:'Ma',Jupiter:'Ju',Saturn:'Sa',Uranus:'Ur',Neptune:'Ne',Pluto:'Pl',Chiron:'Ch',NorthNode:'NN'};
-  const nItems=nPlanets.map(p=>({name:p,deg:NATAL[p]}));
-  const spreadN=spreadPos(nItems,8);
-  for(const item of spreadN){
-    const pos=toXY(item.deg,rNatal-10);
-    svg+=`<text x="${pos.x}" y="${pos.y}" text-anchor="middle" dominant-baseline="central" fill="var(--bright)" font-size="8" font-weight="600" opacity=".85">${PL_ABBR[item.name]||'?'}</text>`;
-    const t1=toXY(NATAL[item.name],rNatal),t2=toXY(NATAL[item.name],rNatal-4);
-    svg+=`<line x1="${t1.x}" y1="${t1.y}" x2="${t2.x}" y2="${t2.y}" stroke="var(--text)" stroke-width=".5" opacity=".3"/>`;
-  }
-
-  // Transit planets
-  if(showTransitRing){
-    const rTransit=rSign+5;
-    const tPlanets=['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto','Chiron'];
-    const tItems=tPlanets.map(p=>({name:p,deg:cur[p]}));
-    const spreadT=spreadPos(tItems,8);
-    for(const item of spreadT){
-      const pos=toXY(item.deg,rTransit+6);
-      const ms=motionStatus(item.name,jd);
-      const color=ms.retrograde?'var(--crimson)':'var(--azure)';
-      svg+=`<text x="${pos.x}" y="${pos.y}" text-anchor="middle" dominant-baseline="central" fill="${color}" font-size="7" font-weight="600" opacity=".7">${PL_ABBR[item.name]||'?'}</text>`;
-    }
-  }
-
-  // Aspect lines
-  if(showAspectLines&&transits.length>0){
-    const topT=transits.slice(0,10);
-    for(const t of topT){
-      const from=toXY(t.tLon,rInner+5),to=toXY(t.nLon,rInner+5);
-      let color,dash='';
-      if(t.aspect.type==='hard')color='rgba(224,66,93,.35)';
-      else if(t.aspect.type==='easy')color='rgba(74,158,255,.3)';
-      else if(t.aspect.type==='minor'){color='rgba(155,109,255,.12)';dash=' stroke-dasharray="2,3"';}
-      else color='rgba(212,168,67,.3)';
-      const w=t.aspect.orbActual<1?'1.5':t.aspect.orbActual<3?'1':'.5';
-      const filt=t.aspect.orbActual<1?' filter="url(#glow)"':'';
-      svg+=`<line x1="${from.x}" y1="${from.y}" x2="${to.x}" y2="${to.y}" stroke="${color}" stroke-width="${w}"${dash}${filt} stroke-linecap="round"/>`;
-    }
-  }
-
-  // Center
-  svg+=`<text x="${cx}" y="${cy-6}" text-anchor="middle" fill="var(--gold)" font-size="7" font-weight="600" letter-spacing="1.5" opacity=".5">NATAL</text>`;
-  svg+=`<text x="${cx}" y="${cy+6}" text-anchor="middle" fill="var(--text2)" font-size="7" opacity=".35">${signOf(NATAL.Sun).name.slice(0,3)} / ${signOf(NATAL.Moon).name.slice(0,3)}</text>`;
-  svg+='</svg>';return svg;
-}
-
-// Chart wheel uses text abbreviations for planets and signs (no Unicode symbols)
-
-
-// ══════════════════════════════════════════════════════════════
-// INTERACTIVE UI + MAIN RENDER
-// ══════════════════════════════════════════════════════════════
-
-let expandedCards={},dayOffset=0,activeTab='today',activeFilter='all';
-// Caches
-const _forecastCache={},_exactDateCache={};
-function cachedExactDate(tp,np,aspectAngle,jd){
-  const key=tp+np+aspectAngle;
-  if(!_exactDateCache[key])_exactDateCache[key]=findExactDate(tp,np,aspectAngle,jd);
-  return _exactDateCache[key];
-}
-function cachedForecast(baseJd){
-  const key=Math.round(baseJd*10);
-  if(!_forecastCache[key])_forecastCache[key]=compute7Day(baseJd);
-  return _forecastCache[key];
-}
-
-function getTargetDate(){const d=new Date();d.setDate(d.getDate()+dayOffset);return d;}
-
-// ── Tooltip system ──
-function showTooltip(term,el){
-  const g=GLOSSARY[term];if(!g)return;
-  const tip=document.getElementById('tooltip-el');
-  tip.innerHTML=`<strong>${term}</strong>${g}`;
-  const rect=el.getBoundingClientRect();
-  tip.style.left=Math.min(rect.left,window.innerWidth-290)+'px';
-  tip.style.top=(rect.top-tip.offsetHeight-8)+'px';
-  tip.classList.add('open');
-  setTimeout(()=>tip.classList.remove('open'),4000);
-  const close=()=>{tip.classList.remove('open');document.removeEventListener('touchstart',close);};
-  setTimeout(()=>document.addEventListener('touchstart',close),100);
-}
-function showTip(term){const el=event.currentTarget;event.stopPropagation();showTooltip(term,el);}
-
-// ── Planet Modal ──
-function openPlanetModal(planet,cur,jd){
-  const modal=document.getElementById('planet-modal');
-  const nLon=NATAL[planet];const tLon=cur[planet];
-  const nSign=signOf(nLon),tSign=signOf(tLon);
-  const nHouse=houseOf(nLon),tHouse=houseOf(tLon);
-  const nDig=getDignity(planet,nLon),tDig=getDignity(planet,tLon);
-  const ms=motionStatus(planet,jd);
-  const tv=TRANSIT_VOICE[planet]||{};const nv=NATAL_VOICE[planet]||{};
-  const label=planet==='NorthNode'?'North Node':planet;
-
-  let h=`<div class="modal-sheet"><div class="modal-handle"></div>`;
-  h+=`<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">`;
-  h+=`<div>${pSVG(planet,36,'var(--gold)')}</div>`;
-  h+=`<div><div style="font-size:20px;font-weight:700;color:var(--bright)">${label}</div>`;
-  h+=`<div style="font-size:12px;color:var(--text2)">${tv.theme||''}</div></div></div>`;
-
-  // Current transit position
-  h+=`<div class="section-title">Current Position</div>`;
-  h+=`<div class="card">`;
-  h+=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">`;
-  h+=`<div><div style="font-size:14px;font-weight:600;color:var(--bright)">${fmtLong(tLon)}</div>`;
-  h+=`<div style="font-size:12px;color:var(--text2)">House ${tHouse} — ${(HOUSE_VOICE[tHouse]||{}).name||''}</div></div>`;
-  h+=`<div style="text-align:right">`;
-  if(ms.retrograde)h+=`<div style="font-size:11px;font-weight:700;color:var(--crimson)">RETROGRADE</div>`;
-  else if(ms.stationary)h+=`<div style="font-size:11px;font-weight:700;color:var(--amber)">STATIONARY</div>`;
-  else h+=`<div style="font-size:11px;color:var(--text2)">Direct</div>`;
-  if(tDig)h+=`<div style="font-size:10px;font-weight:700;color:${tDig.color}">${tDig.label}</div>`;
-  h+=`</div></div>`;
-  h+=`<div style="font-size:13px;line-height:1.6;color:var(--text)">${tv.desc||''}</div>`;
-  if(ms.retrograde&&RETRO_VOICE[planet])h+=`<div style="margin-top:8px;font-size:12px;line-height:1.6;color:var(--violet);padding:10px;background:var(--violet-soft);border-radius:var(--r-sm)">${RETRO_VOICE[planet]}</div>`;
-  h+=`</div>`;
-
-  // Natal position
-  h+=`<div class="section-title">In Your Birth Chart</div>`;
-  h+=`<div class="card">`;
-  h+=`<div style="font-size:14px;font-weight:600;color:var(--bright);margin-bottom:4px">${fmtLong(nLon)}</div>`;
-  h+=`<div style="font-size:12px;color:var(--text2);margin-bottom:8px">House ${nHouse} — ${(HOUSE_VOICE[nHouse]||{}).name||''}</div>`;
-  if(nDig)h+=`<div style="font-size:11px;font-weight:700;color:${nDig.color};margin-bottom:6px">${nDig.label}: ${nDig.desc}</div>`;
-  h+=`<div style="font-size:13px;line-height:1.6;color:var(--text)">${nv.desc||''}</div>`;
-  h+=`</div>`;
-
-  h+=`<div style="padding:12px 0;text-align:center"><button onclick="closeModal()" style="background:var(--surface);border:none;color:var(--text2);padding:10px 24px;border-radius:var(--r-lg);font-size:13px;font-weight:600;cursor:pointer">Close</button></div>`;
-  h+=`</div>`;
-  modal.innerHTML=h;modal.classList.add('open');
-}
-function closeModal(){document.getElementById('planet-modal').classList.remove('open');}
-
-// ── 7-Day Forecast Engine ──
-function compute7Day(baseJd){
-  const days=[];
-  for(let d=-1;d<=5;d++){
-    const fJd=baseJd+d;const fCur=computeAll(fJd);
-    const TPS=['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto','Chiron','NorthNode'];
-    const NPS=['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto','Chiron','NorthNode','Ascendant','MC'];
-    const fTransits=[];
-    for(const tp of TPS){for(const np of NPS){
-      if(tp===np&&!['Saturn','Jupiter','Mars','Chiron','NorthNode'].includes(tp))continue;
-      const asp=findAspect(fCur[tp],NATAL[np],tp,np,fJd);
-      if(asp)fTransits.push({tp,np,aspect:asp,importance:transitImportance(tp,np,asp)});
-    }}
-    const v=vibeCalc(fTransits);
-    const date=jdToDate(fJd);
-    days.push({offset:d,date,score:v.score,transits:fTransits,count:fTransits.length});
-  }
-  return days;
-}
-
-// ══════════════════════════════════════════════════════════════
-// MAIN RENDER
-// ══════════════════════════════════════════════════════════════
-
-function renderApp(){
-  const now=getTargetDate();const isToday=dayOffset===0;
-  const jd=julianDate(now.getUTCFullYear(),now.getUTCMonth()+1,now.getUTCDate(),
-    isToday?now.getUTCHours()+now.getUTCMinutes()/60:12);
-  const T=jdToT(jd),cur=computeAll(jd);
-  const mPhase=moonPhaseInfo(moonPhase(T)),moonSign=signOf(cur.Moon);
-  const phaseAngle=moonPhase(T);
-  const vocResult=isVoidOfCourse(cur.Moon,jd);
-
-  const TPS=['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto','Chiron','NorthNode'];
-  const NPS=['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto','Chiron','NorthNode','Ascendant','MC'];
-  const transits=[];
-  for(const tp of TPS){for(const np of NPS){
-    if(tp===np&&!['Saturn','Jupiter','Mars','Chiron','NorthNode'].includes(tp))continue;
-    const asp=findAspect(cur[tp],NATAL[np],tp,np,jd);
-    if(asp){const exactInfo=(tp!=='Moon')?cachedExactDate(tp,np,asp.angle,jd):null;
-      transits.push({tp,np,tLon:cur[tp],nLon:NATAL[np],aspect:asp,
-        importance:transitImportance(tp,np,asp),
-        interp:getDeepInterp(tp,np,asp.name,houseOf(cur[tp])),
-        duration:DUR[tp],house:houseOf(cur[tp]),exactDate:exactInfo});}
-  }}
-  transits.sort((a,b)=>b.importance-a.importance);
-
-  const retros=[],stats=[];
-  for(const p of['Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto','Chiron']){
-    const ms=motionStatus(p,jd);if(ms.stationary)stats.push(p);else if(ms.retrograde)retros.push(p);}
-  const vibe=vibeCalc(transits);
-  const ingresses=findIngresses(cur,jd);
-
-  const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
-
-  let h='';
-
-  // ── HEADER ──
-  const timeStr=isToday?' · '+new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}):'';
-  h+=`<div class="header">`;
-  h+=`<div class="header-sub">Your Transits</div>`;
-  h+=`<div class="header-date">${months[now.getMonth()]} ${now.getDate()}</div>`;
-  h+=`<div class="header-day">${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][now.getDay()]}${timeStr}</div>`;
-  h+=`<div class="date-nav">`;
-  h+=`<button onclick="navDay(-1)">&#8249;</button>`;
-  h+=`<button class="today-btn ${!isToday?'show':''}" onclick="navToday()">Today</button>`;
-  h+=`<button onclick="navDay(1)">&#8250;</button></div></div>`;
-
-  // ══════════ TODAY TAB ══════════
-  h+=`<div class="tab-content ${activeTab==='today'?'active':''}">`;
-
-  // 7-Day Forecast Strip
-  const forecast=cachedForecast(jd);
-  h+=`<div class="forecast">`;
-  for(const fd of forecast){
-    const sel=fd.offset===0?'sel':'';
-    const barH=Math.max(8,fd.score*4);
-    const color=fd.score>=7?'var(--azure)':fd.score<=3?'var(--crimson)':'var(--gold)';
-    h+=`<div class="forecast-day ${sel}" onclick="dayOffset+=${fd.offset};renderApp()">`;
-    h+=`<div class="fd-name">${days[fd.date.getDay()]}</div>`;
-    h+=`<div class="fd-num">${fd.date.getDate()}</div>`;
-    h+=`<div class="fd-bar" style="height:${barH}px;background:${color};width:6px;border-radius:3px"></div>`;
-    h+=`<div class="fd-score" style="color:${color}">${fd.score}</div>`;
-    h+=`</div>`;
-  }
-  h+=`</div>`;
-
-  // Mini chart
-  h+=`<div class="chart-wrap">${renderChartWheel(cur,transits,jd,340)}</div>`;
-
-  // Daily Guidance
-  const guidance=generateDailyGuidance(transits,vibe,mPhase,retros,stats,vocResult,moonSign,cur);
-  h+=`<div class="guidance"><div class="guidance-title">Daily Guidance</div>`;
-  h+=`<div class="guidance-text">${guidance.replace(/\n\n/g,'<br><br>')}</div></div>`;
-
-  // Moon Phase
-  h+=`<div class="moon-card">`;
-  h+=`<div class="moon-visual">${renderMoonSVG(phaseAngle,64)}</div>`;
-  h+=`<div class="moon-info"><div class="moon-phase-name">${mPhase.name}</div>`;
-  h+=`<div class="moon-detail">Moon in ${moonSign.name} ${sSVG(moonSign.name,14,'var(--violet)')} · House ${houseOf(cur.Moon)}</div>`;
-  h+=`<div class="moon-meaning">${MOON_PHASE_MEANINGS[mPhase.name]||''}</div></div></div>`;
-
-  // Alerts
-  if(retros.length||stats.length||vocResult.voc||ingresses.length){
-    h+=`<div class="alerts">`;
-    if(vocResult.voc)h+=`<div class="pill void" onclick="showTip('Void of Course')">Moon VOC<span class="help">?</span></div>`;
-    for(const p of stats)h+=`<div class="pill station" onclick="showTip('Stationary')">${pSVG(p,14,'var(--amber)')} ${p} Stationary<span class="help">?</span></div>`;
-    for(const p of retros)h+=`<div class="pill retro" onclick="showTip('Retrograde')">${pSVG(p,14,'var(--crimson)')} ${p} Rx<span class="help">?</span></div>`;
-    for(const ig of ingresses)h+=`<div class="pill ingress">${pSVG(ig.planet,14,'var(--emerald)')} → ${sSVG(ig.sign,13,'var(--emerald)')} in ${ig.days}d</div>`;
-    h+=`</div>`;
-  }
-
-  // Energy Meter with context
-  const eColor=vibe.score>=7?'var(--azure)':vibe.score<=3?'var(--crimson)':'var(--gold)';
-  h+=`<div class="energy" onclick="showTip('Energy Score')">`;
-  h+=`<div class="energy-label">Energy</div>`;
-  h+=`<div class="energy-bar"><div class="energy-fill" style="width:${vibe.score*10}%;background:${eColor}"></div></div>`;
-  h+=`<div class="energy-score" style="color:${eColor}">${vibe.score}/10</div>`;
-  h+=`</div>`;
-
-  // Filter chips
-  h+=`<div class="filters">`;
-  h+=`<div class="filter-chip ${activeFilter==='all'?'on':''}" onclick="setFilter('all')">All (${transits.length})</div>`;
-  const hardCount=transits.filter(t=>t.aspect.type==='hard').length;
-  const easyCount=transits.filter(t=>t.aspect.type==='easy').length;
-  const conjCount=transits.filter(t=>t.aspect.name==='conjunction').length;
-  if(conjCount)h+=`<div class="filter-chip ${activeFilter==='conj'?'on':''}" onclick="setFilter('conj')">Conjunctions (${conjCount})</div>`;
-  if(hardCount)h+=`<div class="filter-chip ${activeFilter==='hard'?'on':''}" onclick="setFilter('hard')">Challenges (${hardCount})</div>`;
-  if(easyCount)h+=`<div class="filter-chip ${activeFilter==='easy'?'on':''}" onclick="setFilter('easy')">Flowing (${easyCount})</div>`;
-  h+=`</div>`;
-
-  // Transit list
-  const filtered=activeFilter==='all'?transits:
-    activeFilter==='hard'?transits.filter(t=>t.aspect.type==='hard'):
-    activeFilter==='easy'?transits.filter(t=>t.aspect.type==='easy'):
-    activeFilter==='conj'?transits.filter(t=>t.aspect.name==='conjunction'):transits;
-
-  if(filtered.length>0){
-    h+=`<div class="section-title">Active Transits</div>`;
-    for(let i=0;i<filtered.length;i++){
-      const t=filtered[i];
-      const interp=t.interp;
-      const cls=t.aspect.type==='hard'?'hard':t.aspect.type==='easy'?'easy':t.aspect.name==='conjunction'?'conj':'minor';
-      const exactCls=t.aspect.motion==='exact'?' exact-transit':'';
-      const tpName=t.tp==='NorthNode'?'North Node':t.tp;
-      const npName=t.np==='NorthNode'?'North Node':t.np==='Ascendant'?'Ascendant':t.np==='MC'?'Midheaven':t.np;
-      const hv=HOUSE_VOICE[t.house]||{};
-      const id='t-'+t.tp+'-'+t.np+'-'+t.aspect.name;
-      const isOpen=expandedCards[id];
-
-      h+=`<div class="transit ${cls}${exactCls}" data-card-id="${id}" onclick="toggleCard('${id}')" style="animation-delay:${i*40}ms">`;
-      // Top row: planet glyphs + badge
-      h+=`<div class="t-top"><div class="t-planets">${pSVG(t.tp,24,'var(--bright)')}`;
-      h+=`<span style="color:var(--text3)">${aSVG(t.aspect.name,16,'var(--text3)')}</span>`;
-      h+=`${pSVG(t.np==='Ascendant'||t.np==='MC'?'Sun':t.np,24,'var(--text)')}</div>`;
-      h+=`<span class="t-badge ${cls}">${interp.aspectLabel}</span></div>`;
-
-      // Label
-      h+=`<div class="t-label">${tpName} ${aSVG(t.aspect.name,13,'var(--text2)')} natal ${npName}</div>`;
-      // Summary interpretation
-      h+=`<div class="t-interp">${interp.summary}</div>`;
-      // Advice
-      if(interp.advice)h+=`<div class="t-advice">${interp.advice}</div>`;
-
-      // Meta tags with tooltips
-      h+=`<div class="t-meta">`;
-      h+=`<div class="t-tag" onclick="event.stopPropagation();showTip('Orb')">${t.aspect.orbActual.toFixed(1)}° orb<span class="help">?</span></div>`;
-      h+=`<div class="t-motion ${t.aspect.motion}" onclick="event.stopPropagation();showTip('${t.aspect.motion.charAt(0).toUpperCase()+t.aspect.motion.slice(1)}')">${t.aspect.motion}<span class="help">?</span></div>`;
-      h+=`<div class="t-tag">${t.duration}</div>`;
-      if(hv.name)h+=`<div class="t-tag" onclick="event.stopPropagation();showTip('House')">H${t.house}: ${hv.name}<span class="help">?</span></div>`;
-      if(t.exactDate)h+=`<div class="t-tag">Exact ${fmtExactDate(t.exactDate)}</div>`;
-      h+=`</div>`;
-
-      // Expandable deep detail
-      h+=`<div class="t-expand ${isOpen?'open':''}"><div class="t-expand-inner">`;
-      h+=`<div class="t-expand-section">${interp.full.replace(/\n\n/g,'<br><br>')}</div>`;
-      if(interp.houseContext)h+=`<div class="t-expand-section" style="padding:10px;background:var(--surface);border-radius:var(--r-sm)"><strong>House ${t.house} Context</strong><br>${interp.houseContext}</div>`;
-      const tDig=getDignity(t.tp,t.tLon);
-      if(tDig)h+=`<div class="t-expand-section"><strong>${t.tp} in ${tDig.label}:</strong> ${tDig.desc}</div>`;
-      const ms=motionStatus(t.tp,jd);
-      if(ms.retrograde&&RETRO_VOICE[t.tp])h+=`<div class="t-expand-section" style="color:var(--violet)"><strong>${t.tp} Retrograde:</strong> ${RETRO_VOICE[t.tp]}</div>`;
-      h+=`</div></div></div>`;
-    }
-  }
-  // ── Transit Timeline ──
-  const timeline=buildTimeline(transits,jd);
-  if(timeline.length>0){
-    h+=`<div class="section-title">Upcoming Transits</div>`;
-    h+=`<div class="timeline">`;
-    for(const ev of timeline){
-      const tpName=ev.tp==='NorthNode'?'N.Node':ev.tp;
-      const npName=ev.np==='NorthNode'?'N.Node':ev.np==='Ascendant'?'ASC':ev.np==='MC'?'MC':ev.np;
-      const dateStr=fmtExactDate(ev.date);
-      const dotCls=ev.diffDays<=0?'exact':ev.diffDays<=7?'applying':'separating';
-      const whenStr=ev.diffDays===0?'Today':ev.diffDays===1?'Tomorrow':ev.diffDays<0?Math.abs(ev.diffDays)+'d ago':'in '+ev.diffDays+'d';
-      h+=`<div class="tl-item">`;
-      h+=`<div class="tl-date">${dateStr}<br><span style="font-size:9px;opacity:.6">${whenStr}</span></div>`;
-      h+=`<div class="tl-dot ${dotCls}"></div>`;
-      h+=`<div class="tl-body">`;
-      h+=`<div class="tl-label">${tpName} ${aSVG(ev.aspect.name,12,'var(--text2)')} ${npName}<span class="tl-badge ${ev.cls}">${ev.aspect.name}</span></div>`;
-      h+=`<div class="tl-desc">${ev.duration} transit · ${ev.aspect.type==='hard'?'Challenging':'Supportive'} energy${ev.importance>20?' · High impact':''}</div>`;
-      h+=`</div></div>`;
-    }
-    h+=`</div>`;
-  }
-
-  h+=`</div>`; // end today tab
-
-  // ══════════ CHART TAB ══════════
-  h+=`<div class="tab-content ${activeTab==='chart'?'active':''}">`;
-  h+=`<div class="chart-wrap full">${renderChartWheel(cur,transits,jd,420)}</div>`;
-  h+=`<div class="chart-toggles">`;
-  h+=`<div class="chart-toggle ${showTransitRing?'on':''}" onclick="toggleChart('transit')">Transits</div>`;
-  h+=`<div class="chart-toggle ${showAspectLines?'on':''}" onclick="toggleChart('aspects')">Aspects</div></div>`;
-
-  h+=`<div class="section-title">Current Positions</div>`;
-  h+=`<div class="pos-grid">`;
-  for(const p of TPS){
-    const isR=retros.includes(p),isS=stats.includes(p);
-    const dig=getDignity(p,cur[p]);const label=p==='NorthNode'?'N.Node':p;
-    h+=`<div class="pos-item" onclick="openPlanetModal('${p}',${JSON.stringify(cur).replace(/"/g,'&quot;')},${jd})">`;
-    h+=`${pSVG(p,18,'var(--gold)')}`;
-    h+=`<div style="flex:1;min-width:0"><div style="font-size:10px;color:var(--text2)">${label}`;
-    if(isR)h+=`<span style="color:var(--crimson);margin-left:4px" onclick="event.stopPropagation();showTip('Retrograde')">Rx</span>`;
-    if(isS)h+=`<span style="color:var(--amber);margin-left:4px">STA</span>`;
-    if(dig)h+=`<span style="color:${dig.color};margin-left:4px;font-size:9px;font-weight:700">${dig.label}</span>`;
-    h+=`</div><div style="font-size:12px;font-weight:500;color:var(--bright)">${fmtShort(cur[p])}</div></div>`;
-    h+=`<span style="font-size:10px;color:var(--emerald);opacity:.5">H${houseOf(cur[p])}</span></div>`;
-  }
-  h+=`</div></div>`;
-
-  // ══════════ NATAL TAB ══════════
-  h+=`<div class="tab-content ${activeTab==='natal'?'active':''}">`;
-  h+=`<div class="chart-wrap full" style="margin-bottom:16px">${renderChartWheel(cur,[],jd,400)}</div>`;
-  const natalPlanets=['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto','Chiron','NorthNode'];
-  for(const p of natalPlanets){
-    const lon=NATAL[p];const sign=signOf(lon);const house=houseOf(lon);
-    const dig=getDignity(p,lon);const nv=NATAL_VOICE[p]||{};const hv=HOUSE_VOICE[house]||{};
-    const label=p==='NorthNode'?'North Node':p;
-    const id='n-'+p;const isOpen=expandedCards[id];
-
-    h+=`<div class="natal" data-card-id="${id}" onclick="toggleCard('${id}')">`;
-    h+=`<div class="natal-head">${pSVG(p,28,'var(--gold)')}<div>`;
-    h+=`<div class="natal-name">${label}</div>`;
-    h+=`<div class="natal-pos">${sign.name} ${sign.degree}° · House ${house}</div></div></div>`;
-    if(nv.title)h+=`<div class="natal-title">${nv.title}</div>`;
-    if(nv.desc)h+=`<div class="natal-desc">${nv.desc}</div>`;
-    h+=`<div class="natal-tags">`;
-    h+=`<span class="natal-tag">${sSVG(sign.name,13,'var(--text2)')} ${sign.name}</span>`;
-    h+=`<span class="natal-tag" onclick="event.stopPropagation();showTip('House')">H${house}: ${hv.name||''}</span>`;
-    if(dig)h+=`<span class="natal-tag" style="color:${dig.color}" onclick="event.stopPropagation()">${dig.label}</span>`;
-    h+=`</div>`;
-
-    // Expandable detail
-    h+=`<div class="natal-expand ${isOpen?'open':''}"><div style="padding:12px 0 0;border-top:1px solid var(--surface);margin-top:10px">`;
-    if(dig)h+=`<div style="font-size:12px;line-height:1.6;color:var(--text);margin-bottom:8px"><strong style="color:${dig.color}">${dig.label}:</strong> ${dig.desc}</div>`;
-    h+=`<div style="font-size:12px;line-height:1.6;color:var(--text);margin-bottom:8px"><strong>House ${house} (${hv.name||''}):</strong> ${hv.desc||''}</div>`;
-    // House ruler connection
-    const ruler=RULERS[sign.name];
-    if(ruler&&NATAL[ruler]!==undefined){
-      const rulerSign=signOf(NATAL[ruler]);const rulerHouse=houseOf(NATAL[ruler]);
-      h+=`<div style="font-size:12px;line-height:1.6;color:var(--violet)"><strong>Sign Ruler:</strong> ${sign.name} is ruled by ${ruler} (in ${rulerSign.name}, House ${rulerHouse}). The condition of ${ruler} in your chart colors how this ${label} expresses itself.</div>`;
-    }
-    h+=`</div></div></div>`;
-  }
-  h+=`</div>`;
-
-  // ══════════ TAB BAR ══════════
-  const svgToday=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><line x1="12" y1="3" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="21"/><line x1="3" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="21" y2="12"/></svg>`;
-  const svgChart=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><line x1="12" y1="3" x2="12" y2="21"/><line x1="3" y1="12" x2="21" y2="12"/></svg>`;
-  const svgNatal=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12,2 20,8 18,18 6,18 4,8" fill="none"/><circle cx="12" cy="11" r="3"/></svg>`;
-
-  h+=`<div class="tab-bar">`;
-  h+=`<button class="${activeTab==='today'?'active':''}" onclick="switchTab('today')">${svgToday}<span>Today</span></button>`;
-  h+=`<button class="${activeTab==='chart'?'active':''}" onclick="switchTab('chart')">${svgChart}<span>Chart</span></button>`;
-  h+=`<button class="${activeTab==='natal'?'active':''}" onclick="switchTab('natal')">${svgNatal}<span>Natal</span></button>`;
-  h+=`</div>`;
-
-  document.getElementById('app').innerHTML=h;
-}
-
-// ── Event handlers ──
-function navDay(offset){
-  const app=document.getElementById('app');
-  const dir=offset>0?'slide-left':'slide-right';
-  app.classList.add(dir);
-  setTimeout(()=>{
-    dayOffset+=offset;renderApp();
-    app.classList.remove(dir);
-    app.classList.add('slide-in');
-    setTimeout(()=>app.classList.remove('slide-in'),150);
-  },120);
-}
-function navToday(){
-  if(dayOffset===0)return;
-  const app=document.getElementById('app');
-  app.classList.add(dayOffset>0?'slide-right':'slide-left');
-  setTimeout(()=>{
-    dayOffset=0;renderApp();
-    app.classList.remove('slide-left','slide-right');
-    app.classList.add('slide-in');
-    setTimeout(()=>app.classList.remove('slide-in'),150);
-  },120);
-}
-function switchTab(tab){activeTab=tab;renderApp();window.scrollTo(0,0);}
-function toggleCard(id){
-  expandedCards[id]=!expandedCards[id];
-  // Direct DOM toggle instead of full re-render
-  const el=document.querySelector(`[data-card-id="${id}"] .t-expand, [data-card-id="${id}"] .natal-expand`);
-  if(el){el.classList.toggle('open');return;}
-  renderApp();
-}
-function toggleChart(opt){if(opt==='transit')showTransitRing=!showTransitRing;else showAspectLines=!showAspectLines;renderApp();}
-function setFilter(f){activeFilter=f;renderApp();}
-
-// Touch navigation
-let touchStartX=0,touchStartY=0,swiping=false;
-document.addEventListener('touchstart',e=>{touchStartX=e.touches[0].clientX;touchStartY=e.touches[0].clientY;swiping=true;},{passive:true});
-document.addEventListener('touchmove',e=>{if(!swiping)return;if(Math.abs(e.touches[0].clientY-touchStartY)>Math.abs(e.touches[0].clientX-touchStartX)*1.2)swiping=false;},{passive:true});
-document.addEventListener('touchend',e=>{if(!swiping)return;const dx=e.changedTouches[0].clientX-touchStartX;if(Math.abs(dx)>60){if(dx<0)navDay(1);else navDay(-1);}swiping=false;});
-
-// Keyboard
-document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')navDay(-1);else if(e.key==='ArrowRight')navDay(1);else if(e.key==='Home'||e.key==='Escape')navToday();});
-
-// Close tooltip on scroll
-document.addEventListener('scroll',()=>{document.getElementById('tooltip-el').classList.remove('open');});
-
-renderApp();
-setInterval(()=>{if(dayOffset===0)renderApp();},10*60*1000);
-
-if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{});}
-
-const prefersReduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-if(prefersReduced){const s=document.createElement('style');s.textContent='*{animation:none!important;transition:none!important}';document.head.appendChild(s);}
-
 </script>
 </body>
 </html>

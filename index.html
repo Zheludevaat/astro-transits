@@ -1071,108 +1071,153 @@ let showAspectLines=true,showTransitRing=true;
 
 function renderChartWheel(cur,transits,jd,size){
   size=size||400;const cx=size/2,cy=size/2;
-  const rOuter=size/2-10,rSign=rOuter-28,rHouse=rSign-22,rNatal=rHouse-28,rInner=50;
+  // Ring layout: transit ring (outermost) > zodiac band > house area > natal ring > center
+  const rTransit=size/2-4;          // outermost — transit planet glyphs
+  const rOuter=rTransit-20;         // outer edge of zodiac band
+  const rSign=rOuter-22;            // inner edge of zodiac band
+  const rHouse=rSign-16;            // house cusp zone
+  const rNatal=rHouse-26;           // natal planet ring
+  const rInner=size*0.12;           // center hub
   const ascDeg=NATAL.Ascendant;
 
   function toXY(deg,r){const a=(180-(deg-ascDeg))*DEG;return{x:cx+r*Math.cos(a),y:cy-r*Math.sin(a)};}
 
   let svg=`<svg class="chart-svg" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">`;
   svg+=`<defs><radialGradient id="cg"><stop offset="0%" stop-color="#0d1240"/><stop offset="100%" stop-color="#05081a"/></radialGradient>`;
-  svg+=`<filter id="glow"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>`;
+  svg+=`<filter id="glow"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>`;
 
-  // Background rings
+  // Background — transit ring band (subtle fill)
+  svg+=`<circle cx="${cx}" cy="${cy}" r="${rTransit}" fill="#060a1e" stroke="rgba(155,109,255,.06)" stroke-width=".5"/>`;
+  // Zodiac band fill
   svg+=`<circle cx="${cx}" cy="${cy}" r="${rOuter}" fill="#080c24" stroke="rgba(155,109,255,.12)" stroke-width=".5"/>`;
-  svg+=`<circle cx="${cx}" cy="${cy}" r="${rSign}" fill="none" stroke="rgba(155,109,255,.08)" stroke-width=".5"/>`;
-  svg+=`<circle cx="${cx}" cy="${cy}" r="${rHouse}" fill="none" stroke="rgba(155,109,255,.06)" stroke-width=".5"/>`;
-  svg+=`<circle cx="${cx}" cy="${cy}" r="${rNatal}" fill="none" stroke="rgba(155,109,255,.08)" stroke-width=".5"/>`;
+  svg+=`<circle cx="${cx}" cy="${cy}" r="${rSign}" fill="none" stroke="rgba(155,109,255,.1)" stroke-width=".5"/>`;
+  // Inner rings
+  svg+=`<circle cx="${cx}" cy="${cy}" r="${rHouse}" fill="none" stroke="rgba(155,109,255,.05)" stroke-width=".5"/>`;
+  svg+=`<circle cx="${cx}" cy="${cy}" r="${rNatal}" fill="none" stroke="rgba(155,109,255,.07)" stroke-width=".5"/>`;
   svg+=`<circle cx="${cx}" cy="${cy}" r="${rInner}" fill="url(#cg)" stroke="rgba(155,109,255,.06)" stroke-width=".5"/>`;
+
+  // Degree tick marks on zodiac ring (every 5 degrees, longer at 10)
+  for(let d=0;d<360;d+=5){
+    const isTen=d%10===0;
+    const p1=toXY(d,rOuter);
+    const p2=toXY(d,rOuter-(isTen?4:2));
+    svg+=`<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="rgba(155,109,255,${isTen?.08:.04})" stroke-width=".5"/>`;
+  }
 
   // Sign divisions + glyphs
   const sColors=['#e0425d','#3dd9a0','#4a9eff','#e0425d','#3dd9a0','#4a9eff','#e0425d','#3dd9a0','#4a9eff','#e0425d','#3dd9a0','#4a9eff'];
   for(let i=0;i<12;i++){
     const deg=i*30;const p1=toXY(deg,rSign),p2=toXY(deg,rOuter);
-    svg+=`<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="rgba(155,109,255,.08)" stroke-width=".5"/>`;
+    svg+=`<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="rgba(155,109,255,.1)" stroke-width=".5"/>`;
     const mid=toXY(deg+15,(rSign+rOuter)/2);
-    svg+=sChG(i, mid.x, mid.y, 14, sColors[i], 0.5);
+    svg+=sChG(i, mid.x, mid.y, 13, sColors[i], 0.35);
   }
 
   // House cusps
   for(let i=0;i<12;i++){
     const deg=HOUSES[i];const p1=toXY(deg,rInner),p2=toXY(deg,rSign);
     const isAngle=[0,3,6,9].includes(i);
-    svg+=`<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="${isAngle?'rgba(212,168,67,.3)':'rgba(155,109,255,.06)'}" stroke-width="${isAngle?'1.5':'.5'}"/>`;
+    svg+=`<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="${isAngle?'rgba(212,168,67,.25)':'rgba(155,109,255,.04)'}" stroke-width="${isAngle?'1':'.5'}"/>`;
+    // Extend angular cusps through zodiac band
+    if(isAngle){
+      const p3=toXY(deg,rSign),p4=toXY(deg,rOuter);
+      svg+=`<line x1="${p3.x}" y1="${p3.y}" x2="${p4.x}" y2="${p4.y}" stroke="rgba(212,168,67,.12)" stroke-width=".5"/>`;
+    }
     const nextCusp=HOUSES[(i+1)%12];let midDeg=(deg+nextCusp)/2;
     if(Math.abs(nextCusp-deg)>180)midDeg=norm(midDeg+180);
-    const hPos=toXY(midDeg,rInner+16);
-    svg+=`<text x="${hPos.x}" y="${hPos.y}" text-anchor="middle" dominant-baseline="central" fill="rgba(212,168,67,.2)" font-size="9">${i+1}</text>`;
+    const hPos=toXY(midDeg,rInner+14);
+    svg+=`<text x="${hPos.x}" y="${hPos.y}" text-anchor="middle" dominant-baseline="central" fill="rgba(212,168,67,.15)" font-size="8">${i+1}</text>`;
   }
 
-  // ASC/MC labels
-  const ascP=toXY(NATAL.Ascendant,rOuter+2);
-  svg+=`<text x="${ascP.x-14}" y="${ascP.y}" text-anchor="middle" dominant-baseline="central" fill="var(--gold)" font-size="9" font-weight="700">ASC</text>`;
-  const mcP=toXY(NATAL.MC,rOuter+2);
-  svg+=`<text x="${mcP.x}" y="${mcP.y-12}" text-anchor="middle" dominant-baseline="central" fill="var(--gold)" font-size="9" font-weight="700">MC</text>`;
+  // ASC/MC/DSC/IC labels with arrow indicators
+  const ascA=toXY(NATAL.Ascendant,rOuter+3),ascB=toXY(NATAL.Ascendant,rTransit+2);
+  svg+=`<line x1="${ascA.x}" y1="${ascA.y}" x2="${ascB.x}" y2="${ascB.y}" stroke="rgba(212,168,67,.3)" stroke-width="1"/>`;
+  svg+=`<text x="${ascB.x+(ascB.x<cx?-12:12)}" y="${ascB.y}" text-anchor="${ascB.x<cx?'end':'start'}" dominant-baseline="central" fill="var(--gold)" font-size="8" font-weight="700" opacity=".8">ASC</text>`;
+  const mcA=toXY(NATAL.MC,rOuter+3),mcB=toXY(NATAL.MC,rTransit+2);
+  svg+=`<line x1="${mcA.x}" y1="${mcA.y}" x2="${mcB.x}" y2="${mcB.y}" stroke="rgba(212,168,67,.3)" stroke-width="1"/>`;
+  svg+=`<text x="${mcB.x}" y="${mcB.y+(mcB.y<cy?-8:8)}" text-anchor="middle" dominant-baseline="${mcB.y<cy?'auto':'hanging'}" fill="var(--gold)" font-size="8" font-weight="700" opacity=".8">MC</text>`;
 
-  // Spread positions to avoid overlap
+  // Improved spread — more passes, larger gap, radial overflow for tight clusters
   function spreadPos(items,minGap){
-    const sorted=items.map((it,idx)=>({...it,origIdx:idx})).sort((a,b)=>a.deg-b.deg);
-    for(let pass=0;pass<5;pass++){for(let i=0;i<sorted.length;i++){
-      const next=sorted[(i+1)%sorted.length];let gap=norm(next.deg-sorted[i].deg);
-      if(gap<minGap){const push=(minGap-gap)/2;sorted[i].deg=norm(sorted[i].deg-push);next.deg=norm(next.deg+push);}
-    }}return sorted;}
-
-  // Natal planets
-  const nPlanets=['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto','Chiron','NorthNode'];
-  const PL_ABBR={Sun:'Su',Moon:'Mo',Mercury:'Me',Venus:'Ve',Mars:'Ma',Jupiter:'Ju',Saturn:'Sa',Uranus:'Ur',Neptune:'Ne',Pluto:'Pl',Chiron:'Ch',NorthNode:'NN'};
-  const nItems=nPlanets.map(p=>({name:p,deg:NATAL[p]}));
-  const spreadN=spreadPos(nItems,8);
-  for(const item of spreadN){
-    const pos=toXY(item.deg,rNatal-10);
-    svg+=pChG(item.name, pos.x, pos.y, 14, 'var(--bright)', 0.85);
-    const t1=toXY(NATAL[item.name],rNatal),t2=toXY(NATAL[item.name],rNatal-4);
-    svg+=`<line x1="${t1.x}" y1="${t1.y}" x2="${t2.x}" y2="${t2.y}" stroke="var(--text)" stroke-width=".5" opacity=".3"/>`;
+    const sorted=items.map((it,idx)=>({...it,origIdx:idx,origDeg:it.deg})).sort((a,b)=>a.deg-b.deg);
+    for(let pass=0;pass<20;pass++){
+      let moved=false;
+      for(let i=0;i<sorted.length;i++){
+        const next=sorted[(i+1)%sorted.length];
+        let gap=norm(next.deg-sorted[i].deg);
+        if(gap<minGap){
+          const push=Math.min((minGap-gap)/2, 2);
+          sorted[i].deg=norm(sorted[i].deg-push);
+          next.deg=norm(next.deg+push);
+          moved=true;
+        }
+      }
+      if(!moved)break;
+    }
+    return sorted;
   }
 
-  // Transit planets
+  // Natal planets — dimmer, they're the reference layer
+  const nPlanets=['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto','Chiron','NorthNode'];
+  const nItems=nPlanets.map(p=>({name:p,deg:NATAL[p]}));
+  const spreadN=spreadPos(nItems,9);
+  for(const item of spreadN){
+    const pos=toXY(item.deg,(rNatal+rHouse)/2-4);
+    svg+=pChG(item.name, pos.x, pos.y, 12, 'var(--bright)', 0.55);
+    // Tick line from true position on natal ring to glyph
+    const t1=toXY(NATAL[item.name],rNatal+2),t2=toXY(NATAL[item.name],rNatal-2);
+    svg+=`<line x1="${t1.x}" y1="${t1.y}" x2="${t2.x}" y2="${t2.y}" stroke="var(--text)" stroke-width=".5" opacity=".2"/>`;
+  }
+
+  // Transit planets — OUTERMOST ring, bold, the main data layer
   if(showTransitRing){
-    const rTransit=rSign+5;
+    const rTGlyph=(rOuter+rTransit)/2+2;
     const tPlanets=['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto','Chiron'];
     const tItems=tPlanets.map(p=>({name:p,deg:cur[p]}));
-    const spreadT=spreadPos(tItems,8);
+    const spreadT=spreadPos(tItems,10);
     for(const item of spreadT){
-      const pos=toXY(item.deg,rTransit+6);
+      const pos=toXY(item.deg,rTGlyph);
       const ms=motionStatus(item.name,jd);
       const color=ms.retrograde?'var(--crimson)':'var(--azure)';
-      svg+=pChG(item.name, pos.x, pos.y, 12, color, 0.7);
+      svg+=pChG(item.name, pos.x, pos.y, 14, color, 0.9);
+      // Tick line connecting glyph to true degree on outer zodiac ring
+      const t1=toXY(cur[item.name],rOuter),t2=toXY(cur[item.name],rOuter+3);
+      svg+=`<line x1="${t1.x}" y1="${t1.y}" x2="${t2.x}" y2="${t2.y}" stroke="${color}" stroke-width=".6" opacity=".4"/>`;
     }
   }
 
-  // Aspect lines
+  // Aspect lines — curved beziers through center, thinner, softer
   if(showAspectLines&&transits.length>0){
-    const topT=transits.slice(0,10);
+    const topT=transits.slice(0,8);
     for(const t of topT){
-      const from=toXY(t.tLon,rInner+5),to=toXY(t.nLon,rInner+5);
+      const rAsp=rInner+8;
+      const from=toXY(t.tLon,rAsp),to=toXY(t.nLon,rAsp);
+      // Quadratic bezier curving through a point offset from center
+      const midDeg=norm((t.tLon+t.nLon)/2);
+      const angleDiff=Math.abs(norm(t.tLon-t.nLon));
+      const curveR=angleDiff>150?rAsp*0.3:rAsp*0.15;
+      const cp=toXY(midDeg+(angleDiff>150?180:0),curveR);
       let color,dash='';
-      if(t.aspect.type==='hard')color='rgba(224,66,93,.35)';
-      else if(t.aspect.type==='easy')color='rgba(74,158,255,.3)';
-      else if(t.aspect.type==='minor'){color='rgba(155,109,255,.12)';dash=' stroke-dasharray="2,3"';}
-      else color='rgba(212,168,67,.3)';
-      const w=t.aspect.orbActual<1?'1.5':t.aspect.orbActual<3?'1':'.5';
-      const filt=t.aspect.orbActual<1?' filter="url(#glow)"':'';
-      svg+=`<line x1="${from.x}" y1="${from.y}" x2="${to.x}" y2="${to.y}" stroke="${color}" stroke-width="${w}"${dash}${filt} stroke-linecap="round"/>`;
+      if(t.aspect.type==='hard')color='rgba(224,66,93,.25)';
+      else if(t.aspect.type==='easy')color='rgba(74,158,255,.2)';
+      else if(t.aspect.type==='minor'){color='rgba(155,109,255,.08)';dash=' stroke-dasharray="2,3"';}
+      else color='rgba(212,168,67,.2)';
+      const w=t.aspect.orbActual<1?'1.2':t.aspect.orbActual<3?'.8':'.4';
+      const filt=t.aspect.orbActual<0.5?' filter="url(#glow)"':'';
+      svg+=`<path d="M${from.x},${from.y} Q${cp.x},${cp.y} ${to.x},${to.y}" fill="none" stroke="${color}" stroke-width="${w}"${dash}${filt} stroke-linecap="round"/>`;
     }
   }
 
-  // Center
-  svg+=`<text x="${cx}" y="${cy-6}" text-anchor="middle" fill="var(--gold)" font-size="7" font-weight="600" letter-spacing="1.5" opacity=".5">NATAL</text>`;
-  svg+=sChG(signOf(NATAL.Sun).index, cx-8, cy+6, 10, 'var(--gold)', 0.4);
-  svg+=sChG(signOf(NATAL.Moon).index, cx+8, cy+6, 10, 'var(--text2)', 0.35);
+  // Center — minimal
+  svg+=`<text x="${cx}" y="${cy-4}" text-anchor="middle" fill="var(--gold)" font-size="6" font-weight="600" letter-spacing="1.5" opacity=".4">NATAL</text>`;
+  svg+=sChG(signOf(NATAL.Sun).index, cx-6, cy+5, 8, 'var(--gold)', 0.3);
+  svg+=sChG(signOf(NATAL.Moon).index, cx+6, cy+5, 8, 'var(--text2)', 0.25);
   svg+='</svg>';return svg;
 }
 
 // Chart-embeddable sigil functions (nested SVG for embedding in chart wheel)
 function sChG(i,x,y,sz,col,op){
-  const h=sz/2;const f=`fill="${col}"`;
+  const h=sz/2;const f=`fill="${col}" stroke="#080c24" stroke-width="1.5" paint-order="stroke"`;
   const P=[
     `<path d="M14.960278956943602 28.263796240145545Q14.960278956943602 18.439660400242573 12.61885991510006 12.111279563371742Q10.27744087325652 5.78289872650091 7.510309278350515 5.78289872650091Q5.398120072771377 5.78289872650091 5.119769557307459 7.3956943602183145Q4.841419041843541 9.008489993935719 4.841419041843541 9.565191024863555Q4.841419041843541 11.661006670709522 6.216798059429958 13.75682231655549H4.0227410551849605Q2.5 11.595512431776836 2.5 8.959369314736204Q2.5 6.798059429957551 3.834445118253487 5.2671315949060045Q5.168890236506974 3.736203759854458 7.559429957550031 3.736203759854458Q13.650394178289874 3.736203759854458 15.795330503335355 16.39296543359612Q15.926318981200728 17.19526986052153 16.008186779866584 17.850212249848397Q16.073681018799274 17.19526986052153 16.204669496664646 16.39296543359612Q18.3659793814433 3.736203759854458 24.44057004244997 3.736203759854458Q26.847483323226196 3.736203759854458 28.1737416616131 5.2671315949060045Q29.5 6.798059429957551 29.5 8.959369314736204Q29.5 11.595512431776836 27.977258944815038 13.75682231655549H25.78320194057004Q27.17495451788963 11.661006670709522 27.17495451788963 9.548817465130384Q27.17495451788963 8.992116434202547 26.89660400242571 7.387507580351729Q26.618253486961795 5.78289872650091 24.489690721649485 5.78289872650091Q21.73893268647665 5.78289872650091 19.397513644633108 12.111279563371742Q17.056094602789567 18.439660400242573 17.056094602789567 28.263796240145545Z" ${f} fill-rule="evenodd"/>`,
     `<path d="M15.981951871657754 13.97860962566845Q13.328877005347593 13.97860962566845 11.469919786096256 15.84659090909091Q9.610962566844918 17.71457219251337 9.610962566844918 20.36764705882353Q9.610962566844918 23.020721925133692 11.469919786096256 24.87967914438503Q13.328877005347593 26.738636363636363 15.981951871657753 26.738636363636363Q18.635026737967912 26.738636363636363 20.50300802139037 24.87967914438503Q22.37098930481283 23.020721925133692 22.37098930481283 20.36764705882353Q22.37098930481283 17.71457219251337 20.52105614973262 15.84659090909091Q18.671122994652407 13.97860962566845 15.981951871657754 13.97860962566845ZM15.981951871657754 11.271390374331553Q18.346256684491976 11.181149732620323 19.717914438502675 10.080213903743317Q21.270053475935825 8.889037433155082 22.145387700534755 7.264705882352942Q23.020721925133685 5.640374331550802 24.473596256684488 4.070187165775401Q25.92647058823529 2.5 29.265374331550802 2.5V4.449197860962567Q27.045454545454547 4.449197860962567 25.538435828877006 7.264705882352942Q24.031417112299465 10.080213903743317 21.667112299465238 12.029411764705884Q21.288101604278076 12.372326203208559 20.87299465240642 12.643048128342247Q21.703208556149733 13.184491978609625 22.479278074866308 13.924465240641712Q25.11430481283422 16.613636363636363 25.11430481283422 20.403743315508024Q25.11430481283422 24.175802139037433 22.45220588235294 26.837901069518715Q19.790106951871657 29.5 15.981951871657754 29.5Q12.227941176470587 29.5 9.55681818181818 26.837901069518715Q6.8856951871657746 24.175802139037433 6.8856951871657746 20.403743315508024Q6.8856951871657746 16.613636363636363 9.556818181818182 13.924465240641712Q10.296791443850267 13.166443850267381 11.163101604278074 12.625Q10.72994652406417 12.372326203208559 10.350935828877004 12.029411764705884Q8.022727272727272 10.080213903743317 6.47961229946524 7.264705882352942Q4.936497326203209 4.449197860962567 2.7346256684491976 4.449197860962567V2.5Q6.073529411764706 2.5 7.752005347593583 4.070187165775401Q9.43048128342246 5.640374331550802 10.080213903743314 7.264705882352942Q10.72994652406417 8.889037433155082 12.26403743315508 10.080213903743317Q13.65374331550802 11.181149732620323 15.981951871657754 11.271390374331553Z" ${f} fill-rule="evenodd"/>`,
@@ -1190,7 +1235,7 @@ function sChG(i,x,y,sz,col,op){
   return `<svg x="${x-h}" y="${y-h}" width="${sz}" height="${sz}" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" opacity="${op||1}">${P[i]}</svg>`;
 }
 function pChG(name,x,y,sz,col,op){
-  const h=sz/2;const f=`fill="${col}"`;
+  const h=sz/2;const f=`fill="${col}" stroke="#080c24" stroke-width="1.5" paint-order="stroke"`;
   const P={
     Sun:`<path d="M29.5 16.0Q29.5 21.612967914438503 25.547459893048128 25.55648395721925Q21.59491978609626 29.5 15.981951871657754 29.5Q10.405080213903743 29.5 6.452540106951871 25.55648395721925Q2.5 21.612967914438503 2.5 16.0Q2.5 12.49866310160428 4.313836898395722 9.240975935828878Q6.127673796791443 5.983288770053477 9.37633689839572 4.2416443850267385Q12.625 2.5 15.981951871657754 2.5Q19.393048128342247 2.5 22.641711229946523 4.2416443850267385Q25.890374331550802 5.983288770053477 27.6951871657754 9.222927807486633Q29.5 12.462566844919788 29.5 16.0ZM3.8175133689839575 16.0Q3.8175133689839575 21.053475935828878 7.372994652406417 24.599933155080215Q10.928475935828876 28.146390374331553 15.981951871657753 28.146390374331553Q21.03542780748663 28.146390374331553 24.590909090909093 24.599933155080215Q28.146390374331553 21.053475935828878 28.146390374331553 16.0Q28.146390374331553 12.80548128342246 26.522058823529413 9.899732620320856Q24.897727272727273 6.993983957219253 21.973930481283425 5.423796791443852Q19.050133689839573 3.853609625668451 15.981951871657753 3.853609625668451Q12.913770053475934 3.853609625668451 9.989973262032084 5.423796791443852Q7.0661764705882355 6.993983957219253 5.441844919786097 9.899732620320856Q3.8175133689839575 12.80548128342246 3.8175133689839575 16.0ZM19.375 16.0Q19.375 17.407754010695186 18.391377005347593 18.391377005347593Q17.40775401069519 19.375 15.999999999999998 19.375Q14.610294117647058 19.375 13.617647058823529 18.391377005347593Q12.625 17.407754010695186 12.625 16.0Q12.625 15.115641711229948 13.07620320855615 14.303475935828878Q13.5274064171123 13.491310160427808 14.33957219251337 13.058155080213904Q15.151737967914437 12.625 16.0 12.625Q16.84826203208556 12.625 17.66042780748663 13.058155080213904Q18.4725935828877 13.491310160427808 18.92379679144385 14.303475935828878Q19.375 15.115641711229948 19.375 16.0Z" ${f} fill-rule="evenodd"/>`,
     Moon:`<path d="M10.473578595317724 2.5Q17.607357859531774 2.5 22.519732441471575 9.308695652173913Q24.434113712374582 12.433110367892976 24.434113712374582 16.00903010033445Q24.434113712374582 23.088628762541806 17.282274247491635 27.73010033444816Q14.049498327759197 29.5 10.870903010033443 29.5H9.985953177257525Q9.137123745819398 29.5 7.674247491638795 29.229096989966557V29.120735785953176Q12.676923076923076 27.693979933110366 14.934448160535117 24.49732441471572Q17.73377926421405 20.849163879598663 17.73377926421405 16.00903010033445Q17.73377926421405 8.784949832775919 11.701672240802674 4.7394648829431425Q9.245484949832775 3.2946488294314378 7.565886287625418 3.005685618729096V2.9515050167224075Q7.565886287625418 2.752842809364548 10.25685618729097 2.5ZM10.979264214046824 3.6197324414715695V3.673913043478258Q19.23277591973244 7.231772575250833 19.23277591973244 16.117391304347827Q19.23277591973244 23.377591973244147 13.146488294314382 27.567558528428094L12.36989966555184 28.001003344481607V28.07324414715719H12.478260869565217Q14.031438127090302 28.07324414715719 16.884949832775916 26.574247491638797Q21.092976588628765 23.829096989966555 22.573913043478264 19.422408026755853Q23.09765886287625 17.742809364548492 23.09765886287625 16.063210702341138V15.900668896321069Q23.09765886287625 10.175585284280935 16.830769230769228 5.461872909698997Q13.886956521739132 3.6197324414715695 11.033444816053512 3.6197324414715695Z" ${f} fill-rule="evenodd"/>`,

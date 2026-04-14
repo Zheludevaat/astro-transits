@@ -158,7 +158,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;
 .t-badge.minor{background:rgba(255,255,255,.05);color:var(--text2)}
 
 .t-label{font-size:14px;font-weight:600;color:var(--bright);margin-bottom:4px}
-.t-interp{font-size:13px;line-height:1.65;color:var(--text);margin-bottom:8px}
+.t-interp{font-size:13px;line-height:1.75;color:var(--text);margin-bottom:8px}
 .t-advice{font-size:12px;color:var(--emerald);line-height:1.5;margin-bottom:8px;padding:8px 10px;
   background:var(--emerald-soft);border-radius:var(--r-sm)}
 .t-meta{display:flex;gap:6px;flex-wrap:wrap}
@@ -188,7 +188,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;
 .tab-bar button{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 14px;color:var(--text3);
   font-size:10px;font-weight:600;cursor:pointer;border:none;background:none;text-transform:uppercase;
   letter-spacing:.5px;transition:color .15s;position:relative}
-.tab-bar button.active{color:var(--gold)}
+.tab-bar button.active{color:var(--gold);filter:drop-shadow(0 0 4px rgba(212,168,67,.3))}
 .tab-bar button.active::after{content:'';position:absolute;top:-6px;left:50%;transform:translateX(-50%);
   width:20px;height:2px;background:var(--gold);border-radius:2px}
 .tab-bar button svg{width:20px;height:20px}
@@ -259,7 +259,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;
 .forecast::-webkit-scrollbar{display:none}
 .forecast-day{flex-shrink:0;width:56px;display:flex;flex-direction:column;align-items:center;gap:4px;
   padding:10px 4px;border-radius:var(--r-md);cursor:pointer;transition:all .15s;background:var(--card);border:1px solid rgba(255,255,255,.04)}
-.forecast-day:active,.forecast-day.sel{background:var(--card-hover);border-color:rgba(212,168,67,.2)}
+.forecast-day:active,.forecast-day.sel{background:var(--card-hover);border-color:rgba(212,168,67,.3);box-shadow:0 0 12px rgba(212,168,67,.15)}
 .forecast-day .fd-name{font-size:10px;font-weight:600;color:var(--text2)}
 .forecast-day .fd-num{font-size:14px;font-weight:700;color:var(--bright)}
 .forecast-day .fd-bar{width:6px;border-radius:3px;transition:height .3s}
@@ -278,6 +278,60 @@ body::before{content:'';position:fixed;inset:0;z-index:0;
 @keyframes glow{0%,100%{box-shadow:0 0 8px rgba(212,168,67,.15)}50%{box-shadow:0 0 20px rgba(212,168,67,.3)}}
 
 @media(max-width:360px){.chart-wrap{max-width:300px}.chart-wrap.full{max-width:340px}}
+
+/* ── Light / Day theme ── */
+html.light{
+  --bg:#f4f0e6;--bg2:#ede8dc;--card:#ffffff;--card-hover:#f8f6f0;--surface:#e8e2d6;
+  --gold:#9e7a2e;--gold-soft:rgba(158,122,46,.1);--gold-glow:rgba(158,122,46,.2);
+  --crimson:#c03348;--crimson-soft:rgba(192,51,72,.1);
+  --azure:#2a6db5;--azure-soft:rgba(42,109,181,.1);
+  --violet:#7b52cc;--violet-soft:rgba(123,82,204,.1);
+  --emerald:#248a64;--emerald-soft:rgba(36,138,100,.1);
+  --amber:#c88520;--amber-soft:rgba(200,133,32,.1);
+  --pearl:#3a3450;
+  --text:#3a3450;--text2:#6e6880;--text3:#9e98a8;--bright:#1a1530;
+  --shadow:0 1px 4px rgba(0,0,0,.08),0 0 0 1px rgba(0,0,0,.04);
+}
+html.light body::before{background:radial-gradient(ellipse at 50% 0%,#f8f4ec 0%,#f0ebe0 70%)}
+html.light .tab-bar{background:rgba(244,240,230,.95);border-top-color:rgba(158,122,46,.12)}
+html.light .chart-svg{filter:drop-shadow(0 0 8px rgba(123,82,204,.06))}
+html.light .guidance{background:linear-gradient(135deg,rgba(158,122,46,.06) 0%,rgba(123,82,204,.04) 100%);
+  border-color:rgba(158,122,46,.12)}
+html.light .moon-card{border-color:rgba(123,82,204,.08)}
+html.light .transit{border-color:rgba(0,0,0,.06)}
+html.light .modal-overlay{background:rgba(244,240,230,.85)}
+html.light .modal-sheet{background:var(--bg);border-color:rgba(0,0,0,.06)}
+
+/* ── Theme toggle button ── */
+.theme-toggle{position:absolute;top:16px;right:16px;background:var(--card);border:1px solid rgba(255,255,255,.06);
+  border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;z-index:10;transition:all .2s}
+.theme-toggle:active{transform:scale(.9)}
+html.light .theme-toggle{border-color:rgba(0,0,0,.08)}
+
+/* ── Show-more button ── */
+.show-more{display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;margin:8px 0 16px;
+  background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:var(--r-md);
+  color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s}
+.show-more:active{background:var(--card-hover);color:var(--gold)}
+html.light .show-more{border-color:rgba(0,0,0,.06)}
+
+/* ── Guidance collapsible ── */
+.guidance-preview{max-height:180px;overflow:hidden;position:relative;transition:max-height .3s ease}
+.guidance-preview.expanded{max-height:3000px}
+.guidance-preview:not(.expanded)::after{content:'';position:absolute;bottom:0;left:0;right:0;height:60px;
+  background:linear-gradient(transparent,var(--bg));pointer-events:none}
+html.light .guidance-preview:not(.expanded)::after{background:linear-gradient(transparent,#f4f0e6)}
+.guidance-toggle{display:flex;align-items:center;justify-content:center;gap:4px;padding:8px;
+  color:var(--gold);font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;
+  cursor:pointer;margin-top:-4px}
+
+/* ── Chevron indicator on cards ── */
+.t-chevron{width:16px;height:16px;color:var(--text3);transition:transform .2s;flex-shrink:0}
+.transit.card-open .t-chevron{transform:rotate(180deg)}
+
+/* ── Swipe hint ── */
+.swipe-zone{touch-action:pan-y}
 </style>
 </head>
 <body>
@@ -1223,7 +1277,7 @@ function renderChartWheel(cur,transits,jd,size){
 
 // Chart-embeddable sigil functions (nested SVG for embedding in chart wheel)
 function sChG(i,x,y,sz,col,op){
-  const h=sz/2;const f=`fill="${col}" stroke="#080c24" stroke-width="1.5" paint-order="stroke"`;
+  const h=sz/2;const bg=document.documentElement.classList.contains("light")?"#f4f0e6":"#080c24";const f=`fill="${col}" stroke="${bg}" stroke-width="1.5" paint-order="stroke"`;
   const P=[
     `<path d="M14.960278956943602 28.263796240145545Q14.960278956943602 18.439660400242573 12.61885991510006 12.111279563371742Q10.27744087325652 5.78289872650091 7.510309278350515 5.78289872650091Q5.398120072771377 5.78289872650091 5.119769557307459 7.3956943602183145Q4.841419041843541 9.008489993935719 4.841419041843541 9.565191024863555Q4.841419041843541 11.661006670709522 6.216798059429958 13.75682231655549H4.0227410551849605Q2.5 11.595512431776836 2.5 8.959369314736204Q2.5 6.798059429957551 3.834445118253487 5.2671315949060045Q5.168890236506974 3.736203759854458 7.559429957550031 3.736203759854458Q13.650394178289874 3.736203759854458 15.795330503335355 16.39296543359612Q15.926318981200728 17.19526986052153 16.008186779866584 17.850212249848397Q16.073681018799274 17.19526986052153 16.204669496664646 16.39296543359612Q18.3659793814433 3.736203759854458 24.44057004244997 3.736203759854458Q26.847483323226196 3.736203759854458 28.1737416616131 5.2671315949060045Q29.5 6.798059429957551 29.5 8.959369314736204Q29.5 11.595512431776836 27.977258944815038 13.75682231655549H25.78320194057004Q27.17495451788963 11.661006670709522 27.17495451788963 9.548817465130384Q27.17495451788963 8.992116434202547 26.89660400242571 7.387507580351729Q26.618253486961795 5.78289872650091 24.489690721649485 5.78289872650091Q21.73893268647665 5.78289872650091 19.397513644633108 12.111279563371742Q17.056094602789567 18.439660400242573 17.056094602789567 28.263796240145545Z" ${f} fill-rule="evenodd"/>`,
     `<path d="M15.981951871657754 13.97860962566845Q13.328877005347593 13.97860962566845 11.469919786096256 15.84659090909091Q9.610962566844918 17.71457219251337 9.610962566844918 20.36764705882353Q9.610962566844918 23.020721925133692 11.469919786096256 24.87967914438503Q13.328877005347593 26.738636363636363 15.981951871657753 26.738636363636363Q18.635026737967912 26.738636363636363 20.50300802139037 24.87967914438503Q22.37098930481283 23.020721925133692 22.37098930481283 20.36764705882353Q22.37098930481283 17.71457219251337 20.52105614973262 15.84659090909091Q18.671122994652407 13.97860962566845 15.981951871657754 13.97860962566845ZM15.981951871657754 11.271390374331553Q18.346256684491976 11.181149732620323 19.717914438502675 10.080213903743317Q21.270053475935825 8.889037433155082 22.145387700534755 7.264705882352942Q23.020721925133685 5.640374331550802 24.473596256684488 4.070187165775401Q25.92647058823529 2.5 29.265374331550802 2.5V4.449197860962567Q27.045454545454547 4.449197860962567 25.538435828877006 7.264705882352942Q24.031417112299465 10.080213903743317 21.667112299465238 12.029411764705884Q21.288101604278076 12.372326203208559 20.87299465240642 12.643048128342247Q21.703208556149733 13.184491978609625 22.479278074866308 13.924465240641712Q25.11430481283422 16.613636363636363 25.11430481283422 20.403743315508024Q25.11430481283422 24.175802139037433 22.45220588235294 26.837901069518715Q19.790106951871657 29.5 15.981951871657754 29.5Q12.227941176470587 29.5 9.55681818181818 26.837901069518715Q6.8856951871657746 24.175802139037433 6.8856951871657746 20.403743315508024Q6.8856951871657746 16.613636363636363 9.556818181818182 13.924465240641712Q10.296791443850267 13.166443850267381 11.163101604278074 12.625Q10.72994652406417 12.372326203208559 10.350935828877004 12.029411764705884Q8.022727272727272 10.080213903743317 6.47961229946524 7.264705882352942Q4.936497326203209 4.449197860962567 2.7346256684491976 4.449197860962567V2.5Q6.073529411764706 2.5 7.752005347593583 4.070187165775401Q9.43048128342246 5.640374331550802 10.080213903743314 7.264705882352942Q10.72994652406417 8.889037433155082 12.26403743315508 10.080213903743317Q13.65374331550802 11.181149732620323 15.981951871657754 11.271390374331553Z" ${f} fill-rule="evenodd"/>`,
@@ -1241,7 +1295,7 @@ function sChG(i,x,y,sz,col,op){
   return `<svg x="${x-h}" y="${y-h}" width="${sz}" height="${sz}" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" opacity="${op||1}">${P[i]}</svg>`;
 }
 function pChG(name,x,y,sz,col,op){
-  const h=sz/2;const f=`fill="${col}" stroke="#080c24" stroke-width="1.5" paint-order="stroke"`;
+  const h=sz/2;const bg=document.documentElement.classList.contains("light")?"#f4f0e6":"#080c24";const f=`fill="${col}" stroke="${bg}" stroke-width="1.5" paint-order="stroke"`;
   const P={
     Sun:`<path d="M29.5 16.0Q29.5 21.612967914438503 25.547459893048128 25.55648395721925Q21.59491978609626 29.5 15.981951871657754 29.5Q10.405080213903743 29.5 6.452540106951871 25.55648395721925Q2.5 21.612967914438503 2.5 16.0Q2.5 12.49866310160428 4.313836898395722 9.240975935828878Q6.127673796791443 5.983288770053477 9.37633689839572 4.2416443850267385Q12.625 2.5 15.981951871657754 2.5Q19.393048128342247 2.5 22.641711229946523 4.2416443850267385Q25.890374331550802 5.983288770053477 27.6951871657754 9.222927807486633Q29.5 12.462566844919788 29.5 16.0ZM3.8175133689839575 16.0Q3.8175133689839575 21.053475935828878 7.372994652406417 24.599933155080215Q10.928475935828876 28.146390374331553 15.981951871657753 28.146390374331553Q21.03542780748663 28.146390374331553 24.590909090909093 24.599933155080215Q28.146390374331553 21.053475935828878 28.146390374331553 16.0Q28.146390374331553 12.80548128342246 26.522058823529413 9.899732620320856Q24.897727272727273 6.993983957219253 21.973930481283425 5.423796791443852Q19.050133689839573 3.853609625668451 15.981951871657753 3.853609625668451Q12.913770053475934 3.853609625668451 9.989973262032084 5.423796791443852Q7.0661764705882355 6.993983957219253 5.441844919786097 9.899732620320856Q3.8175133689839575 12.80548128342246 3.8175133689839575 16.0ZM19.375 16.0Q19.375 17.407754010695186 18.391377005347593 18.391377005347593Q17.40775401069519 19.375 15.999999999999998 19.375Q14.610294117647058 19.375 13.617647058823529 18.391377005347593Q12.625 17.407754010695186 12.625 16.0Q12.625 15.115641711229948 13.07620320855615 14.303475935828878Q13.5274064171123 13.491310160427808 14.33957219251337 13.058155080213904Q15.151737967914437 12.625 16.0 12.625Q16.84826203208556 12.625 17.66042780748663 13.058155080213904Q18.4725935828877 13.491310160427808 18.92379679144385 14.303475935828878Q19.375 15.115641711229948 19.375 16.0Z" ${f} fill-rule="evenodd"/>`,
     Moon:`<path d="M10.473578595317724 2.5Q17.607357859531774 2.5 22.519732441471575 9.308695652173913Q24.434113712374582 12.433110367892976 24.434113712374582 16.00903010033445Q24.434113712374582 23.088628762541806 17.282274247491635 27.73010033444816Q14.049498327759197 29.5 10.870903010033443 29.5H9.985953177257525Q9.137123745819398 29.5 7.674247491638795 29.229096989966557V29.120735785953176Q12.676923076923076 27.693979933110366 14.934448160535117 24.49732441471572Q17.73377926421405 20.849163879598663 17.73377926421405 16.00903010033445Q17.73377926421405 8.784949832775919 11.701672240802674 4.7394648829431425Q9.245484949832775 3.2946488294314378 7.565886287625418 3.005685618729096V2.9515050167224075Q7.565886287625418 2.752842809364548 10.25685618729097 2.5ZM10.979264214046824 3.6197324414715695V3.673913043478258Q19.23277591973244 7.231772575250833 19.23277591973244 16.117391304347827Q19.23277591973244 23.377591973244147 13.146488294314382 27.567558528428094L12.36989966555184 28.001003344481607V28.07324414715719H12.478260869565217Q14.031438127090302 28.07324414715719 16.884949832775916 26.574247491638797Q21.092976588628765 23.829096989966555 22.573913043478264 19.422408026755853Q23.09765886287625 17.742809364548492 23.09765886287625 16.063210702341138V15.900668896321069Q23.09765886287625 10.175585284280935 16.830769230769228 5.461872909698997Q13.886956521739132 3.6197324414715695 11.033444816053512 3.6197324414715695Z" ${f} fill-rule="evenodd"/>`,
@@ -1265,6 +1319,39 @@ function pChG(name,x,y,sz,col,op){
 // ══════════════════════════════════════════════════════════════
 
 let expandedCards={},dayOffset=0,activeTab='today',activeFilter='all';
+
+// ── Theme system ──
+let themeOverride=null;
+function detectTheme(){
+  if(themeOverride)return themeOverride;
+  const h=new Date().getHours();
+  return(h>=6&&h<18)?'light':'dark';
+}
+function applyTheme(t){document.documentElement.classList.toggle('light',t==='light');
+  document.querySelector('meta[name=theme-color]').content=t==='light'?'#f4f0e6':'#05081a';}
+function toggleTheme(){
+  const cur=detectTheme();
+  themeOverride=cur==='light'?'dark':'light';
+  applyTheme(themeOverride);
+  renderApp();
+}
+applyTheme(detectTheme());
+
+// Swipe navigation handled below
+
+// ── Show more transits ──
+let showAllTransits=false;
+function toggleShowAll(){showAllTransits=!showAllTransits;renderApp();}
+
+// ── Guidance expand ──
+let guidanceExpanded=false;
+function toggleGuidance(){guidanceExpanded=!guidanceExpanded;
+  const el=document.querySelector('.guidance-preview');
+  if(el)el.classList.toggle('expanded',guidanceExpanded);
+  const btn=document.querySelector('.guidance-toggle');
+  if(btn)btn.textContent=guidanceExpanded?'Show less':'Read more';}
+
+
 // Caches
 const _forecastCache={},_exactDateCache={};
 function cachedExactDate(tp,np,aspectAngle,jd){
@@ -1403,7 +1490,11 @@ function renderApp(){
 
   // ── HEADER ──
   const timeStr=isToday?' · '+new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}):'';
-  h+=`<div class="header">`;
+  h+=`<div class="header" style="position:relative">`;
+  const themeIcon=detectTheme()==='light'?
+    `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`:
+    `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
+  h+=`<div class="theme-toggle" onclick="toggleTheme()">${themeIcon}</div>`;
   h+=`<div class="header-sub">Your Transits</div>`;
   h+=`<div class="header-date">${months[now.getMonth()]} ${now.getDate()}</div>`;
   h+=`<div class="header-day">${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][now.getDay()]}${timeStr}</div>`;
@@ -1431,37 +1522,38 @@ function renderApp(){
   }
   h+=`</div>`;
 
-  // Mini chart
-  h+=`<div class="chart-wrap">${renderChartWheel(cur,transits,jd,340)}</div>`;
-
-  // Daily Guidance
-  const guidance=generateDailyGuidance(transits,vibe,mPhase,retros,stats,vocResult,moonSign,cur,phaseAngle);
-  h+=`<div class="guidance"><div class="guidance-title">Daily Guidance</div>${guidance}</div>`;
-
-  // Moon Phase
-  h+=`<div class="moon-card">`;
-  h+=`<div class="moon-visual">${renderMoonSVG(phaseAngle,64)}</div>`;
-  h+=`<div class="moon-info"><div class="moon-phase-name">${mPhase.name}</div>`;
-  h+=`<div class="moon-detail">Moon in ${moonSign.name} ${sSVG(moonSign.name,14,'var(--violet)')} · House ${houseOf(cur.Moon)}</div>`;
-  h+=`<div class="moon-meaning">${MOON_PHASE_MEANINGS[mPhase.name]||''}</div></div></div>`;
-
-  // Alerts
+  // Alerts (first — urgent info)
   if(retros.length||stats.length||vocResult.voc||ingresses.length){
     h+=`<div class="alerts">`;
     if(vocResult.voc)h+=`<div class="pill void" onclick="showTip('Void of Course')">Moon VOC<span class="help">?</span></div>`;
     for(const p of stats)h+=`<div class="pill station" onclick="showTip('Stationary')">${pSVG(p,14,'var(--amber)')} ${p} Stationary<span class="help">?</span></div>`;
     for(const p of retros)h+=`<div class="pill retro" onclick="showTip('Retrograde')">${pSVG(p,14,'var(--crimson)')} ${p} Rx<span class="help">?</span></div>`;
-    for(const ig of ingresses)h+=`<div class="pill ingress">${pSVG(ig.planet,14,'var(--emerald)')} → ${sSVG(ig.sign,13,'var(--emerald)')} in ${ig.days}d</div>`;
+    for(const ig of ingresses)h+=`<div class="pill ingress">${pSVG(ig.planet,14,'var(--emerald)')} ${sSVG(ig.sign,13,'var(--emerald)')} in ${ig.days}d</div>`;
     h+=`</div>`;
   }
 
-  // Energy Meter with context
+  // Energy Meter (compact summary)
   const eColor=vibe.score>=7?'var(--azure)':vibe.score<=3?'var(--crimson)':'var(--gold)';
   h+=`<div class="energy" onclick="showTip('Energy Score')">`;
   h+=`<div class="energy-label">Energy</div>`;
   h+=`<div class="energy-bar"><div class="energy-fill" style="width:${vibe.score*10}%;background:${eColor}"></div></div>`;
   h+=`<div class="energy-score" style="color:${eColor}">${vibe.score}/10</div>`;
   h+=`</div>`;
+
+  // Moon Phase (compact row)
+  h+=`<div class="moon-card">`;
+  h+=`<div class="moon-visual">${renderMoonSVG(phaseAngle,48)}</div>`;
+  h+=`<div class="moon-info"><div class="moon-phase-name" style="font-size:15px">${mPhase.name}</div>`;
+  h+=`<div class="moon-detail">Moon in ${moonSign.name} ${sSVG(moonSign.name,14,'var(--violet)')} · House ${houseOf(cur.Moon)}</div></div></div>`;
+
+  // Mini chart
+  h+=`<div class="chart-wrap">${renderChartWheel(cur,transits,jd,340)}</div>`;
+
+  // Daily Guidance (collapsible)
+  const guidance=generateDailyGuidance(transits,vibe,mPhase,retros,stats,vocResult,moonSign,cur,phaseAngle);
+  h+=`<div class="guidance"><div class="guidance-title">Daily Guidance</div>`;
+  h+=`<div class="guidance-preview${guidanceExpanded?' expanded':''}">${guidance}</div>`;
+  h+=`<div class="guidance-toggle" onclick="toggleGuidance()">${guidanceExpanded?'Show less':'Read more'}</div></div>`;
 
   // Filter chips
   h+=`<div class="filters">`;
@@ -1474,15 +1566,18 @@ function renderApp(){
   if(easyCount)h+=`<div class="filter-chip ${activeFilter==='easy'?'on':''}" onclick="setFilter('easy')">Flowing (${easyCount})</div>`;
   h+=`</div>`;
 
-  // Transit list
+  // Transit list — show top 5, rest behind "show more"
   const filtered=activeFilter==='all'?transits:
     activeFilter==='hard'?transits.filter(t=>t.aspect.type==='hard'):
     activeFilter==='easy'?transits.filter(t=>t.aspect.type==='easy'):
     activeFilter==='conj'?transits.filter(t=>t.aspect.name==='conjunction'):transits;
 
+  const SHOW_LIMIT=5;
+  const visibleTransits=showAllTransits?filtered:filtered.slice(0,SHOW_LIMIT);
+
   if(filtered.length>0){
     h+=`<div class="section-title">Active Transits</div>`;
-    for(let i=0;i<filtered.length;i++){
+    for(let i=0;i<visibleTransits.length;i++){
       const t=filtered[i];
       const interp=t.interp;
       const cls=t.aspect.type==='hard'?'hard':t.aspect.type==='easy'?'easy':t.aspect.name==='conjunction'?'conj':'minor';
@@ -1493,12 +1588,13 @@ function renderApp(){
       const id='t-'+t.tp+'-'+t.np+'-'+t.aspect.name;
       const isOpen=expandedCards[id];
 
-      h+=`<div class="transit ${cls}${exactCls}" data-card-id="${id}" onclick="toggleCard('${id}')" style="animation-delay:${i*40}ms">`;
+      h+=`<div class="transit ${cls}${exactCls}${isOpen?' card-open':''}" data-card-id="${id}" onclick="toggleCard('${id}')" style="animation-delay:${Math.min(i,4)*40}ms">`;
       // Top row: planet glyphs + badge
       h+=`<div class="t-top"><div class="t-planets">${pSVG(t.tp,24,'var(--bright)')}`;
       h+=`<span style="color:var(--text3)">${aSVG(t.aspect.name,16,'var(--text3)')}</span>`;
       h+=`${pSVG(t.np==='Ascendant'||t.np==='MC'?'Sun':t.np,24,'var(--text)')}</div>`;
-      h+=`<span class="t-badge ${cls}">${interp.aspectLabel}</span></div>`;
+      h+=`<span class="t-badge ${cls}">${interp.aspectLabel}</span>
+<svg class="t-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6,9 12,15 18,9"/></svg></div>`;
 
       // Label
       h+=`<div class="t-label">${tpName} ${aSVG(t.aspect.name,13,'var(--text2)')} natal ${npName}</div>`;
@@ -1527,6 +1623,13 @@ function renderApp(){
       h+=`</div></div></div>`;
     }
   }
+  if(!showAllTransits&&filtered.length>SHOW_LIMIT){
+    h+=`<div class="show-more" onclick="event.stopPropagation();toggleShowAll()">Show ${filtered.length-SHOW_LIMIT} more transits</div>`;
+  }
+  if(showAllTransits&&filtered.length>SHOW_LIMIT){
+    h+=`<div class="show-more" onclick="event.stopPropagation();toggleShowAll()">Show fewer</div>`;
+  }
+
   // ── Transit Timeline ──
   const timeline=buildTimeline(transits,jd);
   if(timeline.length>0){

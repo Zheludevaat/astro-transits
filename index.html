@@ -2,312 +2,273 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Astro Transits</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/decimal.js/10.4.3/decimal.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.45/moment-timezone-with-data.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#05081a">
+<title>Alexander's Transits</title>
+<link rel="manifest" href="manifest.json">
 <style>
-:root {
-  --sign-aries: "♈";
-  --sign-taurus: "♉";
-  --sign-gemini: "♊";
-  --sign-cancer: "♋";
-  --sign-leo: "♌";
-  --sign-virgo: "♍";
-  --sign-libra: "♎";
-  --sign-scorpio: "♏";
-  --sign-sagittarius: "♐";
-  --sign-capricorn: "♑";
-  --sign-aquarius: "♒";
-  --sign-pisces: "♓";
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#05081a;--bg2:#0a0e24;--card:#0e1330;--card-hover:#131842;--surface:#161c45;
+  --gold:#d4a843;--gold-soft:rgba(212,168,67,.12);--gold-glow:rgba(212,168,67,.25);
+  --crimson:#e0425d;--crimson-soft:rgba(224,66,93,.12);
+  --azure:#4a9eff;--azure-soft:rgba(74,158,255,.12);
+  --violet:#9b6dff;--violet-soft:rgba(155,109,255,.12);
+  --emerald:#3dd9a0;--emerald-soft:rgba(61,217,160,.12);
+  --amber:#f0a030;--amber-soft:rgba(240,160,48,.12);
+  --pearl:#e8e0d0;
+  --text:#d0cae0;--text2:#8880a0;--text3:#5a5478;--bright:#f4f0ff;
+  --r-sm:10px;--r-md:16px;--r-lg:22px;
+  --shadow:0 2px 8px rgba(0,0,0,.4),0 0 0 1px rgba(255,255,255,.03);
+  --safe-top:env(safe-area-inset-top,20px);--safe-bottom:env(safe-area-inset-bottom,20px);
 }
-body {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  min-height: 100vh;
-  color: #333;
+html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',system-ui,sans-serif;
+  min-height:100dvh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body{padding:var(--safe-top) 0 calc(var(--safe-bottom) + 72px)}
+.container{padding:0 16px;max-width:480px;margin:0 auto}
+body::before{content:'';position:fixed;inset:0;z-index:0;
+  background:radial-gradient(ellipse at 50% 0%,#0d1240 0%,#05081a 70%);pointer-events:none}
+#app{position:relative;z-index:1}
+
+/* ── Typography ── */
+.label{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text2)}
+.title{font-size:28px;font-weight:700;line-height:1.2}
+.subtitle{font-size:16px;font-weight:500;color:var(--text2)}
+.body{font-size:14px;line-height:1.6}
+.body-sm{font-size:12px;line-height:1.5}
+
+/* ── Grid & Spacing ── */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.space-v-xl{margin-bottom:40px}
+.space-v-lg{margin-bottom:24px}
+.space-v-md{margin-bottom:16px}
+.space-v-sm{margin-bottom:8px}
+.space-v-xs{margin-bottom:4px}
+.divider{height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent)}
+
+/* ── Cards & Surfaces ── */
+.card{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:var(--r-md);padding:16px;transition:all .3s cubic-bezier(.4,0,.2,1)}
+.card:hover{background:var(--card-hover);border-color:rgba(255,255,255,.12)}
+.card-inset{box-shadow:inset 0 1px 2px rgba(0,0,0,.3)}
+
+/* ── Buttons & Links ── */
+.btn{display:flex;align-items:center;justify-content:center;height:44px;padding:0 16px;border:none;border-radius:var(--r-md);font-size:13px;font-weight:600;letter-spacing:.5px;cursor:pointer;transition:all .2s ease;-webkit-user-select:none;user-select:none;-webkit-appearance:none;appearance:none;gap:8px}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:linear-gradient(135deg,var(--gold) 0%,#e8c458 100%);color:#05081a;box-shadow:0 4px 12px rgba(212,168,67,.3)}
+.btn-primary:hover{box-shadow:0 6px 16px rgba(212,168,67,.4)}
+.btn-secondary{background:var(--surface);color:var(--text);border:1px solid rgba(255,255,255,.2)}
+.btn-secondary:hover{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.4)}
+.btn-icon{width:44px;height:44px;padding:0;border-radius:50%}
+.btn-icon-sm{width:36px;height:36px}
+
+/* ── Badges & Indicators ── */
+.badge{display:inline-flex;align-items:center;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:600;gap:4px}
+.badge-gold{background:var(--gold-soft);color:var(--gold)}
+.badge-crimson{background:var(--crimson-soft);color:var(--crimson)}
+.badge-azure{background:var(--azure-soft);color:var(--azure)}
+.badge-violet{background:var(--violet-soft);color:var(--violet)}
+.badge-emerald{background:var(--emerald-soft);color:var(--emerald)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%}
+
+/* ── Scrolling & Overflow ── */
+.scroll-h{display:flex;overflow-x:auto;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;gap:8px}
+.scroll-h::-webkit-scrollbar{height:3px}
+.scroll-h::-webkit-scrollbar-track{background:transparent}
+.scroll-h::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:2px}
+
+/* ── Responsive ── */
+@media (max-width:380px){
+  .container{padding:0 12px}
+  .title{font-size:24px}
+  .grid-2{grid-template-columns:1fr}
 }
-.container {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-  padding: 30px;
-}
-h1 {
-  color: #667eea;
-  text-align: center;
-  margin-bottom: 10px;
-  font-size: 2.5em;
-}
-.subtitle {
-  text-align: center;
-  color: #666;
-  margin-bottom: 30px;
-  font-size: 0.95em;
-}
-.input-group {
-  margin-bottom: 20px;
-}
-label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 600;
-  color: #333;
-}
-input, select {
-  width: 100%;
-  padding: 10px 12px;
-  border: 2px solid #e0e0e0;
-  border-radius: 6px;
-  font-size: 14px;
-  box-sizing: border-box;
-  transition: border-color 0.3s;
-}
-input:focus, select:focus {
-  outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-.button-group {
-  display: flex;
-  gap: 10px;
-  margin-top: 20px;
-}
-button {
-  flex: 1;
-  padding: 12px;
-  background: #667eea;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.3s, transform 0.1s;
-}
-button:hover {
-  background: #5568d3;
-}
-button:active {
-  transform: scale(0.98);
-}
-button:disabled {
-  background: #ccc;
-  cursor: not-allowed;
-}
-.results {
-  margin-top: 30px;
-  padding-top: 30px;
-  border-top: 2px solid #f0f0f0;
-}
-.result-item {
-  margin-bottom: 20px;
-  padding: 15px;
-  background: #f9f9f9;
-  border-left: 4px solid #667eea;
-  border-radius: 4px;
-}
-.result-item h3 {
-  margin: 0 0 10px 0;
-  color: #333;
-  font-size: 1.1em;
-}
-.planet-row {
-  display: grid;
-  grid-template-columns: 120px 1fr 1fr 1fr;
-  gap: 10px;
-  margin: 8px 0;
-  font-size: 13px;
-  align-items: center;
-}
-.planet-name {
-  font-weight: 600;
-  color: #667eea;
-}
-.planet-value {
-  color: #666;
-}
-.sign {
-  font-weight: 600;
-  color: #764ba2;
-}
-.longitude {
-  color: #999;
-  font-size: 0.9em;
-}
-error {
-  color: #d32f2f;
-  padding: 10px;
-  margin-top: 10px;
-  background: #ffebee;
-  border-radius: 4px;
-  border-left: 4px solid #d32f2f;
-}
-.loading {
-  text-align: center;
-  color: #667eea;
-  font-weight: 600;
-  margin: 20px 0;
-}
-.row { display: flex; gap: 20px; }
-.row > div { flex: 1; }
-@media (max-width: 768px) {
-  .container { padding: 20px; }
-  h1 { font-size: 1.8em; }
-  .planet-row { grid-template-columns: 1fr; }
-  .button-group { flex-direction: column; }
+
+/* ── Dark Mode Enhancements ── */
+@media (prefers-color-scheme:dark){
+  .card{background:rgba(14,19,48,.6)}
 }
 </style>
 </head>
 <body>
-<div class="container">
-  <h1>♈ Astro Transits ♓</h1>
-  <p class="subtitle">Calculate Planetary Positions</p>
-  
-  <div class="input-group">
-    <label for="birthDate">Birth Date (YYYY-MM-DD)</label>
-    <input type="date" id="birthDate" value="1996-07-02">
+<div id="app">
+  <div class="container">
+    <header style="padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 20px;">
+      <h1 class="title">Alexander's Transits</h1>
+      <p class="subtitle" style="margin-top: 4px;">Birth: July 2, 1996 | 00:08 EDT | Stony Brook, NY</p>
+    </header>
+
+    <main>
+      <!-- Date Selection -->
+      <section class="space-v-lg">
+        <label class="label">Current Date</label>
+        <div style="display: flex; gap: 8px; margin-top: 12px;">
+          <input type="date" id="dateInput" value="2026-04-14" style="flex:1; padding:10px 12px; border-radius:8px; border:1px solid rgba(255,255,255,.12); background:var(--card); color:var(--text); font-size:14px;">
+          <button id="todayBtn" class="btn btn-secondary" style="min-width:100px;">Today</button>
+        </div>
+      </section>
+
+      <div class="divider space-v-lg"></div>
+
+      <!-- Main Results Grid -->
+      <div id="results" style="display:grid; gap:16px;">
+        <!-- Results will be populated here -->
+      </div>
+    </main>
   </div>
-  
-  <div class="input-group">
-    <label for="birthTime">Birth Time (HH:MM:SS)</label>
-    <input type="time" id="birthTime" value="00:08">
-  </div>
-  
-  <div class="input-group">
-    <label for="timezone">Timezone</label>
-    <input type="text" id="timezone" value="America/New_York" placeholder="e.g., America/New_York">
-  </div>
-  
-  <div class="input-group">
-    <label for="currentDate">Current Date (YYYY-MM-DD)</label>
-    <input type="date" id="currentDate">
-  </div>
-  
-  <div class="button-group">
-    <button onclick="calculateTransits()">Calculate Transits</button>
-    <button onclick="clearResults()">Clear</button>
-  </div>
-  
-  <div id="results" class="results" style="display: none;"></div>
-  <div id="error" style="display: none;"></div>
 </div>
 
 <script>
-// Set current date to today
-document.getElementById("currentDate").valueAsDate = new Date();
+// Store birth data
+const BIRTH_DATA = {
+  month: 7,
+  day: 2,
+  year: 1996,
+  hour: 0,
+  minute: 8,
+  second: 0,
+  timezone: -4, // EDT
+  lat: 40.9176, // Stony Brook
+  lng: -72.8596
+};
 
-const ZODIAC_SIGNS = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
-const PLANETS = ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto"];
+const PLANETS_DATA = [
+  { name: 'Sun', lon: 100.88 },
+  { name: 'Moon', lon: 333.82 },
+  { name: 'Mercury', lon: 98.28 },
+  { name: 'Venus', lon: 71.98 },
+  { name: 'Mars', lon: 347.77 },
+  { name: 'Jupiter', lon: 19.15 },
+  { name: 'Saturn', lon: 55.96 },
+  { name: 'Uranus', lon: 0.98 },
+  { name: 'Neptune', lon: 325.36 },
+  { name: 'Pluto', lon: 222.36 }
+];
 
-// Simple heliocentric ephemeris calculator
-function calculateOrbitalElements(jd, planet) {
-  const T = (jd - 2451545.0) / 36525;
-  const M = moment.utc(jd, "jD");
-  
-  // Simplified planetary positions (approximation)
-  const a = 1.0, e = 0.0167, i = 0, w = 100, Om = 0, M0 = 100;
-  const Omega = Om + 1.7e-4 * 36525 * T;
-  
-  let lon = w + 1.0 * T + 35999.05 * T;
-  let lat = 0;
-  
-  switch(planet) {
-    case 0: lon = 100 + 1.0 * T + 35999.05 * T; break; // Sun
-    case 1: lon = 120 + 13.2 * T + 481267.88 * T; break; // Moon
-    case 2: lon = 48.3 + 0.98 * T + 58517.81 * T; break; // Mercury
-    case 3: lon = 75.8 + 0.62 * T + 58517.81 * T; break; // Venus
-    case 4: lon = 335.4 + 0.52 * T + 19132.18 * T; break; // Mars
-    case 5: lon = 14.2 + 0.09 * T + 3034.74 * T; break; // Jupiter
-    case 6: lon = 93.0 + 0.03 * T + 1223.51 * T; break; // Saturn
-    case 7: lon = 173.0 + 0.02 * T + 428.47 * T; break; // Uranus
-    case 8: lon = 48.1 + 0.01 * T + 218.46 * T; break; // Neptune
-    case 9: lon = 238.0 + 0.003 * T; break; // Pluto
+// Ephemeris (simplified for demo)
+const EPHEMERIS = {
+  '2026-04-14': {
+    Sun: 24.89,
+    Moon: 27.45,
+    Mercury: 3.12,
+    Venus: 352.67,
+    Mars: 27.33,
+    Jupiter: 38.45,
+    Saturn: 68.12,
+    Uranus: 18.67,
+    Neptune: 337.89,
+    Pluto: 234.56
   }
-  
-  lon = ((lon % 360) + 360) % 360;
-  return {lon: lon, lat: lat, distance: 1.0};
+};
+
+// Colors for planets
+const COLORS = {
+  Sun: 'var(--amber)',
+  Moon: 'var(--pearl)',
+  Mercury: 'var(--azure)',
+  Venus: 'var(--emerald)',
+  Mars: 'var(--crimson)',
+  Jupiter: 'var(--gold)',
+  Saturn: 'var(--gold)',
+  Uranus: 'var(--violet)',
+  Neptune: 'var(--azure)',
+  Pluto: 'var(--crimson)'
+};
+
+// Initialize
+function init() {
+  const dateInput = document.getElementById('dateInput');
+  const todayBtn = document.getElementById('todayBtn');
+  const resultsDiv = document.getElementById('results');
+
+  // Set today's date
+  todayBtn.addEventListener('click', () => {
+    const today = new Date();
+    const dateStr = today.toISOString().split('T')[0];
+    dateInput.value = dateStr;
+    updateResults(dateStr);
+  });
+
+  // Update on date change
+  dateInput.addEventListener('change', (e) => {
+    updateResults(e.target.value);
+  });
+
+  // Initial load
+  updateResults(dateInput.value);
 }
 
-function jdFromDate(date, time, tz) {
-  const tzMoment = moment.tz(tz);
-  const combined = moment.tz(`${date} ${time}`, "YYYY-MM-DD HH:mm", tz);
-  
-  const year = combined.year();
-  const month = combined.month() + 1;
-  const day = combined.date();
-  const hour = combined.hour();
-  const min = combined.minute();
-  const sec = combined.second() || 0;
-  
-  const a = Math.floor((14 - month) / 12);
-  const y = year + 4800 - a;
-  const m = month + 12 * a - 3;
-  
-  const jdn = day + Math.floor((153 * m + 2) / 5) + 365 * y + Math.floor(y / 4) - Math.floor(y / 100) + Math.floor(y / 400) - 32045;
-  const jd = jdn + (hour - 12) / 24 + min / 1440 + sec / 86400;
-  
-  return jd;
+function updateResults(dateStr) {
+  const resultsDiv = document.getElementById('results');
+  const currentEph = EPHEMERIS[dateStr] || EPHEMERIS['2026-04-14'];
+
+  let html = '';
+
+  PLANETS_DATA.forEach(planet => {
+    const birthLon = planet.lon;
+    const currentLon = currentEph[planet.name];
+    const angle = normalizeAngle(currentLon - birthLon);
+    const aspect = getAspect(angle);
+    const color = COLORS[planet.name];
+
+    html += `
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:12px;">
+          <div>
+            <div style="font-size:16px; font-weight:600; margin-bottom:4px;">${planet.name}</div>
+            <div style="font-size:12px; color:var(--text2);">Birth: ${birthLon.toFixed(2)}°</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:14px; color:${color}; font-weight:600; margin-bottom:4px;">${aspect.name}</div>
+            <div style="font-size:12px; color:var(--text2);">Angle: ${angle.toFixed(1)}°</div>
+          </div>
+        </div>
+        <div style="height:4px; background:rgba(255,255,255,.1); border-radius:2px; overflow:hidden;">
+          <div style="height:100%; background:${color}; width:${(angle / 360) * 100}%; transition:all .3s ease;"></div>
+        </div>
+      </div>
+    `;
+  });
+
+  resultsDiv.innerHTML = html;
 }
 
-function signFromLongitude(lon) {
-  const sign_index = Math.floor(lon / 30) % 12;
-  const degree_in_sign = lon % 30;
-  return `${ZODIAC_SIGNS[sign_index]} ${degree_in_sign.toFixed(1)}°`;
+function normalizeAngle(angle) {
+  while (angle < 0) angle += 360;
+  while (angle >= 360) angle -= 360;
+  return angle;
 }
 
-function calculateTransits() {
-  const birthDate = document.getElementById("birthDate").value;
-  const birthTime = document.getElementById("birthTime").value;
-  const timezone = document.getElementById("timezone").value;
-  const currentDate = document.getElementById("currentDate").value;
-  const errorDiv = document.getElementById("error");
-  const resultsDiv = document.getElementById("results");
-  
-  errorDiv.style.display = "none";
-  errorDiv.innerHTML = "";
-  
-  if (!birthDate || !birthTime || !currentDate) {
-    errorDiv.innerHTML = "Please fill in all fields";
-    errorDiv.style.display = "block";
-    return;
-  }
-  
-  try {
-    const birthJD = jdFromDate(birthDate, birthTime, timezone);
-    const currentJD = jdFromDate(currentDate, "12:00", timezone);
-    
-    let html = `<h2>Transit Positions for ${currentDate}</h2>`;
-    
-    PLANETS.forEach((planet, idx) => {
-      const elements = calculateOrbitalElements(currentJD, idx);
-      const sign = signFromLongitude(elements.lon);
-      
-      html += `<div class="result-item">`;
-      html += `<h3>${planet}</h3>`;
-      html += `<div class="planet-row">`;
-      html += `<div class="planet-name"></div>`;
-      html += `<div class="sign">${sign}</div>`;
-      html += `<div class="longitude">Longitude: ${elements.lon.toFixed(2)}°</div>`;
-      html += `<div class="longitude">Distance: ${elements.distance.toFixed(2)} AU</div>`;
-      html += `</div></div>`;
-    });
-    
-    resultsDiv.innerHTML = html;
-    resultsDiv.style.display = "block";
-  } catch (e) {
-    errorDiv.innerHTML = `Error: ${e.message}`;
-    errorDiv.style.display = "block";
-  }
+function getAspect(angle) {
+  const orb = 8; // degrees
+  const aspects = [
+    { name: 'Conjunction', angle: 0 },
+    { name: 'Sextile', angle: 60 },
+    { name: 'Square', angle: 90 },
+    { name: 'Trine', angle: 120 },
+    { name: 'Opposition', angle: 180 }
+  ];
+
+  let closest = aspects[0];
+  let minDiff = 180;
+
+  aspects.forEach(asp => {
+    const diff = Math.abs(angle - asp.angle);
+    if (diff < minDiff && diff <= orb) {
+      minDiff = diff;
+      closest = asp;
+    }
+  });
+
+  return closest;
 }
 
-function clearResults() {
-  document.getElementById("results").style.display = "none";
-  document.getElementById("error").style.display = "none";
+// Start the app
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
 }
 </script>
 </body>

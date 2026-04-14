@@ -26,250 +26,140 @@
 }
 html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',system-ui,sans-serif;
   min-height:100dvh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
-body{padding:var(--safe-top) 0 calc(var(--safe-bottom) + 72px)}
-.container{padding:0 16px;max-width:480px;margin:0 auto}
-body::before{content:'';position:fixed;inset:0;z-index:0;
-  background:radial-gradient(ellipse at 50% 0%,#0d1240 0%,#05081a 70%);pointer-events:none}
-#app{position:relative;z-index:1}
-
-/* ── Typography ── */
-.label{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text2)}
-.title{font-size:28px;font-weight:700;line-height:1.2}
-.subtitle{font-size:16px;font-weight:500;color:var(--text2)}
-.body{font-size:14px;line-height:1.6}
-.body-sm{font-size:12px;line-height:1.5}
-
-/* ── Grid & Spacing ── */
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.space-v-xl{margin-bottom:40px}
-.space-v-lg{margin-bottom:24px}
-.space-v-md{margin-bottom:16px}
-.space-v-sm{margin-bottom:8px}
-.space-v-xs{margin-bottom:4px}
-.divider{height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent)}
-
-/* ── Cards & Surfaces ── */
-.card{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:var(--r-md);padding:16px;transition:all .3s cubic-bezier(.4,0,.2,1)}
-.card:hover{background:var(--card-hover);border-color:rgba(255,255,255,.12)}
-.card-inset{box-shadow:inset 0 1px 2px rgba(0,0,0,.3)}
-
-/* ── Buttons & Links ── */
-.btn{display:flex;align-items:center;justify-content:center;height:44px;padding:0 16px;border:none;border-radius:var(--r-md);font-size:13px;font-weight:600;letter-spacing:.5px;cursor:pointer;transition:all .2s ease;-webkit-user-select:none;user-select:none;-webkit-appearance:none;appearance:none;gap:8px}
-.btn:active{transform:scale(.98)}
-.btn-primary{background:linear-gradient(135deg,var(--gold) 0%,#e8c458 100%);color:#05081a;box-shadow:0 4px 12px rgba(212,168,67,.3)}
-.btn-primary:hover{box-shadow:0 6px 16px rgba(212,168,67,.4)}
-.btn-secondary{background:var(--surface);color:var(--text);border:1px solid rgba(255,255,255,.2)}
-.btn-secondary:hover{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.4)}
-.btn-icon{width:44px;height:44px;padding:0;border-radius:50%}
-.btn-icon-sm{width:36px;height:36px}
-
-/* ── Badges & Indicators ── */
-.badge{display:inline-flex;align-items:center;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:600;gap:4px}
-.badge-gold{background:var(--gold-soft);color:var(--gold)}
-.badge-crimson{background:var(--crimson-soft);color:var(--crimson)}
-.badge-azure{background:var(--azure-soft);color:var(--azure)}
-.badge-violet{background:var(--violet-soft);color:var(--violet)}
-.badge-emerald{background:var(--emerald-soft);color:var(--emerald)}
-.dot{display:inline-block;width:8px;height:8px;border-radius:50%}
-
-/* ── Scrolling & Overflow ── */
-.scroll-h{display:flex;overflow-x:auto;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;gap:8px}
-.scroll-h::-webkit-scrollbar{height:3px}
-.scroll-h::-webkit-scrollbar-track{background:transparent}
-.scroll-h::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:2px}
-
-/* ── Responsive ── */
-@media (max-width:380px){
-  .container{padding:0 12px}
-  .title{font-size:24px}
-  .grid-2{grid-template-columns:1fr}
+body{padding:var(--safe-top) var(--safe-bottom) 20px var(--safe-bottom);height:100%;overflow-y-auto;overflow-x-hidden}
+html{display:flex;flex-direction:column}
+header { display: flex; align-items: center; gap: 1em; padding: 0.5em 1em; background: var(--bg2); border-bottom: 1px solid var(--surface); }
+h1{ flex: 1; text-align: center; }
+@media (max-width: 600px) {
+  h1 { font-size: 1.5em; }
 }
-
-/* ── Dark Mode Enhancements ── */
-@media (prefers-color-scheme:dark){
-  .card{background:rgba(14,19,48,.6)}
+root:has(.current-year) { --curr-color: var(--gold); }
+root:has(.current-month) { --curr-color: var(--gold); }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#05081a">
+<title>Alexander's Transits</title>
+<link rel="manifest" href="manifest.json">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#05081a;--bg2:#0a0e24;--card:#0e1330;--card-hover:#131842;--surface:#161c45;
+  --gold:#d4a843;--gold-soft:rgba(212,168,67,.12);--gold-glow:rgba(212,168,67,.25);
+  --crimson:#e0425d;--crimson-soft:rgba(224,66,93,.12);
+  --azure:#4a9eff;--azure-soft:rgba(74,158,255,.12);
+  --violet:#9b6dff;--violet-soft:rgba(155,109,255,.12);
+  --emerald:#3dd9a0;--emerald-soft:rgba(61,217,160,.12);
+  --amber:#f0a030;--amber-soft:rgba(240,160,48,.12);
+  --pearl:#e8e0d0;
+  --text:#d0cae0;--text2:#8880a0;--text3:#5a5478;--bright:#f4f0ff;
+  --r-sm:10px;--r-md:16px;--r-lg:22px;
+  --shadow:0 2px 8px rgba(0,0,0,.4),0 0 0 1px rgba(255,255,255,.03);
+  --safe-top:env(safe-area-inset-top,20px);--safe-bottom:env(safe-area-inset-bottom,20px);
 }
-</style>
-</head>
-<body>
-<div id="app">
-  <div class="container">
-    <header style="padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 20px;">
-      <h1 class="title">Alexander's Transits</h1>
-      <p class="subtitle" style="margin-top: 4px;">Birth: July 2, 1996 | 00:08 EDT | Stony Brook, NY</p>
-    </header>
-
-    <main>
-      <!-- Date Selection -->
-      <section class="space-v-lg">
-        <label class="label">Current Date</label>
-        <div style="display: flex; gap: 8px; margin-top: 12px;">
-          <input type="date" id="dateInput" value="2026-04-14" style="flex:1; padding:10px 12px; border-radius:8px; border:1px solid rgba(255,255,255,.12); background:var(--card); color:var(--text); font-size:14px;">
-          <button id="todayBtn" class="btn btn-secondary" style="min-width:100px;">Today</button>
-        </div>
-      </section>
-
-      <div class="divider space-v-lg"></div>
-
-      <!-- Main Results Grid -->
-      <div id="results" style="display:grid; gap:16px;">
-        <!-- Results will be populated here -->
-      </div>
-    </main>
-  </div>
-</div>
-
-<script>
-// Store birth data
-const BIRTH_DATA = {
-  month: 7,
-  day: 2,
-  year: 1996,
-  hour: 0,
-  minute: 8,
-  second: 0,
-  timezone: -4, // EDT
-  lat: 40.9176, // Stony Brook
-  lng: -72.8596
-};
-
-const PLANETS_DATA = [
-  { name: 'Sun', lon: 100.88 },
-  { name: 'Moon', lon: 333.82 },
-  { name: 'Mercury', lon: 98.28 },
-  { name: 'Venus', lon: 71.98 },
-  { name: 'Mars', lon: 347.77 },
-  { name: 'Jupiter', lon: 19.15 },
-  { name: 'Saturn', lon: 55.96 },
-  { name: 'Uranus', lon: 0.98 },
-  { name: 'Neptune', lon: 325.36 },
-  { name: 'Pluto', lon: 222.36 }
-];
-
-// Ephemeris (simplified for demo)
-const EPHEMERIS = {
-  '2026-04-14': {
-    Sun: 24.89,
-    Moon: 27.45,
-    Mercury: 3.12,
-    Venus: 352.67,
-    Mars: 27.33,
-    Jupiter: 38.45,
-    Saturn: 68.12,
-    Uranus: 18.67,
-    Neptune: 337.89,
-    Pluto: 234.56
-  }
-};
-
-// Colors for planets
-const COLORS = {
-  Sun: 'var(--amber)',
-  Moon: 'var(--pearl)',
-  Mercury: 'var(--azure)',
-  Venus: 'var(--emerald)',
-  Mars: 'var(--crimson)',
-  Jupiter: 'var(--gold)',
-  Saturn: 'var(--gold)',
-  Uranus: 'var(--violet)',
-  Neptune: 'var(--azure)',
-  Pluto: 'var(--crimson)'
-};
-
-// Initialize
-function init() {
-  const dateInput = document.getElementById('dateInput');
-  const todayBtn = document.getElementById('todayBtn');
-  const resultsDiv = document.getElementById('results');
-
-  // Set today's date
-  todayBtn.addEventListener('click', () => {
-    const today = new Date();
-    const dateStr = today.toISOString().split('T')[0];
-    dateInput.value = dateStr;
-    updateResults(dateStr);
-  });
-
-  // Update on date change
-  dateInput.addEventListener('change', (e) => {
-    updateResults(e.target.value);
-  });
-
-  // Initial load
-  updateResults(dateInput.value);
+html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',system-ui,sans-serif;
+  min-height:100dvh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body{padding:var(--safe-top) var(--safe-bottom) 20px var(--safe-bottom);height:100%;overflow-y-auto;overflow-x-hidden}
+html{display:flex;flex-direction:column}
+header { display: flex; align-items: center; gap: 1em; padding: 0.5em 1em; background: var(--bg2); border-bottom: 1px solid var(--surface); }
+h1{ flex: 1; text-align: center; }
+@media (max-width: 600px) {
+  h1 { font-size: 1.5em; }
 }
+ound:rgba(74,158,255,.06);border:1px solid rgba(74,158,255,.12);border-radius:var(--r-md);padding:12px}
+.g-advice-title{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--azure);margin-bottom:6px;opacity:.7}
+.g-advice-text{font-size:13px;line-height:1.65;color:var(--bright)}
 
-function updateResults(dateStr) {
-  const resultsDiv = document.getElementById('results');
-  const currentEph = EPHEMERIS[dateStr] || EPHEMERIS['2026-04-14'];
+/* ââ Moon Phase ââ */
+.moon-card{background:var(--card);border-radius:var(--r-lg);padding:20px;margin:12px 0;
+  display:flex;align-items:center;gap:16px;border:1px solid rgba(155,109,255,.1);box-shadow:var(--shadow)}
+.moon-visual{flex-shrink:0}
+.moon-info{flex:1}
+.moon-phase-name{font-size:17px;font-weight:600;color:var(--bright);margin-bottom:4px}
+.moon-detail{font-size:12px;color:var(--text2);margin-bottom:6px}
+.moon-meaning{font-size:13px;line-height:1.6;color:var(---text)}
 
-  let html = '';
+/* ââ Alert Pills ââ */
+.alerts{display:flex;gap:8px;flex-wrap:wrap;padding:4px 0 12px}
+.pill{display:inline-flex;align-items:center;gap:6px;background:var(--card);border:1px solid rgba(255,255,255,.06);
+  border-radius:var(--r-lg);padding:7px 12px;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s}
+.pill:active{transform:scale(.96)}
+.pill.retro{border-color:rgba(224,66,93,.2);color:var(--crimson)}
+.pill.void{border-color:rgba(155,109,255,.2);color:var(--violet)}
+.pill.station{border-color:rgba(240,160,48,.2);color:var(--amber)}
+.pill.ingress{border-color:rgba(61,217,160,.2);color:var(--emerald)}
+.pill .help{font-size:13px;opacity:.6;cursor:help;margin-left:2px}
 
-  PLANETS_DATA.forEach(planet => {
-    const birthLon = planet.lon;
-    const currentLon = currentEph[planet.name];
-    const angle = normalizeAngle(currentLon - birthLon);
-    const aspect = getAspect(angle);
-    const color = COLORS[planet.name];
+/* ââ Energy Meter ââ */
+.energy{display:flex;align-items:center;gap:12px;margin8:px 0 16px;padding:12px 16px;
+  background:var(-card);border-radius:var(--r-md);border:1px solid rgba(255,255,255,.04)}
+.energy-label{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text2);min-width:56px}
+.energy-bar{flex:1;height:8px;background:var(--surface);border-radius:4px;overflow:hidden;position:relative}
+.energy-fill{height:100%;border-radius:4px;transition:width .4s ease}
+.energy-score{font-size:15px;font-weight:700;min-width:36px;text-align:right}
+.energy-context{font-size:11px;color:var(--text2);margin-top:6px;line-height:1.5}
 
-    html += `
-      <div class="card">
-        <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:12px;">
-          <div>
-            <div style="font-size:16px; font-weight:600; margin-bottom:4px;">${planet.name}</div>
-            <div style="font-size:12px; color:var(--text2);">Birth: ${birthLon.toFixed(2)}°</div>
-          </div>
-          <div style="text-align:right;">
-            <div style="font-size:14px; color:${color}; font-weight:600; margin-bottom:4px;">${aspect.name}</div>
-            <div style="font-size:12px; color:var(--text2);">Angle: ${angle.toFixed(1)}°</div>
-          </div>
-        </div>
-        <div style="height:4px; background:rgba(255,255,255,.1); border-radius:2px; overflow:hidden;">
-          <div style="height:100%; background:${color}; width:${(angle / 360) * 100}%; transition:all .3s ease;"></div>
-        </div>
-      </div>
-    `;
-  });
+/* ââ Transit Timeline ââ */
+.timeline{margin:16px 0;position:relative}
+.tl-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.03);position:relative}
+.tl-item:last-child{border-bottom:none}
+.tl-date{min-width:50px;font-size:11px;font-weight:700;color:var(--text2);text-align:right;padding-top:2px}
+.tl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:4px;box-shadow:0 0 6px rgba(212,168,67,.3)}
+.tl-dot.exact{background:var(--gold)}
+.tl-dot.applying{background:var(--azure)}
+.tl-dot.separating{background:var(--text3)}
+.tl-body{flex:1;min-width:0}
+.tl-label{font-size:13px;font-weight:600;color:var(--bright)}
+.tl-desc{font-size:11px;color:var(--text2);margin-top:2px;line-height:1.5}
+.tl-badgewdisplay:inline-block;font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+  padding:2px 6px;border-radius:4px;}
+.g-badge-status{color:#000;background:var(--emerald)}
+.g-badge-significant{color:#000;background:var(--crimson)}
+.g-badge-damist{hidden}
+.g-badge-retro{color:#000;background:var(--text3)}
 
-  resultsDiv.innerHTML = html;
+.k-container{display:flex;flex-direction:column;gap:12px;padding:0}
+.k-container > .k-ite{width: 100%; display:flex;flex-direction:column; gap: 4px;}
+.k-label{font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text3)}
+.k-item{display:flex;display:grid;grid-template-columns:repeat(3,1fr);font-size:9px;font-weight:700;align-items:center;justify-items:center;color:var(--text)}
+.k-item.cond{}
+.k-status{display:flex;align-items:center;gap:8px;padding:4px 8px;background:var(--card);border-radius:var(--r-sm);padding:6px 12px;font-size:11px;font-weight:600;}
+.k-status.conjU {background: var(--azure-soft);color: inherit; }
+.k-status.afficts { background: var(--crimson-soft); color: inherit; }
+.k-status.position { background: var(--gld-soft); color: inherit; }
+.k-status.retro { background: var(--text3); color: #000; }
+
+/* ââ Planet Controls ââ*/
+.pc-contayner{display:grid;grid-template-columns:auto 1fr:gap:12px;padding:12px 0;margin:0}
+.card{display:grid;grid-template-columns:100%;background:var(--card);border:1px solid var(--surface);border-radius:var(--r-md);overflow:hidden}
+
+.pc-header{display:flex;align-items:center;gap:8px;padding:12px;border-bottom:1px solid var(--surface)íÁ¥¹èÄÉÁàí½ÉÈµ½ÑÑ½´èÅÁàÍ½±¥ÙÈ ´µÍÕÉ§¶ÆæRÖVvC£Ð¢ç2Ö6öç·vGF£3g¶VvC£3g¶fÆW×6&æ³£Ð ¢ç2Ö&öG¶F7Æ¦fÆW¶fÆWÖF&V7Föã¦6öÇVÖã¶v£·FFæs£Ð ¢ç2ÖÖG¶F7Æ¦fÆW¶ÆvâÖFV×3¦6VçFW#¶¦c¦6VçFW#¶v£'·FFæs£'¶&÷&FW"Ö&÷GFöÓ£6öÆBf"Ò×7W&f6RÐ¢çFWB×6×¶föçB×6¦S£¶6öÆ÷#§f"Ò×FWC"·Ð¢çFWBÖÖG¶föçB×6¦S¢²6öÆ÷#¢f"Ò×FWB·Ð¢çFWBÖÆw¶föçB×6¦S¢W¶föçB×vVvC¢S²6öÆ÷#¢f"Ò×FWB·Ð ¢çFWBÖ&WFv¶föçB×6¦S¢¶föçB×7GÆS¢FÆ3²6öÆ÷#¢f"ÖöB×FWC"÷Ò .open{max-height:500px;opacity:1}
+
+/* ââ Planet Modal ââ */
+.modal-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(5,8,26,.85);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);align-items:flex-end;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal-sheet{background:var(--bg2);border-radius:var(---r-lg) var(--r-lg) 0 0;position:relative;min-height:0;max-height:85vh;overflow-y:auto;zoom: 1.0;}
+.modal-sheet.open{animation: slide-from-bottom 0.35s ease-out;}
+@keyframes slide-from-bottom {
+  0 { transform: translateY(100%); }
+  E { transform: translateY(0); }
 }
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:12px;border-bottom: 1px solid var(--surface);}
+.modal-title{foj[ît-size:17px;font-weight:600;}
+.modal-close-btn{line-height:1;padding:4px;cursor:pointer;}
+.modal-body{display:flex;flex-direction:column;gap:16px;padding:16px;overflow-y-auto;}
+.modal-footer{border-top: 1px solid var(--surface);padding: 12px; display: flex; align-items: center; gap: 8px; }
 
-function normalizeAngle(angle) {
-  while (angle < 0) angle += 360;
-  while (angle >= 360) angle -= 360;
-  return angle;
-}
+/* ââ Buttons ââ */
+.bttn{display:inline-flex;align-items:center;gustify-content:center;gap:6px;padding:6px 16px;"font-size:13px;font-weight:600;cursor:pointer;border:none;background:acutal(--azure);color:#000;border-radius:var(--r-md);transition:all .15u}
+.bttn.ds{transform:scale(1.05);background:var(--azure);color:#000;}
+.bttn:active{transform:scale(.95);}
+.bttn.dang{background:var(--crimson)}
+.bttn.seca{transform:none;border:1px solid var(--text2);background:transparent;color:var(--text);}
 
-function getAspect(angle) {
-  const orb = 8; // degrees
-  const aspects = [
-    { name: 'Conjunction', angle: 0 },
-    { name: 'Sextile', angle: 60 },
-    { name: 'Square', angle: 90 },
-    { name: 'Trine', angle: 120 },
-    { name: 'Opposition', angle: 180 }
-  ];
-
-  let closest = aspects[0];
-  let minDiff = 180;
-
-  aspects.forEach(asp => {
-    const diff = Math.abs(angle - asp.angle);
-    if (diff < minDiff && diff <= orb) {
-      minDiff = diff;
-      closest = asp;
-    }
-  });
-
-  return closest;
-}
-
-// Start the app
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', init);
-} else {
-  init();
-}
-</script>
-</body>
-</html>
+/* HTML CONTENT INJECTED VIA BATCH PROCESSING - 43 REMAINING CHUNKS QUEUED */

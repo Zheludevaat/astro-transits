@@ -1129,13 +1129,19 @@ function renderChartWheel(cur,transits,jd,size){
     svg+=`<text x="${hPos.x}" y="${hPos.y}" text-anchor="middle" dominant-baseline="central" fill="rgba(212,168,67,.15)" font-size="8">${i+1}</text>`;
   }
 
-  // ASC/MC/DSC/IC labels with arrow indicators
-  const ascA=toXY(NATAL.Ascendant,rOuter+3),ascB=toXY(NATAL.Ascendant,rTransit+2);
-  svg+=`<line x1="${ascA.x}" y1="${ascA.y}" x2="${ascB.x}" y2="${ascB.y}" stroke="rgba(212,168,67,.3)" stroke-width="1"/>`;
-  svg+=`<text x="${ascB.x+(ascB.x<cx?-12:12)}" y="${ascB.y}" text-anchor="${ascB.x<cx?'end':'start'}" dominant-baseline="central" fill="var(--gold)" font-size="8" font-weight="700" opacity=".8">ASC</text>`;
-  const mcA=toXY(NATAL.MC,rOuter+3),mcB=toXY(NATAL.MC,rTransit+2);
-  svg+=`<line x1="${mcA.x}" y1="${mcA.y}" x2="${mcB.x}" y2="${mcB.y}" stroke="rgba(212,168,67,.3)" stroke-width="1"/>`;
-  svg+=`<text x="${mcB.x}" y="${mcB.y+(mcB.y<cy?-8:8)}" text-anchor="middle" dominant-baseline="${mcB.y<cy?'auto':'hanging'}" fill="var(--gold)" font-size="8" font-weight="700" opacity=".8">MC</text>`;
+  // ASC/MC labels — placed just outside zodiac band, clamped inside viewBox
+  const ascTick1=toXY(NATAL.Ascendant,rSign),ascTick2=toXY(NATAL.Ascendant,rOuter);
+  svg+=`<line x1="${ascTick1.x}" y1="${ascTick1.y}" x2="${ascTick2.x}" y2="${ascTick2.y}" stroke="rgba(212,168,67,.35)" stroke-width="1.5"/>`;
+  const ascLbl=toXY(NATAL.Ascendant,rOuter+6);
+  const ascLx=Math.max(18,Math.min(size-18,ascLbl.x+(ascLbl.x<cx?-14:14)));
+  const ascLy=Math.max(10,Math.min(size-10,ascLbl.y));
+  svg+=`<text x="${ascLx}" y="${ascLy}" text-anchor="${ascLbl.x<cx?'end':'start'}" dominant-baseline="central" fill="var(--gold)" font-size="8" font-weight="700" opacity=".85">ASC</text>`;
+  const mcTick1=toXY(NATAL.MC,rSign),mcTick2=toXY(NATAL.MC,rOuter);
+  svg+=`<line x1="${mcTick1.x}" y1="${mcTick1.y}" x2="${mcTick2.x}" y2="${mcTick2.y}" stroke="rgba(212,168,67,.35)" stroke-width="1.5"/>`;
+  const mcLbl=toXY(NATAL.MC,rOuter+6);
+  const mcLx=Math.max(14,Math.min(size-14,mcLbl.x));
+  const mcLy=Math.max(10,Math.min(size-10,mcLbl.y+(mcLbl.y<cy?-8:8)));
+  svg+=`<text x="${mcLx}" y="${mcLy}" text-anchor="middle" dominant-baseline="${mcLbl.y<cy?'auto':'hanging'}" fill="var(--gold)" font-size="8" font-weight="700" opacity=".85">MC</text>`;
 
   // Improved spread — more passes, larger gap, radial overflow for tight clusters
   function spreadPos(items,minGap){

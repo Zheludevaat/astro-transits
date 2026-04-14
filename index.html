@@ -26,51 +26,66 @@
 }
 html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',system-ui,sans-serif;
   min-height:100dvh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
-body{padding:var(--safe-top) var(--safe-bottom) 20px var(--safe-bottom);height:100%;overflow-y-auto;overflow-x-hidden}
-html{display:flex;flex-direction:column}
-header { display: flex; align-items: center; gap: 1em; padding: 0.5em 1em; background: var(--bg2); border-bottom: 1px solid var(--surface); }
-h1{ flex: 1; text-align: center; }
-@media (max-width: 600px) {
-  h1 { font-size: 1.5em; }
-}
-root:has(.current-year) { --curr-color: var(--gold); }
-root:has(.current-month) { --curr-color: var(--gold); }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#05081a">
-<title>Alexander's Transits</title>
-<link rel="manifest" href="manifest.json">
-<style>
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-:root{
-  --bg:#05081a;--bg2:#0a0e24;--card:#0e1330;--card-hover:#131842;--surface:#161c45;
-  --gold:#d4a843;--gold-soft:rgba(212,168,67,.12);--gold-glow:rgba(212,168,67,.25);
-  --crimson:#e0425d;--crimson-soft:rgba(224,66,93,.12);
-  --azure:#4a9eff;--azure-soft:rgba(74,158,255,.12);
-  --violet:#9b6dff;--violet-soft:rgba(155,109,255,.12);
-  --emerald:#3dd9a0;--emerald-soft:rgba(61,217,160,.12);
-  --amber:#f0a030;--amber-soft:rgba(240,160,48,.12);
-  --pearl:#e8e0d0;
-  --text:#d0cae0;--text2:#8880a0;--text3:#5a5478;--bright:#f4f0ff;
-  --r-sm:10px;--r-md:16px;--r-lg:22px;
-  --shadow:0 2px 8px rgba(0,0,0,.4),0 0 0 1px rgba(255,255,255,.03);
-  --safe-top:env(safe-area-inset-top,20px);--safe-bottom:env(safe-area-inset-bottom,20px);
-}
-html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',system-ui,sans-serif;
-  min-height:100dvh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
-body{padding:var(--safe-top) var(--safe-bottom) 20px var(--safe-bottom);height:100%;overflow-y-auto;overflow-x-hidden}
-html{display:flex;flex-direction:column}
-header { display: flex; align-items: center; gap: 1em; padding: 0.5em 1em; background: var(--bg2); border-bottom: 1px solid var(--surface); }
-h1{ flex: 1; text-align: center; }
-@media (max-width: 600px) {
-  h1 { font-size: 1.5em; }
-}
-ound:rgba(74,158,255,.06);border:1px solid rgba(74,158,255,.12);border-radius:var(--r-md);padding:12px}
+body{padding:var(--safe-top) 0 calc(var(--safe-bottom) + 72px)}
+.container{padding:0 16px;max-width:480px;margin:0 auto}
+body::before{content:'';position:fixed;inset:0;z-index:0;
+  background:radial-gradient(ellipse at 50% 0%,#0d1240 0%,#05081a 70%);pointer-events:none}
+#app{position:relative;z-index:1}
+
+/* ââ Typography ââ */
+.label{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text2)}
+.section-title{font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text2);
+  margin:24px 0 12px;display:flex;align-items:center;gap:8px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--surface)}
+
+/* ââ Cards ââ */
+.card{background:var(--card);border:1px solid rgba(255,255,255,.04);border-radius:var(--r-md);
+  padding:16px;margin-bottom:10px;box-shadow:var(--shadow);transition:background .15s}
+.card:active{background:var(--card-hover)}
+
+/* ââ Header ââ */
+.header{text-align:center;padding:16px 0 8px}
+.header-sub{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:500;margin-bottom:6px}
+.header-date{font-size:28px;font-weight:700;color:var(--bright);margin-bottom:2px}
+.header-day{font-size:13px;color:var(--text2)}
+.date-nav{display:flex;align-items:center;justify-content:center;gap:8px;margin:12px 0 0}
+.date-nav button{background:none;border:none;color:var(--text2);font-size:20px;padding:8px 14px;cursor:pointer;
+  border-radius:var(--r-md);transition:all .15s}
+.date-nav button:active{background:var(--gold-soft);color:var(--gold)}
+.today-btn{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:6px 14px;
+  border:1px solid rgba(212,168,67,.3);border-radius:var(--r-lg);color:var(--gold);display:none;background:var(--gold-soft)}
+.today-btn.show{display:inline-block}
+
+/* ââ Daily Guidance ââ */
+.guidance{background:linear-gradient(135deg,rgba(212,168,67,.08) 0%,rgba(155,109,255,.06) 100%);
+  border:1px solid rgba(212,168,67,.15);border-radius:var(--r-lg);padding:20px;margin:16px 0;position:relative;overflow:hidden}
+.guidance::before{content:'';position:absolute;top:-30px;right:-30px;width:100px;height:100px;
+  background:radial-gradient(circle,rgba(212,168,67,.08),transparent 70%);pointer-events:none}
+.guidance-title{font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+.g-theme{font-size:18px;font-weight:700;color:var(--bright);margin-bottom:8px;letter-spacing:.3px}
+.g-overview{font-size:13.5px;line-height:1.7;color:var(--text);margin-bottom:16px}
+.g-section-title{font-size:11px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--violet);margin:14px 0 8px;opacity:.7}
+.g-transit{background:rgba(0,0,0,.2);border-radius:var(--r-md);padding:12px;margin-bottom:8px;border-left:3px solid rgba(155,109,255,.3)}
+.g-transit-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.g-planets{display:flex;align-items:center;gap:2px;flex-shrink:0}
+.g-transit-label{font-size:13px;font-weight:600;color:var(--bright);flex:1}
+.g-tag{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600;letter-spacing:.5px}
+.g-tag.exact{background:rgba(224,66,93,.2);color:var(--crimson)}
+.g-tag.applying{background:rgba(74,158,255,.15);color:var(--azure)}
+.g-tag.separating{background:rgba(255,255,255,.08);color:var(--text2)}
+.g-transit-body{font-size:12.5px;line-height:1.65;color:var(--text)}
+.g-transit-house{font-size:11px;color:var(--text2);margin-top:4px;opacity:.7}
+.g-moon-row{display:flex;align-items:flex-start;gap:12px;background:rgba(0,0,0,.15);border-radius:var(--r-md);padding:12px}
+.g-moon-icon{flex-shrink:0}
+.g-moon-label{font-size:13px;font-weight:600;color:var(--bright);margin-bottom:4px;display:flex;align-items:center;gap:4px}
+.g-moon-flavor{font-size:12px;line-height:1.6;color:var(--text)}
+.g-focus-grid{display:flex;gap:8px;flex-wrap:wrap}
+.g-focus-card{background:rgba(155,109,255,.08);border:1px solid rgba(155,109,255,.12);border-radius:var(--r-md);padding:8px 14px;flex:1;min-width:80px;text-align:center}
+.g-focus-num{font-size:11px;font-weight:700;color:var(--violet);opacity:.6}
+.g-focus-name{font-size:12px;color:var(--text);margin-top:2px}
+.g-alerts{margin-top:12px;display:flex;flex-direction:column;gap:6px}
+.g-alert{font-size:12px;color:var(--amber);background:rgba(212,168,67,.08);border-radius:var(--r-sm);padding:8px 12px;line-height:1.5}
+.g-advice{margin-top:14px;background:rgba(74,158,255,.06);border:1px solid rgba(74,158,255,.12);border-radius:var(--r-md);padding:12px}
 .g-advice-title{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--azure);margin-bottom:6px;opacity:.7}
 .g-advice-text{font-size:13px;line-height:1.65;color:var(--bright)}
 
@@ -81,7 +96,7 @@ ound:rgba(74,158,255,.06);border:1px solid rgba(74,158,255,.12);border-radius:va
 .moon-info{flex:1}
 .moon-phase-name{font-size:17px;font-weight:600;color:var(--bright);margin-bottom:4px}
 .moon-detail{font-size:12px;color:var(--text2);margin-bottom:6px}
-.moon-meaning{font-size:13px;line-height:1.6;color:var(---text)}
+.moon-meaning{font-size:13px;line-height:1.6;color:var(--text)}
 
 /* ââ Alert Pills ââ */
 .alerts{display:flex;gap:8px;flex-wrap:wrap;padding:4px 0 12px}
@@ -95,8 +110,8 @@ ound:rgba(74,158,255,.06);border:1px solid rgba(74,158,255,.12);border-radius:va
 .pill .help{font-size:13px;opacity:.6;cursor:help;margin-left:2px}
 
 /* ââ Energy Meter ââ */
-.energy{display:flex;align-items:center;gap:12px;margin8:px 0 16px;padding:12px 16px;
-  background:var(-card);border-radius:var(--r-md);border:1px solid rgba(255,255,255,.04)}
+.energy{display:flex;align-items:center;gap:12px;margin:8px 0 16px;padding:12px 16px;
+  background:var(--card);border-radius:var(--r-md);border:1px solid rgba(255,255,255,.04)}
 .energy-label{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text2);min-width:56px}
 .energy-bar{flex:1;height:8px;background:var(--surface);border-radius:4px;overflow:hidden;position:relative}
 .energy-fill{height:100%;border-radius:4px;transition:width .4s ease}
@@ -115,51 +130,1330 @@ ound:rgba(74,158,255,.06);border:1px solid rgba(74,158,255,.12);border-radius:va
 .tl-body{flex:1;min-width:0}
 .tl-label{font-size:13px;font-weight:600;color:var(--bright)}
 .tl-desc{font-size:11px;color:var(--text2);margin-top:2px;line-height:1.5}
-.tl-badgewdisplay:inline-block;font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
-  padding:2px 6px;border-radius:4px;}
-.g-badge-status{color:#000;background:var(--emerald)}
-.g-badge-significant{color:#000;background:var(--crimson)}
-.g-badge-damist{hidden}
-.g-badge-retro{color:#000;background:var(--text3)}
+.tl-badge{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+  padding:2px 6px;border-radius:4px;margin-left:6px;vertical-align:middle}
+.tl-badge.hard{background:var(--crimson-soft);color:var(--crimson)}
+.tl-badge.easy{background:var(--azure-soft);color:var(--azure)}
+.tl-badge.conj{background:var(--gold-soft);color:var(--gold)}
 
-.k-container{display:flex;flex-direction:column;gap:12px;padding:0}
-.k-container > .k-ite{width: 100%; display:flex;flex-direction:column; gap: 4px;}
-.k-label{font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text3)}
-.k-item{display:flex;display:grid;grid-template-columns:repeat(3,1fr);font-size:9px;font-weight:700;align-items:center;justify-items:center;color:var(--text)}
-.k-item.cond{}
-.k-status{display:flex;align-items:center;gap:8px;padding:4px 8px;background:var(--card);border-radius:var(--r-sm);padding:6px 12px;font-size:11px;font-weight:600;}
-.k-status.conjU {background: var(--azure-soft);color: inherit; }
-.k-status.afficts { background: var(--crimson-soft); color: inherit; }
-.k-status.position { background: var(--gld-soft); color: inherit; }
-.k-status.retro { background: var(--text3); color: #000; }
+/* ââ Transit Cards ââ */
+.transit{background:var(--card);border:1px solid rgba(255,255,255,.04);border-radius:var(--r-md);
+  padding:14px;margin-bottom:10px;cursor:pointer;transition:all .15s;box-shadow:var(--shadow);
+  animation:fadeUp .3s ease both;position:relative;overflow:hidden}
+.transit:active{background:var(--card-hover)}
+.transit.hard{border-left:3px solid var(--crimson)}
+.transit.easy{border-left:3px solid var(--azure)}
+.transit.conj{border-left:3px solid var(--gold)}
+.transit.minor{border-left:3px solid var(--text3)}
+.transit.exact-transit{box-shadow:0 0 16px rgba(212,168,67,.2),var(--shadow)}
 
-/* ââ Planet Controls ââ*/
-.pc-contayner{display:grid;grid-template-columns:auto 1fr:gap:12px;padding:12px 0;margin:0}
-.card{display:grid;grid-template-columns:100%;background:var(--card);border:1px solid var(--surface);border-radius:var(--r-md);overflow:hidden}
+.t-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.t-planets{display:flex;align-items:center;gap:4px}
+.t-glyph{width:24px;height:24px}
+.t-aspect-icon{width:16px;height:16px;opacity:.5}
+.t-badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:var(--r-sm);letter-spacing:.3px}
+.t-badge.hard{background:var(--crimson-soft);color:var(--crimson)}
+.t-badge.easy{background:var(--azure-soft);color:var(--azure)}
+.t-badge.conj{background:var(--gold-soft);color:var(--gold)}
+.t-badge.minor{background:rgba(255,255,255,.05);color:var(--text2)}
 
-.pc-header{display:flex;align-items:center;gap:8px;padding:12px;border-bottom:1px solid var(--surface)íÁ¥¹èÄÉÁàí½ÉÈµ½ÑÑ½´èÅÁàÍ½±¥ÙÈ ´µÍÕÉ§¶ÆæRÖVvC£Ð¢ç2Ö6öç·vGF£3g¶VvC£3g¶fÆW×6&æ³£Ð ¢ç2Ö&öG¶F7Æ¦fÆW¶fÆWÖF&V7Föã¦6öÇVÖã¶v£·FFæs£Ð ¢ç2ÖÖG¶F7Æ¦fÆW¶ÆvâÖFV×3¦6VçFW#¶¦c¦6VçFW#¶v£'·FFæs£'¶&÷&FW"Ö&÷GFöÓ£6öÆBf"Ò×7W&f6RÐ¢çFWB×6×¶föçB×6¦S£¶6öÆ÷#§f"Ò×FWC"·Ð¢çFWBÖÖG¶föçB×6¦S¢²6öÆ÷#¢f"Ò×FWB·Ð¢çFWBÖÆw¶föçB×6¦S¢W¶föçB×vVvC¢S²6öÆ÷#¢f"Ò×FWB·Ð ¢çFWBÖ&WFv¶föçB×6¦S¢¶föçB×7GÆS¢FÆ3²6öÆ÷#¢f"ÖöB×FWC"÷Ò .open{max-height:500px;opacity:1}
+.t-label{font-size:14px;font-weight:600;color:var(--bright);margin-bottom:4px}
+.t-interp{font-size:13px;line-height:1.65;color:var(--text);margin-bottom:8px}
+.t-advice{font-size:12px;color:var(--emerald);line-height:1.5;margin-bottom:8px;padding:8px 10px;
+  background:var(--emerald-soft);border-radius:var(--r-sm)}
+.t-meta{display:flex;gap:6px;flex-wrap:wrap}
+.t-tag{font-size:10px;padding:4px 8px;border-radius:var(--r-sm);background:var(--surface);color:var(--text2);
+  display:inline-flex;align-items:center;gap:4px;cursor:help;position:relative}
+.t-tag .tip{display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);
+  background:#1a1f45;border:1px solid rgba(255,255,255,.1);border-radius:var(--r-sm);padding:8px 10px;
+  font-size:11px;line-height:1.5;color:var(--text);white-space:normal;width:200px;z-index:50;
+  box-shadow:0 4px 16px rgba(0,0,0,.5);pointer-events:none}
+.t-tag:hover .tip,.t-tag.show-tip .tip{display:block}
+.t-motion{font-size:10px;font-weight:700;padding:4px 8px;border-radius:var(--r-sm);text-transform:uppercase;letter-spacing:.5px}
+.t-motion.applying{background:var(--gold-soft);color:var(--gold)}
+.t-motion.exact{background:var(--crimson-soft);color:var(--crimson)}
+.t-motion.separating{background:rgba(255,255,255,.04);color:var(--text3)}
+.t-motion.stationary{background:var(--amber-soft);color:var(--amber)}
+
+.t-expand{max-height:0;opacity:0;overflow:hidden;transition:max-height .3s ease,opacity .25s ease}
+.t-expand.open{max-height:600px;opacity:1}
+.t-expand-inner{padding:12px 0 0;border-top:1px solid var(--surface);margin-top:10px}
+.t-expand-section{font-size:12px;line-height:1.6;color:var(--text);margin-bottom:8px}
+.t-expand-section strong{color:var(--bright);font-weight:600}
+
+/* ââ Tab Bar ââ */
+.tab-bar{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:space-around;
+  background:rgba(5,8,26,.92);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);
+  border-top:1px solid rgba(212,168,67,.06);padding:6px 0 calc(var(--safe-bottom) + 4px);z-index:100}
+.tab-bar button{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 14px;color:var(--text3);
+  font-size:10px;font-weight:600;cursor:pointer;border:none;background:none;text-transform:uppercase;
+  letter-spacing:.5px;transition:color .15s;position:relative}
+.tab-bar button.active{color:var(--gold)}
+.tab-bar button.active::after{content:'';position:absolute;top:-6px;left:50%;transform:translateX(-50%);
+  width:20px;height:2px;background:var(--gold);border-radius:2px}
+.tab-bar button svg{width:20px;height:20px}
+
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+/* ââ Day transition animation ââ */
+#app{transition:opacity .15s ease,transform .15s ease}
+#app.slide-left{opacity:0;transform:translateX(-20px)}
+#app.slide-right{opacity:0;transform:translateX(20px)}
+#app.slide-in{opacity:1;transform:translateX(0)}
+
+/* ââ Chart ââ */
+.chart-wrap{position:relative;width:100%;max-width:380px;margin:0 auto;aspect-ratio:1;padding:8px 0}
+.chart-wrap.full{max-width:420px}
+.chart-svg{width:100%;height:100%;filter:drop-shadow(0 0 12px rgba(155,109,255,.1))}
+.chart-toggles{display:flex;gap:8px;justify-content:center;margin:12px 0;flex-wrap:wrap}
+.chart-toggle{background:var(--card);border:1px solid rgba(255,255,255,.06);color:var(--text2);font-size:11px;
+  padding:8px 14px;border-radius:var(--r-lg);cursor:pointer;font-weight:600;transition:all .15s}
+.chart-toggle.on{background:var(--gold-soft);border-color:rgba(212,168,67,.3);color:var(--gold)}
+
+/* ââ Natal Cards ââ */
+.natal{background:var(--card);border-radius:var(--r-md);padding:16px;margin-bottom:10px;
+  box-shadow:var(--shadow);border:1px solid rgba(212,168,67,.06);cursor:pointer;transition:all .15s}
+.natal:active{background:var(--card-hover)}
+.natal-head{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.natal-glyph{width:28px;height:28px;flex-shrink:0}
+.natal-name{font-size:16px;font-weight:600;color:var(--bright)}
+.natal-pos{font-size:12px;color:var(--text2)}
+.natal-title{font-size:13px;font-weight:600;color:var(--gold);margin-bottom:4px}
+.natal-desc{font-size:13px;line-height:1.65;color:var(--text)}
+.natal-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.natal-tag{font-size:10px;padding:3px 8px;border-radius:var(--r-sm);background:var(--surface);color:var(--text2)}
+.natal-expand{max-height:0;opacity:0;overflow:hidden;transition:max-height .3s,opacity .25s}
+.natal-expand.open{max-height:500px;opacity:1}
 
 /* ââ Planet Modal ââ */
 .modal-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(5,8,26,.85);
   -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);align-items:flex-end;justify-content:center}
 .modal-overlay.open{display:flex}
-.modal-sheet{background:var(--bg2);border-radius:var(---r-lg) var(--r-lg) 0 0;position:relative;min-height:0;max-height:85vh;overflow-y:auto;zoom: 1.0;}
-.modal-sheet.open{animation: slide-from-bottom 0.35s ease-out;}
-@keyframes slide-from-bottom {
-  0 { transform: translateY(100%); }
-  E { transform: translateY(0); }
+.modal-sheet{background:var(--bg2);border-radius:var(--r-lg) var(--r-lg) 0 0;width:100%;max-width:480px;
+  max-height:85vh;overflow-y:auto;padding:20px 16px calc(var(--safe-bottom) + 16px);
+  animation:slideUp .25s ease;border:1px solid rgba(255,255,255,.04);border-bottom:none}
+.modal-handle{width:40px;height:4px;background:var(--text3);border-radius:2px;margin:0 auto 16px}
+.modal-close{position:absolute;top:12px;right:16px;background:var(--surface);border:none;color:var(--text2);
+  width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center}
+
+/* ââ Tooltip ââ */
+.info-btn{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;
+  border-radius:50%;background:var(--surface);color:var(--text3);font-size:10px;font-weight:700;
+  cursor:help;border:none;vertical-align:middle;margin-left:4px;flex-shrink:0}
+.tooltip-popup{display:none;position:fixed;z-index:300;background:#1a1f48;border:1px solid rgba(255,255,255,.1);
+  border-radius:var(--r-md);padding:14px;max-width:280px;font-size:12px;line-height:1.6;color:var(--text);
+  box-shadow:0 8px 24px rgba(0,0,0,.6);pointer-events:auto}
+.tooltip-popup.open{display:block}
+.tooltip-popup strong{color:var(--bright);display:block;margin-bottom:4px}
+
+/* ââ Filter Bar ââ */
+.filters{display:flex;gap:6px;overflow-x:auto;padding:4px 0 12px;-webkit-overflow-scrolling:touch}
+.filters::-webkit-scrollbar{display:none}
+.filter-chip{white-space:nowrap;font-size:11px;font-weight:600;padding:6px 12px;border-radius:var(--r-lg);
+  background:var(--card);border:1px solid rgba(255,255,255,.06);color:var(--text2);cursor:pointer;transition:all .15s;flex-shrink:0}
+.filter-chip.on{background:var(--gold-soft);border-color:rgba(212,168,67,.3);color:var(--gold)}
+
+/* ââ 7-Day Forecast ââ */
+.forecast{display:flex;gap:6px;margin:12px 0;overflow-x:auto;padding:4px 0;-webkit-overflow-scrolling:touch}
+.forecast::-webkit-scrollbar{display:none}
+.forecast-day{flex-shrink:0;width:56px;display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:10px 4px;border-radius:var(--r-md);cursor:pointer;transition:all .15s;background:var(--card);border:1px solid rgba(255,255,255,.04)}
+.forecast-day:active,.forecast-day.sel{background:var(--card-hover);border-color:rgba(212,168,67,.2)}
+.forecast-day .fd-name{font-size:10px;font-weight:600;color:var(--text2)}
+.forecast-day .fd-num{font-size:14px;font-weight:700;color:var(--bright)}
+.forecast-day .fd-bar{width:6px;border-radius:3px;transition:height .3s}
+.forecast-day .fd-score{font-size:10px;font-weight:600;margin-top:2px}
+
+/* ââ Grid ââ */
+.pos-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}
+.pos-item{display:flex;align-items:center;gap:8px;padding:10px;background:var(--card);
+  border-radius:var(--r-md);box-shadow:var(--shadow);cursor:pointer;transition:all .15s}
+.pos-item:active{background:var(--card-hover)}
+
+/* ââ Animations ââ */
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes glow{0%,100%{box-shadow:0 0 8px rgba(212,168,67,.15)}50%{box-shadow:0 0 20px rgba(212,168,67,.3)}}
+
+@media(max-width:360px){.chart-wrap{max-width:300px}.chart-wrap.full{max-width:340px}}
+</style>
+</head>
+<body>
+<div id="app" class="container"></div>
+<div id="planet-modal" class="modal-overlay" onclick="if(event.target===this)closeModal()"></div>
+<div id="tooltip-el" class="tooltip-popup"></div>
+<script>
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ASTRONOMICAL ENGINE v3 â True Node, improved Chiron
+// ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+
+const DEG=Math.PI/180,RAD=180/Math.PI;
+const sin=a=>Math.sin(a*DEG),cos=a=>Math.cos(a*DEG),atan2d=(y,x)=>Math.atan2(y,x)*RAD;
+const norm=a=>((a%360)+360)%360;
+
+function julianDate(y,m,d,h=0){if(m<=2){y--;m+=12;}const A=Math.floor(y/100),B=2-A+Math.floor(A/4);
+  return Math.floor(365.25*(y+4716))+Math.floor(30.6001*(m+1))+d+h/24+B-1524.5;}
+function jdToT(jd){return(jd-2451545.0)/36525;}
+
+function sunLongitude(T){
+  const L0=norm(280.46646+36000.76983*T+.0003032*T*T);
+  const M=norm(357.52911+35999.05029*T-.0001537*T*T);
+  const C=(1.914602-.004817*T)*sin(M)+(.019993-.000101*T)*sin(2*M)+.000289*sin(3*M);
+  return norm(L0+C);
 }
-.modal-header{display:flex;align-items:center;justify-content:space-between;padding:12px;border-bottom: 1px solid var(--surface);}
-.modal-title{foj[ît-size:17px;font-weight:600;}
-.modal-close-btn{line-height:1;padding:4px;cursor:pointer;}
-.modal-body{display:flex;flex-direction:column;gap:16px;padding:16px;overflow-y-auto;}
-.modal-footer{border-top: 1px solid var(--surface);padding: 12px; display: flex; align-items: center; gap: 8px; }
 
-/* ââ Buttons ââ */
-.bttn{display:inline-flex;align-items:center;gustify-content:center;gap:6px;padding:6px 16px;"font-size:13px;font-weight:600;cursor:pointer;border:none;background:acutal(--azure);color:#000;border-radius:var(--r-md);transition:all .15u}
-.bttn.ds{transform:scale(1.05);background:var(--azure);color:#000;}
-.bttn:active{transform:scale(.95);}
-.bttn.dang{background:var(--crimson)}
-.bttn.seca{transform:none;border:1px solid var(--text2);background:transparent;color:var(--text);}
+function moonLongitude(T){
+  const Lp=norm(218.3164477+481267.88123421*T-.0015786*T*T+T*T*T/538841-T*T*T*T/65194000);
+  const D=norm(297.8501921+445267.1114034*T-.0018819*T*T+T*T*T/545868-T*T*T*T/113065000);
+  const M=norm(357.5291092+35999.0502909*T-.0001536*T*T+T*T*T/24490000);
+  const Mp=norm(134.9633964+477198.8675055*T+.0087414*T*T+T*T*T/69699-T*T*T*T/14712000);
+  const F=norm(93.2720950+483202.0175233*T-.0036539*T*T-T*T*T/3526000+T*T*T*T/863310000);
+  const A1=norm(119.75+131.849*T),A2=norm(53.09+479264.290*T);
+  const E=1-.002516*T-.0000074*T*T,E2=E*E;
+  const t=[[0,0,1,0,6288774],[2,0,-1,0,1274027],[2,0,0,0,658314],[0,0,2,0,213618],
+    [0,1,0,0,-185116],[0,0,0,2,-114332],[2,0,-2,0,58793],[2,-1,-1,0,57066],
+    [2,0,1,0,53322],[2,-1,0,0,45758],[0,1,-1,0,-40923],[1,0,0,0,-34720],
+    [0,1,1,0,-30383],[2,0,0,-2,15327],[0,0,1,2,-12528],[0,0,1,-2,10980],
+    [4,0,-1,0,10675],[0,0,3,0,10034],[4,0,-2,0,8548],[2,1,-1,0,-7888],
+    [2,1,0,0,-6766],[1,0,-1,0,-5163],[1,1,0,0,4987],[2,-1,1,0,4036],
+    [2,0,2,0,3994],[4,0,0,0,3861],[2,0,-3,0,3665],[0,1,-2,0,-2689],
+    [2,0,-1,2,-2602],[2,-1,-2,0,2390],[1,0,1,0,-2348],[2,-2,0,0,2236],
+    [0,1,2,0,-2120],[0,2,0,0,-2069],[2,-2,-1,0,2048],[2,0,1,-2,-1773],
+    [2,0,0,2,-1595],[4,-1,-1,0,1215],[0,0,2,2,-1110],[3,0,-1,0,-892],
+    [2,1,1,0,-810],[4,-1,-2,0,759],[0,2,-1,0,-713],[2,2,-1,0,-700],
+    [2,1,-2,0,691],[2,-1,0,-2,596],[4,0,1,0,549],[0,0,4,0,537],
+    [4,-1,0,0,520],[1,0,-2,0,-487],[2,1,0,-2,-399],[0,0,2,-2,-381],
+    [1,1,1,0,351],[3,0,-2,0,-340],[4,0,-3,0,330],[2,-1,2,0,327],
+    [0,2,1,0,-323],[1,1,-1,0,299],[2,0,3,0,294]];
+  let SL=0;
+  for(const[d,m,mp,f,c]of t){let v=sin(d*D+m*M+mp*Mp+f*F);
+    if(Math.abs(m)===1)v*=E;else if(Math.abs(m)===2)v*=E2;SL+=c*v;}
+  SL+=3958*sin(A1)+1962*sin(Lp-F)+318*sin(A2);
+  return norm(Lp+SL/1000000);
+}
 
-/* HTML CONTENT INJECTED VIA BATCH PROCESSING - 43 REMAINING CHUNKS QUEUED */
+// True Node (mean node + principal perturbation terms)
+function trueNodeLongitude(T){
+  const Om=norm(125.0446-1934.1363*T+.0021*T*T);
+  const D=norm(297.8501921+445267.1114034*T);
+  const M=norm(357.5291092+35999.0502909*T);
+  const Mp=norm(134.9633964+477198.8675055*T);
+  const F=norm(93.2720950+483202.0175233*T);
+  let corr=-1.4979*sin(2*(D-F)) -.1500*sin(M) -.1226*sin(2*D)
+    +.1176*sin(2*F) -.0801*sin(2*(Mp-F));
+  return norm(Om+corr);
+}
+
+const ELEMENTS={
+  Mercury:{v:[.38709927,.20563593,7.00497902,252.25032350,77.45779628,48.33076593],r:[.00000037,.00001906,-.00594749,149472.67411175,.16047689,-.12534081]},
+  Venus:{v:[.72333566,.00677672,3.39467605,181.97909950,131.60246718,76.67984255],r:[.00000390,-.00004107,-.00078890,58517.81538729,.00268329,-.27769418]},
+  Earth:{v:[1.00000261,.01671123,-.00001531,100.46457166,102.93768193,0],r:[.00000562,-.00004392,-.01294668,35999.37244981,.32327364,0]},
+  Mars:{v:[1.52371034,.09339410,1.84969142,-4.55343205,-23.94362959,49.55953891],r:[.00001847,.00007882,-.00813131,19140.30268499,.44441088,-.29257343]},
+  Jupiter:{v:[5.20288700,.04838624,1.30439695,34.39644051,14.72847983,100.47390909],r:[-.00011607,-.00013253,-.00183714,3034.74612775,.21252668,.20469106]},
+  Saturn:{v:[9.53667594,.05386179,2.48599187,49.95424423,92.59887831,113.66242448],r:[-.00125060,-.00050991,.00193609,1222.49362201,-.41897216,-.28867794]},
+  Uranus:{v:[19.18916464,.04725744,.77263783,313.23810451,170.95427630,74.01692503],r:[-.00196176,-.00004397,-.00242939,428.48202785,.40805281,.04240589]},
+  Neptune:{v:[30.06992276,.00859048,1.77004347,-55.12002969,44.96476227,131.78422574],r:[.00026291,.00005105,.00035372,218.45945325,-.32241464,-.00508664]},
+  Pluto:{v:[39.48211675,.24882730,17.14001206,238.92903833,224.06891629,110.30393684],r:[-.00031596,.00005170,.00004818,145.20780515,-.04062942,-.01183482]},
+  Chiron:{v:[13.648,0.3791,6.926,209.39,339.56,209.21],r:[-.0004,.000023,-.0039,504.90,0.72,-0.13]},
+};
+const EXTRA={
+  Jupiter:[-.00012452,.06064060,-.35635438,38.35125000],
+  Saturn:[.00025899,-.13434469,.87320147,38.35125000],
+  Uranus:[.00058331,-.97731848,.17689245,7.67025000],
+  Neptune:[-.00041348,.68346318,-.10162547,7.67025000],
+  Pluto:[-.01262724,0,0,0],
+};
+
+function heliocentricLon(planet,T){
+  const el=ELEMENTS[planet];
+  const a=el.v[0]+el.r[0]*T,e=el.v[1]+el.r[1]*T,I=el.v[2]+el.r[2]*T;
+  let L=norm(el.v[3]+el.r[3]*T);
+  const lp=el.v[4]+el.r[4]*T,node=el.v[5]+el.r[5]*T;
+  if(EXTRA[planet]){const[b,c,s,f]=EXTRA[planet];L+=f!==0?b*T*T+c*cos(f*T)+s*sin(f*T):b*T*T;L=norm(L);}
+  let M_=norm(L-lp),E_=M_;
+  for(let i=0;i<30;i++){const dE=(M_-(E_-e*RAD*sin(E_)))/(1-e*cos(E_));E_+=dE;if(Math.abs(dE)<1e-10)break;}
+  const xp=a*(cos(E_)-e),yp=a*Math.sqrt(1-e*e)*sin(E_);
+  const cN=cos(node),sN=sin(node),cI=cos(I),w=lp-node,cW=cos(w),sW=sin(w);
+  const x=(cN*cW-sN*sW*cI)*xp+(-cN*sW-sN*cW*cI)*yp;
+  const y=(sN*cW+cN*sW*cI)*xp+(-sN*sW+cN*cW*cI)*yp;
+  return{lon:norm(atan2d(y,x)),dist:Math.sqrt(x*x+y*y)};
+}
+function geocentricLon(planet,T){
+  const e=heliocentricLon('Earth',T),p=heliocentricLon(planet,T);
+  return norm(atan2d(p.dist*sin(p.lon)-e.dist*sin(e.lon),p.dist*cos(p.lon)-e.dist*cos(e.lon)));
+}
+function planetMotion(planet,jd){
+  const T1=jdToT(jd-.5),T2=jdToT(jd+.5);
+  let l1,l2;
+  if(planet==='Sun'){l1=sunLongitude(T1);l2=sunLongitude(T2);}
+  else if(planet==='Moon'){l1=moonLongitude(T1);l2=moonLongitude(T2);}
+  else if(planet==='NorthNode'){l1=trueNodeLongitude(T1);l2=trueNodeLongitude(T2);}
+  else{l1=geocentricLon(planet,T1);l2=geocentricLon(planet,T2);}
+  let d=l2-l1;if(d>180)d-=360;if(d<-180)d+=360;return d;
+}
+function motionStatus(planet,jd){
+  const m=planetMotion(planet,jd),am=Math.abs(m);
+  const th={Mercury:.15,Venus:.08,Mars:.03,Jupiter:.01,Saturn:.005,Uranus:.003,Neptune:.002,Pluto:.002,Chiron:.005};
+  return am<(th[planet]||.01)?{retrograde:m<0,stationary:true,motion:m}:{retrograde:m<0,stationary:false,motion:m};
+}
+function moonPhase(T){return norm(moonLongitude(T)-sunLongitude(T));}
+function moonPhaseInfo(a){
+  const phases=[['New Moon',0],['Waxing Crescent',45],['First Quarter',90],['Waxing Gibbous',135],
+    ['Full Moon',180],['Waning Gibbous',225],['Last Quarter',270],['Waning Crescent',315]];
+  for(let i=phases.length-1;i>=0;i--)if(a>=phases[i][1]-22.5||i===0)return{name:phases[i>0&&a<22.5?0:i][0]};
+  return{name:'New Moon'};
+}
+
+function isVoidOfCourse(moonLon,jd){
+  const ms=Math.floor(moonLon/30),aspA=[0,60,90,120,180];
+  const tps=['Sun','Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto'];
+  for(let h=.5;h<=72;h+=2){
+    const fJd=jd+h/24,fT=jdToT(fJd),fMl=moonLongitude(fT);
+    if(Math.floor(fMl/30)!==ms)return{voc:true,endsIn:h,nextSign:SIGNS[Math.floor(fMl/30)]};
+    for(const p of tps){const pL=p==='Sun'?sunLongitude(fT):geocentricLon(p,fT);
+      for(const aa of aspA){let d=norm(fMl-pL),o=Math.abs(d-aa);if(o>180)o=360-o;
+        if(aa===0){let ad=Math.abs(d);if(ad>180)ad=360-ad;if(ad<1)return{voc:false};}
+        else if(o<1)return{voc:false};}}
+  }
+  return{voc:true,endsIn:72,nextSign:'?'};
+}
+
+
+// ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// SVG GLYPH SYSTEM + ASTROLOGY ENGINE
+// ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+
+const SIGNS=['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
+const SIGN_ABBR=['Ari','Tau','Gem','Can','Leo','Vir','Lib','Sco','Sag','Cap','Aqu','Pis'];
+
+// SVG sign glyphs â traditional astrology symbols, no Unicode
+function sSVG(name,size=16,col='currentColor'){
+  const o=`<svg width="${size}" height="${size}" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle">`;
+  const e='</svg>';const s=`stroke="${col}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"`;
+  switch(name){
+    case'Aries':return o+`<path d="M8 28 C8 14 16 4 16 4 C16 4 24 14 24 28" ${s}/><line x1="16" y1="4" x2="16" y2="18" ${s}/>`+e;
+    case'Taurus':return o+`<circle cx="16" cy="20" r="8" ${s}/><path d="M4 10 C4 4 16 2 16 10" ${s}/><path d="M28 10 C28 4 16 2 16 10" ${s}/>`+e;
+    case'Gemini':return o+`<line x1="11" y1="6" x2="11" y2="26" ${s}/><line x1="21" y1="6" x2="21" y2="26" ${s}/><path d="M6 6 Q16 2 26 6" ${s}/><path d="M6 26 Q16 30 26 26" ${s}/>`+e;
+    case'Cancer':return o+`<path d="M6 16 A8 8 0 0 1 22 16" ${s}/><path d="M26 16 A8 8 0 0 1 10 16" ${s}/><circle cx="8" cy="16" r="2.5" stroke="${col}" stroke-width="2" fill="${col}"/><circle cx="24" cy="16" r="2.5" stroke="${col}" stroke-width="2" fill="${col}"/>`+e;
+    case'Leo':return o+`<circle cx="12" cy="22" r="6" ${s}/><path d="M18 22 C24 22 26 16 26 12 C26 6 20 4 16 8 C12 12 18 14 22 10" ${s}/>`+e;
+    case'Virgo':return o+`<path d="M4 24 L4 8 Q4 4 8 8 L8 24 Q8 4 12 8 L12 24 Q12 4 16 8 L16 24" ${s}/><path d="M16 18 C20 18 24 14 26 20 C28 26 22 28 20 24" ${s}/>`+e;
+    case'Libra':return o+`<line x1="6" y1="26" x2="26" y2="26" ${s}/><line x1="6" y1="20" x2="26" y2="20" ${s}/><path d="M16 20 C16 10 8 8 8 14" ${s}/><path d="M16 20 C16 10 24 8 24 14" ${s}/>`+e;
+    case'Scorpio':return o+`<path d="M4 24 L4 8 Q4 4 8 8 L8 24 Q8 4 12 8 L12 24 Q12 4 16 8 L16 24 L22 18" ${s}/><polyline points="19,14 22,18 26,16" ${s}/>`+e;
+    case'Sagittarius':return o+`<line x1="6" y1="26" x2="26" y2="6" ${s}/><polyline points="16,6 26,6 26,16" ${s}/><line x1="10" y1="18" x2="18" y2="26" ${s}/>`+e;
+    case'Capricorn':return o+`<path d="M4 18 Q4 6 12 6 Q18 6 14 16 L14 24 C14 28 22 28 24 22 A5 5 0 1 0 18 18" ${s}/>`+e;
+    case'Aquarius':return o+`<path d="M4 12 L8 8 L12 12 L16 8 L20 12 L24 8 L28 12" ${s}/><path d="M4 22 L8 18 L12 22 L16 18 L20 22 L24 18 L28 22" ${s}/>`+e;
+    case'Pisces':return o+`<path d="M8 4 C2 16 2 16 8 28" ${s}/><path d="M24 4 C30 16 30 16 24 28" ${s}/><line x1="4" y1="16" x2="28" y2="16" ${s}/>`+e;
+    default:return`<span style="font-size:${size}px">${name}</span>`;
+  }
+}
+
+// SVG aspect glyphs â clean geometric symbols
+function aSVG(name,size=14,col='currentColor'){
+  const o=`<svg width="${size}" height="${size}" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle">`;
+  const e='</svg>';const s=`stroke="${col}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"`;
+  switch(name){
+    case'conjunction':return o+`<circle cx="16" cy="16" r="7" ${s}/><line x1="16" y1="23" x2="16" y2="30" ${s}/>`+e;
+    case'semi-sextile':return o+`<line x1="16" y1="28" x2="16" y2="12" ${s}/><circle cx="16" cy="8" r="4" ${s}/>`+e;
+    case'sextile':return o+`<polygon points="16,4 26,10 26,22 16,28 6,22 6,10" ${s}/>`+e;
+    case'square':return o+`<rect x="6" y="6" width="20" height="20" ${s}/>`+e;
+    case'trine':return o+`<polygon points="16,4 28,28 4,28" ${s}/>`+e;
+    case'quincunx':return o+`<line x1="16" y1="28" x2="16" y2="14" ${s}/><polygon points="16,4 22,14 10,14" ${s}/>`+e;
+    case'opposition':return o+`<circle cx="16" cy="8" r="5" ${s}/><line x1="16" y1="13" x2="16" y2="19" ${s}/><circle cx="16" cy="24" r="5" ${s}/>`+e;
+    default:return`<span style="font-size:${size}px">${name}</span>`;
+  }
+}
+
+// SVG planet glyphs â render identically on all devices
+function pSVG(name,size=20,col='currentColor'){
+  const o=`<svg width="${size}" height="${size}" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle">`;
+  const e='</svg>';const s=`stroke="${col}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"`;
+  const f=`fill="${col}"`;
+  switch(name){
+    case'Sun':return o+`<circle cx="16" cy="16" r="9" ${s}/><circle cx="16" cy="16" r="2.5" ${f}/>`+e;
+    case'Moon':return o+`<path d="M21 8a9 9 0 11-1 16 11 11 0 001-16z" ${s} fill="none"/>`+e;
+    case'Mercury':return o+`<circle cx="16" cy="15" r="5.5" ${s}/><line x1="16" y1="20.5" x2="16" y2="28" ${s}/><line x1="12" y1="24" x2="20" y2="24" ${s}/><path d="M10.5 9.5a5.5 5.5 0 0111 0" ${s} fill="none"/>`+e;
+    case'Venus':return o+`<circle cx="16" cy="12" r="6.5" ${s}/><line x1="16" y1="18.5" x2="16" y2="28" ${s}/><line x1="11.5" y1="23" x2="20.5" y2="23" ${s}/>`+e;
+    case'Mars':return o+`<circle cx="13" cy="19" r="7" ${s}/><line x1="18.5" y1="13.5" x2="26" y2="6" ${s}/><polyline points="20,6 26,6 26,12" ${s} fill="none"/>`+e;
+    case'Jupiter':return o+`<path d="M8 6 a9 9 0 0 1 0 16 L24 22" ${s} fill="none"/><line x1="20" y1="8" x2="20" y2="28" ${s}/>`+e;
+    case'Saturn':return o+`<line x1="8" y1="8" x2="20" y2="8" ${s}/><path d="M14 3 V20 Q14 27 20 27 Q27 27 27 20" ${s} fill="none"/>`+e;
+    case'Uranus':return o+`<circle cx="16" cy="26" r="3.5" ${s}/><circle cx="16" cy="26" r="1" ${f}/><line x1="16" y1="22.5" x2="16" y2="10" ${s}/><line x1="8" y1="10" x2="24" y2="10" ${s}/><line x1="8" y1="10" x2="8" y2="4" ${s}/><line x1="24" y1="10" x2="24" y2="4" ${s}/>`+e;
+    case'Neptune':return o+`<line x1="16" y1="28" x2="16" y2="5" ${s}/><line x1="10" y1="24" x2="22" y2="24" ${s}/><path d="M5 15 Q5 5 16 5 Q27 5 27 15" ${s} fill="none"/><line x1="5" y1="15" x2="5" y2="8" ${s}/><line x1="27" y1="15" x2="27" y2="8" ${s}/>`+e;
+    case'Pluto':return o+`<path d="M6 3 Q6 14 16 14 Q26 14 26 3" ${s} fill="none"/><circle cx="16" cy="7" r="3.5" ${s}/><line x1="16" y1="14" x2="16" y2="29" ${s}/><line x1="10" y1="22" x2="22" y2="22" ${s}/>`+e;
+    case'Chiron':return o+`<circle cx="16" cy="25" r="5" ${s}/><line x1="16" y1="20" x2="16" y2="3" ${s}/><line x1="16" y1="10" x2="24" y2="3" ${s}/><line x1="16" y1="10" x2="24" y2="16" ${s}/>`+e;
+    case'NorthNode':return o+`<path d="M8 12 a8 8 0 0 0 16 0" ${s} fill="none"/><line x1="8" y1="12" x2="8" y2="18" ${s}/><line x1="24" y1="12" x2="24" y2="18" ${s}/><circle cx="8" cy="22" r="4" ${s}/><circle cx="24" cy="22" r="4" ${s}/>`+e;
+    default:return`<span style="font-size:${size}px">${name}</span>`;
+  }
+}
+
+function signOf(l){const i=Math.floor(norm(l)/30);const deg=norm(l)%30;
+  return{name:SIGNS[i],abbr:SIGN_ABBR[i],index:i,degree:Math.floor(deg),degInSign:deg,minute:Math.floor((deg%1)*60)};}
+function fmtShort(l){const s=signOf(l);return`${s.degree}Â° ${s.abbr}`;}
+function fmtLong(l){const s=signOf(l);return`${s.degree}Â°${String(s.minute).padStart(2,'0')}' ${s.name}`;}
+
+// Birth data
+const BIRTH={year:1996,month:7,day:2,hour:4+8/60,lat:40.9256,lon:-73.1409};
+
+function computeAll(jd){const T=jdToT(jd);return{Sun:sunLongitude(T),Moon:moonLongitude(T),
+  Mercury:geocentricLon('Mercury',T),Venus:geocentricLon('Venus',T),Mars:geocentricLon('Mars',T),
+  Jupiter:geocentricLon('Jupiter',T),Saturn:geocentricLon('Saturn',T),Uranus:geocentricLon('Uranus',T),
+  Neptune:geocentricLon('Neptune',T),Pluto:geocentricLon('Pluto',T),Chiron:geocentricLon('Chiron',T),
+  NorthNode:trueNodeLongitude(T)};}
+
+function computeAsc(jd,lat,lon){const T=jdToT(jd);
+  const LST=norm(280.46061837+360.98564736629*(jd-2451545)+.000387933*T*T+lon);
+  const eps=23.4393-.0130*T;
+  return norm(Math.atan2(cos(LST),-(sin(eps)*Math.tan(lat*DEG)+cos(eps)*sin(LST)))*RAD);}
+function computeMC(jd,lon){const T=jdToT(jd);
+  const LST=norm(280.46061837+360.98564736629*(jd-2451545)+.000387933*T*T+lon);
+  const eps=23.4393-.0130*T;let mc=norm(atan2d(Math.tan(LST*DEG),cos(eps)));
+  const d=norm(mc-LST);if(d>90&&d<270)mc=norm(mc+180);return mc;}
+
+const NJD=julianDate(BIRTH.year,BIRTH.month,BIRTH.day,BIRTH.hour);
+const NATAL=computeAll(NJD);
+NATAL.Ascendant=computeAsc(NJD,BIRTH.lat,BIRTH.lon);
+NATAL.MC=computeMC(NJD,BIRTH.lon);
+
+// Placidus house cusps (verified against Swiss Ephemeris for birth data)
+const HOUSES=[358.8483,40.7474,67.8144,89.3949,110.8756,137.5807,178.8483,220.7474,247.8144,269.3949,290.8756,317.5807];
+function houseOf(lon){const l=norm(lon);for(let i=0;i<12;i++){const s=HOUSES[i],e=HOUSES[(i+1)%12];
+  if(s<e){if(l>=s&&l<e)return i+1;}else{if(l>=s||l<e)return i+1;}}return 1;}
+
+// Aspects
+const ASPECTS=[
+  {name:'conjunction',angle:0,orb:8,type:'neutral'},
+  {name:'semi-sextile',angle:30,orb:2,type:'minor'},
+  {name:'sextile',angle:60,orb:5,type:'easy'},
+  {name:'square',angle:90,orb:7,type:'hard'},
+  {name:'trine',angle:120,orb:7,type:'easy'},
+  {name:'quincunx',angle:150,orb:3,type:'minor'},
+  {name:'opposition',angle:180,orb:8,type:'hard'}
+];
+
+function getOrb(a,tp,np){let o=a.orb;if(['Sun','Moon'].includes(np))o+=1;if(['Saturn','Jupiter','Uranus','Neptune','Pluto'].includes(tp))o+=1;return o;}
+
+function getLon(planet,jd){const T=jdToT(jd);if(planet==='Sun')return sunLongitude(T);if(planet==='Moon')return moonLongitude(T);
+  if(planet==='NorthNode')return trueNodeLongitude(T);return geocentricLon(planet,T);}
+
+function findAspect(tL,nL,tp,np,jd){
+  for(const a of ASPECTS){const orb=getOrb(a,tp,np);let d=Math.abs(norm(tL-nL)-a.angle);
+    if(d>180)d=360-d;if(d<=orb){
+      const T2=jdToT(jd+1);let tL2=getLon(tp,jd+1);
+      let d2=Math.abs(norm(tL2-nL)-a.angle);if(d2>180)d2=360-d2;
+      const ms=(tp!=='Sun'&&tp!=='Moon'&&tp!=='NorthNode')?motionStatus(tp,jd):null;
+      let motion;if(d<0.3)motion='exact';else if(ms&&ms.stationary)motion='stationary';
+      else if(d2<d)motion='applying';else motion='separating';
+      return{...a,orbActual:Math.round(d*10)/10,motion};
+    }}return null;}
+
+function transitImportance(tp,np,a){let s=0;
+  const ow={Pluto:50,Neptune:45,Uranus:40,Saturn:35,Jupiter:25,Chiron:18,Mars:12,Venus:8,Mercury:6,Sun:10,Moon:5,NorthNode:15};
+  const nw={Sun:10,Moon:9,Ascendant:8,MC:7,NorthNode:6,Mercury:5,Venus:5,Mars:5,Jupiter:4,Saturn:4,Chiron:4,Uranus:3,Neptune:3,Pluto:3};
+  s+=(ow[tp]||5)+(nw[np]||3);
+  if(a.type==='hard')s+=5;if(a.name==='conjunction')s+=8;if(a.type==='minor')s-=5;
+  if(a.motion==='exact')s+=10;if(a.motion==='stationary')s+=8;if(a.motion==='applying')s+=3;
+  s-=a.orbActual*2;return s;}
+
+function findExactDate(tp,np,aspectAngle,jd){
+  const isMoon=tp==='Moon';const range=isMoon?15:90;const step=isMoon?.1:1;const nLon=NATAL[np];
+  let bestJd=jd,bestOrb=999;
+  for(let d=-range;d<=range;d+=step){const testJd=jd+d;const tLon=getLon(tp,testJd);
+    let diff=Math.abs(norm(tLon-nLon)-aspectAngle);if(diff>180)diff=360-diff;
+    if(diff<bestOrb){bestOrb=diff;bestJd=testJd;}}
+  let lo=bestJd-step,hi=bestJd+step;
+  for(let iter=0;iter<30;iter++){const m1=lo+(hi-lo)/3,m2=lo+2*(hi-lo)/3;
+    let o1=Math.abs(norm(getLon(tp,m1)-nLon)-aspectAngle);
+    let o2=Math.abs(norm(getLon(tp,m2)-nLon)-aspectAngle);
+    if(o1>180)o1=360-o1;if(o2>180)o2=360-o2;if(o1<o2)hi=m2;else lo=m1;}
+  const eJd=(lo+hi)/2;const eDate=jdToDate(eJd);return eDate;}
+
+function jdToDate(jd){const z=Math.floor(jd+.5);const a=z<2299161?z:z+1+Math.floor((z-1867216.25)/36524.25)-Math.floor(Math.floor((z-1867216.25)/36524.25)/4);
+  const b=a+1524;const c=Math.floor((b-122.1)/365.25);const d=Math.floor(365.25*c);const e=Math.floor((b-d)/30.6001);
+  const day=b-d-Math.floor(30.6001*e);const month=e<14?e-1:e-13;const year=month>2?c-4716:c-4715;
+  return new Date(year,month-1,day);}
+
+function fmtExactDate(d){if(!d)return'';const m=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return m[d.getMonth()]+' '+d.getDate();}
+
+function findIngresses(cur,jd){const ing=[];
+  for(const p of['Sun','Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto','Chiron']){
+    const cs=Math.floor(cur[p]/30);
+    for(let d=1;d<=7;d++){const fT=jdToT(jd+d);
+      const fl=p==='Sun'?sunLongitude(fT):geocentricLon(p,fT);
+      if(Math.floor(fl/30)!==cs){ing.push({planet:p,sign:SIGNS[Math.floor(fl/30)],signIdx:Math.floor(fl/30),days:d});break;}}}
+  return ing;}
+
+// Dignities
+const RULERS={Aries:'Mars',Taurus:'Venus',Gemini:'Mercury',Cancer:'Moon',Leo:'Sun',Virgo:'Mercury',
+  Libra:'Venus',Scorpio:'Pluto',Sagittarius:'Jupiter',Capricorn:'Saturn',Aquarius:'Uranus',Pisces:'Neptune'};
+const DETRIMENT={Aries:'Venus',Taurus:'Pluto',Gemini:'Jupiter',Cancer:'Saturn',Leo:'Uranus',Virgo:'Neptune',
+  Libra:'Mars',Scorpio:'Venus',Sagittarius:'Mercury',Capricorn:'Moon',Aquarius:'Sun',Pisces:'Mercury'};
+const EXALT={Aries:'Sun',Cancer:'Jupiter',Libra:'Saturn',Capricorn:'Mars',Taurus:'Moon',Virgo:'Mercury',Pisces:'Venus',Scorpio:'Uranus'};
+const FALL={Libra:'Sun',Capricorn:'Jupiter',Aries:'Saturn',Cancer:'Mars',Scorpio:'Moon',Pisces:'Mercury',Virgo:'Venus',Taurus:'Uranus'};
+
+function getDignity(p,lon){const s=signOf(lon).name;
+  if(RULERS[s]===p)return{label:'Domicile',color:'var(--emerald)',desc:'This planet rules this sign â it operates at full strength here, expressing its nature freely and powerfully.'};
+  if(DETRIMENT[s]===p)return{label:'Detriment',color:'var(--crimson)',desc:'This planet is in the sign opposite its home â it must work harder to express itself, often creating tension or over-compensation.'};
+  if(EXALT[s]===p)return{label:'Exalted',color:'var(--gold)',desc:'This planet is honored and elevated in this sign â its best qualities are amplified and refined.'};
+  if(FALL[s]===p)return{label:'Fall',color:'var(--amber)',desc:'This planet struggles in this sign â its energy is weakened or misdirected, requiring conscious effort to express well.'};
+  return null;}
+
+// Transit duration labels
+const DUR={Sun:'~1 day',Moon:'~6 hours',Mercury:'1-2 weeks',Venus:'1-3 weeks',Mars:'2-4 weeks',
+  Jupiter:'3-4 weeks',Saturn:'3-6 months',Uranus:'1-2 years',Neptune:'2-3 years',Pluto:'2-4 years',
+  Chiron:'4-6 months',NorthNode:'2-3 months'};
+
+
+// ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// DEEP INTERPRETATION ENGINE â Layered content system
+// ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+
+// What each planet BRINGS when it transits (activates) something
+const TRANSIT_VOICE={
+Sun:{theme:'Identity & Vitality',desc:'The Sun illuminates whatever it touches, bringing conscious awareness, vitality, and a desire for authentic expression. It asks: what do you truly want here? This is a brief but clarifying spotlight.'},
+Moon:{theme:'Emotions & Instincts',desc:'The Moon stirs your emotional depths and instinctive reactions. It reveals what you need to feel safe and nurtured. These are fast-moving mood shifts that expose deeper feelings you may normally suppress.'},
+Mercury:{theme:'Mind & Communication',desc:'Mercury activates your thinking, conversations, decisions, and daily connections. Information arrives, plans form, and your mental process gets stimulated. Pay attention to what you hear, read, and say right now.'},
+Venus:{theme:'Love & Values',desc:'Venus brings pleasure, attraction, harmony, and questions about what you truly value. Relationships soften or sweeten. Your sense of beauty and desire for connection heightens. What are you drawn toward?'},
+Mars:{theme:'Drive & Action',desc:'Mars pushes you to act, assert, compete, or confront. Your energy and courage spike but so can irritation and impatience. This is fuel â the question is whether you direct it consciously or let it ignite reactively.'},
+Jupiter:{theme:'Growth & Opportunity',desc:'Jupiter expands whatever it touches â for better or worse. Doors open, optimism rises, and your perspective broadens. The gift is opportunity; the risk is overextension or taking good fortune for granted.'},
+Saturn:{theme:'Structure & Maturity',desc:'Saturn arrives as the teacher demanding accountability. It restricts, tests, and restructures. What isn\'t working gets exposed. This feels heavy, but Saturn builds things that last. Accept the discipline â it\'s building your foundation.'},
+Uranus:{theme:'Liberation & Disruption',desc:'Uranus shatters what has become stale or inauthentic. Expect the unexpected â sudden changes, breakthroughs, restlessness, or the urge to break free. What feels destabilizing is actually liberating you from outgrown patterns.'},
+Neptune:{theme:'Transcendence & Dissolution',desc:'Neptune dissolves boundaries between real and imagined. Inspiration, spiritual connection, and creativity heighten â but so can confusion, deception, and escapism. Trust your intuition but verify the facts.'},
+Pluto:{theme:'Transformation & Power',desc:'Pluto works at the deepest level, forcing confrontation with power, control, and what lies hidden. Nothing superficial survives this transit. What dies needed to die. What emerges is more authentic and powerful than before.'},
+Chiron:{theme:'Healing & Vulnerability',desc:'Chiron reopens old wounds â not to punish but to heal. You may feel raw, exposed, or revisit painful patterns. The gift is that your deepest pain, fully faced, becomes your greatest source of wisdom and your ability to heal others.'},
+NorthNode:{theme:'Destiny & Evolution',desc:'The North Node creates fated-feeling encounters and nudges you toward your evolutionary path. Events feel significant, karmic, or like course corrections. Pay attention â life is pointing you somewhere important.'},
+};
+
+// What each natal point REPRESENTS â personalized to actual birth chart
+const NATAL_VOICE={
+Sun:{title:'Your Core Self',desc:'Your Sun in Cancer in the 4th house places your core identity in the realm of home, family, and emotional roots. You find yourself through nurturing, creating safe spaces, and honoring where you come from. Your deepest sense of purpose is tied to emotional connection and protecting what matters to you. Transits here shake your foundations â they touch not just who you are but where you belong.'},
+Moon:{title:'Your Inner World',desc:'Your Moon in Capricorn in the 11th house â in detriment â creates a tension between your emotional needs and how you express them. You feel deeply but process emotions through structure, discipline, and achievement. In the 11th house, your emotional security is tied to your community, friendships, and vision for the future. You nurture others through practical support rather than overt warmth. Transits here challenge your emotional self-reliance.'},
+Mercury:{title:'Your Mind',desc:'Your Mercury in Gemini in the 4th house â in domicile â gives you an exceptionally quick, curious, and versatile mind operating at full power. You process information rapidly, see connections others miss, and communicate with natural wit. In the 4th house, your thinking is deeply influenced by your upbringing, family narratives, and private inner world. Transits here accelerate or disrupt your mental patterns.'},
+Venus:{title:'Your Heart & Values',desc:'Your Venus in Gemini in the 3rd house expresses love through communication, intellectual connection, and variety. You are attracted to people who stimulate your mind and keep you curious. In the 3rd house, daily interactions, conversations, and your immediate environment are where you experience beauty and pleasure. Transits here shift your relationship dynamics and what you find attractive.'},
+Mars:{title:'Your Drive',desc:'Your Mars in Gemini in the 3rd house channels your drive through words, ideas, and mental agility. You fight with your mind â debating, persuading, and outmaneuvering rather than overpowering. Your energy scatters across multiple interests simultaneously. In the 3rd house, you take action through communication, short trips, and your daily environment. Transits here fuel or frustrate your ambitions.'},
+Jupiter:{title:'Your Growth',desc:'Your Jupiter in Capricorn in the 10th house â in fall â means your growth and expansion come through disciplined effort in your career rather than easy luck. Jupiter struggles in Capricorn, so abundance arrives through hard work, patience, and building lasting structures. In the 10th house, your career and public reputation are where you seek meaning and expansion. Transits here amplify professional ambitions.'},
+Saturn:{title:'Your Foundation',desc:'Your Saturn in Aries in the 1st house â in fall â places your greatest life lesson directly in your identity and self-assertion. Saturn struggles in Aries, creating tension between the need for caution and the impulse to act. In the 1st house, you may have felt restricted in expressing yourself early in life, developing discipline around who you are. Transits here test your identity at the deepest structural level.'},
+Uranus:{title:'Your Individuality',desc:'Your Uranus in Aquarius in the 11th house â in domicile â is at full revolutionary power in its home sign and natural house. Your individuality expresses through progressive ideas, unconventional friendships, and a vision for the future that others find radical. You are naturally drawn to communities of innovators and outsiders. Transits here electrify your social world and accelerate your most authentic impulses.'},
+Neptune:{title:'Your Imagination',desc:'Your Neptune in Capricorn in the 11th house brings your dreams and spiritual longings into the realm of community and long-term vision. You idealize social progress and may have illusions about institutions or authority figures within your groups. Your imagination works best when given practical structure. Transits here blur the boundaries between your individual dreams and collective aspirations.'},
+Pluto:{title:'Your Deepest Power',desc:'Your Pluto in Sagittarius in the 8th house â Pluto\'s natural house â concentrates your transformative power in the deepest possible position. Intimacy, shared resources, psychological depths, and matters of life and death are where you encounter your shadow and reclaim your power. In Sagittarius, your transformations are tied to belief systems, philosophical crises, and the search for meaning. Transits here go to the absolute core.'},
+Chiron:{title:'Your Deepest Wound',desc:'Your Chiron in Virgo in the 6th house â Chiron\'s natural territory â places your core wound in daily routines, health, work, and service. You may have experienced early wounds around feeling useful, capable, or healthy enough. Perfectionism and self-criticism are shadow expressions. The gift: your pain around these themes makes you an exceptional healer, problem-solver, and helper for others struggling with similar patterns.'},
+NorthNode:{title:'Your Soul Path',desc:'Your North Node in Libra in the 7th house points your soul\'s evolution directly toward partnership, balance, diplomacy, and learning through relationships. Your growth comes from moving away from self-reliance (South Node in Aries/1st house) toward genuine collaboration, compromise, and seeing yourself through the mirror of others. Committed partnerships are your evolutionary classroom.'},
+Ascendant:{title:'Your Outer Self',desc:'Your Pisces Ascendant gives you a gentle, empathetic, and slightly ethereal presence. Others perceive you as sensitive, artistic, and adaptable â sometimes hard to pin down. You approach new situations intuitively rather than strategically, absorbing the energy of your environment. Your physical appearance may have a dreamy or otherworldly quality. Transits here change how the world sees you and how you instinctively engage with it.'},
+MC:{title:'Your Public Life',desc:'Your Midheaven in Sagittarius at the cusp of Capricorn points your career toward exploration, teaching, philosophy, or cross-cultural work â with a pragmatic Capricorn edge that demands tangible results. Your public reputation is tied to big-picture thinking and expanding others\' horizons. You need work that feels meaningful and expansive, not just profitable. Transits here are major career turning points.'},
+};
+
+// How each aspect type modifies the interaction
+const ASPECT_VOICE={
+conjunction:{label:'Fusion',feel:'Intensely focused',
+  desc:'The transit planet\'s energy merges completely with this part of your chart. There\'s no separation â you ARE this energy right now. This is the most personally felt of all aspects. The intensity can be overwhelming or exhilarating depending on the planets involved.',
+  advice:'Don\'t resist the merge. Whatever this transit is bringing, lean into it fully. Half-measures won\'t work under a conjunction.'},
+opposition:{label:'Awareness',feel:'Pulled in two directions',
+  desc:'You feel this transit most clearly through other people and external circumstances. There\'s a tension between what the transit planet demands and what your natal point needs. The key insight: what you\'re seeing "out there" is actually reflecting something within you.',
+  advice:'Look for the mirror. The tension you feel with others is showing you something about yourself. Integration, not choosing sides, is the path forward.'},
+square:{label:'Challenge',feel:'Pressure to change',
+  desc:'This is the aspect of crisis and growth. The transit creates friction that forces action â you can\'t stay comfortable. Something must change, and the discomfort is the catalyst. Squares produce the most tangible, lasting results when you work with them instead of against them.',
+  advice:'Don\'t avoid the discomfort â it\'s showing you exactly where growth is needed. Take concrete action. Squares reward courage and initiative.'},
+trine:{label:'Flow',feel:'Natural ease',
+  desc:'The transit harmoniously supports this area of life. Talents are enhanced, opportunities come easily, and things feel aligned. The energy flows without resistance. The only risk is passivity â trines give gifts, but you still need to reach for them.',
+  advice:'This is your window of ease â use it. Start things, create, connect. Don\'t mistake this for permanent â channel the good energy while it lasts.'},
+sextile:{label:'Opportunity',feel:'Gentle opening',
+  desc:'The transit offers doors that open if you\'re willing to walk through them. Less dramatic than a trine but more motivating â you need to take some initiative. Good for learning, networking, and starting new ventures with natural support.',
+  advice:'Take the initiative. This aspect rewards action. The opportunity is real but it won\'t pursue you â you need to step toward it.'},
+quincunx:{label:'Adjustment',feel:'Something\'s off',
+  desc:'The transit and your natal point have nothing in common, creating a persistent sense that something doesn\'t fit. You can\'t power through or ignore it â creative adaptation is required. Health disruptions, schedule upheavals, and the need to juggle incompatible demands are common.',
+  advice:'Stop trying to force things to fit. The lesson here is flexibility and creative problem-solving. Small adjustments, not dramatic overhauls.'},
+'semi-sextile':{label:'Subtle Shift',feel:'Background nudge',
+  desc:'A quiet, persistent influence working just below conscious awareness. Like a pebble in your shoe â not dramatic but impossible to completely ignore. It slowly shifts your perspective on this area of life without obvious triggers.',
+  advice:'Pay attention to small signals and minor irritations. They\'re pointing toward something that needs subtle recalibration.'},
+};
+
+// Where in life this plays out (house context)
+const HOUSE_VOICE={
+1:{name:'Self & Identity',desc:'This plays out through your physical body, appearance, personal identity, and how you present yourself to the world. You may change your look, feel different physically, or shift how you carry yourself. Others notice a change in you.'},
+2:{name:'Money & Self-Worth',desc:'This affects your finances, possessions, earning capacity, and deep sense of self-worth. Material security and what you value most come into question. Budget changes, new income streams, or reassessing what truly matters to you.'},
+3:{name:'Communication & Learning',desc:'This activates your daily environment â conversations, short trips, siblings, neighbors, writing, teaching, and how you process information. Your thinking shifts, important messages arrive, or learning accelerates.'},
+4:{name:'Home & Roots',desc:'This touches your home, family, emotional foundation, and private inner world. Moves, renovations, family dynamics, ancestral patterns surfacing, or a deep need to feel emotionally grounded and safe.'},
+5:{name:'Creativity & Joy',desc:'This lights up romance, creative expression, children, hobbies, risk-taking, and what makes your heart sing. Dating energy, artistic inspiration, playfulness, and the courage to express yourself authentically.'},
+6:{name:'Health & Daily Life',desc:'This affects your daily routines, physical health, work habits, service to others, and pets. Diet changes, new exercise regimens, job adjustments, healing practices, or a need to reorganize your daily life.'},
+7:{name:'Relationships',desc:'This activates your one-on-one partnerships â romantic, business, and close friendships. Commitments deepen or dissolve, negotiations arise, and you see yourself more clearly through the mirror of others.'},
+8:{name:'Transformation',desc:'This goes deep â shared resources, intimacy, psychological patterns, power dynamics, debt, taxes, and death/rebirth cycles. Emotional vulnerability, letting go of control, and confronting what you normally avoid.'},
+9:{name:'Expansion & Meaning',desc:'This broadens your horizons â travel (especially foreign), higher education, philosophy, religion, publishing, legal matters, and your search for life\'s bigger meaning. Your worldview is evolving.'},
+10:{name:'Career & Legacy',desc:'This affects your professional life, public reputation, authority figures, achievements, and the legacy you\'re building. Career turning points, changes in status, recognition, or restructuring of your ambitions.'},
+11:{name:'Community & Vision',desc:'This activates your social network, friendships, group affiliations, humanitarian impulses, hopes, and your vision for the future. Finding your tribe, shifting social circles, or clarifying your dreams.'},
+12:{name:'The Unconscious',desc:'This works below the surface â solitude, dreams, the unconscious mind, hidden patterns, self-undoing, spirituality, and surrender. Endings that prepare for new beginnings. What you can\'t see is shifting.'},
+};
+
+// ââ Special deep interpretations for high-impact transits ââ
+const DEEP={
+Pluto_conjunction_Sun:'Pluto is merging with your Sun â your fundamental identity is being dismantled and rebuilt from the ground up. This is one of the most powerful transits possible, happening only once or twice in a lifetime. You may feel compelled to confront issues of power, control, and authenticity that you\'ve avoided for years. Old identities, roles, and self-concepts that no longer reflect who you truly are will be stripped away. This can feel like an ego death. Relationships, career paths, and life structures that were built on a false foundation may collapse. What emerges is a more powerful, authentic version of you â but the process is not gentle. Trust the transformation even when it feels like destruction.',
+Pluto_conjunction_Moon:'Pluto is sitting on your Moon, dredging up your deepest emotional patterns, childhood wounds, and unconscious needs. This is an emotional pressure cooker. Feelings you\'ve suppressed for years â grief, rage, fear, longing â demand to be felt and processed. Your relationship with women, mother figures, and your own nurturing instincts undergoes radical transformation. You may become obsessive about emotional security or go through periods of intense isolation. The gift: emotional honesty and depth that wasn\'t possible before. You\'re learning to feel everything fully and survive it.',
+Pluto_conjunction_Uranus:'A once-in-a-lifetime transit reshaping your relationship with individuality, freedom, and radical change. The structures of your independence are being transformed at the deepest level. Expect sudden, permanent shifts in how you express your uniqueness. Old rebellions become mature liberation. What felt like chaos becomes your authentic path.',
+Saturn_conjunction_Sun:'Saturn is sitting on your Sun â your core identity is being tested and restructured. This happens roughly every 29 years and marks a major maturation point. You may feel heavy, burdened with new responsibilities, or confronted by authority figures. Energy can feel low. But this isn\'t punishment â it\'s crystallization. Saturn asks: is your life reflecting who you truly are? Where the answer is no, things fall away. What survives has been proven real. Accept the weight â it\'s building something that lasts for decades.',
+Saturn_conjunction_Moon:'Saturn is pressing on your Moon â your emotional life, comfort zone, and sense of inner security are being restructured. This can feel isolating, emotionally cold, or like your needs aren\'t being met. Old emotional patterns and dependencies that no longer serve you are being outgrown. Relationships with family or mother figures may feel strained. But Saturn is teaching you emotional maturity â the ability to nurture yourself, set healthy boundaries, and build genuine inner stability rather than depending on external comfort.',
+Saturn_conjunction_Saturn:'Your Saturn Return â one of astrology\'s most significant passages. Everything in your life that isn\'t working, that was built on someone else\'s expectations, or that you\'ve outgrown now demands restructuring. Careers change, relationships end or solidify, and you\'re forced to take full responsibility for your own life. It\'s heavy but necessary. This is the bridge between youth and true adulthood. What you build in the next two years will define the next 29.',
+Saturn_conjunction_Mercury:'Saturn is restructuring how you think, communicate, and make decisions. Your mind becomes more disciplined but may also feel heavy or pessimistic. Important contracts, tests, or formal communications demand precision. You\'re learning to think more carefully, speak more deliberately, and commit to ideas that have lasting value. Mental shortcuts and casual promises no longer work.',
+Saturn_conjunction_Venus:'Saturn is testing your relationships and values. Love feels serious, commitments deepen or end, and superficial connections fall away. You may feel lonely or question whether you deserve love. Financial discipline is required. But this transit builds lasting bonds â the relationships and values that survive Saturn\'s test are the real ones.',
+Saturn_conjunction_Mars:'Saturn is putting the brakes on your drive and ambition. You may feel frustrated, blocked, or physically depleted. Anger simmers without easy release. But this transit teaches you disciplined action â the difference between explosive impulse and sustained effort. Channel the frustration into patient, strategic work. What you build through this restriction will outlast anything achieved through raw force.',
+Jupiter_conjunction_Sun:'Jupiter is expanding your sense of self, bringing optimism, confidence, and new opportunities. This is one of the luckiest transits â doors open, people are generous, and you feel like more is possible. Travel, education, and publishing are favored. The risk is overconfidence or taking on too much. Enjoy the expansion but keep one foot on the ground.',
+Jupiter_conjunction_Moon:'Jupiter warms your emotional life, bringing comfort, generosity, and a sense of emotional abundance. Home improvements, family celebrations, and feeling nurtured are highlighted. Your intuition is strong and your capacity for empathy expands. A wonderful time for emotional healing and deepening family bonds.',
+Jupiter_conjunction_Jupiter:'Your Jupiter Return â a renewal of faith, vision, and life direction that happens every 12 years. Your philosophical outlook refreshes, new teachers or mentors may appear, and you feel a pull toward growth and adventure. It\'s time to dream bigger and recommit to what gives your life meaning.',
+Uranus_conjunction_Sun:'Uranus is electrifying your identity â expect sudden, liberating changes to who you are and how you live. This transit can feel like an earthquake in your sense of self. Old identities crack open. You may change careers, relationships, locations, or appearance dramatically and suddenly. The common thread is authenticity: whatever was constraining your true nature gets shattered. Embrace the disruption â you\'re becoming more yourself than ever.',
+Uranus_conjunction_Moon:'Uranus is disrupting your emotional patterns and domestic life. Expect sudden mood swings, unexpected changes at home, and a fierce need for emotional freedom. Old comfort zones feel suffocating. You may move suddenly, change family dynamics, or discover emotions you didn\'t know you had. Unsettling but ultimately liberating.',
+Neptune_conjunction_Sun:'Neptune is dissolving the boundaries of your identity. You may feel confused about who you are, unusually sensitive, or drawn to spiritual and creative pursuits. Your ego softens â which can be beautiful (compassion, inspiration) or disorienting (confusion, loss of direction). Stay grounded in practical routines while allowing your identity to become more fluid and compassionate.',
+Neptune_conjunction_Moon:'Neptune is dissolving your emotional boundaries. Empathy heightens to an almost psychic degree. You absorb others\' feelings, dreams become vivid and meaningful, and you may feel uncharacteristically vulnerable. Beautiful for artistic and spiritual growth, but watch for emotional manipulation, substance issues, or difficulty distinguishing your feelings from others\'.',
+Chiron_conjunction_Sun:'Chiron is touching your core identity, reopening fundamental wounds around self-worth and purpose. You may revisit old pain about not being seen, valued, or allowed to be yourself. This hurts â but it\'s healing. By facing these wounds consciously, you transform them into wisdom. You emerge as someone who can help others face their own identity crises.',
+Chiron_conjunction_Moon:'Chiron is pressing on your deepest emotional wounds â particularly around nurturing, belonging, and mother. Old feelings of abandonment, emotional neglect, or not being allowed to have needs may surface with surprising intensity. This is deep healing work. Allow the feelings without judgment.',
+Chiron_conjunction_Chiron:'Your Chiron Return (around age 50) â a profound encounter with your core wound and the wisdom it has given you. You\'re being asked to fully accept the wound you\'ve carried your whole life and recognize how it became your greatest gift. This is when the wounded healer archetype fully activates.',
+NorthNode_conjunction_Sun:'The North Node is activating your Sun â a fated period for your identity and life purpose. Encounters feel destined. You may meet people or encounter situations that accelerate your growth in exactly the direction your soul needs to go. Say yes to what calls you, even if it\'s unfamiliar.',
+Saturn_square_Sun:'Saturn is creating friction with your identity and life direction. You feel tested, restricted, and forced to prove yourself. Authority figures challenge you. Responsibilities mount. But this pressure is refining you â it reveals where your life structure is weak and demands you strengthen it through effort, not luck.',
+Saturn_opposition_Sun:'Saturn opposes your Sun, creating tension between your desires and external demands. You may feel like the world is pushing back against who you are. Relationships with authority, partners, or institutions feel strained. The lesson: mature self-expression means balancing your needs with your responsibilities to others.',
+Pluto_square_Sun:'Pluto is creating intense friction with your core identity. Power struggles, control issues, and confrontations with dark truths about yourself and others dominate. Something about how you\'ve been living is fundamentally unsustainable and Pluto is forcing a crisis to catalyze change. Resist the urge to manipulate or control â surrender to the transformation.',
+Pluto_opposition_Sun:'Pluto opposes your Sun, projecting its transformative intensity through other people and external events. Someone or something is forcing you to confront your shadow â issues of power, control, jealousy, or manipulation that you\'d rather not see. The transformation happens when you own these qualities in yourself rather than fighting them in others.',
+Uranus_square_Sun:'Uranus is shaking the foundations of your identity through unexpected challenges and disruptions. You feel restless, rebellious, and desperate for change â but the path isn\'t clear. Impulsive decisions tempt you. The key is conscious revolution: make the changes you need, but with some awareness of consequences.',
+Jupiter_trine_Sun:'Beautiful flow between expansion and your core self. Confidence comes naturally, opportunities align with who you are, and generosity flows both ways. Travel, education, and creative expression are especially favored. This is harvest energy â enjoy what you\'ve built.',
+Saturn_trine_Sun:'Saturn supports your identity with steady, reliable energy. Your discipline pays off. Authority figures recognize your competence. This is a time of quiet achievement â nothing flashy, but the results are solid and lasting. Good for long-term commitments.',
+
+// ââ Transits to Ascendant ââ
+Pluto_conjunction_Ascendant:'Pluto is crossing your Ascendant â one of the most powerful identity transits possible. Your entire self-presentation, physical appearance, and the way others perceive you is undergoing radical transformation. People may find you more intense, magnetic, or intimidating. Power dynamics in close relationships shift fundamentally. You may experience a physical transformation, a complete image overhaul, or a crisis that forces you to show the world who you really are beneath all the masks. This transit burns away every false persona.',
+Saturn_conjunction_Ascendant:'Saturn is crossing your Ascendant, beginning a new 29-year cycle of personal development. You feel the weight of new responsibilities settling onto your shoulders. Your appearance may seem more serious or aged. Others perceive you as more authoritative but also more distant. This is a major maturation point â you are being asked to take full ownership of how you show up in the world. Health and physical vitality need attention. The structures you build around your identity now will define you for years.',
+Uranus_conjunction_Ascendant:'Uranus crossing your Ascendant is a lightning bolt to your identity. Your appearance, style, and entire approach to life changes suddenly and dramatically. You may feel unrecognizable to people who knew the old you â and that is exactly the point. Restlessness is extreme. Relationships that cannot accommodate the new you will fall away. This is liberation from every way you have been performing instead of being authentic.',
+Jupiter_conjunction_Ascendant:'Jupiter crossing your Ascendant brings a wave of optimism, confidence, and opportunity to your personal life. You feel expansive, generous, and magnetic. Others are drawn to your warmth. Physical health improves, weight may fluctuate (Jupiter expands everything). New beginnings feel blessed. Travel, education, and personal growth accelerate. You are larger than life right now â enjoy it but stay grounded.',
+Neptune_conjunction_Ascendant:'Neptune dissolving across your Ascendant blurs the boundaries of your identity. You become more empathetic, intuitive, and creatively inspired â but also more confused about who you are. Others project their fantasies onto you. You may appear glamorous or mysterious without trying. Watch for deception in close relationships and avoid substances that blur your already-soft boundaries. Channel this into art, spirituality, or compassionate service.',
+Chiron_conjunction_Ascendant:'Chiron crossing your Ascendant reopens wounds around your identity, body, and how you present yourself to the world. Old insecurities about appearance, acceptability, or your right to take up space surface with surprising force. You may feel exposed or raw in social situations. But this vulnerability is the doorway to deep healing â by facing these wounds publicly, you become someone who gives others permission to be imperfect too.',
+Pluto_square_Ascendant:'Pluto is creating intense friction with your public identity. Power struggles with others challenge how you present yourself. Someone or something is trying to control your image, your body, or your autonomy. The pressure forces you to claim your power more consciously â to stop accommodating others at the expense of your authentic self.',
+Saturn_square_Ascendant:'Saturn creates friction between your responsibilities and your personal identity. You feel constrained, judged, or unable to express yourself freely. Physical energy may be low. The lesson is finding a sustainable way to be yourself while honoring your commitments to others.',
+Uranus_square_Ascendant:'Uranus disrupts your identity through unexpected external events. Relationships, living situations, or your physical circumstances change suddenly, forcing you to adapt who you are. The restlessness is productive if you channel it into conscious reinvention rather than reactive decisions.',
+Ascendant_opposition_Saturn:'Saturn opposing your Ascendant focuses its weight on your closest relationships. Partners, collaborators, and one-on-one connections demand maturity, commitment, or dissolution. You cannot hide behind charm â others see you clearly and expect substance. Relationships that survive this are built to last.',
+Pluto_opposition_Ascendant:'Pluto opposing your Ascendant projects its transformative intensity through your closest relationships. A partner, collaborator, or adversary becomes the catalyst for deep personal change. Power struggles in relationships force you to confront your own need for control. The transformation happens through the mirror of others.',
+
+// ââ Transits to MC (Midheaven) ââ
+Pluto_conjunction_MC:'Pluto is crossing your Midheaven â your career, public reputation, and life direction are being fundamentally transformed. You may experience a total career change, a dramatic rise or fall in status, or a confrontation with authority that redefines your professional identity. Power dynamics with bosses, institutions, or the public become intense. What emerges is a career path that reflects your deepest authentic ambitions, not what you thought you should want.',
+Saturn_conjunction_MC:'Saturn crossing your Midheaven is the peak of a 29-year career cycle. Maximum professional responsibility, visibility, and pressure arrive simultaneously. You may receive a promotion, a major achievement, or a sobering realization about what your career has cost you. This is the summit â what you have built is now visible to everyone. If the foundation was solid, you are rewarded. If not, restructuring is required.',
+Jupiter_conjunction_MC:'Jupiter crossing your Midheaven is one of the best career transits possible. Professional opportunities expand, recognition arrives, and your reputation grows. Promotions, public honors, or a lucky break in your field are likely. Your vision for your life direction broadens. Say yes to opportunities that align with your authentic ambitions.',
+Uranus_conjunction_MC:'Uranus crossing your Midheaven shatters your career trajectory. A sudden job change, unexpected recognition, or dramatic disruption to your professional life forces you onto an entirely new path. The career you thought you wanted may fall away to reveal the career your authentic self actually needs. Embrace the chaos â it is redirecting you.',
+Neptune_conjunction_MC:'Neptune dissolving across your Midheaven creates confusion about your career direction and public identity. Your professional goals become foggy. You may feel disillusioned with success or drawn toward more spiritual, creative, or service-oriented work. Others may misperceive your professional identity. Stay flexible â clarity will come, but not on your timeline.',
+Chiron_conjunction_MC:'Chiron crossing your Midheaven brings old wounds about achievement, authority, and public recognition to the surface. You may feel inadequate professionally, revisit failures, or question whether your career reflects your true purpose. The healing comes through accepting that your vulnerabilities and struggles are part of what makes your contribution unique.',
+Saturn_square_MC:'Saturn creates friction with your career path. Professional obstacles, authority conflicts, or a sense of being stuck force you to reassess whether your current direction is truly right. Hard work is required but may feel unrewarded in the short term. The structures you strengthen now support long-term professional success.',
+Pluto_square_MC:'Pluto creates intense pressure on your career and public life. Power struggles with bosses or institutions, ethical dilemmas, or forced career changes demand that you align your professional life with your deepest values. Superficial ambition gets destroyed â only authentic purpose survives.',
+
+// ââ Hard aspects to Moon ââ
+Pluto_square_Moon:'Pluto is creating intense emotional friction. Compulsive feelings, jealousy, control issues in intimate relationships, and confrontations with deep psychological patterns dominate. Your emotional security is being challenged at a fundamental level. Old coping mechanisms â emotional manipulation, withdrawal, or obsessive attachment â are being exposed. The pressure forces emotional honesty that was previously impossible.',
+Pluto_opposition_Moon:'Pluto opposing your Moon projects its intensity through intimate relationships and family dynamics. Someone close to you becomes the catalyst for deep emotional transformation. You may feel emotionally overwhelmed, controlled, or manipulated â but the real work is recognizing these patterns within yourself. Emotional power that was given away is being reclaimed.',
+Uranus_square_Moon:'Uranus is disrupting your emotional patterns through unexpected events at home, in family, or in your inner world. Sudden mood swings, restlessness, and a fierce need for emotional freedom make your usual comfort zones feel suffocating. Relationships that restrict your emotional authenticity become unbearable. The disruption serves liberation.',
+Wranus_opposition_Moon:'Uranus opposing your Moon creates sudden disruptions in domestic life, family relationships, and emotional security. Unexpected events force you out of emotional ruts. A move, a family upheaval, or a sudden shift in your closest relationships breaks patterns you didn\'t realize were constraining you. Unsettling but ultimately freeing.',
+Waturn_square_Moon:'Saturn is pressing against your emotional nature, creating feelings of isolation, emotional coldness, or inadequacy. Family obligations weigh heavily. You may feel unable to express your needs or receive the nurturing you crave. The lesson is learning to provide your own emotional security â to be your own source of comfort rather than depending on others.',
+Saturn_opposition_Moon:'Saturn opposing your Moon creates tension between your professional responsibilities and your emotional needs. Work-life balance feels impossible. Family or domestic situations demand sacrifice. You may feel emotionally unsupported by partners or family. Building genuine inner security â not dependent on external validation â is the work.',
+Neptune_square_Sun:'Neptune creates confusion and dissolution around your identity and life direction. Boundaries between self and others blur uncomfortably. You may feel lost, disillusioned, or deceived about who you are. Creative and spiritual inspiration is high, but so is the risk of escapism, substance issues, or self-deception. Stay anchored in practical reality while allowing your identity to evolve.',
+Neptune_opposition_Sun:'Neptune opposing your Sun projects its dissolving energy through other people. You may idealize partners, be deceived in relationships, or attract people who mirror your own confusion back to you. Discernment in relationships is essential. The lesson is compassion without self-abandonment.',
+Neptune_square_Moon:'Neptune dissolves your emotional boundaries, creating heightened sensitivity, confusion, and vulnerability. You absorb others\' emotions like a sponge. Dreams are vivid and meaningful but daily life feels foggy. Family secrets or illusions about your childhood may surface. Channel the sensitivity into creative expression rather than escapism.',
+Neptune_opposition_Moon:'Neptune opposing your Moon creates emotional confusion through relationships and family dynamics. You may idealize family members or partners, ignoring red flags. Boundaries in intimate relationships dissolve â beautiful for empathy, dangerous for codependency. Trust your intuition but verify the facts about the people closest to you.',
+
+// ââ Additional important transits ââ
+Jupiter_square_Sun:'Jupiter creates tension through overexpansion of your ego and life direction. You may take on too much, overcommit, or become arrogant. The friction between your ambitions and your actual capacity forces a correction. Scale back the grandiose plans and focus on what is genuinely achievable. Growth requires pruning.',
+Jupiter_opposition_Sun:'Jupiter opposing your Sun inflates expectations in relationships and external circumstances. Others may overpromise, or you may expect too much from partnerships. Legal matters, business deals, and philosophical disagreements test your judgment. The lesson is balanced optimism â hope without naivety.',
+Jupiter_square_Moon:'Jupiter creates emotional overexpansion. Feelings are amplified â generosity is excessive, indulgence is tempting, and emotional boundaries are too loose. Family situations may become overwhelming in their abundance. The challenge is enjoying emotional richness without losing your center.',
+Uranus_opposition_Sun:'Uranus opposing your Sun creates sudden disruptions through other people and external events. Partners, collaborators, or circumstances shock you out of complacency. The tension between who you have been and who you are becoming plays out through relationships. Liberation comes through integrating the disruption rather than fighting it.',
+Chiron_square_Sun:'Chiron creates friction with your core identity through painful encounters with your deepest insecurities. You may feel fundamentally inadequate or face situations that trigger old wounds about your worth. The pain is purposeful â it is showing you exactly where healing is needed so you can finally address what you have been avoiding.',
+Chiron_opposition_Sun:'Chiron opposing your Sun brings your core wound into your relationships. Others trigger your deepest insecurities, or you find yourself drawn to wounded people who mirror your own pain. The healing comes through seeing your wound reflected in others and recognizing that your vulnerability is also your greatest gift.',
+NorthNode_conjunction_Moon:'The North Node activating your Moon creates fated emotional encounters and shifts in your domestic life. You may feel drawn to new living situations, family connections, or emotional experiences that feel destined. Trust what feels deeply right even if it does not make logical sense â your soul is guiding you toward emotional growth.',
+NorthNode_conjunction_Ascendant:'The North Node crossing your Ascendant is one of the most personally fated transits. Your identity is being pulled toward its evolutionary direction. People enter your life who accelerate your growth. Opportunities that align with your soul purpose appear. Say yes to what feels like destiny, even if it requires becoming someone new.',
+NorthNode_conjunction_MC:'The North Node activating your Midheaven creates fated career developments. Professional opportunities feel destined. Mentors, authority figures, or public recognition arrive at exactly the right moment. Your career is being aligned with your soul purpose. Trust the direction life is pointing you professionally.',
+};
+
+// ââ Retrograde interpretations per planet ââ
+const RETRO_VOICE={
+Mercury:'Mercury retrograde turns communication, technology, and travel inside out. Misunderstandings multiply, old contacts reappear, and plans unravel. But this isn\'t just chaos â it\'s an invitation to review, revise, and reconsider. Reread the fine print. Reconnect with people from your past. Redo what was rushed. The slowdown is the point.',
+Venus:'Venus retrograde pulls you inward to reassess relationships, finances, and what you truly value. Old lovers may resurface. Attractions feel confused. It\'s not the time to start new relationships or make major purchases â instead, reflect on what and who you genuinely love versus what was just comfortable.',
+Mars:'Mars retrograde frustrates your drive and initiative. Energy levels drop, anger simmers without productive outlet, and projects stall. Don\'t start new ventures or pick fights. Instead, review your strategies, redirect your ambition, and address the anger you\'ve been suppressing. When Mars goes direct, you\'ll know exactly where to aim.',
+Jupiter:'Jupiter retrograde turns growth inward. External expansion slows so you can digest what you\'ve already experienced. It\'s time to develop inner wisdom, revisit abandoned studies, and question whether your beliefs still serve your growth. The expansion continues â it\'s just happening on the inside.',
+Saturn:'Saturn retrograde reviews your commitments, structures, and responsibilities. Are you disciplined in the right areas? Are your boundaries healthy? Old duties resurface and demand attention. Karmic debts come due. This is maintenance work on the foundation of your life.',
+Uranus:'Uranus retrograde internalizes the revolution. Instead of external upheaval, the disruption happens in your psyche â old conditioning breaks down, and you quietly shed beliefs and patterns that were limiting your freedom. The breakthrough is internal first.',
+Neptune:'Neptune retrograde lifts the fog slightly, offering clearer vision about where you\'ve been deceiving yourself or others. Illusions become harder to maintain. Dreams become more symbolic and revelatory. Use this clarity for spiritual refinement and creative editing.',
+Pluto:'Pluto retrograde turns its transformative intensity inward. External power struggles ease but internal psychological work intensifies. You\'re processing deep changes that were initiated when Pluto was direct. Allow the inner alchemy without rushing back to external action.',
+Chiron:'Chiron retrograde deepens your healing work. Wounds you thought were resolved may resurface for another layer of processing. This is refinement, not regression. You\'re developing deeper compassion and wisdom from your pain.',
+};
+
+// ââ Educational glossary ââ
+const GLOSSARY={
+'Orb':'The orb is how far from exact an aspect is, measured in degrees. A 0Â° orb means the aspect is perfectly exact and at peak intensity. A wider orb (like 5-8Â°) means the aspect is present but weaker. Think of it like standing near a campfire â the closer you are (smaller orb), the more heat you feel.',
+'Applying':'An applying aspect means the transit planet is moving TOWARD exact alignment with your natal point. The energy is building, becoming stronger each day. Think of it like a wave approaching the shore â the impact hasn\'t peaked yet.',
+'Separating':'A separating aspect means the transit planet has already passed the exact point and is moving away. The energy is fading. The peak experience has passed, and you\'re now integrating what happened.',
+'Exact':'An exact aspect means the transit planet is at the precise degree of alignment with your natal point (0Â° orb). This is the peak moment of the transit â its influence is at maximum intensity.',
+'Stationary':'A stationary planet appears to stand still in the sky as it shifts between direct and retrograde motion. A stationary planet\'s energy is concentrated and intensified, like a magnifying glass focusing sunlight.',
+'Retrograde':'When a planet appears to move backward through the zodiac (an optical illusion caused by orbital mechanics). Retrograde periods are times of review, revision, and internalization of that planet\'s themes.',
+'Void of Course':'The Moon is void of course when it makes no more major aspects before changing signs. Traditional astrology says: don\'t start important new things during VOC. Existing projects are fine; new initiatives may fizzle. Good for routine tasks, rest, and meditation.',
+'Transit':'A transit is when a currently-moving planet forms an aspect (geometric angle) to a point in your birth chart. It\'s how the current sky activates your personal astrology.',
+'House':'Houses are 12 divisions of your birth chart, each governing a different area of life (identity, money, communication, home, etc.). When a transit happens in a particular house, that life area gets activated.',
+'Conjunction':'Two planets at the same degree (0Â°). The most intense aspect â their energies merge completely. Can be harmonious or challenging depending on the planets.',
+'Opposition':'Two planets 180Â° apart. Creates tension, awareness, and often plays out through relationships and external events. The lesson is finding balance between two opposing needs.',
+'Square':'Two planets 90Â° apart. Creates friction, pressure, and the motivation to act. Challenging but productive â squares are where the most growth happens.',
+'Trine':'Two planets 120Â° apart. Natural harmony and flow. Talents and opportunities come easily. The risk is passivity.',
+'Sextile':'Two planets 60Â° apart. Gentle opportunities that reward initiative. Less dramatic than a trine but more motivating.',
+'Dignity':'A planet\'s dignity describes how well it functions in a particular zodiac sign. A planet in its own sign (domicile) is at full power. In the opposite sign (detriment), it struggles.',
+'Energy Score':'A composite rating (1-10) reflecting the overall tone of today\'s transits. Higher scores indicate more harmonious, flowing energy. Lower scores indicate more challenging, growth-oriented energy. Neither is inherently good or bad â easy days offer comfort while challenging days drive the most transformation.',
+};
+
+// ââ Combine layers into full interpretation ââ
+function getDeepInterp(tp,np,aspectName,house){
+  const key=tp+'_'+aspectName+'_'+np;
+  const deep=DEEP[key];
+  const tv=TRANSIT_VOICE[tp]||{};
+  const nv=NATAL_VOICE[np]||{};
+  const av=ASPECT_VOICE[aspectName]||{};
+  const hv=HOUSE_VOICE[house]||{};
+
+  let summary='',full='',advice='',houseContext='';
+
+  if(deep){
+    summary=deep.split('. ').slice(0,2).join('. ')+'.';
+    full=deep;
+  }else{
+    const tDesc=tv.desc||'A subtle cosmic influence is at work.';
+    const nDesc=nv.desc||'';
+    const aDesc=av.desc||'';
+    summary=`${tv.theme||tp} energy is activating ${nv.title||np}. ${av.feel||''} â ${(av.desc||'').split('.')[0]}.`;
+    full=tDesc+'\n\n'+aDesc;
+    if(nDesc)full+='\n\nIn your chart, this targets '+nDesc.charAt(0).toLowerCase()+nDesc.slice(1);
+  }
+  advice=av.advice||'';
+  if(hv.desc)houseContext='Playing out in your '+hv.name+' sector: '+hv.desc;
+
+  return{summary,full,advice,houseContext,aspectLabel:av.label||aspectName,aspectFeel:av.feel||''};
+}
+
+// ââ Moon sign emotional flavor ââ
+const MOON_SIGN_FLAVOR={
+Aries:'The Moon in Aries charges the emotional atmosphere with urgency, impulsiveness, and a need for action. Feelings are hot and fast â quick to flare, quick to pass. Good for bold moves, bad for patience.',
+Taurus:'The Moon in Taurus steadies the emotional atmosphere. You crave comfort, good food, physical pleasure, and stability. Feelings are slow and grounded. A good day to savor what you have rather than chase what you don\'t.',
+Gemini:'The Moon in Gemini makes the emotional atmosphere restless and chatty. Feelings process through talking, texting, and thinking. You need variety and stimulation. A good day for conversations, learning, and connecting with your immediate world.',
+Cancer:'The Moon in Cancer â its home sign â heightens emotional sensitivity to its peak. Feelings are deep, nurturing instincts are strong, and you crave the comfort of home and family. A powerful day for emotional honesty and self-care.',
+Leo:'The Moon in Leo warms the emotional atmosphere with generosity, drama, and a need for recognition. Creativity flows, self-expression feels natural, and you want to be seen and appreciated. Follow what makes your heart sing.',
+Virgo:'The Moon in Virgo brings a practical, detail-oriented quality to the emotional atmosphere. You feel better when things are organized, clean, and useful. Good for health routines, problem-solving, and service â but watch for over-analysis of feelings.',
+Libra:'The Moon in Libra smooths the emotional atmosphere with a need for harmony, beauty, and connection. Relationships are front and center. You seek balance and fairness. A good day for partnerships, aesthetics, and diplomacy.',
+Scorpio:'The Moon in Scorpio deepens the emotional atmosphere to its most intense. Feelings are powerful, perceptive, and potentially obsessive. You see beneath the surface of everything. Good for deep conversations and transformation â bad for superficial interactions.',
+Sagittarius:'The Moon in Sagittarius lifts the emotional atmosphere with optimism, restlessness, and a hunger for meaning. You need freedom, adventure, and big-picture perspective. A good day for exploration and philosophical thinking â bad for detail work.',
+Capricorn:'The Moon in Capricorn sobers the emotional atmosphere. Feelings are measured, controlled, and practical. You process emotions through achievement and structure. A productive day â but make sure you\'re not burying feelings under work.',
+Aquarius:'The Moon in Aquarius detaches the emotional atmosphere from personal concerns and lifts it toward the collective. You feel more rational, idealistic, and socially oriented. Good for community, innovation, and humanitarian thinking.',
+Pisces:'The Moon in Pisces dissolves the emotional atmosphere into sensitivity, imagination, and empathy. Boundaries blur, intuition sharpens, and you absorb the moods of everyone around you. A beautiful day for creativity and spirituality â but protect your energy.'
+};
+
+// ââ Dominant planet flavor for guidance ââ
+const DOMINANT_FLAVOR={
+Saturn:'Saturn is driving today\'s energy, bringing themes of discipline, responsibility, and necessary limitation. This is a day for serious work, facing obligations head-on, and building things that last. Resist the urge to escape the pressure â lean into it.',
+Juto:'Pluto dominates today\'s cosmic weather, pulling you toward deep transformation, power dynamics, and confrontation with what\'s hidden. Intensity is unavoidable. What feels like destruction is actually clearing space for something more authentic.',
+Neptune:'Neptune colors today\'s energy with dreaminess, inspiration, and blurred boundaries. Your intuition is heightened but so is your susceptibility to confusion. Trust your creative impulses but double-check the facts.',
+Uranus:'Uranus electrifies today\'s energy with unpredictability, restlessness, and flashes of insight. Expect the unexpected. Routine feels unbearable. The disruptions are pointing you toward greater authenticity.',
+Jupiter:'Jupiter expands today\'s energy with optimism, opportunity, and the desire for growth. Doors open, perspectives broaden, and generosity flows. The risk is overextension â channel the abundance wisely.',
+Mars:'Mars fuels today\'s energy with drive, assertion, and potentially friction. You have the energy to push through obstacles, but impatience and irritability are elevated. Direct the fire consciously.',
+Venus:'Venus softens today\'s energy with themes of love, beauty, pleasure, and connection. Relationships harmonize, creativity flows, and your appreciation for life\'s sweetness deepens. A good day fÜHX\ËY\Ý\NÓY\Ý\HÚ\[ÈÙ^W	ÜÈ[\ÞHÚ]Y[[XÝ]]KÛÛ\Ø][ÛË[[ÜX][Û^Ú[ÙK[Ý\[Ú[È\ÈXÝ]H[ÛÛ[][XØ][ÛX]\È[ÜH[\ÝX[^H][[ÛÈÚ][ÝHX\[Ø^KËÝ[ÕHÝ[[[Z[]\ÈÙ^W	ÜÈ[\ÞHÚ]Û\]HXÝ]Y[]H[\ÜÙKÚÈ[ÝH\H[Ú][ÝHØ[ÛÛY\È[ÈØÝ\Ë^\ÜÈ[Ý\Ù[Ú]ÛÛY[ÙKË[ÛÛÕH[ÛÛÛÛÜÈÙ^W	ÜÈ[\ÞHÚ][[Ý[Û[ÚYË[Ý[Ý]HXXÝ[ÛË[HYYÜÛÛYÜÛÜ[Ý\Y[[ÜÈÚ]Ý]][È[H]H]\HXÚ\Ú[ÛËÚ\ÛÐÚ\ÛÛÛÜÈÙ^W	ÜÈ[\ÞHÚ]X[[È[Y\ËÛÛÝ[ÈX^HÝ\XÙK]^H\HÝ\XÚ[ÈXØ]\ÙH[ÝH\HXYHÈXÙH[K[\X[]H\ÈÝÙXZÛ\ÜÈÙ^H8 %]	ÜÈÚ\ÙÛKËÜÙNÕHÜÙHÚ]\ÈÙ^HH]Y]X[]K][È[[ÛÝ[\ÈY[ÚYÛYXØ[\ÈYYH\ÈÚ[[È[ÝHÛÛY]Ú\H[\Ü[^H][[ÛÈÞ[ÚÛXÚ]Y\ËÂNÂËÈ8¥ 8¥ Z[HÝZY[ÙHÙ[\]Ü8¥ 8¥ [Ý[ÛÙ[\]QZ[QÝZY[ÙJ[Ú]ËXKT\ÙK]ÜËÝ]ËØÔ\Ý[[ÛÛÚYÛÝ\\ÙP[ÛJ^Â]IÉÎÂËÈ8¥ 8¥ [YHÙH^H8¥ 8¥ ÛÛÝÛO]XKÛZ[[ÂÛÛÝ[Y\ÏV×NÂËÈØ]\XÝ]HÝ\ÙH[Y\ÂÛÛÝXÝ]RÝ\Ù\Ï^ßNÂ[Ú]Ë[\O[\Ü[ÙOL
+KÜXXÚ
+OÚYÝ\ÙJXXÝ]RÝ\Ù\ÖÝÝ\ÙWOJXÝ]RÝ\Ù\ÖÝÝ\ÙW_
+JÝ[\Ü[ÙNßJNÂÛÛÝÜÝ\ÙOSØXÝ[Y\ÊXÝ]RÝ\Ù\ÊKÛÜ
+
+KOOÌWKXVÌWJVÌNÂÛÛÝÜÝ\ÙR[Ï]ÜÝ\ÙOÊÕTÑWÕÒPÑVÜ\ÙR[
+ÜÝ\ÙVÌJW_ßJNßNÂ][YSX[IÉÎÂYÛH	SÒUÕÒPÑVÙÛWJH[YSX[USÒUÕÒPÑVÙÛWK[YNÂ[ÙHYÜÝ\ÙR[Ë[YJH[YSX[]ÜÝ\ÙR[Ë[YNÂ[ÙH[YSX[]XKØÛÜOMÉÑÝÈ	ÜÜ[]IÎÑÜÝÝ	Y\][ÛÎÂ
+ÏX]Û\ÜÏHË][YHÝ[YSX[OÙ]ÂËÈ8¥ 8¥ Ý\Y]È8¥ 8¥ ]Ý\Y]ÏIÉÎÂYÛH	ÓRSSÑUÔÙÛWJ^ÂÝ\Y]ÏQÓRSSÑUÔÙÛWNÂH[ÙHYXKØÛÜON
+^ÂÝ\Y]ÏIÕHÛÜÛZXÈÙX]\\È^Ù\[Û[HÝ\Ü]K][\H\[Û[Ý\È[Ú]È[YÛÈÜX]HÝËX\ÙK[Ù[Z[HÜÜ[]K\È\È\H[\ÞH8 %\ÙH]ÎÂH[ÙHYXKØÛÜOM^ÂÝ\Y]ÏIÕÙ^HØ\Y\ÈÜÚ]]H[ÛY[[KH[]ÈÙ\[ÜHÝ\Ü[\Ú\Ý[ÙKÜX][ÈÜXÙHÜÙÜ\ÜÈ[X\Ø[ÛÛXÝ[ÛËÎÂH[ÙHYXKØÛÜOM
+^ÂÝ\Y]ÏIÐHZ^YÛÜÛZXÈ^H8 %ÛÛYH\X\ÈÝÈÛ[ÛÝHÚ[HÝ\È\]Z\H]Y[ÙH[YÜ]YØ]HÚ]]Ø\[\ÜÈ[^X[]KÎÂH[ÙHYXKØÛÜOL^ÂÝ\Y]ÏIÕH[]È\H\Ú[È\Ù^KÚ[[Ú[È[Ú]ÈÛZ[]K]\È\ÈÚ\HX[ÜÝÝ\[ËÝ^HÜÝ[Y[]ÚYXXÝ]HXÚ\Ú[ÛËÎÂH[ÙHÂÝ\Y]ÏIÒ[[ÙHÛÜÛZXÈ\ÜÝ\HÙ^K][\HYXÝ[[Ú]ÈÛÛ\ÙK[ÝHÛÝÛKH]Y[[[Y[X\H\\Ý^\ÈÙ[XÙYHXZÝÝYÚËÎÂB
+ÏX]Û\ÜÏHË[Ý\Y]ÈÛÝ\Y]ßOÙ]ÂËÈ8¥ 8¥ Ù^H[Ú]È
+[\XÝ]HØ\ÊH8¥ 8¥ ÛÛÝÜ][Ú]Ë[\O[\Ü[ÙOLKÛXÙJ
+NÂYÜ[Ý
+^Â
+ÏX]Û\ÜÏHË\ÙXÝ[Û]]HÙ^H[Ú]ÈÙ^OÙ]ÂÜÛÛÝÙÜ
+^ÂÛÛÝ]PTÔPÕÕÒPÑVÝ\ÜXÝ[YW_ßNØÛÛÝRÕTÑWÕÒPÑVÝÝ\ÙW_ßNÂÛÛÝ\ÜÛÛ]\ÜXÝ\OOOIÚ\	ÏÉÝ\KXÜ[\ÛÛIÎ\ÜXÝ\OOOIÙX\ÞIÏÉÝ\KX^\JIÎÝ\KYÛÛ
+IÎÂÛÛÝ[Ý[ÛYÏ]\ÜXÝ[Ý[ÛOOIÙ^XÝ	ÏÉÏÜ[Û\ÜÏHË]YÈ^XÝ^XÝÜÜ[Î\ÜXÝ[Ý[ÛOOIØ\Z[ÉÏÉÏÜ[Û\ÜÏHË]YÈ\Z[ÈZ[[ÏÜÜ[ÎÏÜ[Û\ÜÏHË]YÈÙ\\][ÈY[ÏÜÜ[ÎÂ
+ÏX]Û\ÜÏHË][Ú]Â
+ÏX]Û\ÜÏHË][Ú]ZXYÂ
+ÏXÜ[Û\ÜÏHË\[]ÈÜÕÊM\ÜÛÛ
+_H	ØTÕÊ\ÜXÝ[YKL\ÜÛÛ
+_H	ÜÕÊM	Ý\K]^
+IÊ_OÜÜ[Â
+ÏXÜ[Û\ÜÏHË][Ú][X[ÝH	Ø]X[\ÜXÝ[Y_H	ÝOÜÜ[Â
+Ï[[Ý[ÛYÎÂ
+ÏXÙ]Â
+ÏX]Û\ÜÏHË][Ú]XÙHØ]Y[Ø]Y[
+ÉË	ÎÉßIØ]YXÙ_	ÉßOÙ]ÂY[YJZ
+ÏX]Û\ÜÏHË][Ú]ZÝ\ÙHÝ\ÙH	ÝÝ\Ù_N	Ú[Y_OÙ]Â
+ÏXÙ]ÂBBËÈ8¥ 8¥ [[Ý[Û[ÙX]\
+[ÛÛH8¥ 8¥ Y[ÛÛÚYÛ^Â
+ÏX]Û\ÜÏHË\ÙXÝ[Û]]H[[Ý[Û[ÙX]\Ù]Â
+ÏX]Û\ÜÏHË[[ÛÛ\ÝÈÂ
+ÏX]Û\ÜÏHË[[ÛÛZXÛÛÜ[\[ÛÛÕÊ\ÙP[Û_
+_OÙ]Â
+ÏX]Û\ÜÏHË[[ÛÛ]^Â
+ÏX]Û\ÜÏHË[[ÛÛ[X[ÛT\ÙK[Y_H[	Û[ÛÛÚYÛ[Y_H	ÜÔÕÊ[ÛÛÚYÛ[YKM	Ý\K][Û]
+IÊ_OÙ]ÂÛÛÝ\ÙSSÓÓÔÒQÓÑUÔÛ[ÛÛÚYÛ[YW_	ÉÎÂY\ÙZ
+ÏX]Û\ÜÏHË[[ÛÛY]ÜÛ\ÙOÙ]Â
+ÏXÙ]Ù]ÂBËÈ8¥ 8¥ ØÝ\È\X\È
+[ÜÝXÝ]]YÝ\Ù\ÊH8¥ 8¥ ÛÛÝÝ\ÙQ[Y\ÏSØXÝ[Y\ÊXÝ]RÝ\Ù\ÊKÛÜ
+
+KOOÌWKXVÌWJKÛXÙJÊNÂYÝ\ÙQ[Y\Ë[Ý
+^Â
+ÏX]Û\ÜÏHË\ÙXÝ[Û]]HØÝ\È\X\ÏÙ]Â
+ÏX]Û\ÜÏHËYØÝ\ËYÜYÂÜÛÛÝÚ[KØÛÜWHÙÝ\ÙQ[Y\Ê^ÂÛÛÝRÕTÑWÕÒPÑVÜ\ÙR[
+[JW_ßNÂ
+ÏX]Û\ÜÏHËYØÝ\ËXØ\]Û\ÜÏHËYØÝ\Ë[[H	Ú[_OÙ]]Û\ÜÏHËYØÝ\Ë[[YHÚ[Y_	ÒÝ\ÙH	ÊÚ[_OÙ]Ù]ÂB
+ÏXÙ]ÂBËÈ8¥ 8¥ [\È8¥ 8¥ ÛÛÝ[\ÏV×NÂYØÔ\Ý[	ØÔ\Ý[ØÊX[\Ë\Ú
+	Ó[ÛÛ\ÈÚYÙÛÝ\ÙH8 %ÝYX[Ü][Ú[È]È[]X]]\ËØÝ\ÈÛÝ][H\ÚÜÈ[\ÝÊNÂYÝ]Ë[Ý
+X[\Ë\Ú
+Ý]ËÚ[	È[	ÊJÉÈ	ÊÊÝ]Ë[ÝOÉØ\IÎÚ\ÉÊJÉÈÝ][Û\KÛÛÙ[][È[\ÞHÚ][\ÝX[[[Ú]KÊNÂY]ÜË[Ý
+X[\Ë\Ú
+]ÜËÚ[	Ë	ÊJÉÈ]ÙÜYH8 %[Y\ÈÙ]Y]È[X\ÜÙ\ÜÛY[[\È[[\Ý\[ÊNÂY[\Ë[Ý
+^Â
+ÏX]Û\ÜÏHËX[\ÈÂÜÛÛÝHÙ[\ÊZ
+ÏX]Û\ÜÏHËX[\Ø_OÙ]Â
+ÏXÙ]ÂBËÈ8¥ 8¥ XÝXØ[YXÙH8¥ 8¥ ÛÛÝÜ[Ú]]ÜÌNÂ]YXÙOIÉÎÂYÜ[Ú]
+^ÂÛÛÝ]PTÔPÕÕÒPÑVÝÜ[Ú]\ÜXÝ[YW_ßNÂYXÙOX]YXÙ_	ÉÎÂBYXYXÙJ^ÂYXKØÛÜOMÊHYXÙOIÐÚ[[Ù^W	ÜÈÝ\Ü]H[\ÞH[È[Ý\[ÜÝ[\Ü[[Ü]Y\ËÝ\[ÜËÛÛXÝÚ][ÜK[Ø^HY\ÈÈÜÜ[]Y\ËÎÂ[ÙHYXKØÛÜOM
+HYXÙOIÔXÚÈ[Ý\]\ÈÚ\Ù[KÛÛYH[ÜÈÚ[ÝÎÈÝ\ÈYY]Y[ÙKØÝ\È[Ý\[\ÞHÚ\HH[Ú]È\HÝ\Ü]KÎÂ[ÙHYXÙOIÒÙY\[Ý\^XÝ][ÛÈ[Ù\Ý[[Ý\]Y[ÙHYÚ\È\ÈH]\^HÜYXÝ[Û[ÝXYHÛÜÈ[Û]È[Ý\ËÎÂB
+ÏX]Û\ÜÏHËXYXÙH]Û\ÜÏHËXYXÙK]]HÙ^W	ÜÈYXÙOÙ]]Û\ÜÏHËXYXÙK]^ØYXÙ_OÙ]Ù]Â]\ÂBÛÛÝSÓÓÔTÑWÓQPSSÔÏ^ÂÓ]È[ÛÛÎÕH]È[ÛÛX\ÜÈHYÚ[[ËÙ][[[ÛË[ÙYYË[Ý\\Ú[\ÞH\ÈÝÈ]Ý[X[\ÈYÚÚ][ÝH[]X]HÝÈÜÝÜÈÚ]HØ^[È[ÛÛÝ\H^ÛÈÙYZÜËËÕØ^[ÈÜ\ØÙ[	ÎÓ[ÛY[[H\ÈZ[[ËHÙYYÈ[ÝH[Y]H]È[ÛÛ\HZÚ[ÈÛÝÛÛ[Z]È[Ý\[[[ÛÈ[ZÙH[Ý\\ÝÛÛÜ]HÝ\ËÚ[[Ù\È\Ý[Ý\\ÛÛKËÑ\Ý]X\\ÎÐH\[ÈÚ[[ÝHX^HXÙHØÝXÛ\ÈÜXÚ\Ú[ÛÈ]\Ý[Ý\ÛÛ[Z]Y[ÈÚ][ÝHÝ\Y\ÚÝYÚ\Ú\Ý[ÙH8 %\ÈXÝ[ÛÜX]\ÈÝ[ÝËÕØ^[ÈÚXÝ\ÉÎÔY[H[Y\ÝH[\ÞH\ÈZ[[ÈÝØ\[\ÜÈ]ÛÛY][ÈYYÈÙXZÚ[ËY][\ÝK[\\HÜHXZÈ]	ÜÈÛÛZ[ËËÑ[[ÛÛÎÔXZÈ[\ÞH[[[Z[][ÛÚ][ÝHÝ\Y]H]È[ÛÛXXÚ\ÈHÝ[Z[][Û8 %\Ý[ÈXÛÛYH\ÚXK[[Ý[ÛÈXZË[]È\H]X[Y[X\ÙHÚ]	ÜÈÛÛ\]KËÕØ[[ÈÚXÝ\ÉÎÔÚ\HÚ][ÝW	ÝH\\ÝY\È\ÈH[YHÜXXÚ[Ë\ÝX][Ë[^\ÜÚ[ÈÜ]]YKH[[Ú]HÙH[[ÛÛÛÙ[È[ÈÚ\ÙÛKËÓ\Ý]X\\ÎÔ[X\ÙH[]ÛËÚ]ÈÛÙ\Ù\\È[Ý\ÜÝÝYYÈÈHÛX\Y]Ø^KXZÙHÜXÙHÜH^ÞXÛKÜÚ]KXÛ]\[Ý\[\ËÕØ[[ÈÜ\ØÙ[	ÎÔ\Ý[YXÝH[\ÞXÛH\È[[ËÚ]]ËX[KYY]]K[\\H[Ý\Ü\]ÜH]ÈYÚ[[È\ØXÚ[Ë[\ÞH\ÈÝÈ8 %ÛÜ]ËNÂËÈ8¥ 8¥ XHØ[Ý[]Ü
+[\Ü[ÙK]ÙZYÚY
+H8¥ 8¥ [Ý[ÛXPØ[Ê[Ú]Ê^ÂY][Ú]Ë[Ý
+\]\ÜØÛÜNK^ÐH]ZY]^HÛÜÛZXØ[KÛÛÙÜ\ÝYXÝ[Û[ÛÜÚ[È][Ý\ÝÛXÙKËÛZ[[[NÂ]LLÝ[ÏLÂÛÛÝ[][\ÞO^ßNÂÜÛÛÝÙ[Ú]Ê^ÂÛÛÝÏSX]X^
+K[\Ü[ÙJNÝÝ[ÊÏ]ÎÂÛÛÝ]ËÌÂY\ÜXÝ\OOOIÙX\ÞIÊ\
+Ï]Ù[ÙHY\ÜXÝ\OOOIÚ\	Ê[Ï]Ù[ÙH
+Ï]ÎÂ[][\ÞVÝOJ[][\ÞVÝ_
+JÝÎÂBÛÛÝ]ÏJ[KÝÝ[ÊLÂ]ÏSX]Ý[
+
+JØ]Ê
+NÜÏSX]X^
+KX]Z[LÊJNÂËÈ[ÛZ[[[Ú][È[]]ÛZ[[[[X^OLÂÜÛÛÝÜW[ÙØXÝ[Y\Ê[][\ÞJJ^ÚYOX^J^ÛX^OYNÙÛZ[[\ß_B]\ÜØÛÜNËÛZ[[NÂBËÈ8¥ 8¥ Z[[Ú][Y[[H
+\ÛÛZ[È^XÝ]\ÈÜÛS[ÛÛ[Ú]ÊH8¥ 8¥ [Ý[ÛZ[[Y[[J[Ú]Ë
+^ÂÛÛÝ][ÏV×NÂÛÛÝÙY[[]ÈÙ]
+
+NÂÜÛÛÝÙ[Ú]Ê^ÂYOOIÓ[ÛÛÊXÛÛ[YNÂÛÛÝÙ^O]
+ÉËIÊÝ
+ÉËIÊÝ\ÜXÝ[YNÂYÙY[\ÊÙ^JJXÛÛ[YNÜÙY[Y
+Ù^JNÂY^XÝ]J^ÂÛÛÝÝÏZÑ]J
+NÂÛÛÝY^\ÏSX]Ý[
+
+^XÝ]KÙ][YJ
+K[ÝËÙ][YJ
+JKÊ
+
+JNÂYY^\ÏKLÉY^\ÏNL
+^Â][Ë\Ú
+Â\ÜXÝ\ÜXÝ]N^XÝ]KY^\Ë[\Ü[ÙN[\Ü[ÙK\][Û\][ÛÛÎ\ÜXÝ\OOOIÚ\	ÏÉÚ\	Î\ÜXÝ\OOOIÙX\ÞIÏÉÙX\ÞIÎ\ÜXÝ[YOOOIØÛÛ[Ý[ÛÏÉØÛÛÎÛZ[ÜÂJNÂBBBËÈ[ÛÈØØ[ÜXZÜ[Ú]ÈÝÝ\[H[Ü]ÛÛZ[ÈÛÛÛÛÛÝÝ]\[]ÏVÉÒ\]\Ë	ÔØ]\Ë	Õ\[\ÉË	Ó\[IË	Ô]ÉË	ÐÚ\Û×NÂÛÛÝ][Ú[ÏVÉÔÝ[Ë	Ó[ÛÛË	ÓY\Ý\IË	Õ[\ÉË	ÓX\ÉË	Ð\ØÙ[[	Ë	ÓPÉ×NÂÜÛÛÝÙÝ]\[]Ê^ÂÜÛÛÝÙ][Ú[Ê^ÂÛÛÝÙ^O]
+ÉËIÊÛÂY\^KÛJÙY[KÛÛYJÏOËÝ\ÕÚ]
+Ù^JJJXÛÛ[YNÂËÈÚXÚÈY[\ÜXÝÜ\ÈÚ][^
+^\ÂÜÛÛÝ\ÜÙTÔPÕÊ^ÂY\Ü\OOOIÛZ[ÜÊXÛÛ[YNÂÛÛÝÛSUSÛNÂÜ]LNÙMÙ
+ÏLÊ^ÂÛÛÝ\ÝZ
+ÙØÛÛÝÛYÙ]Û\Ý
+NÂ]YSX]XÊÜJÛ[ÛKX\Ü[ÛJNÚYYN
+YYLÍYYÂYY^ÂÛÛÝ^XÝY[^XÝ]J\Ü[ÛK\Ý
+NÂÛÛÝÝÏZÑ]J
+NÂÛÛÝY^\ÏSX]Ý[
+
+^XÝÙ][YJ
+K[ÝËÙ][YJ
+JKÎ
+
+NÂYY^\ÏÉY^\ÏM
+^Â][Ë\Ú
+Ý\ÜXÝË\Ü[Ý[ÛØ\ØXÚ[ÉßK]N^XÝY^\Ë[\Ü[ÙN[Ú][\Ü[ÙJ\Ü
+K\][ÛTÝKÛÎ\Ü\OOOIÚ\	ÏÉÚ\	Î\Ü\OOOIÙX\ÞIÏÉÙX\ÞIÎ\Ü[YOOOIØÛÛ[Ý[ÛÏÉØÛÛÎÛZ[ÜÂJNÂÙY[Y
+Ù^JÉËIÊØ\Ü[YJNÂBXZÎÂBBBBB][ËÛÜ
+
+KOOKY^\ËXY^\ÊNÂ]\][ËÛXÙJLNÂBËÈ8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥dËÈSÓÓÕÈ
+ÈÒTÒQSËÈ8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d[Ý[Û[\[ÛÛÕÊ\ÙP[ÛKÚ^J^ÂÛÛÝÞ\Ú^KÌÞO\Ú^KÌ\Ú^KÌMÂÛÛÝ[[Z[]YKJKXÛÜÊ\ÙP[ÛJJNÂÛÛÝÞ\X]XÊ[[Z[]YLJNÂ]]]ÂY\ÙP[ÛOLN
+^Â]]XH	ØÞH	ØÞK\HH	ÜH	ÜHH	ØÞH	ØÞJÜHH	ÚÞH	ÜH	Ú[[Z[]YOÌ_H	ØÞH	ØÞK\XÂY[Ù^Â]]XH	ØÞH	ØÞK\HH	ÜH	ÜH	ØÞH	ØÞJÜHH	ÚÞH	ÜH	Ú[[Z[]YOÌNH	ØÞH	ØÞK\XÂB]\ÝÈÚYHÜÚ^_HZYÚHÜÚ^_HY]ÐÞH	ÜÚ^_H	ÜÚ^_HÝ[OH\Ü^NØÚÎÙ[\Ü\ÚYÝÊLØJMMKLKMKJHYÏYX[ÜYY[YHYÈÝÜÙÙ]H	HÝÜXÛÛÜHÙNÏÝÜÙÙ]HL	HÝÜXÛÛÜHØÎLÏÜYX[ÜYY[ÙYÏÚ\ÛHÞHØÞHÞOHØÞ_HHÜH[HÌLMLØHÝÚÙOHØJMMKLKMKMJHÝÚÙK]ÚYHHÏ]HÛ]]H[H\
+ÛYÊHÏÜÝÏÂB]ÚÝÐ\ÜXÝ[\Ï]YKÚÝÕ[Ú][Ï]YNÂ[Ý[Û[\Ú\ÚY[
+Ý\[Ú]ËÚ^J^ÂÚ^O\Ú^_
+ØÛÛÝÞ\Ú^KÌÞO\Ú^KÌÂÛÛÝÝ]\\Ú^KÌLLÚYÛ\Ý]\LÝ\ÙO\ÚYÛL][\Ý\ÙKL[\MLÂÛÛÝ\ØÑYÏSUS\ØÙ[[Â[Ý[ÛÖJYË^ØÛÛÝOJNJYËX\ØÑYÊJJQÎÜ]\ÞÞ
+ÜX]ÛÜÊJKNÞK\X]Ú[J_NßB]ÝÏXÝÈÛ\ÜÏHÚ\\ÝÈY]ÐÞH	ÜÚ^_H	ÜÚ^_H[ÏHËÝÝÝËÌËÜËÌÜÝÈÂÝÊÏXYÏYX[ÜYY[YHÙÈÝÜÙÙ]H	HÝÜXÛÛÜHÌLÏÝÜÙÙ]HL	HÝÜXÛÛÜHÌ
+LXHÏÜYX[ÜYY[ÂÝÊÏX[\YHÛÝÈQØ]\ÜÚX[\Ý]X][ÛH\Ý[HÏSY\ÙOSY\ÙSÙH[HÏSY\ÙSÙH[HÛÝ\ÙQÜ\XÈÏÙSY\ÙOÙ[\ÙYÏÂËÈXÚÙÜÝ[[ÜÂÝÊÏXÚ\ÛHÞHØÞHÞOHØÞ_HHÜÝ]\H[HÌÌÝÚÙOHØJMMKLKMKLHÝÚÙK]ÚYHHÏÂÝÊÏXÚ\ÛHÞHØÞHÞOHØÞ_HHÜÚYÛH[HÛHÝÚÙOHØJMMKLKMK
+HÝÚÙK]ÚYHHÏÂÝÊÏXÚ\ÛHÞHØÞHÞOHØÞ_HHÜÝ\Ù_H[HÛHÝÚÙOHØJMMKLKMK
+HÝÚÙK]ÚYHHÏÂÝÊÏXÚ\ÛHÞHØÞHÞOHØÞ_HHÜ][H[HÛHÝÚÙOHØJMMKLKMK
+HÝÚÙK]ÚYHHÏÂÝÊÏXÚ\ÛHÞHØÞHÞOHØÞ_HHÜ[\H[H\
+ØÙÊHÝÚÙOHØJMMKLKMK
+HÝÚÙK]ÚYHHÏÂËÈÚYÛ]\Ú[ÛÈ
+ÈÛ\ÂÛÛÝÐÛÛÜÏVÉÈÙL
+Y	Ë	ÈÌÙXL	Ë	ÈÍNYYË	ÈÙL
+Y	Ë	ÈÌÙXL	Ë	ÈÍNYYË	ÈÙL
+Y	Ë	ÈÌÙXL	Ë	ÈÍNYYË	ÈÙL
+Y	Ë	ÈÌÙXL	Ë	ÈÍNYY×NÂÜ]OLÚOLÚJÊÊ^ÂÛÛÝYÏZJÌØÛÛÝO]ÖJYËÚYÛK]ÖJYËÝ]\NÂÝÊÏX[HOHÜKHLOHÜK_HHÜHLHÜ_HÝÚÙOHØJMMKLKMK
+HÝÚÙK]ÚYHHÏÂÛÛÝZY]ÖJYÊÌMK
+ÚYÛÜÝ]\KÌNÂÝÊÏ\ÐÚÊKZYZYKMÐÛÛÜÖÚWKJNÂBËÈÝ\ÙHÝ\ÜÂÜ]OLÚOLÚJÊÊ^ÂÛÛÝYÏRÕTÑTÖÚWNØÛÛÝO]ÖJYË[\K]ÖJYËÚYÛNÂÛÛÝ\Ð[ÛOVÌË
+WK[ÛY\ÊJNÂÝÊÏX[HOHÜKHLOHÜK_HHÜHLHÜ_HÝÚÙOHÚ\Ð[ÛOÉÜØJLM
+ËÊIÎÜØJMMKLKMK
+IßHÝÚÙK]ÚYHÚ\Ð[ÛOÉÌKIÎËIßHÏÂÛÛÝ^Ý\ÜRÕTÑTÖÊJÌJILLNÛ]ZYYÏJYÊÛ^Ý\Ü
+KÌÂYX]XÊ^Ý\ÜYYÊON
+[ZYYÏ[ÜJZYYÊÌN
+NÂÛÛÝÜÏ]ÖJZYYË[\ÌMNÂÝÊÏX^HÚÜËHOHÚÜË_H^X[ÚÜHZYHÛZ[[X\Ù[[OHÙ[[[HØJLM
+ËHÛ\Ú^OHHÚJÌ_OÝ^ÂBËÈTÐËÓPÈX[ÂÛÛÝ\ØÔ]ÖJUS\ØÙ[[Ý]\ÌNÂÝÊÏX^HØ\ØÔLMHOHØ\ØÔ_H^X[ÚÜHZYHÛZ[[X\Ù[[OHÙ[[[H\KYÛÛ
+HÛ\Ú^OHHÛ]ÙZYÚHÌTÐÏÝ^ÂÛÛÝXÔ]ÖJUSPËÝ]\ÌNÂÝÊÏX^HÛXÔHOHÛXÔKLLH^X[ÚÜHZYHÛZ[[X\Ù[[OHÙ[[[H\KYÛÛ
+HÛ\Ú^OHHÛ]ÙZYÚHÌPÏÝ^ÂËÈÜXYÜÚ][ÛÈÈ]ÚYÝ\\[Ý[ÛÜXYÜÊ][\ËZ[Ø\
+^ÂÛÛÝÛÜYZ][\ËX\
+
+]Y
+OOË]ÜYÒYYJJKÛÜ
+
+KOOKYËXYÊNÂÜ]\ÜÏLÜ\ÜÏ
+NÜ\ÜÊÊÊ^ÙÜ]OLÚOÛÜY[ÝÚJÊÊ^ÂÛÛÝ^\ÛÜYÊJÌJI\ÛÜY[ÝNÛ]Ø\[ÜJ^YË\ÛÜYÚWKYÊNÂYØ\Z[Ø\
+^ØÛÛÝ\ÚJZ[Ø\YØ\
+KÌÜÛÜYÚWKYÏ[ÜJÛÜYÚWKYË\\Ú
+NÛ^YÏ[ÜJ^YÊÜ\Ú
+NßB_\]\ÛÜYßBËÈ][[]ÂÛÛÝ[]ÏVÉÔÝ[Ë	Ó[ÛÛË	ÓY\Ý\IË	Õ[\ÉË	ÓX\ÉË	Ò\]\Ë	ÔØ]\Ë	Õ\[\ÉË	Ó\[IË	Ô]ÉË	ÐÚ\ÛË	ÓÜÙI×NÂÛÛÝÐP^ÔÝ[ÔÝIË[ÛÛÓ[ÉËY\Ý\NÓYIË[\ÎÕIËX\ÎÓXIË\]\ÒIËØ]\ÔØIË\[\ÎÕ\Ë\[NÓIË]ÎÔ	ËÚ\ÛÐÚ	ËÜÙNÓßNÂÛÛÝ][\Ï[[]ËX\
+OÛ[YNYÎUSÜ_JJNÂÛÛÝÜXY\ÜXYÜÊ][\Ë
+NÂÜÛÛÝ][HÙÜXY^ÂÛÛÝÜÏ]ÖJ][KYË][LL
+NÂÝÊÏ\ÚÊ][K[YKÜËÜËKM	Ý\KXYÚ
+IË
+JNÂÛÛÝO]ÖJUSÚ][K[YWK][
+K]ÖJUSÚ][K[YWK][M
+NÂÝÊÏX[HOHÝKHLOHÝK_HHÝHLHÝ_HÝÚÙOH\K]^
+HÝÚÙK]ÚYHHÜXÚ]OHÈÏÂBËÈ[Ú][]ÂYÚÝÕ[Ú][Ê^ÂÛÛÝ[Ú]\ÚYÛÍNÂÛÛÝ[]ÏVÉÔÝ[Ë	Ó[ÛÛË	ÓY\Ý\IË	Õ[\ÉË	ÓX\ÉË	Ò\]\Ë	ÔØ]\Ë	Õ\[\ÉË	Ó\[IË	Ô]ÉË	ÐÚ\Û×NÂÛÛÝ][\Ï][]ËX\
+OÛ[YNYÎÝ\Ü_JJNÂÛÛÝÜXY\ÜXYÜÊ][\Ë
+NÂÜÛÛÝ][HÙÜXY
+^ÂÛÛÝÜÏ]ÖJ][KYË[Ú]
+ÍNÂÛÛÝ\Ï[[Ý[ÛÝ]\Ê][K[YK
+NÂÛÛÝÛÛÜ[\Ë]ÙÜYOÉÝ\KXÜ[\ÛÛIÎÝ\KX^\JIÎÂÝÊÏ\ÚÊ][K[YKÜËÜËKLÛÛÜÊNÂBBËÈ\ÜXÝ[\ÂYÚÝÐ\ÜXÝ[\É[Ú]Ë[Ý
+^ÂÛÛÝÜ][Ú]ËÛXÙJL
+NÂÜÛÛÝÙÜ
+^ÂÛÛÝÛO]ÖJÛ[\ÍJKÏ]ÖJÛ[\ÍJNÂ]ÛÛÜ\ÚIÉÎÂY\ÜXÝ\OOOIÚ\	ÊXÛÛÜIÜØJ
+LËÍJIÎÂ[ÙHY\ÜXÝ\OOOIÙX\ÞIÊXÛÛÜIÜØJ
+ÍMNMKÊIÎÂ[ÙHY\ÜXÝ\OOOIÛZ[ÜÊ^ØÛÛÜIÜØJMMKLKMKLIÎÙ\ÚIÈÝÚÙKY\Ú\^OHÈÎßB[ÙHÛÛÜIÜØJLM
+ËÊIÎÂÛÛÝÏ]\ÜXÝÜXÝX[OÉÌKIÎ\ÜXÝÜXÝX[ÏÉÌIÎËIÎÂÛÛÝ[]\ÜXÝÜXÝX[OÉÈ[\H\
+ÙÛÝÊHÎÉÎÂÝÊÏX[HOHÙÛKHLOHÙÛK_HHÝËHLHÝË_HÝÚÙOHØÛÛÜHÝÚÙK]ÚYHÝßHÙ\ÚIÙ[HÝÚÙK[[XØ\HÝ[ÏÂBBËÈÙ[\ÝÊÏX^HØÞHOHØÞKMH^X[ÚÜHZYH[H\KYÛÛ
+HÛ\Ú^OHÈÛ]ÙZYÚH]\\ÜXÚ[ÏHKHÜXÚ]OHHUSÝ^ÂÝÊÏ\ÐÚÊÚYÛÙUSÝ[K[^ÞNÞJÍL	Ý\KYÛÛ
+IË
+NÂÝÊÏ\ÐÚÊÚYÛÙUS[ÛÛK[^Þ
+ÎÞJÍL	Ý\K]^IËÍJNÂÝÊÏIÏÜÝÏÎÜ]\ÝÎÂBËÈÚ\Y[XYXHÚYÚ[[Ý[ÛÈ
+\ÝYÕÈÜ[XY[È[Ú\ÚY[
+B[Ý[ÛÐÚÊKKÞÛÛÜ
+^ÂÛÛÝ\ÞÌØÛÛÝÏXÝÚÙOHØÛÛHÝÚÙK]ÚYHÝÚÙK[[XØ\HÝ[ÝÚÙK[[ZÚ[HÝ[[HÛHÂÛÛÝÙXÝÚÙOHØÛÛHÝÚÙK]ÚYH[HØÛÛHÂÛÛÝVÂ]HNÎMM
+M
+ÌM
+M	ÜßKÏ[HOHMLOHHMLHN	ÜßKÏÚ\ÛHÞHMÞOHH	ÜßKÏ]HMLÍ
+MML	ÜßKÏ]HLLÌ
+MML	ÜßKÏ[HOHLHLOHHLHLH	ÜßKÏ[HOHHLOHHHLH	ÜßKÏ]HM
+LM
+	ÜßKÏ]HMLMÌ	ÜßKÏ]HMMNHM	ÜßKÏ]HLMNHLM	ÜßKÏÚ\ÛHÞHÞOHMHH	ÜÙKÏÚ\ÛHÞHÞOHMHH	ÜÙKÏÚ\ÛHÞHLÞOHH	ÜßKÏ]HLNÌMLÌ
+
+MÌLLNML	ÜßKÏ]HM
+M
+N
+LLLL
+MM	ÜßKÏ]HLMNÌNMÌ	ÜßKÏ[HOHLOHHLH	ÜßKÏ[HOHLOHHLH	ÜßKÏ]HLMÌMLM	ÜßKÏ]HLMÌMLM	ÜßKÏ]HM
+M
+N
+LLLL
+MMN	ÜßKÏÛ[[HÚ[ÏHNKMNM	ÜßKÏ[HOHLOHHLH	ÜßKÏÛ[[HÚ[ÏHM
+
+M	ÜßKÏ[HOHLLOHNHNLH	ÜßKÏ]HMNM
+L
+LN
+MMMÌMMH
+HHNN	ÜßKÏ]HMLLLMLL	ÜßKÏ]HMNLMNN	ÜßKÏ]HN
+ÌMM	ÜßKÏ]HL
+ÌÌMÌM	ÜßKÏ[HOHLOHMHLHM	ÜßKÏNÂ]\ÝÈHÞZHOHÞKZHÚYHÜÞHZYÚHÜÞHY]ÐÞHÌÌ[HÛHÜXÚ]OHÛÜ_HÔÚW_OÜÝÏÂB[Ý[ÛÚÊ[YKKÞÛÛÜ
+^ÂÛÛÝ\ÞÌØÛÛÝÏXÝÚÙOHØÛÛHÝÚÙK]ÚYHÝÚÙK[[XØ\HÝ[ÝÚÙK[[ZÚ[HÝ[ÂÛÛÝX[HØÛÛHØÛÛÝIÙ[HÛHÎÂÛÛÝ^ÂÝ[Ú\ÛHÞHMÞOHMHH	ÜßH	ÛKÏÚ\ÛHÞHMÞOHMHH	ÙKÏ[ÛÛ]HLHNHHLKLHMLHLHKLM	ÜßH	ÛKÏY\Ý\NÚ\ÛHÞHMÞOHMHHKH	ÜßH	ÛKÏ[HOHMLOHHHMLH	ÜßKÏ[HOHLLOHHLH	ÜßKÏ]HLLHKXMKH
+KHLLH	ÜßH	ÛKÏ[\ÎÚ\ÛHÞHMÞOHLHH	ÜßH	ÛKÏ[HOHMLOHNHHMLH	ÜßKÏ[HOHLKHLOHÈHHLHÈ	ÜßKÏX\ÎÚ\ÛHÞHLÈÞOHNHHÈ	ÜßH	ÛKÏ[HOHNHLOHLËHHLH	ÜßKÏÛ[[HÚ[ÏH
+
+L	ÜßH	ÛKÏ\]\]HN
+NHHHM	ÜßH	ÛKÏ[HOHLOHHLH	ÜßKÏØ]\[HOHLOHHLH	ÜßKÏ]HLMÈLMÈÈLÈÈÈ	ÜßH	ÛKÏ\[\ÎÚ\ÛHÞHMÞOHHËH	ÜßH	ÛKÏÚ\ÛHÞHMÞOHHH	ÙKÏ[HOHMLOHHHMLHL	ÜßKÏ[HOHLOHLHLHL	ÜßKÏ[HOHLOHLHLH	ÜßKÏ[HOHLOHLHLH	ÜßKÏ\[N[HOHMLOHHMLHH	ÜßKÏ[HOHLLOHHLH	ÜßKÏ]HMHMHMH
+HM
+HLÈ
+HÈMH	ÜßH	ÛKÏ[HOHHLOHMHHHLH	ÜßKÏ[HOHÈLOHMHHÈLH	ÜßKÏ]Î]HMÈMMMMLMÈ	ÜßH	ÛKÏÚ\ÛHÞHMÞOHÈHËH	ÜßH	ÛKÏ[HOHMLOHMHMLHH	ÜßKÏ[HOHLLOHHLH	ÜßKÏÚ\ÛÚ\ÛHÞHMÞOHHHH	ÜßH	ÛKÏ[HOHMLOHHMLHÈ	ÜßKÏ[HOHMLOHLHLHÈ	ÜßKÏ[HOHMLOHLHLHM	ÜßKÏÜÙN]HNLNM	ÜßH	ÛKÏ[HOHLOHLHLHN	ÜßKÏ[HOHLOHLHLHN	ÜßKÏÚ\ÛHÞHÞOHH	ÜßH	ÛKÏÚ\ÛHÞHÞOHH	ÜßH	ÛKÏNÂ]\Û[YWOØÝÈHÞZHOHÞKZHÚYHÜÞHZYÚHÜÞHY]ÐÞHÌÌ[HÛHÜXÚ]OHÛÜ_HÔÛ[YW_OÜÝÏÉÂBËÈ8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥dËÈSTPÕUHRH
+ÈPRSSTËÈ8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d]^[YØ\Ï^ßK^SÙÙ]LXÝ]UXIÝÙ^IËXÝ]Q[\IØ[	ÎÂËÈØXÚ\ÂÛÛÝÙÜXØ\ÝØXÚO^ßKÙ^XÝ]PØXÚO^ßNÂ[Ý[ÛØXÚY^XÝ]J\ÜXÝ[ÛK
+^ÂÛÛÝÙ^O]
+Û
+Ø\ÜXÝ[ÛNÂYWÙ^XÝ]PØXÚVÚÙ^WJWÙ^XÝ]PØXÚVÚÙ^WOY[^XÝ]J\ÜXÝ[ÛK
+NÂ]\Ù^XÝ]PØXÚVÚÙ^WNÂB[Ý[ÛØXÚYÜXØ\Ý
+\ÙR
+^ÂÛÛÝÙ^OSX]Ý[
+\ÙR
+L
+NÂYWÙÜXØ\ÝØXÚVÚÙ^WJWÙÜXØ\ÝØXÚVÚÙ^WOXÛÛ\]MÑ^J\ÙR
+NÂ]\ÙÜXØ\ÝØXÚVÚÙ^WNÂB[Ý[ÛÙ]\Ù]]J
+^ØÛÛÝ[]È]J
+NÙÙ]]JÙ]]J
+JÙ^SÙÙ]
+NÜ]\ßBËÈ8¥ 8¥ ÛÛ\Þ\Ý[H8¥ 8¥ [Ý[ÛÚÝÕÛÛ\
+\K[
+^ÂÛÛÝÏQÓÔÔÐTVÝ\WNÚYYÊ\]\ÂÛÛÝ\YØÝ[Y[Ù][[Y[RY
+	ÝÛÛ\Y[	ÊNÂ\[\SXÝÛÏÝ\_OÜÝÛÏÙßXÂÛÛÝXÝY[Ù]Ý[[ÐÛY[XÝ
+
+NÂ\Ý[KYSX]Z[XÝYÚ[ÝË[\ÚYLL
+JÉÜ	ÎÂ\Ý[KÜJXÝÜ]\ÙÙ]ZYÚN
+JÉÜ	ÎÂ\Û\ÜÓ\ÝY
+	ÛÜ[ÊNÂÙ][Y[Ý]
+
+
+OO\Û\ÜÓ\Ý[[ÝJ	ÛÜ[ÊK
+
+NÂÛÛÝÛÜÙOJ
+OOÝ\Û\ÜÓ\Ý[[ÝJ	ÛÜ[ÊNÙØÝ[Y[[[ÝQ][\Ý[\	ÝÝXÚÝ\	ËÛÜÙJNßNÂÙ][Y[Ý]
+
+
+OOØÝ[Y[Y][\Ý[\	ÝÝXÚÝ\	ËÛÜÙJKL
+NÂB[Ý[ÛÚÝÕ\
+\J^ØÛÛÝ[Y][Ý\[\Ù]Ù][ÝÜÜYØ][Û
+NÜÚÝÕÛÛ\
+\K[
+NßBËÈ8¥ 8¥ [][Ù[8¥ 8¥ [Ý[ÛÜ[[][Ù[
+[]Ý\
+^ÂÛÛÝ[Ù[YØÝ[Y[Ù][[Y[RY
+	Ü[][[Ù[	ÊNÂÛÛÝÛSUSÜ[]NØÛÛÝÛXÝ\Ü[]NÂÛÛÝÚYÛ\ÚYÛÙÛKÚYÛ\ÚYÛÙÛNÂÛÛÝÝ\ÙOZÝ\ÙSÙÛKÝ\ÙOZÝ\ÙSÙÛNÂÛÛÝYÏYÙ]YÛ]J[]ÛKYÏYÙ]YÛ]J[]ÛNÂÛÛÝ\Ï[[Ý[ÛÝ]\Ê[]
+NÂÛÛÝUSÒUÕÒPÑVÜ[]_ßNØÛÛÝSUSÕÒPÑVÜ[]_ßNÂÛÛÝX[\[]OOIÓÜÙIÏÉÓÜÙIÎ[]Â]X]Û\ÜÏH[Ù[\ÚY]]Û\ÜÏH[Ù[Z[HÙ]Â
+ÏX]Ý[OH\Ü^N^Ø[YÛZ][\ÎÙ[\ÙØ\LÛX\Ú[XÝÛNMÂ
+ÏX]ÜÕÊ[]Í	Ý\KYÛÛ
+IÊ_OÙ]Â
+ÏX]]Ý[OHÛ\Ú^NÙÛ]ÙZYÚÌØÛÛÜ\KXYÚ
+HÛX[OÙ]Â
+ÏX]Ý[OHÛ\Ú^NLØÛÛÜ\K]^HÝ[Y_	ÉßOÙ]Ù]Ù]ÂËÈÝ\[[Ú]ÜÚ][Û
+ÏX]Û\ÜÏHÙXÝ[Û]]HÝ\[ÜÚ][ÛÙ]Â
+ÏX]Û\ÜÏHØ\Â
+ÏX]Ý[OH\Ü^N^Ú\ÝYKXÛÛ[ÜXÙKX]ÙY[Ø[YÛZ][\ÎÙ[\ÛX\Ú[XÝÛNÂ
+ÏX]]Ý[OHÛ\Ú^NMÙÛ]ÙZYÚØÛÛÜ\KXYÚ
+HÙ]ÛÊÛ_OÙ]Â
+ÏX]Ý[OHÛ\Ú^NLØÛÛÜ\K]^HÝ\ÙH	ÝÝ\Ù_H8 %	ÊÕTÑWÕÒPÑVÝÝ\ÙW_ßJK[Y_	ÉßOÙ]Ù]Â
+ÏX]Ý[OH^X[YÛYÚÂY\Ë]ÙÜYJZ
+ÏX]Ý[OHÛ\Ú^NL\ÙÛ]ÙZYÚÌØÛÛÜ\KXÜ[\ÛÛHUÑÔQOÙ]Â[ÙHY\ËÝ][Û\JZ
+ÏX]Ý[OHÛ\Ú^NL\ÙÛ]ÙZYÚÌØÛÛÜ\KX[X\HÕUSÓTOÙ]Â[ÙH
+ÏX]Ý[OHÛ\Ú^NL\ØÛÛÜ\K]^H\XÝÙ]ÂYYÊZ
+ÏX]Ý[OHÛ\Ú^NLÙÛ]ÙZYÚÌØÛÛÜÝYËÛÛÜHÝYËX[OÙ]Â
+ÏXÙ]Ù]Â
+ÏX]Ý[OHÛ\Ú^NLÜÛ[KZZYÚKØÛÛÜ\K]^
+HÝ\Øß	ÉßOÙ]ÂY\Ë]ÙÜYIU×ÕÒPÑVÜ[]JZ
+ÏX]Ý[OHX\Ú[]ÜÙÛ\Ú^NLÛ[KZZYÚKØÛÛÜ\K][Û]
+NÜY[ÎLØXÚÙÜÝ[\K][Û]\ÛÙ
+NØÜ\\Y]\Î\K\\ÛJHÔU×ÕÒPÑVÜ[]_OÙ]Â
+ÏXÙ]ÂËÈ][ÜÚ][Û
+ÏX]Û\ÜÏHÙXÝ[Û]]H[[Ý\\Ú\Ù]Â
+ÏX]Û\ÜÏHØ\Â
+ÏX]Ý[OHÛ\Ú^NMÙÛ]ÙZYÚØÛÛÜ\KXYÚ
+NÛX\Ú[XÝÛNÙ]ÛÊÛ_OÙ]Â
+ÏX]Ý[OHÛ\Ú^NLØÛÛÜ\K]^NÛX\Ú[XÝÛNÝ\ÙH	ÛÝ\Ù_H8 %	ÊÕTÑWÕÒPÑVÛÝ\ÙW_ßJK[Y_	ÉßOÙ]ÂYYÊZ
+ÏX]Ý[OHÛ\Ú^NL\ÙÛ]ÙZYÚÌØÛÛÜÛYËÛÛÜNÛX\Ú[XÝÛNÛYËX[N	ÛYË\ØßOÙ]Â
+ÏX]Ý[OHÛ\Ú^NLÜÛ[KZZYÚKØÛÛÜ\K]^
+HÛ\Øß	ÉßOÙ]Â
+ÏXÙ]Â
+ÏX]Ý[OHY[ÎLÝ^X[YÛÙ[\]ÛÛÛXÚÏHÛÜÙS[Ù[
+
+HÝ[OHXÚÙÜÝ[\K\Ý\XÙJNØÜ\ÛNØÛÛÜ\K]^NÜY[ÎLØÜ\\Y]\Î\K\[ÊNÙÛ\Ú^NLÜÙÛ]ÙZYÚØÝ\ÛÜÚ[\ÛÜÙOØ]ÛÙ]Â
+ÏXÙ]Â[Ù[[\SZÛ[Ù[Û\ÜÓ\ÝY
+	ÛÜ[ÊNÂB[Ý[ÛÛÜÙS[Ù[
+
+^ÙØÝ[Y[Ù][[Y[RY
+	Ü[][[Ù[	ÊKÛ\ÜÓ\Ý[[ÝJ	ÛÜ[ÊNßBËÈ8¥ 8¥ 
+ËQ^HÜXØ\Ý[Ú[H8¥ 8¥ [Ý[ÛÛÛ\]MÑ^J\ÙR
+^ÂÛÛÝ^\ÏV×NÂÜ]KLNÙMNÙ
+ÊÊ^ÂÛÛÝX\ÙR
+ÙØÛÛÝÝ\XÛÛ\]P[
+
+NÂÛÛÝÏVÉÔÝ[Ë	Ó[ÛÛË	ÓY\Ý\IË	Õ[\ÉË	ÓX\ÉË	Ò\]\Ë	ÔØ]\Ë	Õ\[\ÉË	Ó\[IË	Ô]ÉË	ÐÚ\ÛË	ÓÜÙI×NÂÛÛÝÏVÉÔÝ[Ë	Ó[ÛÛË	ÓY\Ý\IË	Õ[\ÉË	ÓX\ÉË	Ò\]\Ë	ÔØ]\Ë	Õ\[\ÉË	Ó\[IË	Ô]ÉË	ÐÚ\ÛË	ÓÜÙIË	Ð\ØÙ[[	Ë	ÓPÉ×NÂÛÛÝ[Ú]ÏV×NÂÜÛÛÝÙÊ^ÙÜÛÛÝÙÊ^ÂYOO[	VÉÔØ]\Ë	Ò\]\Ë	ÓX\ÉË	ÐÚ\ÛË	ÓÜÙI×K[ÛY\Ê
+JXÛÛ[YNÂÛÛÝ\ÜY[\ÜXÝ
+Ý\ÝKUSÛK
+NÂY\Ü
+Y[Ú]Ë\Ú
+Ý\ÜXÝ\Ü[\Ü[ÙN[Ú][\Ü[ÙJ\Ü
+_JNÂ_BÛÛÝ]XPØ[Ê[Ú]ÊNÂÛÛÝ]OZÑ]J
+NÂ^\Ë\Ú
+ÛÙÙ]]KØÛÜNØÛÜK[Ú]Î[Ú]ËÛÝ[[Ú]Ë[ÝJNÂB]\^\ÎÂBËÈ8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥dËÈPRSSTËÈ8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d[Ý[Û[\\
+
+^ÂÛÛÝÝÏYÙ]\Ù]]J
+NØÛÛÝ\ÕÙ^OY^SÙÙ]OOLÂÛÛÝZ[X[]JÝËÙ]UÑ[YX\
+KÝËÙ]UÓ[Û
+
+JÌKÝËÙ]UÑ]J
+K\ÕÙ^OÛÝËÙ]UÒÝ\Ê
+JÛÝËÙ]UÓZ[]\Ê
+KÍLNÂÛÛÝZÕ
+
+KÝ\XÛÛ\]P[
+
+NÂÛÛÝT\ÙO[[ÛÛ\ÙR[Ê[ÛÛ\ÙJ
+JK[ÛÛÚYÛ\ÚYÛÙÝ\[ÛÛNÂÛÛÝ\ÙP[ÛO[[ÛÛ\ÙJ
+NÂÛÛÝØÔ\Ý[Z\ÕÚYÙÛÝ\ÙJÝ\[ÛÛ
+NÂÛÛÝÏVÉÔÝ[Ë	Ó[ÛÛË	ÓY\Ý\IË	Õ[\ÉË	ÓX\ÉË	Ò\]\Ë	ÔØ]\Ë	Õ\[\ÉË	Ó\[IË	Ô]ÉË	ÐÚ\ÛË	ÓÜÙI×NÂÛÛÝÏVÉÔÝ[Ë	Ó[ÛÛË	ÓY\Ý\IË	Õ[\ÉË	ÓX\ÉË	Ò\]\Ë	ÔØ]\Ë	Õ\[\ÉË	Ó\[IË	Ô]ÉË	ÐÚ\ÛË	ÓÜÙIË	Ð\ØÙ[[	Ë	ÓPÉ×NÂÛÛÝ[Ú]ÏV×NÂÜÛÛÝÙÊ^ÙÜÛÛÝÙÊ^ÂYOO[	VÉÔØ]\Ë	Ò\]\Ë	ÓX\ÉË	ÐÚ\ÛË	ÓÜÙI×K[ÛY\Ê
+JXÛÛ[YNÂÛÛÝ\ÜY[\ÜXÝ
+Ý\ÝKUSÛK
+NÂY\Ü
+^ØÛÛÝ^XÝ[ÏJOOIÓ[ÛÛÊOØØXÚY^XÝ]J\Ü[ÛK
+N[Â[Ú]Ë\Ú
+ÝÛÝ\ÝKÛUSÛK\ÜXÝ\Ü[\Ü[ÙN[Ú][\Ü[ÙJ\Ü
+K[\Ù]Y\[\
+\Ü[YKÝ\ÙSÙÝ\ÝJJK\][ÛTÝKÝ\ÙNÝ\ÙSÙÝ\ÝJK^XÝ]N^XÝ[ßJNßB_B[Ú]ËÛÜ
+
+KOO[\Ü[ÙKXK[\Ü[ÙJNÂÛÛÝ]ÜÏV×KÝ]ÏV×NÂÜÛÛÝÙÉÓY\Ý\IË	Õ[\ÉË	ÓX\ÉË	Ò\]\Ë	ÔØ]\Ë	Õ\[\ÉË	Ó\[IË	Ô]ÉË	ÐÚ\Û×J^ÂÛÛÝ\Ï[[Ý[ÛÝ]\Ê
+NÚY\ËÝ][Û\J\Ý]Ë\Ú
+
+NÙ[ÙHY\Ë]ÙÜYJ\]ÜË\Ú
+
+NßBÛÛÝXO]XPØ[Ê[Ú]ÊNÂÛÛÝ[Ü\ÜÙ\ÏY[[Ü\ÜÙ\ÊÝ\
+NÂÛÛÝ^\ÏVÉÔÝ[Ë	Ó[ÛË	ÕYIË	ÕÙY	Ë	ÕIË	ÑIË	ÔØ]	×NÂÛÛÝ[ÛÏVÉÒ[X\IË	ÑXX\IË	ÓX\Ú	Ë	Ð\[	Ë	ÓX^IË	Ò[IË	Ò[IË	Ð]YÝ\Ý	Ë	ÔÙ\[X\Ë	ÓØÝØ\Ë	ÓÝ[X\Ë	ÑXÙ[X\×NÂ]IÉÎÂËÈ8¥ 8¥ PQT8¥ 8¥ ÛÛÝ[YTÝZ\ÕÙ^OÉÈ0­È	ÊÛ]È]J
+KÓØØ[U[YTÝ[Ê×KÚÝ\Û[Y\XÉËZ[]NÌYYÚ]	ßJNÉÎÂ
+ÏX]Û\ÜÏHXY\Â
+ÏX]Û\ÜÏHXY\\ÝX[Ý\[Ú]ÏÙ]Â
+ÏX]Û\ÜÏHXY\Y]HÛ[ÛÖÛÝËÙ][Û
+
+W_H	ÛÝËÙ]]J
+_OÙ]Â
+ÏX]Û\ÜÏHXY\Y^HÖÉÔÝ[^IË	Ó[Û^IË	ÕY\Ù^IË	ÕÙY\Ù^IË	Õ\Ù^IË	ÑY^IË	ÔØ]\^I×VÛÝËÙ]^J
+W_IÝ[YTÝOÙ]Â
+ÏX]Û\ÜÏH]K[]Â
+ÏX]ÛÛÛXÚÏH]^JLJHÎNÏØ]ÛÂ
+ÏX]ÛÛ\ÜÏHÙ^KX	ÈZ\ÕÙ^OÉÜÚÝÉÎÉßHÛÛXÚÏH]Ù^J
+HÙ^OØ]ÛÂ
+ÏX]ÛÛÛXÚÏH]^JJHÎLÏØ]ÛÙ]Ù]ÂËÈ8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥dÑVHP8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d
+ÏX]Û\ÜÏHXXÛÛ[	ØXÝ]UXOOIÝÙ^IÏÉØXÝ]IÎÉßHÂËÈ
+ËQ^HÜXØ\ÝÝ\ÛÛÝÜXØ\ÝXØXÚYÜXØ\Ý
+
+NÂ
+ÏX]Û\ÜÏHÜXØ\ÝÂÜÛÛÝÙÜXØ\Ý
+^ÂÛÛÝÙ[YÙÙ]OOLÉÜÙ[	ÎÉÎÂÛÛÝ\SX]X^
+ØÛÜJ
+NÂÛÛÝÛÛÜYØÛÜOMÏÉÝ\KX^\JIÎØÛÜOLÏÉÝ\KXÜ[\ÛÛIÎÝ\KYÛÛ
+IÎÂ
+ÏX]Û\ÜÏHÜXØ\ÝY^H	ÜÙ[HÛÛXÚÏH^SÙÙ]
+ÏIÙÙÙ]NÜ[\\
+
+HÂ
+ÏX]Û\ÜÏH[[YHÙ^\ÖÙ]KÙ]^J
+W_OÙ]Â
+ÏX]Û\ÜÏH[[HÙ]KÙ]]J
+_OÙ]Â
+ÏX]Û\ÜÏHX\Ý[OHZYÚØ\\ØXÚÙÜÝ[ØÛÛÜNÝÚYØÜ\\Y]\ÎÜÙ]Â
+ÏX]Û\ÜÏH\ØÛÜHÝ[OHÛÛÜØÛÛÜHÙØÛÜ_OÙ]Â
+ÏXÙ]ÂB
+ÏXÙ]ÂËÈZ[HÚ\
+ÏX]Û\ÜÏHÚ\]Ü\Ü[\Ú\ÚY[
+Ý\[Ú]ËÍ
+_OÙ]ÂËÈZ[HÝZY[ÙBÛÛÝÝZY[ÙOYÙ[\]QZ[QÝZY[ÙJ[Ú]ËXKT\ÙK]ÜËÝ]ËØÔ\Ý[[ÛÛÚYÛÝ\\ÙP[ÛJNÂ
+ÏX]Û\ÜÏHÝZY[ÙH]Û\ÜÏHÝZY[ÙK]]HZ[HÝZY[ÙOÙ]ÙÝZY[Ù_OÙ]ÂËÈ[ÛÛ\ÙB
+ÏX]Û\ÜÏH[ÛÛXØ\Â
+ÏX]Û\ÜÏH[ÛÛ]\ÝX[Ü[\[ÛÛÕÊ\ÙP[ÛK
+
+_OÙ]Â
+ÏX]Û\ÜÏH[ÛÛZ[È]Û\ÜÏH[ÛÛ\\ÙK[[YHÛT\ÙK[Y_OÙ]Â
+ÏX]Û\ÜÏH[ÛÛY]Z[[ÛÛ[	Û[ÛÛÚYÛ[Y_H	ÜÔÕÊ[ÛÛÚYÛ[YKM	Ý\K][Û]
+IÊ_H0­ÈÝ\ÙH	ÚÝ\ÙSÙÝ\[ÛÛ_OÙ]Â
+ÏX]Û\ÜÏH[ÛÛ[YX[[ÈÓSÓÓÔTÑWÓQPSSÔÖÛT\ÙK[YW_	ÉßOÙ]Ù]Ù]ÂËÈ[\ÂY]ÜË[ÝÝ]Ë[ÝØÔ\Ý[Øß[Ü\ÜÙ\Ë[Ý
+^Â
+ÏX]Û\ÜÏH[\ÈÂYØÔ\Ý[ØÊZ
+ÏX]Û\ÜÏH[ÚYÛÛXÚÏHÚÝÕ\
+	ÕÚYÙÛÝ\ÙIÊH[ÛÛÐÏÜ[Û\ÜÏH[ÏÜÜ[Ù]ÂÜÛÛÝÙÝ]ÊZ
+ÏX]Û\ÜÏH[Ý][ÛÛÛXÚÏHÚÝÕ\
+	ÔÝ][Û\IÊHÜÕÊM	Ý\KX[X\IÊ_H	ÜHÝ][Û\OÜ[Û\ÜÏH[ÏÜÜ[Ù]ÂÜÛÛÝÙ]ÜÊZ
+ÏX]Û\ÜÏH[]ÈÛÛXÚÏHÚÝÕ\
+	Ô]ÙÜYIÊHÜÕÊM	Ý\KXÜ[\ÛÛIÊ_H	ÜHÜ[Û\ÜÏH[ÏÜÜ[Ù]ÂÜÛÛÝYÈÙ[Ü\ÜÙ\ÊZ
+ÏX]Û\ÜÏH[[Ü\ÜÈÜÕÊYË[]M	Ý\KY[Y\[
+IÊ_H8¡¤	ÜÔÕÊYËÚYÛLË	Ý\KY[Y\[
+IÊ_H[	ÚYË^\ßYÙ]Â
+ÏXÙ]ÂBËÈ[\ÞHY]\Ú]ÛÛ^ÛÛÝPÛÛÜ]XKØÛÜOMÏÉÝ\KX^\JIÎXKØÛÜOLÏÉÝ\KXÜ[\ÛÛIÎÝ\KYÛÛ
+IÎÂ
+ÏX]Û\ÜÏH[\ÞHÛÛXÚÏHÚÝÕ\
+	Ñ[\ÞHØÛÜIÊHÂ
+ÏX]Û\ÜÏH[\ÞK[X[[\ÞOÙ]Â
+ÏX]Û\ÜÏH[\ÞKX\]Û\ÜÏH[\ÞKY[Ý[OHÚYÝXKØÛÜJLINØXÚÙÜÝ[ÙPÛÛÜHÙ]Ù]Â
+ÏX]Û\ÜÏH[\ÞK\ØÛÜHÝ[OHÛÛÜÙPÛÛÜHÝXKØÛÜ_KÌLÙ]Â
+ÏXÙ]ÂËÈ[\Ú\Â
+ÏX]Û\ÜÏH[\ÈÂ
+ÏX]Û\ÜÏH[\XÚ\	ØXÝ]Q[\OOIØ[	ÏÉÛÛÎÉßHÛÛXÚÏHÙ][\	Ø[	ÊH[
+	Ý[Ú]Ë[ÝJOÙ]ÂÛÛÝ\ÛÝ[][Ú]Ë[\O\ÜXÝ\OOOIÚ\	ÊK[ÝÂÛÛÝX\ÞPÛÝ[][Ú]Ë[\O\ÜXÝ\OOOIÙX\ÞIÊK[ÝÂÛÛÝÛÛÛÝ[][Ú]Ë[\O\ÜXÝ[YOOOIØÛÛ[Ý[ÛÊK[ÝÂYÛÛÛÝ[
+Z
+ÏX]Û\ÜÏH[\XÚ\	ØXÝ]Q[\OOIØÛÛÏÉÛÛÎÉßHÛÛXÚÏHÙ][\	ØÛÛÊHÛÛ[Ý[ÛÈ
+	ØÛÛÛÝ[JOÙ]ÂY\ÛÝ[
+Z
+ÏX]Û\ÜÏH[\XÚ\	ØXÝ]Q[\OOIÚ\	ÏÉÛÛÎÉßHÛÛXÚÏHÙ][\	Ú\	ÊHÚ[[Ù\È
+	Ú\ÛÝ[JOÙ]ÂYX\ÞPÛÝ[
+Z
+ÏX]Û\ÜÏH[\XÚ\	ØXÝ]Q[\OOIÙX\ÞIÏÉÛÛÎÉßHÛÛXÚÏHÙ][\	ÙX\ÞIÊHÝÚ[È
+	ÙX\ÞPÛÝ[JOÙ]Â
+ÏXÙ]ÂËÈ[Ú]\ÝÛÛÝ[\YXXÝ]Q[\OOIØ[	ÏÝ[Ú]ÎXÝ]Q[\OOIÚ\	ÏÝ[Ú]Ë[\O\ÜXÝ\OOOIÚ\	ÊNXÝ]Q[\OOIÙX\ÞIÏÝ[Ú]Ë[\O\ÜXÝ\OOOIÙX\ÞIÊNXÝ]Q[\OOIØÛÛÏÝ[Ú]Ë[\O\ÜXÝ[YOOOIØÛÛ[Ý[ÛÊN[Ú]ÎÂY[\Y[Ý
+^Â
+ÏX]Û\ÜÏHÙXÝ[Û]]HXÝ]H[Ú]ÏÙ]ÂÜ]OLÚO[\Y[ÝÚJÊÊ^ÂÛÛÝY[\YÚWNÂÛÛÝ[\][\ÂÛÛÝÛÏ]\ÜXÝ\OOOIÚ\	ÏÉÚ\	Î\ÜXÝ\OOOIÙX\ÞIÏÉÙX\ÞIÎ\ÜXÝ[YOOOIØÛÛ[Ý[ÛÏÉØÛÛÎÛZ[ÜÎÂÛÛÝ^XÝÛÏ]\ÜXÝ[Ý[ÛOOIÙ^XÝ	ÏÉÈ^XÝ][Ú]	ÎÉÎÂÛÛÝ[YO]OOIÓÜÙIÏÉÓÜÙIÎÂÛÛÝ[YO]OOIÓÜÙIÏÉÓÜÙIÎOOIÐ\ØÙ[[	ÏÉÐ\ØÙ[[	ÎOOIÓPÉÏÉÓZYX][ÎÂÛÛÝRÕTÑWÕÒPÑVÝÝ\ÙW_ßNÂÛÛÝYIÝIÊÝ
+ÉËIÊÝ
+ÉËIÊÝ\ÜXÝ[YNÂÛÛÝ\ÓÜ[Y^[YØ\ÖÚYNÂ
+ÏX]Û\ÜÏH[Ú]	ØÛßIÙ^XÝÛßH]KXØ\ZYHÚYHÛÛXÚÏHÙÙÛPØ\
+	ÉÚYIÊHÝ[OH[[X][ÛY[^NÚJ[\ÈÂËÈÜÝÎ[]Û\È
+ÈYÙB
+ÏX]Û\ÜÏH]Ü]Û\ÜÏH\[]ÈÜÕÊ	Ý\KXYÚ
+IÊ_XÂ
+ÏXÜ[Ý[OHÛÛÜ\K]^ÊHØTÕÊ\ÜXÝ[YKM	Ý\K]^ÊIÊ_OÜÜ[Â
+ÏX	ÜÕÊOOIÐ\ØÙ[[	ßOOIÓPÉÏÉÔÝ[Î	Ý\K]^
+IÊ_OÙ]Â
+ÏXÜ[Û\ÜÏHXYÙH	ØÛßHÚ[\\ÜXÝX[OÜÜ[Ù]ÂËÈX[
+ÏX]Û\ÜÏH[X[Ý[Y_H	ØTÕÊ\ÜXÝ[YKLË	Ý\K]^IÊ_H][	Û[Y_OÙ]ÂËÈÝ[[X\H[\]][Û
+ÏX]Û\ÜÏHZ[\Ú[\Ý[[X\_OÙ]ÂËÈYXÙBY[\YXÙJZ
+ÏX]Û\ÜÏHXYXÙHÚ[\YXÙ_OÙ]ÂËÈY]HYÜÈÚ]ÛÛ\Â
+ÏX]Û\ÜÏH[Y]HÂ
+ÏX]Û\ÜÏH]YÈÛÛXÚÏH][ÝÜÜYØ][Û
+NÜÚÝÕ\
+	ÓÜÊHÝ\ÜXÝÜXÝX[Ñ^Y
+J_p¬ÜÜ[Û\ÜÏH[ÏÜÜ[Ù]Â
+ÏX]Û\ÜÏH[[Ý[Û	Ý\ÜXÝ[Ý[ÛHÛÛXÚÏH][ÝÜÜYØ][Û
+NÜÚÝÕ\
+	ÉÝ\ÜXÝ[Ý[ÛÚ\]
+
+KÕ\\Ø\ÙJ
+JÝ\ÜXÝ[Ý[ÛÛXÙJJ_IÊHÝ\ÜXÝ[Ý[ÛOÜ[Û\ÜÏH[ÏÜÜ[Ù]Â
+ÏX]Û\ÜÏH]YÈÝ\][ÛOÙ]ÂY[YJZ
+ÏX]Û\ÜÏH]YÈÛÛXÚÏH][ÝÜÜYØ][Û
+NÜÚÝÕ\
+	ÒÝ\ÙIÊH	ÝÝ\Ù_N	Ú[Y_OÜ[Û\ÜÏH[ÏÜÜ[Ù]ÂY^XÝ]JZ
+ÏX]Û\ÜÏH]YÈ^XÝ	Ù]^XÝ]J^XÝ]J_OÙ]Â
+ÏXÙ]ÂËÈ^[XHY\]Z[
+ÏX]Û\ÜÏHY^[	Ú\ÓÜ[ÉÛÜ[ÎÉßH]Û\ÜÏHY^[Z[\Â
+ÏX]Û\ÜÏHY^[\ÙXÝ[ÛÚ[\[\XÙJ×ÙË	ÏÊ_OÙ]ÂY[\Ý\ÙPÛÛ^
+Z
+ÏX]Û\ÜÏHY^[\ÙXÝ[ÛÝ[OHY[ÎLØXÚÙÜÝ[\K\Ý\XÙJNØÜ\\Y]\Î\K\\ÛJHÝÛÏÝ\ÙH	ÝÝ\Ù_HÛÛ^ÜÝÛÏÚ[\Ý\ÙPÛÛ^OÙ]ÂÛÛÝYÏYÙ]YÛ]JÛNÂYYÊZ
+ÏX]Û\ÜÏHY^[\ÙXÝ[ÛÝÛÏÝH[	ÝYËX[NÜÝÛÏ	ÝYË\ØßOÙ]ÂÛÛÝ\Ï[[Ý[ÛÝ]\Ê
+NÂY\Ë]ÙÜYIU×ÕÒPÑVÝJZ
+ÏX]Û\ÜÏHY^[\ÙXÝ[ÛÝ[OHÛÛÜ\K][Û]
+HÝÛÏÝH]ÙÜYNÜÝÛÏ	ÔU×ÕÒPÑVÝ_OÙ]Â
+ÏXÙ]Ù]Ù]ÂBBËÈ8¥ 8¥ [Ú][Y[[H8¥ 8¥ ÛÛÝ[Y[[OXZ[[Y[[J[Ú]Ë
+NÂY[Y[[K[Ý
+^Â
+ÏX]Û\ÜÏHÙXÝ[Û]]H\ÛÛZ[È[Ú]ÏÙ]Â
+ÏX]Û\ÜÏH[Y[[HÂÜÛÛÝ]Ù[Y[[J^ÂÛÛÝ[YOY]OOIÓÜÙIÏÉÓÙIÎ]ÂÛÛÝ[YOY]OOIÓÜÙIÏÉÓÙIÎ]OOIÐ\ØÙ[[	ÏÉÐTÐÉÎ]OOIÓPÉÏÉÓPÉÎ]ÂÛÛÝ]TÝY]^XÝ]J]]JNÂÛÛÝÝÛÏY]Y^\ÏLÉÙ^XÝ	Î]Y^\ÏMÏÉØ\Z[ÉÎÜÙ\\][ÉÎÂÛÛÝÚ[ÝY]Y^\ÏOOLÉÕÙ^IÎ]Y^\ÏOOLOÉÕÛ[ÜÝÉÎ]Y^\ÏÓX]XÊ]Y^\ÊJÉÙYÛÉÎÚ[	ÊÙ]Y^\ÊÉÙ	ÎÂ
+ÏX]Û\ÜÏHZ][HÂ
+ÏX]Û\ÜÏHY]HÙ]TÝOÜ[Ý[OHÛ\Ú^N\ÛÜXÚ]NÝÚ[ÝOÜÜ[Ù]Â
+ÏX]Û\ÜÏHYÝ	ÙÝÛßHÙ]Â
+ÏX]Û\ÜÏHXÙHÂ
+ÏX]Û\ÜÏH[X[Ý[Y_H	ØTÕÊ]\ÜXÝ[YKL	Ý\K]^IÊ_H	Û[Y_OÜ[Û\ÜÏHXYÙH	Ù]ÛßHÙ]\ÜXÝ[Y_OÜÜ[Ù]Â
+ÏX]Û\ÜÏHY\ØÈÙ]\][ÛH[Ú]0­È	Ù]\ÜXÝ\OOOIÚ\	ÏÉÐÚ[[Ú[ÉÎÔÝ\Ü]IßH[\ÞIÙ][\Ü[ÙOÉÈ0­ÈYÚ[\XÝ	ÎÉßOÙ]Â
+ÏXÙ]Ù]ÂB
+ÏXÙ]ÂB
+ÏXÙ]ÈËÈ[Ù^HXËÈ8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥dÒTP8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d
+ÏX]Û\ÜÏHXXÛÛ[	ØXÝ]UXOOIØÚ\	ÏÉØXÝ]IÎÉßHÂ
+ÏX]Û\ÜÏHÚ\]Ü\[Ü[\Ú\ÚY[
+Ý\[Ú]Ë
+
+_OÙ]Â
+ÏX]Û\ÜÏHÚ\]ÙÙÛ\ÈÂ
+ÏX]Û\ÜÏHÚ\]ÙÙÛH	ÜÚÝÕ[Ú][ÏÉÛÛÎÉßHÛÛXÚÏHÙÙÛPÚ\
+	Ý[Ú]	ÊH[Ú]ÏÙ]Â
+ÏX]Û\ÜÏHÚ\]ÙÙÛH	ÜÚÝÐ\ÜXÝ[\ÏÉÛÛÎÉßHÛÛXÚÏHÙÙÛPÚ\
+	Ø\ÜXÝÉÊH\ÜXÝÏÙ]Ù]Â
+ÏX]Û\ÜÏHÙXÝ[Û]]HÝ\[ÜÚ][ÛÏÙ]Â
+ÏX]Û\ÜÏHÜËYÜYÂÜÛÛÝÙÊ^ÂÛÛÝ\Ô\]ÜË[ÛY\Ê
+K\ÔÏ\Ý]Ë[ÛY\Ê
+NÂÛÛÝYÏYÙ]YÛ]JÝ\ÜJNØÛÛÝX[\OOIÓÜÙIÏÉÓÙIÎÂ
+ÏX]Û\ÜÏHÜËZ][HÛÛXÚÏHÜ[[][Ù[
+	ÉÜIË	ÒÓÓÝ[ÚYJÝ\K\XÙJÈÙË	É][ÝÉÊ_K	ÚJHÂ
+ÏX	ÜÕÊN	Ý\KYÛÛ
+IÊ_XÂ
+ÏX]Ý[OH^NÛZ[]ÚY]Ý[OHÛ\Ú^NLØÛÛÜ\K]^HÛX[XÂY\ÔZ
+ÏXÜ[Ý[OHÛÛÜ\KXÜ[\ÛÛNÛX\Ú[[YÛÛXÚÏH][ÝÜÜYØ][Û
+NÜÚÝÕ\
+	Ô]ÙÜYIÊHÜÜ[ÂY\ÔÊZ
+ÏXÜ[Ý[OHÛÛÜ\KX[X\NÛX\Ú[[YÕOÜÜ[ÂYYÊZ
+ÏXÜ[Ý[OHÛÛÜÙYËÛÛÜNÛX\Ú[[YÙÛ\Ú^N\ÙÛ]ÙZYÚÌÙYËX[OÜÜ[Â
+ÏXÙ]]Ý[OHÛ\Ú^NLÙÛ]ÙZYÚLØÛÛÜ\KXYÚ
+HÙ]ÚÜ
+Ý\ÜJ_OÙ]Ù]Â
+ÏXÜ[Ý[OHÛ\Ú^NLØÛÛÜ\KY[Y\[
+NÛÜXÚ]NH	ÚÝ\ÙSÙÝ\ÜJ_OÜÜ[Ù]ÂB
+ÏXÙ]Ù]ÂËÈ8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥dUSP8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d
+ÏX]Û\ÜÏHXXÛÛ[	ØXÝ]UXOOIÛ][	ÏÉØXÝ]IÎÉßHÂ
+ÏX]Û\ÜÏHÚ\]Ü\[Ý[OHX\Ú[XÝÛNMÜ[\Ú\ÚY[
+Ý\×K
+
+_OÙ]ÂÛÛÝ][[]ÏVÉÔÝ[Ë	Ó[ÛÛË	ÓY\Ý\IË	Õ[\ÉË	ÓX\ÉË	Ò\]\Ë	ÔØ]\Ë	Õ\[\ÉË	Ó\[IË	Ô]ÉË	ÐÚ\ÛË	ÓÜÙI×NÂÜÛÛÝÙ][[]Ê^ÂÛÛÝÛSUSÜNØÛÛÝÚYÛ\ÚYÛÙÛNØÛÛÝÝ\ÙOZÝ\ÙSÙÛNÂÛÛÝYÏYÙ]YÛ]JÛNØÛÛÝSUSÕÒPÑVÜ_ßNØÛÛÝRÕTÑWÕÒPÑVÚÝ\ÙW_ßNÂÛÛÝX[\OOIÓÜÙIÏÉÓÜÙIÎÂÛÛÝYIÛIÊÜØÛÛÝ\ÓÜ[Y^[YØ\ÖÚYNÂ
+ÏX]Û\ÜÏH][]KXØ\ZYHÚYHÛÛXÚÏHÙÙÛPØ\
+	ÉÚYIÊHÂ
+ÏX]Û\ÜÏH][ZXYÜÕÊ	Ý\KYÛÛ
+IÊ_O]Â
+ÏX]Û\ÜÏH][[[YHÛX[OÙ]Â
+ÏX]Û\ÜÏH][\ÜÈÜÚYÛ[Y_H	ÜÚYÛYÜY_p¬0­ÈÝ\ÙH	ÚÝ\Ù_OÙ]Ù]Ù]ÂY]JZ
+ÏX]Û\ÜÏH][]]HÛ]_OÙ]ÂY\ØÊZ
+ÏX]Û\ÜÏH][Y\ØÈÛ\ØßOÙ]Â
+ÏX]Û\ÜÏH][]YÜÈÂ
+ÏXÜ[Û\ÜÏH][]YÈÜÔÕÊÚYÛ[YKLË	Ý\K]^IÊ_H	ÜÚYÛ[Y_OÜÜ[Â
+ÏXÜ[Û\ÜÏH][]YÈÛÛXÚÏH][ÝÜÜYØ][Û
+NÜÚÝÕ\
+	ÒÝ\ÙIÊH	ÚÝ\Ù_N	Ú[Y_	ÉßOÜÜ[ÂYYÊZ
+ÏXÜ[Û\ÜÏH][]YÈÝ[OHÛÛÜÙYËÛÛÜHÛÛXÚÏH][ÝÜÜYØ][Û
+HÙYËX[OÜÜ[Â
+ÏXÙ]ÂËÈ^[XH]Z[
+ÏX]Û\ÜÏH][Y^[	Ú\ÓÜ[ÉÛÜ[ÎÉßH]Ý[OHY[ÎLØÜ\]Ü\ÛÛY\K\Ý\XÙJNÛX\Ú[]ÜLÂYYÊZ
+ÏX]Ý[OHÛ\Ú^NLÛ[KZZYÚKØÛÛÜ\K]^
+NÛX\Ú[XÝÛNÝÛÈÝ[OHÛÛÜÙYËÛÛÜHÙYËX[NÜÝÛÏ	ÙYË\ØßOÙ]Â
+ÏX]Ý[OHÛ\Ú^NLÛ[KZZYÚKØÛÛÜ\K]^
+NÛX\Ú[XÝÛNÝÛÏÝ\ÙH	ÚÝ\Ù_H
+	Ú[Y_	ÉßJNÜÝÛÏ	Ú\Øß	ÉßOÙ]ÂËÈÝ\ÙH[\ÛÛXÝ[ÛÛÛÝ[\TSTÖÜÚYÛ[YWNÂY[\USÜ[\HOO][Y[Y
+^ÂÛÛÝ[\ÚYÛ\ÚYÛÙUSÜ[\JNØÛÛÝ[\Ý\ÙOZÝ\ÙSÙUSÜ[\JNÂ
+ÏX]Ý[OHÛ\Ú^NLÛ[KZZYÚKØÛÛÜ\K][Û]
+HÝÛÏÚYÛ[\ÜÝÛÏ	ÜÚYÛ[Y_H\È[YH	Ü[\H
+[	Ü[\ÚYÛ[Y_KÝ\ÙH	Ü[\Ý\Ù_JKHÛÛ][ÛÙ	Ü[\H[[Ý\Ú\ÛÛÜÈÝÈ\È	ÛX[H^\ÜÙ\È]Ù[Ù]ÂB
+ÏXÙ]Ù]Ù]ÂB
+ÏXÙ]ÂËÈ8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥dPT8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥dÛÛÝÝÕÙ^OXÝÈY]ÐÞH[HÛHÝÚÙOHÝ\[ÛÛÜÝÚÙK]ÚYHKHÚ\ÛHÞHLÞOHLHHÏ[HOHLLOHÈHLLHHÏ[HOHLLOHNHHLLHHÏ[HOHÈLOHLHHLHLÏ[HOHNHLOHLHHLHLÏÜÝÏÂÛÛÝÝÐÚ\XÝÈY]ÐÞH[HÛHÝÚÙOHÝ\[ÛÛÜÝÚÙK]ÚYHKHÚ\ÛHÞHLÞOHLHHÏ[HOHLLOHÈHLLHHÏ[HOHÈLOHLHHLHLÏÜÝÏÂÛÛÝÝÓ][XÝÈY]ÐÞH[HÛHÝÚÙOHÝ\[ÛÛÜÝÚÙK]ÚYHKHÛYÛÛÚ[ÏHLNN
+N
+[HÛHÏÚ\ÛHÞHLÞOHLHHÈÏÜÝÏÂ
+ÏX]Û\ÜÏHXX\Â
+ÏX]ÛÛ\ÜÏHØXÝ]UXOOIÝÙ^IÏÉØXÝ]IÎÉßHÛÛXÚÏHÝÚ]ÚX	ÝÙ^IÊHÜÝÕÙ^_OÜ[Ù^OÜÜ[Ø]ÛÂ
+ÏX]ÛÛ\ÜÏHØXÝ]UXOOIØÚ\	ÏÉØXÝ]IÎÉßHÛÛXÚÏHÝÚ]ÚX	ØÚ\	ÊHÜÝÐÚ\OÜ[Ú\ÜÜ[Ø]ÛÂ
+ÏX]ÛÛ\ÜÏHØXÝ]UXOOIÛ][	ÏÉØXÝ]IÎÉßHÛÛXÚÏHÝÚ]ÚX	Û][	ÊHÜÝÓ][OÜ[][ÜÜ[Ø]ÛÂ
+ÏXÙ]ÂØÝ[Y[Ù][[Y[RY
+	Ø\	ÊK[\SZÂBËÈ8¥ 8¥ ][[\È8¥ 8¥ [Ý[Û]^JÙÙ]
+^ÂÛÛÝ\YØÝ[Y[Ù][[Y[RY
+	Ø\	ÊNÂÛÛÝ\[ÙÙ]ÉÜÛYK[Y	ÎÜÛYK\YÚ	ÎÂ\Û\ÜÓ\ÝY
+\NÂÙ][Y[Ý]
+
+
+OOÂ^SÙÙ]
+Ï[ÙÙ]Ü[\\
+
+NÂ\Û\ÜÓ\Ý[[ÝJ\NÂ\Û\ÜÓ\ÝY
+	ÜÛYKZ[ÊNÂÙ][Y[Ý]
+
+
+OO\Û\ÜÓ\Ý[[ÝJ	ÜÛYKZ[ÊKML
+NÂKL
+NÂB[Ý[Û]Ù^J
+^ÂY^SÙÙ]OOL
+\]\ÂÛÛÝ\YØÝ[Y[Ù][[Y[RY
+	Ø\	ÊNÂ\Û\ÜÓ\ÝY
+^SÙÙ]ÉÜÛYK\YÚ	ÎÜÛYK[Y	ÊNÂÙ][Y[Ý]
+
+
+OOÂ^SÙÙ]LÜ[\\
+
+NÂ\Û\ÜÓ\Ý[[ÝJ	ÜÛYK[Y	Ë	ÜÛYK\YÚ	ÊNÂ\Û\ÜÓ\ÝY
+	ÜÛYKZ[ÊNÂÙ][Y[Ý]
+
+
+OO\Û\ÜÓ\Ý[[ÝJ	ÜÛYKZ[ÊKML
+NÂKL
+NÂB[Ý[ÛÝÚ]ÚXX^ØXÝ]UX]XÜ[\\
+
+NÝÚ[ÝËØÜÛÊ
+NßB[Ý[ÛÙÙÛPØ\
+Y
+^Â^[YØ\ÖÚYOHY^[YØ\ÖÚYNÂËÈ\XÝÓHÙÙÛH[ÝXYÙ[K\[\ÛÛÝ[YØÝ[Y[]Y\TÙ[XÝÜÙ]KXØ\ZYHÚYHHY^[Ù]KXØ\ZYHÚYHH][Y^[
+NÂY[
+^Ù[Û\ÜÓ\ÝÙÙÛJ	ÛÜ[ÊNÜ]\ßB[\\
+
+NÂB[Ý[ÛÙÙÛPÚ\
+Ü
+^ÚYÜOOIÝ[Ú]	Ê\ÚÝÕ[Ú][ÏH\ÚÝÕ[Ú][ÎÙ[ÙHÚÝÐ\ÜXÝ[\ÏH\ÚÝÐ\ÜXÝ[\ÎÜ[\\
+
+NßB[Ý[ÛÙ][\^ØXÝ]Q[\YÜ[\\
+
+NßBËÈÝXÚ]YØ][Û]ÝXÚÝ\LÝXÚÝ\OLÝÚ\[ÏY[ÙNÂØÝ[Y[Y][\Ý[\	ÝÝXÚÝ\	ËOOÝÝXÚÝ\YKÝXÚ\ÖÌKÛY[ÝÝXÚÝ\OYKÝXÚ\ÖÌKÛY[NÜÝÚ\[Ï]YNßKÜ\ÜÚ]NY_JNÂØÝ[Y[Y][\Ý[\	ÝÝXÚ[ÝIËOOÚY\ÝÚ\[Ê\]\ÚYX]XÊKÝXÚ\ÖÌKÛY[K]ÝXÚÝ\JOX]XÊKÝXÚ\ÖÌKÛY[]ÝXÚÝ\
+JK\ÝÚ\[ÏY[ÙNßKÜ\ÜÚ]NY_JNÂØÝ[Y[Y][\Ý[\	ÝÝXÚ[	ËOOÚY\ÝÚ\[Ê\]\ØÛÛÝYKÚ[ÙYÝXÚ\ÖÌKÛY[]ÝXÚÝ\ÚYX]XÊ
+O
+^ÚY
+[]^JJNÙ[ÙH]^JLJNß\ÝÚ\[ÏY[ÙNßJNÂËÈÙ^XØ\ØÝ[Y[Y][\Ý[\	ÚÙ^YÝÛËOOÚYKÙ^OOOIÐ\ÝÓY	Ê[]^JLJNÙ[ÙHYKÙ^OOOIÐ\ÝÔYÚ	Ê[]^JJNÙ[ÙHYKÙ^OOOIÒÛYIßKÙ^OOOIÑ\ØØ\IÊ[]Ù^J
+NßJNÂËÈÛÜÙHÛÛ\ÛØÜÛØÝ[Y[Y][\Ý[\	ÜØÜÛ	Ë
+
+OOÙØÝ[Y[Ù][[Y[RY
+	ÝÛÛ\Y[	ÊKÛ\ÜÓ\Ý[[ÝJ	ÛÜ[ÊNßJNÂ[\\
+
+NÂÙ][\[
+
+
+OOÚY^SÙÙ]OOL
+\[\\
+
+NßKL
+
+L
+NÂY	ÜÙ\XÙUÛÜÙ\È[]YØ]Ü^Û]YØ]ÜÙ\XÙUÛÜÙ\YÚ\Ý\	ËÜÝËÉÊKØ]Ú
+
+
+OOßJNßBÛÛÝY\ÔYXÙY]Ú[ÝËX]ÚYYXJ	ÊY\Ë\YXÙY[[Ý[ÛYXÙJIÊKX]Ú\ÎÂYY\ÔYXÙY
+^ØÛÛÝÏYØÝ[Y[ÜX]Q[[Y[
+	ÜÝ[IÊNÜË^ÛÛ[IÊØ[[X][ÛÛHZ[\Ü[Ý[Ú][ÛÛHZ[\Ü[IÎÙØÝ[Y[XY\[Ú[
+ÊNßBÜØÜ\ØÙOÚ[

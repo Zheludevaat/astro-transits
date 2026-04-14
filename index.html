@@ -433,16 +433,16 @@ function sSVG(name,size=16,col='currentColor'){
   const o=`<svg width="${size}" height="${size}" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle">`;
   const e='</svg>';const s=`stroke="${col}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"`;
   switch(name){
-    case'Aries':return o+`<path d="M8 28 C8 14 16 4 16 4 C16 4 24 14 24 28" ${s}/><line x1="16" y1="4" x2="16" y2="18" ${s}/>`+e;
+    case'Aries':return o+`<path d="M4 24 C4 6 14 6 16 16 C18 6 28 6 28 24" ${s}/>`+e;
     case'Taurus':return o+`<circle cx="16" cy="20" r="8" ${s}/><path d="M4 10 C4 4 16 2 16 10" ${s}/><path d="M28 10 C28 4 16 2 16 10" ${s}/>`+e;
     case'Gemini':return o+`<line x1="11" y1="6" x2="11" y2="26" ${s}/><line x1="21" y1="6" x2="21" y2="26" ${s}/><path d="M6 6 Q16 2 26 6" ${s}/><path d="M6 26 Q16 30 26 26" ${s}/>`+e;
-    case'Cancer':return o+`<path d="M6 16 A8 8 0 0 1 22 16" ${s}/><path d="M26 16 A8 8 0 0 1 10 16" ${s}/><circle cx="8" cy="16" r="2.5" stroke="${col}" stroke-width="2" fill="${col}"/><circle cx="24" cy="16" r="2.5" stroke="${col}" stroke-width="2" fill="${col}"/>`+e;
-    case'Leo':return o+`<circle cx="12" cy="22" r="6" ${s}/><path d="M18 22 C24 22 26 16 26 12 C26 6 20 4 16 8 C12 12 18 14 22 10" ${s}/>`+e;
-    case'Virgo':return o+`<path d="M4 24 L4 8 Q4 4 8 8 L8 24 Q8 4 12 8 L12 24 Q12 4 16 8 L16 24" ${s}/><path d="M16 18 C20 18 24 14 26 20 C28 26 22 28 20 24" ${s}/>`+e;
-    case'Libra':return o+`<line x1="6" y1="26" x2="26" y2="26" ${s}/><line x1="6" y1="20" x2="26" y2="20" ${s}/><path d="M16 20 C16 10 8 8 8 14" ${s}/><path d="M16 20 C16 10 24 8 24 14" ${s}/>`+e;
-    case'Scorpio':return o+`<path d="M4 24 L4 8 Q4 4 8 8 L8 24 Q8 4 12 8 L12 24 Q12 4 16 8 L16 24 L22 18" ${s}/><polyline points="19,14 22,18 26,16" ${s}/>`+e;
-    case'Sagittarius':return o+`<line x1="6" y1="26" x2="26" y2="6" ${s}/><polyline points="16,6 26,6 26,16" ${s}/><line x1="10" y1="18" x2="18" y2="26" ${s}/>`+e;
-    case'Capricorn':return o+`<path d="M4 18 Q4 6 12 6 Q18 6 14 16 L14 24 C14 28 22 28 24 22 A5 5 0 1 0 18 18" ${s}/>`+e;
+    case'Cancer':return o+`<path d="M6 14 A8 8 0 0 1 22 14" ${s}/><path d="M26 18 A8 8 0 0 1 10 18" ${s}/><circle cx="8" cy="14" r="2.5" stroke="${col}" stroke-width="2" fill="${col}"/><circle cx="24" cy="18" r="2.5" stroke="${col}" stroke-width="2" fill="${col}"/>`+e;
+    case'Leo':return o+`<circle cx="10" cy="24" r="6" ${s}/><path d="M16 24 C22 24 26 20 26 14 C26 6 20 4 16 10 C14 14 20 14 24 8" ${s}/>`+e;
+    case'Virgo':return o+`<path d="M4 26 V8 Q4 2 10 8 V26 Q10 2 16 8 V26" ${s}/><path d="M16 18 C20 18 24 14 26 20 C28 26 22 28 20 24" ${s}/>`+e;
+    case'Libra':return o+`<line x1="6" y1="26" x2="26" y2="26" ${s}/><line x1="6" y1="20" x2="26" y2="20" ${s}/><path d="M6 20 Q16 4 26 20" ${s}/>`+e;
+    case'Scorpio':return o+`<path d="M4 26 V8 Q4 2 10 8 V26 Q10 2 16 8 V26 L22 20" ${s}/><polyline points="19,16 22,20 26,18" ${s}/>`+e;
+    case'Sagittarius':return o+`<line x1="6" y1="26" x2="26" y2="6" ${s}/><polyline points="18,6 26,6 26,14" ${s}/><line x1="9" y1="15" x2="17" y2="23" ${s}/>`+e;
+    case'Capricorn':return o+`<path d="M4 16 Q4 4 12 4 Q20 4 16 14 L16 22 Q16 28 22 28 Q28 28 28 22 A4 4 0 1 0 22 20" ${s}/>`+e;
     case'Aquarius':return o+`<path d="M4 12 L8 8 L12 12 L16 8 L20 12 L24 8 L28 12" ${s}/><path d="M4 22 L8 18 L12 22 L16 18 L20 22 L24 18 L28 22" ${s}/>`+e;
     case'Pisces':return o+`<path d="M8 4 C2 16 2 16 8 28" ${s}/><path d="M24 4 C30 16 30 16 24 28" ${s}/><line x1="4" y1="16" x2="28" y2="16" ${s}/>`+e;
     default:return`<span style="font-size:${size}px">${name}</span>`;
@@ -471,18 +471,18 @@ function pSVG(name,size=20,col='currentColor'){
   const e='</svg>';const s=`stroke="${col}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"`;
   const f=`fill="${col}"`;
   switch(name){
-    case'Sun':return o+`<circle cx="16" cy="16" r="9" ${s}/><circle cx="16" cy="16" r="2.5" ${f}/>`+e;
-    case'Moon':return o+`<path d="M21 8a9 9 0 11-1 16 11 11 0 001-16z" ${s} fill="none"/>`+e;
-    case'Mercury':return o+`<circle cx="16" cy="15" r="5.5" ${s}/><line x1="16" y1="20.5" x2="16" y2="28" ${s}/><line x1="12" y1="24" x2="20" y2="24" ${s}/><path d="M10.5 9.5a5.5 5.5 0 0111 0" ${s} fill="none"/>`+e;
-    case'Venus':return o+`<circle cx="16" cy="12" r="6.5" ${s}/><line x1="16" y1="18.5" x2="16" y2="28" ${s}/><line x1="11.5" y1="23" x2="20.5" y2="23" ${s}/>`+e;
-    case'Mars':return o+`<circle cx="13" cy="19" r="7" ${s}/><line x1="18.5" y1="13.5" x2="26" y2="6" ${s}/><polyline points="20,6 26,6 26,12" ${s} fill="none"/>`+e;
-    case'Jupiter':return o+`<path d="M8 6 a9 9 0 0 1 0 16 L24 22" ${s} fill="none"/><line x1="20" y1="8" x2="20" y2="28" ${s}/>`+e;
-    case'Saturn':return o+`<line x1="8" y1="8" x2="20" y2="8" ${s}/><path d="M14 3 V20 Q14 27 20 27 Q27 27 27 20" ${s} fill="none"/>`+e;
-    case'Uranus':return o+`<circle cx="16" cy="26" r="3.5" ${s}/><circle cx="16" cy="26" r="1" ${f}/><line x1="16" y1="22.5" x2="16" y2="10" ${s}/><line x1="8" y1="10" x2="24" y2="10" ${s}/><line x1="8" y1="10" x2="8" y2="4" ${s}/><line x1="24" y1="10" x2="24" y2="4" ${s}/>`+e;
-    case'Neptune':return o+`<line x1="16" y1="28" x2="16" y2="5" ${s}/><line x1="10" y1="24" x2="22" y2="24" ${s}/><path d="M5 15 Q5 5 16 5 Q27 5 27 15" ${s} fill="none"/><line x1="5" y1="15" x2="5" y2="8" ${s}/><line x1="27" y1="15" x2="27" y2="8" ${s}/>`+e;
-    case'Pluto':return o+`<path d="M6 3 Q6 14 16 14 Q26 14 26 3" ${s} fill="none"/><circle cx="16" cy="7" r="3.5" ${s}/><line x1="16" y1="14" x2="16" y2="29" ${s}/><line x1="10" y1="22" x2="22" y2="22" ${s}/>`+e;
-    case'Chiron':return o+`<circle cx="16" cy="25" r="5" ${s}/><line x1="16" y1="20" x2="16" y2="3" ${s}/><line x1="16" y1="10" x2="24" y2="3" ${s}/><line x1="16" y1="10" x2="24" y2="16" ${s}/>`+e;
-    case'NorthNode':return o+`<path d="M8 12 a8 8 0 0 0 16 0" ${s} fill="none"/><line x1="8" y1="12" x2="8" y2="18" ${s}/><line x1="24" y1="12" x2="24" y2="18" ${s}/><circle cx="8" cy="22" r="4" ${s}/><circle cx="24" cy="22" r="4" ${s}/>`+e;
+    case'Sun':return o+`<circle cx="16" cy="16" r="9" ${s} fill="none"/><circle cx="16" cy="16" r="2" ${f}/>`+e;
+    case'Moon':return o+`<path d="M20 6 A9 9 0 1 1 20 26 A7 7 0 0 0 20 6Z" ${s} fill="none"/>`+e;
+    case'Mercury':return o+`<path d="M10.5 9 A5.5 5.5 0 0 1 21.5 9" ${s} fill="none"/><circle cx="16" cy="14" r="5.5" ${s} fill="none"/><line x1="16" y1="19.5" x2="16" y2="28" ${s}/><line x1="12" y1="24" x2="20" y2="24" ${s}/>`+e;
+    case'Venus':return o+`<circle cx="16" cy="12" r="6.5" ${s} fill="none"/><line x1="16" y1="18.5" x2="16" y2="28" ${s}/><line x1="11.5" y1="23" x2="20.5" y2="23" ${s}/>`+e;
+    case'Mars':return o+`<circle cx="13" cy="19" r="7" ${s} fill="none"/><line x1="18.5" y1="13.5" x2="26" y2="6" ${s}/><polyline points="20,6 26,6 26,12" ${s} fill="none"/>`+e;
+    case'Jupiter':return o+`<path d="M6 17 Q6 5 16 5" ${s} fill="none"/><line x1="6" y1="17" x2="24" y2="17" ${s}/><line x1="20" y1="5" x2="20" y2="29" ${s}/>`+e;
+    case'Saturn':return o+`<line x1="6" y1="10" x2="18" y2="10" ${s}/><path d="M12 4 V20 Q12 28 20 28 Q28 28 28 20" ${s} fill="none"/>`+e;
+    case'Uranus':return o+`<circle cx="16" cy="26" r="3.5" ${s} fill="none"/><circle cx="16" cy="26" r="1" ${f}/><line x1="16" y1="22.5" x2="16" y2="10" ${s}/><line x1="8" y1="10" x2="24" y2="10" ${s}/><line x1="8" y1="10" x2="8" y2="4" ${s}/><line x1="24" y1="10" x2="24" y2="4" ${s}/>`+e;
+    case'Neptune':return o+`<path d="M6 5 V14 Q16 22 26 14 V5" ${s} fill="none"/><line x1="16" y1="5" x2="16" y2="28" ${s}/><line x1="10" y1="24" x2="22" y2="24" ${s}/>`+e;
+    case'Pluto':return o+`<path d="M6 14 Q6 4 16 4 Q26 4 26 14" ${s} fill="none"/><circle cx="16" cy="10" r="4" ${s} fill="none"/><line x1="16" y1="14" x2="16" y2="28" ${s}/><line x1="10" y1="22" x2="22" y2="22" ${s}/>`+e;
+    case'Chiron':return o+`<circle cx="16" cy="25" r="5" ${s} fill="none"/><line x1="16" y1="20" x2="16" y2="4" ${s}/><line x1="16" y1="11" x2="24" y2="4" ${s}/><line x1="16" y1="11" x2="24" y2="17" ${s}/>`+e;
+    case'NorthNode':return o+`<path d="M8 8 A8 8 0 0 0 24 8" ${s} fill="none"/><line x1="8" y1="8" x2="8" y2="18" ${s}/><line x1="24" y1="8" x2="24" y2="18" ${s}/><circle cx="8" cy="22" r="4" ${s} fill="none"/><circle cx="24" cy="22" r="4" ${s} fill="none"/>`+e;
     default:return`<span style="font-size:${size}px">${name}</span>`;
   }
 }
@@ -1176,16 +1176,16 @@ function sChG(i,x,y,sz,col,op){
   const h=sz/2;const s=`stroke="${col}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"`;
   const sf=`stroke="${col}" stroke-width="2" fill="${col}"`;
   const P=[
-    `<path d="M8 28 C8 14 16 4 16 4 C16 4 24 14 24 28" ${s}/><line x1="16" y1="4" x2="16" y2="18" ${s}/>`,
+    `<path d="M4 24 C4 6 14 6 16 16 C18 6 28 6 28 24" ${s}/>`,
     `<circle cx="16" cy="20" r="8" ${s}/><path d="M4 10 C4 4 16 2 16 10" ${s}/><path d="M28 10 C28 4 16 2 16 10" ${s}/>`,
     `<line x1="11" y1="6" x2="11" y2="26" ${s}/><line x1="21" y1="6" x2="21" y2="26" ${s}/><path d="M6 6 Q16 2 26 6" ${s}/><path d="M6 26 Q16 30 26 26" ${s}/>`,
-    `<path d="M6 16 A8 8 0 0 1 22 16" ${s}/><path d="M26 16 A8 8 0 0 1 10 16" ${s}/><circle cx="8" cy="16" r="2.5" ${sf}/><circle cx="24" cy="16" r="2.5" ${sf}/>`,
-    `<circle cx="12" cy="22" r="6" ${s}/><path d="M18 22 C24 22 26 16 26 12 C26 6 20 4 16 8 C12 12 18 14 22 10" ${s}/>`,
-    `<path d="M4 24 L4 8 Q4 4 8 8 L8 24 Q8 4 12 8 L12 24 Q12 4 16 8 L16 24" ${s}/><path d="M16 18 C20 18 24 14 26 20 C28 26 22 28 20 24" ${s}/>`,
-    `<line x1="6" y1="26" x2="26" y2="26" ${s}/><line x1="6" y1="20" x2="26" y2="20" ${s}/><path d="M16 20 C16 10 8 8 8 14" ${s}/><path d="M16 20 C16 10 24 8 24 14" ${s}/>`,
-    `<path d="M4 24 L4 8 Q4 4 8 8 L8 24 Q8 4 12 8 L12 24 Q12 4 16 8 L16 24 L22 18" ${s}/><polyline points="19,14 22,18 26,16" ${s}/>`,
-    `<line x1="6" y1="26" x2="26" y2="6" ${s}/><polyline points="16,6 26,6 26,16" ${s}/><line x1="10" y1="18" x2="18" y2="26" ${s}/>`,
-    `<path d="M4 18 Q4 6 12 6 Q18 6 14 16 L14 24 C14 28 22 28 24 22 A5 5 0 1 0 18 18" ${s}/>`,
+    `<path d="M6 14 A8 8 0 0 1 22 14" ${s}/><path d="M26 18 A8 8 0 0 1 10 18" ${s}/><circle cx="8" cy="14" r="2.5" ${sf}/><circle cx="24" cy="18" r="2.5" ${sf}/>`,
+    `<circle cx="10" cy="24" r="6" ${s}/><path d="M16 24 C22 24 26 20 26 14 C26 6 20 4 16 10 C14 14 20 14 24 8" ${s}/>`,
+    `<path d="M4 26 V8 Q4 2 10 8 V26 Q10 2 16 8 V26" ${s}/><path d="M16 18 C20 18 24 14 26 20 C28 26 22 28 20 24" ${s}/>`,
+    `<line x1="6" y1="26" x2="26" y2="26" ${s}/><line x1="6" y1="20" x2="26" y2="20" ${s}/><path d="M6 20 Q16 4 26 20" ${s}/>`,
+    `<path d="M4 26 V8 Q4 2 10 8 V26 Q10 2 16 8 V26 L22 20" ${s}/><polyline points="19,16 22,20 26,18" ${s}/>`,
+    `<line x1="6" y1="26" x2="26" y2="6" ${s}/><polyline points="18,6 26,6 26,14" ${s}/><line x1="9" y1="15" x2="17" y2="23" ${s}/>`,
+    `<path d="M4 16 Q4 4 12 4 Q20 4 16 14 L16 22 Q16 28 22 28 Q28 28 28 22 A4 4 0 1 0 22 20" ${s}/>`,
     `<path d="M4 12 L8 8 L12 12 L16 8 L20 12 L24 8 L28 12" ${s}/><path d="M4 22 L8 18 L12 22 L16 18 L20 22 L24 18 L28 22" ${s}/>`,
     `<path d="M8 4 C2 16 2 16 8 28" ${s}/><path d="M24 4 C30 16 30 16 24 28" ${s}/><line x1="4" y1="16" x2="28" y2="16" ${s}/>`
   ];
@@ -1195,18 +1195,18 @@ function pChG(name,x,y,sz,col,op){
   const h=sz/2;const s=`stroke="${col}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"`;
   const f=`fill="${col}"`;const n='fill="none"';
   const P={
-    Sun:`<circle cx="16" cy="16" r="9" ${s} ${n}/><circle cx="16" cy="16" r="2.5" ${f}/>`,
-    Moon:`<path d="M21 8a9 9 0 11-1 16 11 11 0 001-16z" ${s} ${n}/>`,
-    Mercury:`<circle cx="16" cy="15" r="5.5" ${s} ${n}/><line x1="16" y1="20.5" x2="16" y2="28" ${s}/><line x1="12" y1="24" x2="20" y2="24" ${s}/><path d="M10.5 9.5a5.5 5.5 0 0111 0" ${s} ${n}/>`,
+    Sun:`<circle cx="16" cy="16" r="9" ${s} ${n}/><circle cx="16" cy="16" r="2" ${f}/>`,
+    Moon:`<path d="M20 6 A9 9 0 1 1 20 26 A7 7 0 0 0 20 6Z" ${s} ${n}/>`,
+    Mercury:`<path d="M10.5 9 A5.5 5.5 0 0 1 21.5 9" ${s} ${n}/><circle cx="16" cy="14" r="5.5" ${s} ${n}/><line x1="16" y1="19.5" x2="16" y2="28" ${s}/><line x1="12" y1="24" x2="20" y2="24" ${s}/>`,
     Venus:`<circle cx="16" cy="12" r="6.5" ${s} ${n}/><line x1="16" y1="18.5" x2="16" y2="28" ${s}/><line x1="11.5" y1="23" x2="20.5" y2="23" ${s}/>`,
     Mars:`<circle cx="13" cy="19" r="7" ${s} ${n}/><line x1="18.5" y1="13.5" x2="26" y2="6" ${s}/><polyline points="20,6 26,6 26,12" ${s} ${n}/>`,
-    Jupiter:`<path d="M8 6 a9 9 0 0 1 0 16 L24 22" ${s} ${n}/><line x1="20" y1="8" x2="20" y2="28" ${s}/>`,
-    Saturn:`<line x1="8" y1="8" x2="20" y2="8" ${s}/><path d="M14 3 V20 Q14 27 20 27 Q27 27 27 20" ${s} ${n}/>`,
+    Jupiter:`<path d="M6 17 Q6 5 16 5" ${s} ${n}/><line x1="6" y1="17" x2="24" y2="17" ${s}/><line x1="20" y1="5" x2="20" y2="29" ${s}/>`,
+    Saturn:`<line x1="6" y1="10" x2="18" y2="10" ${s}/><path d="M12 4 V20 Q12 28 20 28 Q28 28 28 20" ${s} ${n}/>`,
     Uranus:`<circle cx="16" cy="26" r="3.5" ${s} ${n}/><circle cx="16" cy="26" r="1" ${f}/><line x1="16" y1="22.5" x2="16" y2="10" ${s}/><line x1="8" y1="10" x2="24" y2="10" ${s}/><line x1="8" y1="10" x2="8" y2="4" ${s}/><line x1="24" y1="10" x2="24" y2="4" ${s}/>`,
-    Neptune:`<line x1="16" y1="28" x2="16" y2="5" ${s}/><line x1="10" y1="24" x2="22" y2="24" ${s}/><path d="M5 15 Q5 5 16 5 Q27 5 27 15" ${s} ${n}/><line x1="5" y1="15" x2="5" y2="8" ${s}/><line x1="27" y1="15" x2="27" y2="8" ${s}/>`,
-    Pluto:`<path d="M6 3 Q6 14 16 14 Q26 14 26 3" ${s} ${n}/><circle cx="16" cy="7" r="3.5" ${s} ${n}/><line x1="16" y1="14" x2="16" y2="29" ${s}/><line x1="10" y1="22" x2="22" y2="22" ${s}/>`,
-    Chiron:`<circle cx="16" cy="25" r="5" ${s} ${n}/><line x1="16" y1="20" x2="16" y2="3" ${s}/><line x1="16" y1="10" x2="24" y2="3" ${s}/><line x1="16" y1="10" x2="24" y2="16" ${s}/>`,
-    NorthNode:`<path d="M8 12 a8 8 0 0 0 16 0" ${s} ${n}/><line x1="8" y1="12" x2="8" y2="18" ${s}/><line x1="24" y1="12" x2="24" y2="18" ${s}/><circle cx="8" cy="22" r="4" ${s} ${n}/><circle cx="24" cy="22" r="4" ${s} ${n}/>`
+    Neptune:`<path d="M6 5 V14 Q16 22 26 14 V5" ${s} ${n}/><line x1="16" y1="5" x2="16" y2="28" ${s}/><line x1="10" y1="24" x2="22" y2="24" ${s}/>`,
+    Pluto:`<path d="M6 14 Q6 4 16 4 Q26 4 26 14" ${s} ${n}/><circle cx="16" cy="10" r="4" ${s} ${n}/><line x1="16" y1="14" x2="16" y2="28" ${s}/><line x1="10" y1="22" x2="22" y2="22" ${s}/>`,
+    Chiron:`<circle cx="16" cy="25" r="5" ${s} ${n}/><line x1="16" y1="20" x2="16" y2="4" ${s}/><line x1="16" y1="11" x2="24" y2="4" ${s}/><line x1="16" y1="11" x2="24" y2="17" ${s}/>`,
+    NorthNode:`<path d="M8 8 A8 8 0 0 0 24 8" ${s} ${n}/><line x1="8" y1="8" x2="8" y2="18" ${s}/><line x1="24" y1="8" x2="24" y2="18" ${s}/><circle cx="8" cy="22" r="4" ${s} ${n}/><circle cx="24" cy="22" r="4" ${s} ${n}/>`
   };
   return P[name]?`<svg x="${x-h}" y="${y-h}" width="${sz}" height="${sz}" viewBox="0 0 32 32" fill="none" opacity="${op||1}">${P[name]}</svg>`:''
 }

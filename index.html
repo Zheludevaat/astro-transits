@@ -249,7 +249,18 @@ html.light .header{background:rgba(244,240,230,.82)}
 .hours-now-title{font-size:var(--fs-card);font-weight:700;color:var(--bright);letter-spacing:.2px}
 .hours-now-intent{font-size:var(--fs-meta);color:var(--text2);margin-top:2px;line-height:1.45;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hours-now-time{flex-shrink:0;font-size:var(--fs-ui);color:var(--text2);letter-spacing:.5px;font-variant-numeric:tabular-nums}
+.hours-now-time{flex-shrink:0;font-size:var(--fs-ui);color:var(--text2);letter-spacing:.5px;font-variant-numeric:tabular-nums;text-align:right}
+.hours-now-mins{font-size:10px;color:var(--text3);margin-top:2px;letter-spacing:.3px;text-transform:uppercase}
+.hours-now{cursor:pointer;transition:background .15s,border-color .15s}
+.hours-now:hover{background:rgba(212,168,67,.06);border-color:var(--gold-line)}
+.hours-now.open{border-color:var(--gold-line);background:rgba(212,168,67,.04)}
+.hours-now-chev{color:var(--gold);font-size:9px;margin-left:6px;opacity:.7}
+.hours-now-detail{margin:-4px 0 10px;padding:12px 14px;background:rgba(212,168,67,.04);border:1px solid var(--gold-line);border-top:none;border-radius:0 0 var(--r-md) var(--r-md);animation:fadeUp .25s ease both}
+.hnd-row{display:flex;gap:10px;font-size:12px;line-height:1.55;padding:6px 0;border-bottom:1px solid rgba(212,168,67,.08)}
+.hnd-row:last-child{border-bottom:none}
+.hnd-k{flex:0 0 70px;font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text2);padding-top:2px}
+.hnd-k.good{color:var(--emerald)}.hnd-k.bad{color:var(--crimson)}
+.hnd-v{flex:1;color:var(--text);min-width:0}
 .hours-label{font-size:var(--fs-label);font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--text2);
   margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
 .hours-label .sun-times{font-weight:400;letter-spacing:0;text-transform:none;font-size:10px;color:var(--text3)}
@@ -836,6 +847,7 @@ body[data-zone="depth"] .t-zone:not(.t-depth){display:none}
   box-shadow:0 8px 24px rgba(0,0,0,.6);pointer-events:auto}
 .tooltip-popup.open{display:block}
 .tooltip-popup strong{color:var(--bright);display:block;margin-bottom:4px}
+.tooltip-popup .tip-close-hint{font-size:9px;color:var(--text3);margin-top:8px;letter-spacing:.6px;text-transform:uppercase;text-align:right;opacity:.7}
 html.light .tooltip-popup{background:#ffffff;border-color:rgba(0,0,0,.12);box-shadow:0 8px 24px rgba(0,0,0,.15)}
 
 /* ── Filter Bar ── */
@@ -1151,6 +1163,19 @@ function fmtLong(l){const s=signOf(l);return`${s.degree}°${String(s.minute).pad
 
 // Birth data
 const BIRTH={year:1996,month:7,day:2,hour:4+8/60,lat:40.9256,lon:-73.1409};
+// Observer location (where the user is using the app — affects planetary hours, sun times, displayed clock)
+const OBSERVER={lat:47.3769,lon:8.5417,tzName:'Europe/Zurich',label:'Zürich'};
+// Returns the current UTC offset (in hours) of OBSERVER.tzName for a given Date, accounting for DST.
+function tzOffsetHours(date){
+  try{
+    const dtf=new Intl.DateTimeFormat('en-US',{timeZone:OBSERVER.tzName,timeZoneName:'shortOffset'});
+    const parts=dtf.formatToParts(date);
+    const tzn=parts.find(p=>p.type==='timeZoneName');
+    if(tzn){const m=tzn.value.match(/GMT([+-]\d+)(?::(\d+))?/);
+      if(m){return parseInt(m[1],10)+(m[2]?Math.sign(parseInt(m[1],10))*parseInt(m[2],10)/60:0);}}
+  }catch(e){}
+  return 1; // fallback CET
+}
 
 function computeAll(jd){const T=jdToT(jd);return{Sun:sunLongitude(T),Moon:moonLongitude(T),
   Mercury:geocentricLon('Mercury',T),Venus:geocentricLon('Venus',T),Mars:geocentricLon('Mars',T),
@@ -1217,6 +1242,107 @@ function transitImportance(tp,np,a){let s=0;
   if(tp===SECT.sectMalefic&&a.type==='hard')s-=2; // Mars hard aspects slightly mitigated in sect
   if(tp===SECT.outSectBenefic&&a.type==='easy')s-=1; // Jupiter easy aspects slightly weaker out of sect
   return s;}
+
+// ─── Natal aspects ───
+const ASPECT_NATURE={
+  'conjunction':{glyph:'☌',color:'var(--gold)',nature:'Fusion. The two planets blend into a single current — their themes cannot be separated. Powerful but sometimes lacks perspective.'},
+  'opposition':{glyph:'☍',color:'var(--crimson)',nature:'Polarity. The two planets face each other across the chart — themes show up as tension, mirroring, or projection onto others, demanding integration.'},
+  'trine':{glyph:'△',color:'var(--emerald)',nature:'Ease. The planets share an element and flow together freely — talent, often unconscious, can be taken for granted.'},
+  'square':{glyph:'□',color:'var(--crimson)',nature:'Friction. The planets share modality but clash by element — tension that forces growth through crisis and effort.'},
+  'sextile':{glyph:'⚹',color:'var(--emerald)',nature:'Opportunity. Planets in complementary elements — cooperation available if you reach for it, but not automatic.'},
+  'quincunx':{glyph:'⚻',color:'var(--amber)',nature:'Adjustment. Planets in unrelated signs — themes never quite fit and require constant recalibration, often tied to health or habit.'},
+  'semi-sextile':{glyph:'⚺',color:'var(--text2)',nature:'Subtle tension. Adjacent signs — quiet irritation or awkward transitions between themes.'}
+};
+const NATAL_ASPECT_DEPTH={
+  'Sun-Moon|conjunction':'Inner life and outer identity fused — wholeness, but less inner dialogue. Born near a new moon.',
+  'Sun-Moon|opposition':'Will and feeling pull against each other. Born near a full moon — a life of negotiating between what you want and what you need.',
+  'Sun-Moon|square':'Tension between conscious direction and emotional nature. Family-of-origin patterns often replay until integrated.',
+  'Sun-Moon|trine':'Ego and feeling cooperate. Rest comes easily; a settled core.',
+  'Sun-Moon|sextile':'Purpose and emotion support each other when you act.',
+  'Sun-Mercury|conjunction':'Identity and thought merge. Strong voice, but can over-identify with opinions.',
+  'Sun-Venus|conjunction':'Love, art, and value fuse with identity — charm, vanity, or aesthetic sense as a life theme.',
+  'Sun-Mars|conjunction':'Willpower amplified — drive, courage, or a chip on the shoulder. Cauldron of initiative.',
+  'Sun-Mars|square':'Will clashes with drive. Anger and assertion must be trained rather than suppressed.',
+  'Sun-Jupiter|trine':'Natural confidence, optimism, protection. Opportunities find you.',
+  'Sun-Jupiter|square':'Overconfidence or overextension. Faith outpaces capacity until tempered.',
+  'Sun-Saturn|conjunction':'Authority and self fused — heavy responsibility from early on, maturity accelerated, father-theme intense.',
+  'Sun-Saturn|square':'Self-worth is tested. Achievement through discipline, but prone to self-doubt.',
+  'Sun-Saturn|trine':'Quiet competence. Enduring structure. Good with long horizons.',
+  'Sun-Saturn|opposition':'You measure yourself against external authority — until you become your own.',
+  'Sun-Uranus|conjunction':'Lightning identity. Radically individual, prone to disruption of stable forms.',
+  'Sun-Uranus|square':'Rebellion as reflex. Must learn to channel eccentricity productively.',
+  'Sun-Neptune|conjunction':'Porous self. Artistic, mystical, but identity can dissolve in others\' fantasies.',
+  'Sun-Neptune|square':'Confusion about who you are. Disillusionment as teacher.',
+  'Sun-Pluto|conjunction':'Intense will, survivor\'s edge. Power dynamics are a core theme.',
+  'Sun-Pluto|square':'Power struggles with authority, especially fathers. Transformation through crisis.',
+  'Moon-Mercury|conjunction':'Feelings and thoughts fused — you think your way through moods, speak from the heart.',
+  'Moon-Venus|trine':'Emotional warmth, aesthetic comfort, easy relating.',
+  'Moon-Mars|square':'Quick temper, emotional volatility. Must learn to feel before reacting.',
+  'Moon-Jupiter|trine':'Emotional abundance, faith, generosity. Protected instincts.',
+  'Moon-Saturn|conjunction':'Emotional gravity. Mother-theme strict or absent. Feelings kept under discipline.',
+  'Moon-Saturn|square':'Emotional loneliness until self-parented. Slow to trust, but steady once bonded.',
+  'Moon-Uranus|square':'Emotional restlessness. Sudden mood shifts, fear of being tied down.',
+  'Moon-Neptune|conjunction':'Dream-soaked feelings, psychic porousness, compassionate but prone to self-deception.',
+  'Moon-Pluto|square':'Obsessive emotional undercurrents. Emotional crises as transformation.',
+  'Mercury-Venus|conjunction':'Graceful speech, artistic thought, diplomatic voice.',
+  'Mercury-Mars|conjunction':'Sharp mind, quick tongue, argumentative edge.',
+  'Mercury-Jupiter|opposition':'Big ideas vs. detail. Teacher-student dynamic between local and far.',
+  'Mercury-Saturn|conjunction':'Disciplined, serious mind. Slow but deep; prone to self-criticism about intellect.',
+  'Mercury-Uranus|trine':'Quick, original mind. Insight arrives whole.',
+  'Mercury-Neptune|square':'Confusion between imagination and fact. Must fact-check intuitions.',
+  'Mercury-Pluto|conjunction':'Penetrating mind, research instinct, speaks hidden things.',
+  'Venus-Mars|conjunction':'Desire and attraction fused — passionate, magnetic, sometimes volatile in love.',
+  'Venus-Mars|square':'Love and desire pull different directions. Relationship tension as teacher.',
+  'Venus-Mars|trine':'Attraction flows easily; creative and romantic currents cooperate.',
+  'Venus-Jupiter|conjunction':'The great benefic — grace, generosity, aesthetic abundance.',
+  'Venus-Saturn|conjunction':'Love tested by time and responsibility. Slow to open, loyal once committed.',
+  'Venus-Saturn|square':'Feeling unworthy of love, or attracted to distant/older partners. Earned affection.',
+  'Venus-Uranus|square':'Sudden attractions, unstable affections, freedom vs. intimacy.',
+  'Venus-Neptune|conjunction':'Idealized love, artistic sensitivity, disillusionment cycles.',
+  'Venus-Pluto|square':'Intense attachments, jealousy, transformative relationships.',
+  'Mars-Jupiter|trine':'Action blessed with luck. Enthusiasm and courage.',
+  'Mars-Saturn|conjunction':'Disciplined drive — blacksmith energy. Hard-won competence, frustration if blocked.',
+  'Mars-Saturn|square':'Effort meets obstacle. Anger frozen or delayed. Forges resilience.',
+  'Mars-Uranus|square':'Accident-prone or electric action. Sudden moves, impatience.',
+  'Mars-Neptune|square':'Drive clouded by confusion. Misplaced anger, or effort that dissolves.',
+  'Mars-Pluto|conjunction':'Volcanic drive, survivor\'s force, intensity in anything pursued.',
+  'Jupiter-Saturn|conjunction':'The great chronocrator — structure meets expansion. Ambition built carefully. A generational signature.',
+  'Jupiter-Saturn|opposition':'Faith vs. fear, growth vs. limit. Lifetime teacher-aspect.',
+  'Jupiter-Uranus|trine':'Sudden breakthroughs, lucky timing with innovation.',
+  'Jupiter-Neptune|conjunction':'Mystical faith, visionary but prone to inflation.',
+  'Jupiter-Pluto|square':'Outsized ambition, hunger for power or meaning.',
+  'Saturn-Uranus|square':'Tradition vs. revolution. Breaking and rebuilding as life-theme.',
+  'Saturn-Neptune|square':'Structure dissolves under doubt. Faith tested by reality.',
+  'Saturn-Pluto|conjunction':'Heavy generational weight, endurance forged through loss.',
+  'Uranus-Neptune|sextile':'Generational: spiritual innovation, visionary technology.',
+  'Uranus-Pluto|square':'Generational: revolution, systemic upheaval. 1960s/2010s.',
+  'Sun-Ascendant|conjunction':'Identity matches presentation. What you are shows.',
+  'Moon-Ascendant|conjunction':'Feeling shows on the surface. Emotionally transparent body.',
+  'Mars-Ascendant|conjunction':'Assertive presence, athletic bearing, scar on the face common.',
+  'Saturn-Ascendant|conjunction':'Serious appearance, aged early, gravitas.',
+  'Sun-MC|conjunction':'Vocation aligned with identity. Publicly visible life.',
+  'Saturn-MC|conjunction':'Career-defining authority, slow-climbing ambition.'
+};
+function natalAspectKey(p1,p2,name){const arr=[p1,p2].sort();return arr[0]+'-'+arr[1]+'|'+name;}
+function findNatalAspects(){
+  const out=[];
+  const pts=['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto','Chiron','NorthNode','Ascendant','MC'];
+  for(let i=0;i<pts.length;i++){for(let j=i+1;j<pts.length;j++){
+    const p1=pts[i],p2=pts[j];if(NATAL[p1]===undefined||NATAL[p2]===undefined)continue;
+    if(p1==='Ascendant'&&p2==='MC')continue;
+    for(const a of ASPECTS){
+      let baseOrb=a.orb;
+      if(['Sun','Moon'].includes(p1)||['Sun','Moon'].includes(p2))baseOrb+=1;
+      if(['Ascendant','MC'].includes(p1)||['Ascendant','MC'].includes(p2))baseOrb=Math.min(baseOrb,6);
+      let d=Math.abs(norm(NATAL[p1]-NATAL[p2])-a.angle);if(d>180)d=360-d;
+      if(d<=baseOrb){out.push({p1,p2,aspect:a.name,type:a.type,orb:Math.round(d*100)/100});break;}
+    }
+  }}
+  // Rank: exactness + involvement of luminaries/angles
+  const rank={Sun:10,Moon:10,Ascendant:9,MC:8,Mercury:6,Venus:6,Mars:6,Jupiter:5,Saturn:5,Uranus:4,Neptune:4,Pluto:4,Chiron:3,NorthNode:4};
+  out.sort((a,b)=>((rank[b.p1]||3)+(rank[b.p2]||3)-b.orb*2)-((rank[a.p1]||3)+(rank[a.p2]||3)-a.orb*2));
+  return out;
+}
 
 function findExactDate(tp,np,aspectAngle,jd){
   const isMoon=tp==='Moon';const range=isMoon?15:90;const step=isMoon?.1:1;const nLon=NATAL[np];
@@ -1390,8 +1516,9 @@ function currentHourIndex(hours,utHours){
 }
 
 function fmtHourTime(h){
-  // Convert UT hours to EDT (UTC-4) for display
-  let local=h-4; // EDT offset
+  // Convert UT hours to OBSERVER local time (Europe/Zurich, DST-aware)
+  const off=tzOffsetHours(new Date());
+  let local=h+off;
   if(local<0)local+=24;if(local>=24)local-=24;
   const hr=Math.floor(local);const mn=Math.round((local-hr)*60);
   const ampm=hr>=12?'PM':'AM';const h12=hr===0?12:hr>12?hr-12:hr;
@@ -1648,7 +1775,7 @@ function findBestElectionalWindows(task,daysAhead,limit){
   for(let d=0;d<daysAhead;d++){
     const date=new Date(now.getTime()+d*86400000);
     const jd=julianDate(date.getUTCFullYear(),date.getUTCMonth()+1,date.getUTCDate(),date.getUTCHours()+date.getUTCMinutes()/60);
-    const ph=computePlanetaryHours(jd,BIRTH.lat,BIRTH.lon);
+    const ph=computePlanetaryHours(jd,OBSERVER.lat,OBSERVER.lon);
     if(!ph)continue;
     // Compute day's position snapshot (Moon, retros) at midday UT
     const y=date.getUTCFullYear(),m=date.getUTCMonth()+1,dy=date.getUTCDate();
@@ -2071,45 +2198,48 @@ const DECAN_RULERS={
   Pisces:['Saturn','Jupiter','Mars'],
 };
 
-// Picatrix faces — 36 traditional images, one per decan.
-// Each: image description, magical indication, keyword.
-const PICATRIX_FACES={
-  'Aries-1':{image:'A dark man, restless, standing, clothed in white, of great bodily power, much courage.',indication:'Force, courage, new beginnings, untested strength.',keyword:'Initiation'},
-  'Aries-2':{image:'A woman clothed in green, lacking one leg, with an iron bracelet.',indication:'Nobility, high counsel, scepter, dignity; but also lameness of pride.',keyword:'Sovereignty'},
-  'Aries-3':{image:'A restless man holding a golden bracelet, wearing red.',indication:'Subtlety, cunning, skill in games, refinement.',keyword:'Cunning'},
-  'Taurus-1':{image:'A woman with long hair, a single-color garment, a flame in her hand.',indication:'Ploughing, sowing, buildings, earning; wealth by labor.',keyword:'Labor'},
-  'Taurus-2':{image:'A naked man with a bow and arrow, ploughing.',indication:'Power, nobility, dignity over common people, the building of houses.',keyword:'Power'},
-  'Taurus-3':{image:'A man like a camel with cloven feet, of corrupt appearance.',indication:'Idleness, hidden work, misery, fear of poverty; vain requests.',keyword:'Concealment'},
-  'Gemini-1':{image:'A beautiful woman and a servant girl carrying a staff.',indication:'Writing, counting, learning, teaching, science.',keyword:'Learning'},
-  'Gemini-2':{image:'A man with a flute, one digging in the earth.',indication:'Infamy, labor, uneasy searches, arguments.',keyword:'Struggle'},
-  'Gemini-3':{image:'A man seeking arms and a fool holding a staff in one hand and a bird in another.',indication:'Foolhardiness, violence, obscurity; scorn of things.',keyword:'Rashness'},
-  'Cancer-1':{image:'A young woman beautifully adorned with a crown of myrtle, holding a lyre.',indication:'Subtlety of sense, love, joy, sweetness.',keyword:'Pleasure'},
-  'Cancer-2':{image:'A man with a beautiful face and crown of roses, holding an iron staff.',indication:'Games, riches, pleasure, abundance.',keyword:'Abundance'},
-  'Cancer-3':{image:'A man, quick of foot, with a serpent in one hand and a golden dart in the other.',indication:'Running, riding, warring, taking of captives.',keyword:'Speed'},
-  'Leo-1':{image:'A man riding a lion, or a man with a drawn sword, hairy.',indication:'Boldness, victory over enemies, passion, unbending will.',keyword:'Courage'},
-  'Leo-2':{image:'A man with a crown of white myrtle, holding a bow.',indication:'Civility, nobility, victory through counsel.',keyword:'Nobility'},
-  'Leo-3':{image:'A young man bearing a whip, and a man very mournful, sorrowful.',indication:'Love, fellowship, liberality, but also sadness.',keyword:'Devotion'},
-  'Virgo-1':{image:'A young virgin wrapped in fine linen, holding a pomegranate.',indication:'Sowing, ploughing, budding, gathering of grapes. Justice and industry.',keyword:'Harvest'},
-  'Virgo-2':{image:'A black man in leather, holding a small bag of money.',indication:'Earning by trade, merchandise, gain by small means.',keyword:'Commerce'},
-  'Virgo-3':{image:'A pale woman with a man, dark, bearded, holding a reed.',indication:'Weakness, old age, infirmity, sloth; but learning too.',keyword:'Decline'},
-  'Libra-1':{image:'A man holding a spear in one hand, a bird in the other.',indication:'Justice, truth, works of good counsel; anger and strife dissolved.',keyword:'Justice'},
-  'Libra-2':{image:'Two men furious and angry, with a well-dressed man in their midst.',indication:'Probity, beauty of appearance; but quarrels, displeasure, strife.',keyword:'Tension'},
-  'Libra-3':{image:'A violent man with a bow; another naked, holding an image of a man with loaves.',indication:'Evil thoughts, malice, the corruption of just acts; also sometimes wealth.',keyword:'Temptation'},
-  'Scorpio-1':{image:'A woman of good countenance and bearing with two men fighting before her.',indication:'Sadness of mind, malice, deceit, the troubling of others.',keyword:'Intrigue'},
-  'Scorpio-2':{image:'A man naked, and a woman naked; a man sitting on the ground, and two dogs biting each other.',indication:'Shamelessness, deceit, ruin of estate; foolish love.',keyword:'Exposure'},
-  'Scorpio-3':{image:'A man bowed down with a stick in his hand; a wolf and a dog fight before him.',indication:'Drunkenness, fornication, anger, violence, evil words.',keyword:'Excess'},
-  'Sagittarius-1':{image:'A man armed with a coat of mail, holding a naked sword.',indication:'Boldness, liberality, victory; levity of mind.',keyword:'Valor'},
-  'Sagittarius-2':{image:'A woman weeping and covered with clothes.',indication:'Sorrow, fear, mournful work; also the doing of honest things.',keyword:'Lament'},
-  'Sagittarius-3':{image:'A man of yellow color, holding a staff, a cat beside him.',indication:'Obstinate work, wickedness, mischief, following one\'s own will.',keyword:'Willfulness'},
-  'Capricorn-1':{image:'A man carrying a book in one hand, and in the other a closed purse.',indication:'Happiness in business, gain; requests well-received.',keyword:'Profit'},
-  'Capricorn-2':{image:'A man holding a book, which he opens and closes.',indication:'Seeking what cannot be had, losing what is held; despair.',keyword:'Loss'},
-  'Capricorn-3':{image:'A woman chaste of body, a wise man mastering his work.',indication:'Governing in wisdom, keeping of riches; diligence toward the just.',keyword:'Mastery'},
-  'Aquarius-1':{image:'A man with a long beard, meditating.',indication:'Thought, reasoning, meditation upon great matters; invention.',keyword:'Contemplation'},
-  'Aquarius-2':{image:'A man like a king, proud, holding a scepter.',indication:'Ignominy in noble things, wrath, impatience; but also eminence.',keyword:'Hubris'},
-  'Aquarius-3':{image:'A black man, very angry.',indication:'Insolence, shamelessness, vain labors; sorrows from the common people.',keyword:'Discord'},
-  'Pisces-1':{image:'A man carrying burdens on his shoulders, and well clothed.',indication:'Travels, changes of place, seeking of riches and livelihood.',keyword:'Passage'},
-  'Pisces-2':{image:'A well-dressed man holding a scroll.',indication:'Great and noble requests; honest, commendable works.',keyword:'Request'},
-  'Pisces-3':{image:'A man naked or of young age, with a beautiful girl clothed in rich garments, dressing.',indication:'Peace, humility, weakness, infirmity; deception by beauty.',keyword:'Allure'},
+// Tarot Decan Attributions — Golden Dawn / Crowley system.
+// Each of the 36 minor arcana pips (2–10 of each suit) corresponds to one decan.
+// Suit follows triplicity: Wands=Fire, Cups=Water, Swords=Air, Disks=Earth.
+// Pip number rises with degrees: cardinal=2-3-4, fixed=5-6-7, mutable=8-9-10.
+// The card is a vehicle for understanding the planet-in-sign quality of that 10° slice.
+const TAROT_DECANS={
+  'Aries-1':{card:'2 of Wands',title:'Lord of Dominion',meaning:'Mars in Aries decan 1. Pure will, the spark before the work begins. The energy is yours to direct — but it has not yet met resistance, so it can squander itself in restless motion. Use this slice to begin, not to sustain.',keyword:'Ignition'},
+  'Aries-2':{card:'3 of Wands',title:'Lord of Established Strength',meaning:'Sun in Aries decan 2. The first surge has organised into a real position. You can see what you are building. The danger is mistaking the founding act for the whole work — pride hardens here. Consolidate, then keep moving.',keyword:'Foundation'},
+  'Aries-3':{card:'4 of Wands',title:'Lord of Perfected Work',meaning:'Venus in Aries decan 3. Mars cooled by Venus: a celebration after a hard push, a finished structure that rests for one breath before the next campaign. Honour the completion. Don\'t coast.',keyword:'Completion'},
+  'Taurus-1':{card:'5 of Disks',title:'Lord of Worry',meaning:'Mercury in Taurus decan 1. The mind worries the body\'s resources — counting, anxious about scarcity, unable to rest in what\'s actually present. Ground the worry in concrete inventory; abstract dread will not solve material questions.',keyword:'Scarcity-anxiety'},
+  'Taurus-2':{card:'6 of Disks',title:'Lord of Success',meaning:'Moon in Taurus decan 2. The Moon is exalted here — material flow finds its rhythm. Resources arrive and pass through you. Generosity and reception both work; stinginess clogs the channel.',keyword:'Flow'},
+  'Taurus-3':{card:'7 of Disks',title:'Lord of Failure',meaning:'Saturn in Taurus decan 3. The work has hit the long grinding middle. What looked promising stalls. Failure here is structural, not personal — finish or cut, but don\'t romanticise the slog.',keyword:'Stagnation'},
+  'Gemini-1':{card:'8 of Swords',title:'Lord of Interference',meaning:'Jupiter in Gemini decan 1. Too many ideas, too many voices, the mind tangled in its own options. Jupiter\'s expansiveness scatters Mercury\'s precision. Pick one thread and follow it; second-guessing is the whole problem.',keyword:'Distraction'},
+  'Gemini-2':{card:'9 of Swords',title:'Lord of Cruelty',meaning:'Mars in Gemini decan 2. The mind turns its blade inward — 3am thoughts, intrusive replays, sharp self-judgment. The cruelty is mental, not real. Get out of bed, write it down, name what is actually happening.',keyword:'Mental siege'},
+  'Gemini-3':{card:'10 of Swords',title:'Lord of Ruin',meaning:'Sun in Gemini decan 3. An idea or argument has run its full course and collapsed. The relief of accepting it is over. Don\'t resurrect what just died — the ground is now clear for something new.',keyword:'Endpoint'},
+  'Cancer-1':{card:'2 of Cups',title:'Lord of Love',meaning:'Venus in Cancer decan 1. Two cups touch. The opening of feeling toward another, mutual recognition, the quiet beginning of any real bond. Reach toward; do not grasp.',keyword:'Bonding'},
+  'Cancer-2':{card:'3 of Cups',title:'Lord of Abundance',meaning:'Mercury in Cancer decan 2. Feeling overflows into shared joy — gathering, celebration, talk that nourishes. The risk is letting overflow drown what was meant to be tended privately.',keyword:'Conviviality'},
+  'Cancer-3':{card:'4 of Cups',title:'Lord of Luxury',meaning:'Moon in Cancer decan 3. The Moon at home: feeling settles into itself and can become satiated, even bored. A gift is held out and you don\'t see it. Look up from the comfortable rut.',keyword:'Satiety'},
+  'Leo-1':{card:'5 of Wands',title:'Lord of Strife',meaning:'Saturn in Leo decan 1. Pride meets pride. Competing wills, sparring without resolution, ego friction that keeps everyone honest if no one cracks. Useful for sharpening; ruinous if taken personally.',keyword:'Friction'},
+  'Leo-2':{card:'6 of Wands',title:'Lord of Victory',meaning:'Jupiter in Leo decan 2. The win arrives, recognition follows, and you are visibly the one who made it happen. The trap is needing the applause to keep coming. Take the bow, then return to the work.',keyword:'Recognition'},
+  'Leo-3':{card:'7 of Wands',title:'Lord of Valour',meaning:'Mars in Leo decan 3. You have the high ground; everyone else has numbers. Hold the position. This is the courage of a defender, not a conqueror — don\'t leave the wall to chase.',keyword:'Defense'},
+  'Virgo-1':{card:'8 of Disks',title:'Lord of Prudence',meaning:'Sun in Virgo decan 1. Patient apprenticeship, the willingness to do something small a hundred times correctly. Mastery accrues quietly. Don\'t skip steps for spectacle.',keyword:'Craft'},
+  'Virgo-2':{card:'9 of Disks',title:'Lord of Gain',meaning:'Venus in Virgo decan 2. Discrimination meets pleasure: the good thing chosen well, the harvest enjoyed. Self-sufficient grace. The shadow is fastidiousness — do not let the perfect refuse the good.',keyword:'Discerning gain'},
+  'Virgo-3':{card:'10 of Disks',title:'Lord of Wealth',meaning:'Mercury in Virgo decan 3. The full storehouse, the operation that runs on its own. Inheritance, both literal and structural. Now the question is what to do with what you have built — stewardship, not acquisition.',keyword:'Established wealth'},
+  'Libra-1':{card:'2 of Swords',title:'Lord of Peace Restored',meaning:'Moon in Libra decan 1. After conflict, a held truce. Both sides set down their arms but neither has surrendered. Don\'t mistake equilibrium for resolution; use this pause to negotiate the real thing.',keyword:'Truce'},
+  'Libra-2':{card:'3 of Swords',title:'Lord of Sorrow',meaning:'Saturn in Libra decan 2. The cut that had to come — the relationship ended, the truth named. Pain that clarifies. Saturn here gives the fall a structure: grieve cleanly, do not embellish.',keyword:'Clean grief'},
+  'Libra-3':{card:'4 of Swords',title:'Lord of Truce',meaning:'Jupiter in Libra decan 3. Withdrawal to recover, the deliberate pause. Set the sword down on the tomb and rest. Returning to the fight too soon undoes the recovery.',keyword:'Recovery'},
+  'Scorpio-1':{card:'5 of Cups',title:'Lord of Disappointment',meaning:'Mars in Scorpio decan 1. What you wanted has spilled. The grief is loud; what remains, you cannot yet see. Sit with the loss before turning to the two cups still standing.',keyword:'Loss'},
+  'Scorpio-2':{card:'6 of Cups',title:'Lord of Pleasure',meaning:'Sun in Scorpio decan 2. Memory and innocence — the past returns sweet, an old current of feeling re-emerges. Honest pleasure, not an escape. Receive without trying to recreate.',keyword:'Remembered joy'},
+  'Scorpio-3':{card:'7 of Cups',title:'Lord of Debauch',meaning:'Venus in Scorpio decan 3. Many cups offered, all glittering, most poisoned. Fantasy, projection, the temptation to believe what you are being shown. Discriminate before drinking.',keyword:'Illusion'},
+  'Sagittarius-1':{card:'8 of Wands',title:'Lord of Swiftness',meaning:'Mercury in Sagittarius decan 1. Arrows in flight — messages arrive, plans accelerate, a long-stuck thing suddenly moves. Catch the wave; the window is short.',keyword:'Acceleration'},
+  'Sagittarius-2':{card:'9 of Wands',title:'Lord of Great Strength',meaning:'Moon in Sagittarius decan 2. The lone defender bandaged but standing, ready for the next assault. Reserve power earned by everything you have already absorbed. Don\'t lower the guard yet.',keyword:'Earned strength'},
+  'Sagittarius-3':{card:'10 of Wands',title:'Lord of Oppression',meaning:'Saturn in Sagittarius decan 3. Carrying more than you should, because you committed and you keep your word. Honour does not require martyrdom. Set down what was never yours.',keyword:'Burden'},
+  'Capricorn-1':{card:'2 of Disks',title:'Lord of Change',meaning:'Jupiter in Capricorn decan 1. Two pans of the scale, constantly rebalancing — work and rest, money in and out, multiple roles. Flow with the oscillation; a fixed posture topples.',keyword:'Juggling'},
+  'Capricorn-2':{card:'3 of Disks',title:'Lord of Works',meaning:'Mars in Capricorn decan 2. Mars is exalted in Capricorn — disciplined effort meets structural ambition. Skilled labour with a clear plan. The work itself is the satisfaction.',keyword:'Skilled labour'},
+  'Capricorn-3':{card:'4 of Disks',title:'Lord of Power',meaning:'Sun in Capricorn decan 3. The fortress finished, gates closed, walls high. Security earned, but at the cost of openness. Loosen the grip occasionally or the structure becomes a prison.',keyword:'Consolidation'},
+  'Aquarius-1':{card:'5 of Swords',title:'Lord of Defeat',meaning:'Venus in Aquarius decan 1. A win that costs more than it gives — burned bridges, alienated allies, the satisfaction of being right. Choose your battles. Some wins are losses in slow motion.',keyword:'Pyrrhic victory'},
+  'Aquarius-2':{card:'6 of Swords',title:'Lord of Science',meaning:'Mercury in Aquarius decan 2. Crossing from rough waters to calmer ones. Method, analysis, the mind solving by stepping back. Take the boat; the swim is unnecessary.',keyword:'Passage'},
+  'Aquarius-3':{card:'7 of Swords',title:'Lord of Futility',meaning:'Moon in Aquarius decan 3. Sneaking out with most of what you came for, leaving the rest. Cleverness without commitment. Sometimes wise; often a way of avoiding the harder honest move.',keyword:'Half-measures'},
+  'Pisces-1':{card:'8 of Cups',title:'Lord of Indolence',meaning:'Saturn in Pisces decan 1. Walking away from a setup that no longer feeds you, even though it looks fine from outside. The cups are full but empty. Trust the leaving.',keyword:'Leaving'},
+  'Pisces-2':{card:'9 of Cups',title:'Lord of Happiness',meaning:'Jupiter in Pisces decan 2. Jupiter at home in Pisces: the wish granted, satisfaction that fills you up. Receive cleanly, without the reflex to discount it.',keyword:'Wish fulfilled'},
+  'Pisces-3':{card:'10 of Cups',title:'Lord of Satiety',meaning:'Mars in Pisces decan 3. The full rainbow — happiness shared, the family scene, the picture that contains everything you wanted. Mars here keeps it from going saccharine: love that includes friction is what holds.',keyword:'Fullness'},
 };
 
 function computeDecan(lon){
@@ -2119,7 +2249,7 @@ function computeDecan(lon){
   const decanIdx=Math.floor(degIntoSign/10); // 0,1,2
   const rulers=DECAN_RULERS[signName]||['','',''];
   const ruler=rulers[decanIdx];
-  const face=PICATRIX_FACES[signName+'-'+(decanIdx+1)]||{};
+  const face=TAROT_DECANS[signName+'-'+(decanIdx+1)]||{};
   return{
     signName,
     decanIdx,
@@ -2128,8 +2258,12 @@ function computeDecan(lon){
     rangeStart:decanIdx*10,
     rangeEnd:(decanIdx+1)*10,
     degIntoDecan:degIntoSign-decanIdx*10,
-    image:face.image,
-    indication:face.indication,
+    // Backward-compat: keep .image/.indication so any old call sites still render.
+    image:face.card?(face.card+' — '+face.title):'',
+    indication:face.meaning,
+    card:face.card,
+    title:face.title,
+    meaning:face.meaning,
     keyword:face.keyword
   };
 }
@@ -2308,7 +2442,7 @@ function buildChartContext(cur,jd,transits,vibe,mPhase,retros,stats,vocResult,mo
       planets:planets.map(p=>fmt(p,cur[p])),
       moonPhase:`${mPhase.name} (${phaseAngle.toFixed(0)}° from Sun)`,
       moonSign:moonSign.name,
-      moonDecan:`Decan ${moonDecan.decanNum} of ${moonDecan.signName}, ruled by ${moonDecan.ruler} — Picatrix: ${moonDecan.image||'(none)'}`,
+      moonDecan:`Decan ${moonDecan.decanNum} of ${moonDecan.signName}, ruled by ${moonDecan.ruler} — Tarot: ${moonDecan.card||''} ${moonDecan.title?'('+moonDecan.title+')':''}`,
       moonMansion:mansion?`Mansion ${mansion.index} ${mansion.name||''} (${mansion.nature})`:null,
       sunDecan:`Decan ${sunDecan.decanNum} of ${sunDecan.signName}, ruled by ${sunDecan.ruler}`,
       voc:vocResult&&vocResult.active?`VOC until Moon enters ${vocResult.nextSign}`:'Moon is not void of course',
@@ -2528,7 +2662,7 @@ function checkNotifications(){
         if(notifPrefs.lastFiredIds[tag]!==todayKey){
           const phase=moonPhaseInfo(moonPhase(jdToT(jd))).name;
           const mSign=signOf(cur.Moon).name;
-          const pHours=computePlanetaryHours(jd,BIRTH.lat,BIRTH.lon);
+          const pHours=computePlanetaryHours(jd,OBSERVER.lat,OBSERVER.lon);
           const dayRuler=pHours?pHours.dayRuler:'';
           fireNotification(
             'Today\'s sky',
@@ -2571,7 +2705,7 @@ function checkNotifications(){
 
     // Planetary hour change
     if(notifPrefs.planetaryHour){
-      const pHours=computePlanetaryHours(jd,BIRTH.lat,BIRTH.lon);
+      const pHours=computePlanetaryHours(jd,OBSERVER.lat,OBSERVER.lon);
       if(pHours){
         const utNow=now.getUTCHours()+now.getUTCMinutes()/60;
         const idx=currentHourIndex(pHours.hours,utNow);
@@ -2701,6 +2835,40 @@ function scanTransitFixedStars(cur,jd,orb){
 // ══════════════════════════════════════════════════════════════
 // SOURCE-GROUNDED REFERENCE INDEX
 // ══════════════════════════════════════════════════════════════
+// Per-term practical info — replaces source/lineage with what actually helps when reading a chart.
+// {whenItMatters, howToRead, watchFor}
+const REF_USEFUL={
+  'Zodiacal Releasing':{whenItMatters:'In long-arc career and identity questions. The chapters do not predict events as much as define the question being asked of you for that span.',howToRead:'Locate which sign is currently ruling. The ruler\'s natal condition (sign, house, dignity, aspects) describes the texture of the period. Peak L1 periods correspond to maximum visibility; Loosings mark forced reorientation.',watchFor:'Major peak years and the eight-from-eight Loosing of the Bond — these are the structural turning points, not random transits.'},
+  'Firdaria':{whenItMatters:'When you want a steady year-by-year throughline for the whole life. Useful as a backdrop to ZR — Firdaria says who is in charge for the next ~10 years; ZR says what episode is playing.',howToRead:'Read the major-period planet through its natal placement and its relationship to the sect light. Sub-period planet adds the flavour for the current ~1–2 years.',watchFor:'Sub-period transitions every 1–2 years — they tend to land as quiet shifts in mood or focus, not events.'},
+  'Solar Return':{whenItMatters:'Once a year around your birthday. Read it as the keynote chart for the next 12 months.',howToRead:'Look at the SR Ascendant (whole-sign), the houses of the SR Sun and Moon, and any tight aspects to natal points. Profected lord placement in the SR is the year\'s headline.',watchFor:'A SR chart cast for your current location, not your birthplace. Where you are at the moment of return matters.'},
+  'Lunar Return':{whenItMatters:'Each lunar month, useful for short-arc planning and emotional weather forecasting.',howToRead:'Note the LR Ascendant and Moon house. The placement of the LR Moon\'s ruler shows where the month\'s feeling will be processed.',watchFor:'Don\'t over-weight a single LR — they swing too fast. Use as one signal among several.'},
+  'Annual Profection':{whenItMatters:'Every birthday. The simplest, most reliable timing tool — start here before more complex techniques.',howToRead:'Count one sign per year of age from the natal Ascendant. The sign reached gives the topic (its house) and a Year Lord (its planetary ruler). The Year Lord\'s natal condition + current transits = the year\'s plot.',watchFor:'Year Lord transits, especially returns and stations, tend to land hard during the profected year.'},
+  'Planetary Hours':{whenItMatters:'When choosing the moment for a deliberate action — sending an important message, opening a conversation, beginning a piece of work.',howToRead:'Match the action to the hour ruler\'s nature: Mercury for communication, Venus for art and reconciliation, Mars for confrontation, Jupiter for big asks, Saturn for grinding focus. The day ruler colours the whole day; the hour ruler the next ~60 minutes.',watchFor:'Hours change at sunrise and sunset, so the first daytime hour is always the day\'s ruler. Don\'t use clock-hours.'},
+  'Electional Astrology':{whenItMatters:'Before any deliberate beginning that will have ongoing consequences — a launch, a contract, a journey.',howToRead:'Pick a moment whose hour-ruler matches the work, with the Moon waxing and not void, and the planet most important to the work strong by sign and house. Avoid stations and tight malefic aspects.',watchFor:'Don\'t let perfect be the enemy of good. A clean Moon condition and a sympathetic hour matter more than chasing every detail.'},
+  'Sect':{whenItMatters:'In every chart reading. Sect determines who the helpers and challengers are.',howToRead:'Day chart: Sun is sect light, Jupiter is sect benefic, Mars is out-of-sect malefic. Night chart: reverse — Moon, Venus, Saturn. The in-sect benefic helps cleanly; the out-of-sect malefic causes the bigger trouble.',watchFor:'Modern textbooks often skip sect. It is the single most-overlooked piece of usable Hellenistic doctrine.'},
+  'Lot of Fortune':{whenItMatters:'Body, money, daily circumstance, the field of luck. Read alongside the 2nd house and the Moon for material questions.',howToRead:'Note its house and any planets aspecting. Transits to Fortune correspond to shifts in income, health, or living circumstance more reliably than to inner life.',watchFor:'Use the correct sect formula. Day: Asc + Moon − Sun. Night: Asc + Sun − Moon.'},
+  'Lot of Spirit':{whenItMatters:'Career, vocation, deliberate action, the field of agency. Pair with the 10th house and the sect light for vocation questions.',howToRead:'Spirit is what the soul chooses to do; Fortune is what happens to the body. Spirit\'s house = arena of intentional action; its ruler\'s condition = the agency available.',watchFor:'When Spirit and Fortune are in dialogue (aspecting each other), action and circumstance are unusually well-aligned.'},
+  'Seven Hermetic Lots':{whenItMatters:'When you want a richer cartography of psychic functions than just Fortune and Spirit. Each lot is a calculated point representing a specific theme.',howToRead:'Read each lot in its house, then by aspects to its position. Eros = what attracts you; Necessity = what binds you; Courage = where you push past fear; Victory = where success comes; Nemesis = where the trap is.',watchFor:'Don\'t overload a reading with all seven. Pick the two or three most relevant to the question.'},
+  'Lunar Mansions':{whenItMatters:'For lunar electional work and for fine-grained Moon transits. The 28 mansions slice the Moon\'s nightly travel, ~12°51\' each.',howToRead:'Note the mansion the Moon currently occupies. Each has traditional indications (favourable for X, unfavourable for Y) drawn from Picatrix and Manāzil traditions.',watchFor:'The Moon spends ~24 hours in each mansion, so the indication shifts daily. Useful for choosing which day in a week to act.'},
+  'Picatrix Faces (Decans)':{whenItMatters:'For finer-grained reading of any planet. Each 30° sign breaks into three 10° decans, each ruled by a different planet in Chaldean order.',howToRead:'In this app the decans are presented through their Golden Dawn / Crowley tarot attributions — the minor arcana 2-10 of each suit map to one decan apiece. The card is a vehicle for the planet-in-sign quality of that 10° slice.',watchFor:'The decan ruler often matters more than the sign ruler for understanding why a planet feels off — e.g., Sun in late Pisces (Mars decan) bites in a way Sun in early Pisces (Saturn decan) does not.'},
+  'Essential Dignities':{whenItMatters:'Whenever a planet feels weak or strong and you want to know why. Dignity is structural condition — independent of aspects.',howToRead:'Domicile = home; Exaltation = honoured guest; Detriment = stranger in hostile territory; Fall = exiled. Triplicity, term, and face add finer scoring. A planet in dignity does its job; in detriment/fall it struggles regardless of how well-aspected.',watchFor:'A dignified malefic is still a malefic — Saturn in Capricorn is harsh and effective. A debilitated benefic still helps but with less reach.'},
+  'Void of Course Moon':{whenItMatters:'Before initiating anything that needs to grow — a meeting, a contract, a new project, a message expecting reply.',howToRead:'If the Moon will perfect no further Ptolemaic aspect before changing sign, she is void. Traditionally: nothing comes of plans launched here. They drift, fizzle, or get reabsorbed.',watchFor:'Routine and continuation are fine on a void Moon. The doctrine targets new beginnings only.'},
+  'Peak Period (ZR)':{whenItMatters:'In Zodiacal Releasing, when a sub-period reaches an angle (1, 4, 7, 10) from the start. Peak periods are when the chapter\'s themes go public.',howToRead:'Peak L1s are career-defining stretches. Peak L2s within a non-peak L1 are smaller crests — the kind of months where things show up.',watchFor:'Not every peak is positive. The texture depends on the ruler\'s natal condition. A weak ruler at peak can mean visible failure as easily as visible success.'},
+  'Loosing of the Bond':{whenItMatters:'When ZR jumps to the 9th sign because the next sub-period would fall in the 8th. These are forced reorientations.',howToRead:'Expect a structural break — relationship, vocation, location, identity. Loosings rewrite the chapter, they do not just colour it.',watchFor:'Loosings often coincide with what feels like external disruption but is structural. Don\'t fight the rerouting.'},
+  'Benefic / Malefic':{whenItMatters:'In every aspect read. Benefic-malefic mixing tells you whether a configuration helps or hurts.',howToRead:'Jupiter and Venus help; Mars and Saturn obstruct. Sect modifies: in-sect malefic is workable, out-of-sect malefic is the real trouble. Mercury and Moon flex by company.',watchFor:'Modern psychological astrology often denies the malefic/benefic distinction. The traditional reading is more useful for predictive work.'},
+  'Retrograde':{whenItMatters:'Whenever a planet is moving backward by apparent motion. Roughly 4× a year for Mercury, less often for outer planets.',howToRead:'The planet\'s significations turn inward. Re-do, re-think, re-encounter; not start fresh. Old situations and people re-surface for completion or reconsideration.',watchFor:'Retrograde does not invalidate action — it invalidates the assumption that action will move forward in a straight line.'},
+  'Sect Light':{whenItMatters:'In every chart. The sect light is the chart\'s primary luminary and a key indicator of vitality and direction.',howToRead:'Sun for day birth, Moon for night birth. Its sign, house, and condition outweigh the other luminary for life-direction questions.',watchFor:'Modern readings that lead with the Sun in night charts miss the Moon\'s structural priority.'},
+  'Hellenistic Astrology':{whenItMatters:'When you want the original system that everything else descends from — sect, lots, time-lord techniques, whole-sign houses.',howToRead:'Read with sect and whole-sign houses. Lots are first-class objects, not curiosities. Time-lord techniques (profections, ZR, firdaria) sit on top of natal indication.',watchFor:'Hellenistic does not mean outdated — it is the densest and most predictive layer of Western astrology.'},
+  'Perso-Arabic Astrology':{whenItMatters:'For mundane and annual techniques (firdaria, world revolutions) and for lots beyond Fortune and Spirit.',howToRead:'Treat as a refinement and elaboration of the Hellenistic system rather than a replacement. Most techniques modern astrologers use as "traditional" come through this layer.',watchFor:'The translations are uneven. Some Latinised Arabic terms have lost meaning across two language jumps.'},
+  'Picatrix':{whenItMatters:'When working with talismanic magic, planetary hours, mansions, or decans for ritual/electional purposes.',howToRead:'It is a magical handbook, not a natal text. Its decan and mansion images are tools for talisman-making and psychic reorientation, not personality readings.',watchFor:'In this app the decans are presented through tarot, not Picatrix images — the underlying planetary attribution is the same.'},
+  'Hermetic Tradition':{whenItMatters:'Mostly as the source of lots, decans, and the philosophical frame around astrology as a sympathetic art.',howToRead:'Hermetic doctrine sees the chart as a single living configuration mirroring a soul. Useful as a reading posture even when the techniques themselves are pre- or post-Hermetic.',watchFor:'The Hermetic Corpus itself is mostly philosophy, not practical astrology. The astrology is in the Liber Hermetis and attributions.'},
+  'Medieval Latin Astrology':{whenItMatters:'For horary, electional, and the older predictive frame that William Lilly summarised.',howToRead:'Use whole-sign or quadrant houses depending on the technique. The dignities table is the central diagnostic tool.',watchFor:'Medieval texts are dense with technical detail and easy to misapply. Lilly\'s Christian Astrology is the readable entry point.'},
+  'Vettius Valens':{whenItMatters:'When working with Zodiacal Releasing, lots, or worked-example case material.',howToRead:'Valens shows you how he reasons about real charts. The Anthology is a working astrologer\'s notebook, not a textbook.',watchFor:'Translations vary. Schmidt\'s Project Hindsight edition is the most rigorous; Riley\'s online translation is the most accessible.'},
+  'Abū Maʿshar (Albumasar)':{whenItMatters:'For firdaria, mundane techniques, and the medieval transmission of Hellenistic doctrine.',howToRead:'His Great Introduction is the canonical source. Firdaria sequence and rulerships of years come from him.',watchFor:'His mundane work focuses on world events. For natal application, use the firdaria and dignities and skip the world-historical apparatus.'},
+  'Guido Bonatti':{whenItMatters:'For horary, electional, and a comprehensive single-author medieval reference.',howToRead:'Liber Astronomiae is encyclopaedic — read by topic, not cover to cover.',watchFor:'Translations are partial. Dykes\' English edition is the working standard.'},
+  'William Lilly':{whenItMatters:'For horary practice and for the void-of-course Moon doctrine.',howToRead:'Christian Astrology is structured pedagogically — it teaches the technique, not just the lore. Read for the worked horary examples.',watchFor:'Lilly\'s aspect orbs are wider than modern Hellenistic practice. His void doctrine is stricter than modern usage.'},
+  'Hermes Trismegistus':{whenItMatters:'As the legendary attribution for lots, decans, and much of the talismanic apparatus.',howToRead:'Read the attribution as cultural signal — texts assigned to Hermes are claiming a particular lineage and authority. The actual authors are usually anonymous Hellenistic astrologers.',watchFor:'Don\'t treat the Hermes attribution as historical fact. The figure is a syncretic conflation of Hermes and Thoth.'},
+};
 // Each entry: {category, term, summary, source, lineage}
 // Categories: Technique, Object, Concept, Tradition, Figure
 const REFERENCES=[
@@ -3747,6 +3915,8 @@ let mansionExpanded=false;
 function toggleMansion(){mansionExpanded=!mansionExpanded;renderApp();}
 let toneExpanded=false;
 function toggleTone(){toneExpanded=!toneExpanded;renderApp();}
+let hourNowExpanded=false;
+function toggleHourNow(){hourNowExpanded=!hourNowExpanded;renderApp();}
 let moonExpanded=false;
 function toggleMoon(){moonExpanded=!moonExpanded;renderApp();}
 let profExpanded=null; // 'year'|'month'|'sect'|null
@@ -3858,7 +4028,7 @@ async function synthGenerate(){
     const vocResult=isVoidOfCourse(cur.Moon,jd);
     const retros=['Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto'].filter(p=>{const ms=motionStatus(p,jd);return ms&&ms.retrograde;});
     const prof=computeProfections(now);
-    const pHours=computePlanetaryHours(jd,BIRTH.lat,BIRTH.lon);
+    const pHours=computePlanetaryHours(jd,OBSERVER.lat,OBSERVER.lon);
     const lots=computeLots(cur,NATAL.Ascendant,SECT.isNocturnal);
     const mansion=computeMansion(cur.Moon);
     // Transits
@@ -3911,8 +4081,9 @@ function notifToggleMaster(){
   } else notifRequestPerm();
 }
 
-let fsNatalExpanded=false,fsTransitExpanded=false;
+let fsNatalExpanded=false,fsTransitExpanded=false,natalAspectsExpanded=false;
 function toggleFSNatal(){fsNatalExpanded=!fsNatalExpanded;renderApp();}
+function toggleNatalAspects(){natalAspectsExpanded=!natalAspectsExpanded;renderApp();}
 function toggleFSTransit(){fsTransitExpanded=!fsTransitExpanded;renderApp();}
 
 let refExpanded={},refCategory='All',refQuery='';
@@ -3948,14 +4119,19 @@ function getTargetDate(){const d=new Date();d.setDate(d.getDate()+dayOffset);ret
 function showTooltip(term,el){
   const g=GLOSSARY[term];if(!g)return;
   const tip=document.getElementById('tooltip-el');
-  tip.innerHTML=`<strong>${term}</strong>${g}`;
+  tip.innerHTML=`<strong>${term}</strong>${g}<div class="tip-close-hint">tap to dismiss</div>`;
   const rect=el.getBoundingClientRect();
   tip.style.left=Math.min(rect.left,window.innerWidth-290)+'px';
   tip.style.top=(rect.top-tip.offsetHeight-8)+'px';
   tip.classList.add('open');
-  setTimeout(()=>tip.classList.remove('open'),4000);
-  const close=()=>{tip.classList.remove('open');document.removeEventListener('touchstart',close);};
-  setTimeout(()=>document.addEventListener('touchstart',close),100);
+  // Long auto-dismiss; user can tap anywhere to close sooner.
+  if(window._tipTO) clearTimeout(window._tipTO);
+  window._tipTO=setTimeout(()=>tip.classList.remove('open'),20000);
+  const close=(ev)=>{ if(tip.contains(ev.target))return; tip.classList.remove('open');
+    document.removeEventListener('touchstart',close,true);
+    document.removeEventListener('mousedown',close,true);
+  };
+  setTimeout(()=>{document.addEventListener('touchstart',close,true);document.addEventListener('mousedown',close,true);},150);
 }
 function showTip(term){const el=event.currentTarget;event.stopPropagation();showTooltip(term,el);}
 
@@ -3991,11 +4167,11 @@ function openPlanetModal(planet,cur,jd){
   h+=`<div style="font-size:13px;line-height:1.6;color:var(--text)">${tv.desc||''}</div>`;
   if(ms.retrograde&&RETRO_VOICE[planet])h+=`<div style="margin-top:8px;font-size:12px;line-height:1.6;color:var(--violet);padding:10px;background:var(--violet-soft);border-radius:var(--r-sm)">${RETRO_VOICE[planet]}</div>`;
   const tDec=computeDecan(tLon);
-  if(tDec&&tDec.image){
+  if(tDec&&tDec.card){
     h+=`<div class="pm-decan">`;
-    h+=`<div class="pm-decan-head">Decan ${tDec.decanNum} of ${tDec.signName} — ruled by ${tDec.ruler}${tDec.keyword?' · '+tDec.keyword:''}</div>`;
-    h+=`<div class="pm-decan-image">"${tDec.image}"</div>`;
-    h+=`<div class="pm-decan-ind">${tDec.indication}</div>`;
+    h+=`<div class="pm-decan-head">Decan ${tDec.decanNum} of ${tDec.signName} — ${tDec.ruler}${tDec.keyword?' · '+tDec.keyword:''}</div>`;
+    h+=`<div class="pm-decan-image"><strong>${tDec.card}</strong> — ${tDec.title}</div>`;
+    h+=`<div class="pm-decan-ind">${tDec.meaning}</div>`;
     h+=`</div>`;
   }
   h+=`</div>`;
@@ -4008,11 +4184,11 @@ function openPlanetModal(planet,cur,jd){
   if(nDig)h+=`<div style="font-size:11px;font-weight:700;color:${nDig.color};margin-bottom:6px">${nDig.label}: ${nDig.desc}</div>`;
   h+=`<div style="font-size:13px;line-height:1.6;color:var(--text)">${nv.desc||''}</div>`;
   const nDec=computeDecan(nLon);
-  if(nDec&&nDec.image){
+  if(nDec&&nDec.card){
     h+=`<div class="pm-decan">`;
-    h+=`<div class="pm-decan-head">Decan ${nDec.decanNum} of ${nDec.signName} — ruled by ${nDec.ruler}${nDec.keyword?' · '+nDec.keyword:''}</div>`;
-    h+=`<div class="pm-decan-image">"${nDec.image}"</div>`;
-    h+=`<div class="pm-decan-ind">${nDec.indication}</div>`;
+    h+=`<div class="pm-decan-head">Decan ${nDec.decanNum} of ${nDec.signName} — ${nDec.ruler}${nDec.keyword?' · '+nDec.keyword:''}</div>`;
+    h+=`<div class="pm-decan-image"><strong>${nDec.card}</strong> — ${nDec.title}</div>`;
+    h+=`<div class="pm-decan-ind">${nDec.meaning}</div>`;
     h+=`</div>`;
   }
   h+=`</div>`;
@@ -4082,7 +4258,7 @@ function renderApp(){
   let h='';
 
   // ── HEADER ──
-  const timeStr=isToday?' · '+new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}):'';
+  const timeStr=isToday?' · '+new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',timeZone:OBSERVER.tzName})+' '+OBSERVER.label:'';
   h+=`<div class="header" style="position:relative">`;
   const themeIcon=detectTheme()==='light'?
     `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`:
@@ -4116,7 +4292,7 @@ function renderApp(){
   if(todayZone!=='all')h+=`<div class="subtab-hint">${zHint[todayZone]}</div>`;
 
   // Hoisted: used by consult, hours strip, liturgy, guidance, journal context
-  const pHours=computePlanetaryHours(jd,BIRTH.lat,BIRTH.lon);
+  const pHours=computePlanetaryHours(jd,OBSERVER.lat,OBSERVER.lon);
 
   h+=`<div class="t-zone t-now">`;
 
@@ -4244,19 +4420,32 @@ function renderApp(){
     // Now-highlight block
     if(isToday && curIdx>=0 && curIdx<24){
       const curHr=pHours.hours[curIdx];
+      const nextHr=pHours.hours[(curIdx+1)%24];
       const hpNow=HOUR_PURPOSE[curHr.ruler]||{};
-      h+=`<div class="hours-now">`;
+      const hpNext=HOUR_PURPOSE[nextHr.ruler]||{};
+      // Minutes left in current hour
+      const utNow2=now.getUTCHours()+now.getUTCMinutes()/60;
+      let minsLeft=Math.round((nextHr.start-utNow2)*60);
+      if(minsLeft<0)minsLeft+=24*60;
+      h+=`<div class="hours-now ${hourNowExpanded?'open':''}" onclick="toggleHourNow()">`;
       h+=`<div class="hours-now-glyph">${pSVG(curHr.ruler,22,'var(--gold)')}</div>`;
       h+=`<div class="hours-now-body">`;
-      h+=`<div class="hours-now-label">Right Now · Hour of ${curHr.ruler}</div>`;
+      h+=`<div class="hours-now-label">Right Now · Hour of ${curHr.ruler} <span class="hours-now-chev">${hourNowExpanded?'&#9660;':'&#9654;'}</span></div>`;
       h+=`<div class="hours-now-title">${hpNow.brief?hpNow.brief.split('.')[0]+'.':curHr.ruler+' hour'}</div>`;
       if(hpNow.brief){
         const rest=hpNow.brief.split('.').slice(1).join('.').trim();
         if(rest)h+=`<div class="hours-now-intent">${rest}</div>`;
       }
       h+=`</div>`;
-      h+=`<div class="hours-now-time">${fmtHourTime(curHr.start)}</div>`;
+      h+=`<div class="hours-now-time">${fmtHourTime(curHr.start)}<div class="hours-now-mins">${minsLeft}m left</div></div>`;
       h+=`</div>`;
+      if(hourNowExpanded){
+        h+=`<div class="hours-now-detail">`;
+        if(hpNow.good)h+=`<div class="hnd-row"><span class="hnd-k good">Good for</span><span class="hnd-v">${hpNow.good}</span></div>`;
+        if(hpNow.avoid)h+=`<div class="hnd-row"><span class="hnd-k bad">Avoid</span><span class="hnd-v">${hpNow.avoid}</span></div>`;
+        h+=`<div class="hnd-row"><span class="hnd-k">Next</span><span class="hnd-v">${pSVG(nextHr.ruler,12,'var(--text2)')} ${nextHr.ruler} hour at ${fmtHourTime(nextHr.start)} — ${hpNext.brief||''}</span></div>`;
+        h+=`</div>`;
+      }
     }
     h+=`<div class="hours-label"><span>Planetary Hours · Day of ${pHours.dayRuler} <span class="help" onclick="event.stopPropagation();showTip('Planetary Hours')">?</span></span>`;
     h+=`<span class="sun-times">${fmtHourTime(pHours.sunrise)} - ${fmtHourTime(pHours.sunset)}</span></div>`;
@@ -4395,11 +4584,11 @@ function renderApp(){
   h+=`<div class="dc-num">${moonDecan.degIntoDecan.toFixed(1)}° / 10°</div></div>`;
   h+=`<div class="dc-ruler-row">${pSVG(moonDecan.ruler,14,'var(--gold)')} Ruler: ${moonDecan.ruler}</div>`;
   if(decanExpanded){
-    if(moonDecan.image)h+=`<div class="dc-image">"${moonDecan.image}"</div>`;
-    if(moonDecan.indication)h+=`<div class="dc-indication"><strong>Indication:</strong> ${moonDecan.indication}</div>`;
-    h+=`<div class="dc-collapsed" style="margin-top:6px">Picatrix face of the Moon\'s decan — most potent when the Moon is passing through. Used in talismanic and electional magic.</div>`;
+    if(moonDecan.card)h+=`<div class="dc-image"><strong>${moonDecan.card}</strong> — ${moonDecan.title}</div>`;
+    if(moonDecan.meaning)h+=`<div class="dc-indication">${moonDecan.meaning}</div>`;
+    h+=`<div class="dc-collapsed" style="margin-top:6px">The Moon is currently in this decan, so its tarot signature colours the day's emotional weather. Read the card as a vehicle for the planet-in-sign quality of this 10° slice — Golden Dawn / Crowley attribution.</div>`;
   } else {
-    h+=`<div class="dc-collapsed">Tap for Picatrix face and indication</div>`;
+    h+=`<div class="dc-collapsed">Tap for the tarot card of this decan</div>`;
   }
   h+=`</div>`;
 
@@ -5072,6 +5261,53 @@ function renderApp(){
   }
   h+=`</div>`;
 
+  // ─── Natal Aspects ───
+  const natalAspList=findNatalAspects();
+  h+=`<div class="fs-card">`;
+  h+=`<div class="fs-head" onclick="toggleNatalAspects()">`;
+  h+=`<span>Aspects in Your Chart</span>`;
+  h+=`<span>${natalAspectsExpanded?'&#9660;':'&#9654;'}</span></div>`;
+  h+=`<div class="fs-sub">Geometric relationships between natal points. Tight aspects (small orb) and those involving Sun, Moon, or angles carry the strongest weight. Tap any aspect for a deeper reading.</div>`;
+  if(natalAspectsExpanded){
+    if(natalAspList.length===0){
+      h+=`<div class="fs-empty">No aspects within orb — rare, and worth noting.</div>`;
+    } else {
+      for(const a of natalAspList){
+        const nat=ASPECT_NATURE[a.aspect]||{};
+        const key=natalAspectKey(a.p1,a.p2,a.aspect);
+        const depth=NATAL_ASPECT_DEPTH[key];
+        const id='na-'+a.p1+'-'+a.p2+'-'+a.aspect;
+        const isOpen=expandedCards[id];
+        const lbl1=a.p1==='NorthNode'?'N.Node':a.p1;const lbl2=a.p2==='NorthNode'?'N.Node':a.p2;
+        const tight=a.orb<=1?' tight':'';
+        h+=`<div class="natal" data-card-id="${id}" onclick="toggleCard('${id}')" style="margin-top:8px">`;
+        h+=`<div class="fs-hit-head"><div class="fs-hit-title">`;
+        h+=`${pSVG(a.p1,14,'var(--gold)')} ${lbl1} <span class="fs-dot" style="color:${nat.color||'var(--text2)'};font-size:14px">${nat.glyph||''}</span> ${pSVG(a.p2,14,'var(--gold)')} ${lbl2}`;
+        h+=`</div><div class="fs-hit-orb${tight}">${a.orb.toFixed(2)}°</div></div>`;
+        h+=`<div class="fs-hit-nature" style="color:${nat.color||'var(--text2)'}">${a.aspect} · ${a.type}</div>`;
+        h+=`<div class="natal-expand ${isOpen?'open':''}"><div style="padding:10px 0 0;border-top:1px solid var(--surface);margin-top:8px">`;
+        h+=`<div style="font-size:12px;line-height:1.6;color:var(--text);margin-bottom:8px"><strong style="color:${nat.color||'var(--gold)'}">${a.aspect}:</strong> ${nat.nature||''}</div>`;
+        if(depth){
+          h+=`<div style="font-size:12px;line-height:1.6;color:var(--violet)"><strong>${lbl1} ${nat.glyph||''} ${lbl2}:</strong> ${depth}</div>`;
+        } else {
+          h+=`<div style="font-size:12px;line-height:1.6;color:var(--text2);font-style:italic">Apply the general ${a.aspect} nature above to the blend of ${lbl1}'s themes (${NATAL_VOICE[a.p1]?.title||a.p1}) with ${lbl2}'s themes (${NATAL_VOICE[a.p2]?.title||a.p2}).</div>`;
+        }
+        h+=`</div></div></div>`;
+      }
+    }
+  } else {
+    // Compact preview: top 6
+    h+=`<div style="padding:8px 0 4px;display:flex;flex-wrap:wrap;gap:6px">`;
+    for(const a of natalAspList.slice(0,6)){
+      const nat=ASPECT_NATURE[a.aspect]||{};
+      const lbl1=a.p1==='NorthNode'?'NN':a.p1.slice(0,3);const lbl2=a.p2==='NorthNode'?'NN':a.p2.slice(0,3);
+      h+=`<span class="natal-tag" style="color:${nat.color||'var(--text2)'}">${lbl1} ${nat.glyph||''} ${lbl2}</span>`;
+    }
+    if(natalAspList.length>6)h+=`<span class="natal-tag" style="opacity:.6">+${natalAspList.length-6} more</span>`;
+    h+=`</div>`;
+  }
+  h+=`</div>`;
+
   const natalPlanets=['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto','Chiron','NorthNode'];
   for(const p of natalPlanets){
     const lon=NATAL[p];const sign=signOf(lon);const house=houseOf(lon);
@@ -5141,9 +5377,14 @@ function renderApp(){
         h+=`<div class="ref-term">${r.term}<span class="ref-term-chev">&#9654;</span></div>`;
         h+=`<div class="ref-summary">${r.summary}</div>`;
         if(open){
+          const u=REF_USEFUL[r.term]||{};
           h+=`<div class="ref-meta">`;
-          h+=`<div class="ref-meta-row"><span class="ref-meta-k">Source</span><span class="ref-meta-v">${r.source}</span></div>`;
-          h+=`<div class="ref-meta-row"><span class="ref-meta-k">Lineage</span><span class="ref-meta-v">${r.lineage}</span></div>`;
+          if(u.whenItMatters)h+=`<div class="ref-meta-row"><span class="ref-meta-k">When it matters</span><span class="ref-meta-v">${u.whenItMatters}</span></div>`;
+          if(u.howToRead)h+=`<div class="ref-meta-row"><span class="ref-meta-k">How to read it</span><span class="ref-meta-v">${u.howToRead}</span></div>`;
+          if(u.watchFor)h+=`<div class="ref-meta-row"><span class="ref-meta-k">Watch for</span><span class="ref-meta-v">${u.watchFor}</span></div>`;
+          if(!u.whenItMatters&&!u.howToRead&&!u.watchFor){
+            h+=`<div class="ref-meta-row"><span class="ref-meta-k">Note</span><span class="ref-meta-v">Practical guidance for this term has not been written yet — see the summary above.</span></div>`;
+          }
           h+=`</div>`;
         }
         h+=`</div>`;
@@ -5226,9 +5467,8 @@ document.addEventListener('touchend',e=>{if(!swiping)return;const dx=e.changedTo
 // Keyboard
 document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')navDay(-1);else if(e.key==='ArrowRight')navDay(1);else if(e.key==='Home'||e.key==='Escape')navToday();});
 
-// Close tooltip on scroll + show/hide back-to-top FAB
+// Show/hide back-to-top FAB on scroll (tooltip stays open until tap)
 document.addEventListener('scroll',()=>{
-  document.getElementById('tooltip-el').classList.remove('open');
   const fab=document.getElementById('fab-top');
   if(fab){if(window.scrollY>500)fab.classList.add('show');else fab.classList.remove('show');}
 });

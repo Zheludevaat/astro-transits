@@ -4115,6 +4115,9 @@ function renderApp(){
   const zHint={now:'Right now: the next few hours.',day:"Today's texture: tone, Moon, decan, mansion.",depth:'Longer arcs: Lots, ZR, Firdaria, returns, Claude.',all:''};
   if(todayZone!=='all')h+=`<div class="subtab-hint">${zHint[todayZone]}</div>`;
 
+  // Hoisted: used by consult, hours strip, liturgy, guidance, journal context
+  const pHours=computePlanetaryHours(jd,BIRTH.lat,BIRTH.lon);
+
   h+=`<div class="t-zone t-now">`;
 
   // ── Consult Button ("What should I do right now?") ──
@@ -4234,7 +4237,6 @@ function renderApp(){
   }
 
   // ── Planetary Hours Strip ──
-  const pHours=computePlanetaryHours(jd,BIRTH.lat,BIRTH.lon);
   if(pHours){
     const utNow=isToday?now.getUTCHours()+now.getUTCMinutes()/60:12;
     const curIdx=currentHourIndex(pHours.hours,utNow);

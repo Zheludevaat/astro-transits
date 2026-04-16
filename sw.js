@@ -1,5 +1,5 @@
 // Service Worker for Alexander's Transits PWA
-const CACHE_NAME = 'transits-v17';
+const CACHE_NAME = 'transits-v18';
 const URLS_TO_CACHE = ['./', './index.html', './manifest.json', './icon.svg', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', event => {

@@ -6160,98 +6160,77 @@ function renderSynastryGrid(natalA, natalB, synAspects) {
 function computeAstroCartoLines(birthJD, natalPositions) {
   const T = jdToT(birthJD);
   const GAST = getGAST(T);
-  const RAD = Math.PI / 180;
-  const DEG = 180 / Math.PI;
 
   const lines = {};
-  const planets = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto', 'Chiron', 'NorthNode'];
+  const planets = ['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto','Chiron','NorthNode'];
 
   for (let planet of planets) {
     if (!(planet in natalPositions)) continue;
 
-    const lon = natalPositions[planet];
-    const ra = lonToRA(lon);
-    const dec = lonToDec(lon);
+    const ecLon = natalPositions[planet];
+    const ra = eclToRA(ecLon);
+    const dec = eclToDec(ecLon);
 
-    // MC line (single meridian at this RA)
-    const mcLon = ((ra - GAST + 360) % 360);
+    // MC: planet on upper meridian when LST = RA => geo_lon = RA - GAST
+    const mcLon = ((ra - GAST) % 360 + 360) % 360;
+
     lines[planet] = {
       mc: mcLon,
       ic: (mcLon + 180) % 360,
-      asc: computeASCLine(ra, dec),
-      dsc: computeDSCLine(ra, dec)
+      asc: computeASCLine(ra, dec, GAST),
+      dsc: computeDSCLine(ra, dec, GAST)
     };
   }
 
   return lines;
 }
 
-function lonToRA(lon) {
-  const DEG = Math.PI / 180;
-  const RAD = 180 / Math.PI;
-  const OBLIQ = 23.4392911 * DEG;
-
-  const sinRA = Math.sin(lon * DEG) * Math.cos(OBLIQ);
-  const cosRA = Math.cos(lon * DEG);
-
-  return Math.atan2(sinRA, cosRA) * RAD;
+function eclToRA(lon) {
+  const D = Math.PI / 180;
+  const OBLIQ = 23.4392911 * D;
+  return Math.atan2(Math.sin(lon * D) * Math.cos(OBLIQ), Math.cos(lon * D)) * (180 / Math.PI);
 }
 
-function lonToDec(lon) {
-  const DEG = Math.PI / 180;
-  const RAD = 180 / Math.PI;
-  const OBLIQ = 23.4392911 * DEG;
-
-  const sinDec = Math.sin(lon * DEG) * Math.sin(OBLIQ);
-
-  return Math.asin(sinDec) * RAD;
+function eclToDec(lon) {
+  const D = Math.PI / 180;
+  const OBLIQ = 23.4392911 * D;
+  return Math.asin(Math.sin(lon * D) * Math.sin(OBLIQ)) * (180 / Math.PI);
 }
 
-function computeASCLine(ra, dec) {
-  const DEG = Math.PI / 180;
-  const RAD = 180 / Math.PI;
+function computeASCLine(ra, dec, GAST) {
+  const D = Math.PI / 180;
   const points = [];
-
-  for (let lat = -66; lat <= 66; lat += 6) {
-    const lon = raDecToLon(ra, dec, lat);
-    points.push({ lat, lon: (lon + 360) % 360 });
+  for (let lat = -65; lat <= 65; lat += 3) {
+    const cosH = -Math.tan(lat * D) * Math.tan(dec * D);
+    if (cosH < -1 || cosH > 1) continue; // circumpolar or never rises
+    const H = Math.acos(cosH) * (180 / Math.PI);
+    // Rising: hour angle is negative (east of meridian)
+    const LST = ((ra - H) % 360 + 360) % 360;
+    const geoLon = ((LST - GAST) % 360 + 360) % 360;
+    points.push({ lat, lon: geoLon });
   }
-
   return points;
 }
 
-function computeDSCLine(ra, dec) {
+function computeDSCLine(ra, dec, GAST) {
+  const D = Math.PI / 180;
   const points = [];
-
-  for (let lat = -66; lat <= 66; lat += 6) {
-    const lon = raDecToLon(ra, dec, lat);
-    points.push({ lat, lon: (lon + 180) % 360 });
+  for (let lat = -65; lat <= 65; lat += 3) {
+    const cosH = -Math.tan(lat * D) * Math.tan(dec * D);
+    if (cosH < -1 || cosH > 1) continue;
+    const H = Math.acos(cosH) * (180 / Math.PI);
+    // Setting: hour angle is positive (west of meridian)
+    const LST = ((ra + H) % 360 + 360) % 360;
+    const geoLon = ((LST - GAST) % 360 + 360) % 360;
+    points.push({ lat, lon: geoLon });
   }
-
   return points;
-}
-
-function raDecToLon(ra, dec, lat) {
-  const DEG = Math.PI / 180;
-  const RAD = 180 / Math.PI;
-  const OBLIQ = 23.4392911 * DEG;
-
-  const latRad = lat * DEG;
-  const raRad = ra * DEG;
-  const decRad = dec * DEG;
-
-  const y = Math.sin(raRad) * Math.cos(decRad);
-  const x = Math.sin(decRad) * Math.cos(OBLIQ) - Math.cos(raRad) * Math.cos(decRad) * Math.sin(OBLIQ);
-
-  return Math.atan2(y, x) * RAD;
 }
 
 function getGAST(T) {
-  // Simplified GAST calculation
-  const JD = 2451545.0 + T * 36525;
-  const D = JD - 2451545;
+  const D = 2451545.0 + T * 36525 - 2451545;
   const gmst = (18.697374558 + 24.06570982441908 * D) % 24;
-  return gmst * 15;
+  return ((gmst * 15) % 360 + 360) % 360;
 }
 
 // ============================================================================
@@ -7106,39 +7085,30 @@ function handleMapClick(evt, svgEl, lines) {
 
     const planetLine = lines[planet];
 
+    // Longitude distance with wrap-around
+    const lonDist = (a, b) => { const d = Math.abs(a - b); return Math.min(d, 360 - d); };
+
     // MC line
-    const mcDist = Math.abs(lon - planetLine.mc);
-    if (mcDist < minDist) {
-      minDist = mcDist;
-      nearest = { planet, angleType: 'mc' };
-    }
+    const mcDist = lonDist(lon, planetLine.mc);
+    if (mcDist < minDist) { minDist = mcDist; nearest = { planet, angleType: 'mc' }; }
 
     // IC line
-    const icDist = Math.abs(lon - planetLine.ic);
-    if (icDist < minDist) {
-      minDist = icDist;
-      nearest = { planet, angleType: 'ic' };
-    }
+    const icDist = lonDist(lon, planetLine.ic);
+    if (icDist < minDist) { minDist = icDist; nearest = { planet, angleType: 'ic' }; }
 
     // ASC line
     if (planetLine.asc) {
       for (let pt of planetLine.asc) {
-        const dist = Math.sqrt(Math.pow(lon - pt.lon, 2) + Math.pow(lat - pt.lat, 2));
-        if (dist < minDist) {
-          minDist = dist;
-          nearest = { planet, angleType: 'asc' };
-        }
+        const dist = Math.sqrt(lonDist(lon, pt.lon) ** 2 + (lat - pt.lat) ** 2);
+        if (dist < minDist) { minDist = dist; nearest = { planet, angleType: 'asc' }; }
       }
     }
 
     // DSC line
     if (planetLine.dsc) {
       for (let pt of planetLine.dsc) {
-        const dist = Math.sqrt(Math.pow(lon - pt.lon, 2) + Math.pow(lat - pt.lat, 2));
-        if (dist < minDist) {
-          minDist = dist;
-          nearest = { planet, angleType: 'dsc' };
-        }
+        const dist = Math.sqrt(lonDist(lon, pt.lon) ** 2 + (lat - pt.lat) ** 2);
+        if (dist < minDist) { minDist = dist; nearest = { planet, angleType: 'dsc' }; }
       }
     }
   }

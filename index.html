@@ -3618,7 +3618,9 @@ function getDeepInterp(tp,np,aspectName,house){
     if(nDesc)full+='\n\nIn your chart, this targets '+nDesc.charAt(0).toLowerCase()+nDesc.slice(1);
   }
   advice=av.advice||'';
-  if(hv.desc)houseContext='Playing out in your '+hv.name+' sector: '+houseVoiceDesc(house);
+  const tpPIH=planetInHouse(tPlanet,house);
+  if(tpPIH)houseContext='Playing out in your '+hv.name+' sector: '+tpPIH;
+  else if(hv.desc)houseContext='Playing out in your '+hv.name+' sector: '+houseVoiceDesc(house);
 
   return{summary,full,advice,houseContext,aspectLabel:av.label||aspectName,aspectFeel:av.feel||''};
 }
@@ -4095,6 +4097,22 @@ function lordFrame(planet){const pool=LORD_FRAME_V[planet];return pool?pick(pool
 function domFlavor(planet){const pool=DOMINANT_FLAVOR_V[planet];return pool?pick(pool,todaySeed()):DOMINANT_FLAVOR[planet]||'';}
 function retroVoice(planet){const pool=RETRO_VOICE_V[planet];return pool?pick(pool,todaySeed()):RETRO_VOICE[planet]||'';}
 function hardBrings(planet,field){const pool=HARD_BRINGS_V[planet];if(!pool)return (HARD_BRINGS[planet]||{})[field]||'';const arr=pool[field];return arr?pick(arr,todaySeed()):'';}
+// House-specific context for hard transits — what the difficulty looks like in each life area
+const REMEDY_HOUSE={
+1:'This hits your body and identity directly. Physical self-care is non-negotiable — sleep, movement, how you present yourself.',
+2:'This targets your finances and self-worth. Avoid impulsive spending. Protect what you have. The pressure is about what you value.',
+3:'This activates your communication zone. Watch your words, double-check messages, and be careful with siblings or neighbors.',
+4:'This lands in your home and family sector. Domestic tensions surface. The foundation is being tested — attend to your roots.',
+5:'This touches creativity, romance, and pleasure. Joy requires more effort. Creative blocks or romantic friction are likely.',
+6:'This hits your daily routines and health. The body speaks louder under pressure. Adjust your schedule before it adjusts you.',
+7:'This activates your relationship sector. Partnerships are under pressure — conflicts demand honest negotiation, not avoidance.',
+8:'This targets shared resources, debts, and deep psychology. Power dynamics intensify. What you owe — financially or emotionally — comes due.',
+9:'This hits your beliefs and horizons. Travel complications, educational setbacks, or a crisis of meaning. Examine what you believe and why.',
+10:'This targets your career and public reputation. Professional pressure increases. Authority figures test you. What you\'ve built is evaluated.',
+11:'This activates your social network and future vision. Friendships are tested. Group dynamics become difficult. Your ideals meet resistance.',
+12:'This hits your hidden sector — isolation, self-undoing, and the unconscious. The difficulty is internal and hard to name. Rest. Reflect. Don\'t fight ghosts.'
+};
+function hardBringsHouse(house){return REMEDY_HOUSE[house]||'';}
 
 // ── Multi-variant NATAL_ASPECT_DEPTH ──
 const NATAL_ASPECT_DEPTH_V={
@@ -4210,6 +4228,20 @@ Nemesis:{long:['Where the reckoning lands — the hidden adversary, the place wh
 // ── Variant accessor functions for new pools ──
 function transitVoiceDesc(planet){const pool=(TRANSIT_VOICE_V[planet]||{}).desc;return pool?pick(pool,todaySeed()):(TRANSIT_VOICE[planet]||{}).desc||'';}
 function houseVoiceDesc(house){const pool=(HOUSE_VOICE_V[house]||{}).desc;return pool?pick(pool,todaySeed()):(HOUSE_VOICE[house]||{}).desc||'';}
+// Planet-modulated house context — what a specific planet does in a specific house
+function planetInHouse(planet,house){
+  const PH={
+    Sun:{1:'Your identity and physical presence are spotlighted.',2:'Vitality flows toward earning, possessions, and self-worth.',3:'Self-expression becomes verbal and intellectual.',4:'Authority turns inward — home and family demand your leadership.',5:'Creative confidence blazes. Romance and self-expression are the stage.',6:'Your energy is channeled into work routines and health discipline.',7:'Your identity is reflected through partnerships. Others define you now.',8:'Your willpower confronts shared resources, debt, and deep psychology.',9:'Your sense of self expands through travel, learning, and belief.',10:'Career and public reputation are the primary stage for your identity.',11:'Your vision and social network become central to self-expression.',12:'Ego retreats. Inner work, solitude, and rest serve you better than visibility.'},
+    Moon:{1:'Emotions are visible on the surface. Your mood affects how others perceive you.',2:'Emotional security ties to finances and possessions.',3:'Feelings flow through words and daily interactions.',4:'Emotional roots are activated. Home and family are the emotional center.',5:'Heart-led creativity and romance. Joy and play are emotionally necessary.',6:'Emotional well-being ties directly to daily routines and physical health.',7:'Emotional needs are met through partnerships and close relationships.',8:'Deep emotions around intimacy, shared resources, and psychological patterns surface.',9:'Emotional fulfillment comes through expanding horizons and belief.',10:'Public role and career carry emotional weight and vulnerability.',11:'Emotional life plays out through friendships and community.',12:'The emotional world goes underground. Dreams, solitude, and hidden feelings dominate.'},
+    Mercury:{1:'Mental energy sharpens your self-presentation and communication style.',2:'Thinking turns practical — financial planning, negotiations, and value assessments.',3:'Mercury is at home here. Communication, learning, and local connections accelerate.',4:'Mental energy focuses on home, family conversations, and private reflection.',5:'Creativity becomes intellectual. Witty communication and mental play.',6:'Analysis turns to health, routines, and systems improvement.',7:'Communication centers on partnerships and negotiations.',8:'Research, investigation, and deep analytical thinking are activated.',9:'Intellectual expansion through study, philosophy, and foreign perspectives.',10:'Professional communication and public speaking are highlighted.',11:'Networking, group discussions, and future planning dominate mentally.',12:'Mental processes turn inward. Journaling, therapy, and unconscious pattern recognition.'},
+    Venus:{1:'Charm and attractiveness increase. Self-presentation becomes more graceful.',2:'Financial opportunities and material pleasures are emphasized.',3:'Social grace flows through conversation and local connections.',4:'Domestic beauty and family harmony are highlighted.',5:'Romance, creative beauty, and pleasure are maximized.',6:'Daily life becomes more pleasant. Work relationships improve.',7:'Relationship harmony peaks. Partnership attracts beauty and ease.',8:'Intimacy deepens. Shared finances and emotional bonds intensify.',9:'Beauty and pleasure connect to travel, culture, and higher learning.',10:'Professional charm and public favor increase. Career benefits from social grace.',11:'Friendships bring joy. Social networks become sources of pleasure.',12:'Private pleasures, artistic solitude, and hidden romances activate.'},
+    Mars:{1:'Physical energy and assertiveness increase. You project strength.',2:'Aggressive pursuit of income and defense of possessions.',3:'Communication becomes sharp, competitive, and direct.',4:'Domestic energy intensifies — home projects, family conflicts, or fierce protectiveness.',5:'Creative drive surges. Competitive romance. Physical play and bold expression.',6:'Work drive intensifies. Health requires physical outlets. Workload increases.',7:'Relationship energy becomes confrontational or passionately direct.',8:'Power struggles around shared resources. Intense psychological confrontation.',9:'Aggressive pursuit of truth, adventure, and philosophical conviction.',10:'Career ambition sharpens. Professional competition and drive increase.',11:'Group dynamics become competitive. Fighting for collective causes.',12:'Hidden anger, self-sabotage, or channeled rage through private discipline.'},
+    Jupiter:{1:'Personal growth and confidence expand. Opportunities come to you directly.',2:'Financial growth and material abundance. Values expand.',3:'Learning opportunities multiply. Communication brings luck.',4:'Home expansion — moves, renovations, family growth.',5:'Creative abundance. Romance expands. Joy and play flourish.',6:'Health improves. Work opportunities grow. Service brings rewards.',7:'Partnerships bring growth and opportunity. Legal matters favor you.',8:'Shared resources expand. Inheritance, investment, or deep psychological breakthroughs.',9:'Maximum expansion through travel, education, and faith. Jupiter is at home.',10:'Career growth and public recognition. Professional opportunities multiply.',11:'Social network expands. Friendships bring opportunity. Vision grows.',12:'Spiritual growth through solitude and inner work. Hidden blessings.'},
+    Saturn:{1:'Identity is tested. Physical limitations or a more serious demeanor emerge.',2:'Financial restriction and forced reassessment of what you truly value.',3:'Communication becomes careful. Learning requires discipline.',4:'Home and family undergo structural pressure. Foundations are tested.',5:'Creative expression requires discipline. Joy must be earned.',6:'Health demands attention. Work routines need restructuring. Discipline in daily life.',7:'Partnerships undergo serious testing. Commitment or dissolution.',8:'Shared resources are restricted. Psychological confrontation with control.',9:'Belief systems are tested. Education requires persistence. Travel is purposeful.',10:'Career is under maximum pressure. Authority is earned or stripped.',11:'Friendships are pruned. Community responsibilities increase.',12:'Hidden burdens surface. Solitude becomes necessary. Endings formalize.'}
+  };
+  const ph=PH[planet];
+  return ph?ph[house]||'':'';
+}
 function hourBrief(ruler){const pool=(HOUR_PURPOSE_V[ruler]||{}).brief;return pool?pick(pool,todaySeed()):(HOUR_PURPOSE[ruler]||{}).brief||'';}
 function hourGood(ruler){const pool=(HOUR_PURPOSE_V[ruler]||{}).good;return pool?pick(pool,todaySeed()):(HOUR_PURPOSE[ruler]||{}).good||'';}
 function hourAvoid(ruler){const pool=(HOUR_PURPOSE_V[ruler]||{}).avoid;return pool?pick(pool,todaySeed()):(HOUR_PURPOSE[ruler]||{}).avoid||'';}
@@ -4247,7 +4279,8 @@ function getDeepInterpV2(tp,np,aspectName,house){
   advice=composeTransitText(tp,np,aspectName,av.type||'conjunction',house).split('. ').pop();
   if(hv.desc){
     const gerunds=HOUSE_GERUND[house]||HOUSE_GERUND[1];
-    houseContext=`Playing out ${pick(gerunds,todaySeed())}: ${houseVoiceDesc(house)}`;
+    const tpPIH2=planetInHouse(tp,house);
+    houseContext=`Playing out ${pick(gerunds,todaySeed())}: ${tpPIH2||houseVoiceDesc(house)}`;
   }
 
   return{summary,full,advice,houseContext,aspectLabel:av.label||aspectName,aspectFeel:av.feel||''};
@@ -5594,30 +5627,43 @@ function renderApp(){
       }
       h+=`</div>`;
     }
-    // Actionable tone guidance
-    const TONE_GUIDANCE_HIGH=[
-      'The energy supports bold action. Schedule important conversations, pitches, or creative work today.',
-      'This is a strong day to initiate. Move forward on things that matter — the currents are cooperative.',
-      'Favorable conditions for making things happen. Don\'t waste this on maintenance — aim for what matters.',
-      'A day with real momentum behind it. Ask for what you want, start what you\'ve been planning.',
-      'The sky is working with you today. Push on stalled projects, reach out to people, take ground.'
-    ];
-    const TONE_GUIDANCE_MID=[
-      'A mixed day — some support, some friction. Lead with your strengths and avoid overextending.',
-      'Pick your battles today. Some efforts will flow, others will meet resistance. Read the room.',
-      'Moderate energy. Focus on steady progress rather than breakthroughs. Finish more than you start.',
-      'The day has friction but also opportunity. Handle conflict carefully and lean into what feels easy.',
-      'Not the day for big gambles. Advance what\'s already in motion and save launches for stronger timing.'
-    ];
-    const TONE_GUIDANCE_LOW=[
-      'A heavy day. Reduce commitments, protect your energy, and handle only what truly cannot wait.',
-      'The pressure is real today. Keep expectations low, be gentle with yourself, and don\'t force results.',
-      'Difficult energy. This is a day for damage control and self-care, not ambition. Ride it out.',
-      'Low-energy conditions. Cancel what you can, rest when possible, and trust that better days are close.',
-      'Demanding transits are active. Move slowly, avoid confrontation, and give yourself more margin than usual.'
-    ];
-    const tGuidPool=vibe.score>=7?TONE_GUIDANCE_HIGH:vibe.score>=4?TONE_GUIDANCE_MID:TONE_GUIDANCE_LOW;
-    const tGuid=pick(tGuidPool,todaySeed());
+    // Actionable tone guidance — planet-specific where possible
+    const TONE_PLANET_HIGH={
+      Sun:'Solar confidence is strong today. Your authority, visibility, and creative output are amplified. Step into the spotlight — you have backing.',
+      Moon:'Emotional intelligence is your advantage today. Relationships, intuition, and nurturing efforts flow. Trust your gut and attend to people.',
+      Mercury:'Your mind is sharp and communication channels are open. Write, pitch, negotiate, sign, and schedule the important conversations today.',
+      Venus:'Pleasure, charm, and social grace are amplified. Relationships, creative projects, and financial negotiations are strongly favored.',
+      Mars:'Physical energy and drive are high and well-directed. Compete, exercise, initiate, and push through obstacles — the fire is working for you.',
+      Jupiter:'Expansion and opportunity are active. Take the bigger risk, say yes to the invitation, and think about what you want to grow. Luck is available.',
+      Saturn:'Structure and discipline pay off today. The energy is serious but productive — build, commit, and do the work that compounds over time.'
+    };
+    const TONE_PLANET_MID={
+      Sun:'Your identity and will are in a mixed field today. Assert yourself where it matters, but pick your moments rather than pushing on everything.',
+      Moon:'Emotions are active but uneven. Some connections will flow, others will need patience. Check in with yourself before reacting.',
+      Mercury:'Communication is possible but requires care. Double-check details, clarify assumptions, and avoid sending anything in frustration.',
+      Venus:'Relationships and pleasures have both friction and reward. Don\'t force social situations — lean into what\'s easy and defer what isn\'t.',
+      Mars:'Energy is present but volatile. Channel the drive into physical or productive outlets. Avoid confrontations that don\'t serve you.',
+      Jupiter:'Some doors open, others stick. Growth is possible but not guaranteed. Don\'t overcommit — selective optimism beats blind expansion.',
+      Saturn:'Pressure is real but manageable. Focus on obligations and structure — the day rewards discipline but punishes overreach.'
+    };
+    const TONE_PLANET_LOW={
+      Sun:'Your vitality and confidence are under pressure. Conserve energy, avoid ego battles, and don\'t make identity-level decisions under this cloud.',
+      Moon:'Emotional storms are likely. Protect your inner peace — avoid people who drain you, cancel what you can, and prioritize self-care.',
+      Mercury:'Communication is treacherous. Misunderstandings, lost messages, and mental fog dominate. Verify everything twice and delay important decisions.',
+      Venus:'Relationships and finances are strained. Don\'t make major purchases, start new relationships, or force social harmony. Let beauty wait.',
+      Mars:'Anger, accidents, and impulsive decisions threaten. Move your body, avoid confrontation, and don\'t send the email. The fire is destructive today.',
+      Jupiter:'Overconfidence and excess are the traps. What looks like opportunity may be inflation. Don\'t overcommit, overspend, or overpromise.',
+      Saturn:'The weight is heavy. Accept limitations rather than fighting them. Rest, reduce commitments, and do only what is truly load-bearing.'
+    };
+    const TONE_GENERIC_HIGH=['The energy supports bold action. Schedule important conversations, pitches, or creative work today.','This is a strong day to initiate. Move forward on things that matter.','Favorable conditions for making things happen. Aim for what matters.'];
+    const TONE_GENERIC_MID=['A mixed day — some support, some friction. Lead with your strengths.','Pick your battles today. Some efforts will flow, others will meet resistance.','Moderate energy. Focus on steady progress rather than breakthroughs.'];
+    const TONE_GENERIC_LOW=['A heavy day. Reduce commitments, protect your energy, and handle only what truly cannot wait.','Difficult energy. This is a day for damage control and self-care, not ambition.','Demanding transits are active. Move slowly and give yourself more margin than usual.'];
+    const tGuid=(function(){
+      const dom=vibe.dominant;
+      if(vibe.score>=7){return (dom&&TONE_PLANET_HIGH[dom])?TONE_PLANET_HIGH[dom]:pick(TONE_GENERIC_HIGH,todaySeed());}
+      if(vibe.score>=4){return (dom&&TONE_PLANET_MID[dom])?TONE_PLANET_MID[dom]:pick(TONE_GENERIC_MID,todaySeed());}
+      return (dom&&TONE_PLANET_LOW[dom])?TONE_PLANET_LOW[dom]:pick(TONE_GENERIC_LOW,todaySeed());
+    })();
     h+=`<div style="font-size:12px;line-height:1.6;color:var(--text);padding:6px 16px 10px;margin-top:-4px;opacity:.85"><em>${tGuid}</em></div>`;
   }
 
@@ -5651,7 +5697,10 @@ function renderApp(){
       h+=`<div class="prof-detail-head">Year ${prof.ageYears} · Profected to ${prof.yearSign}, ruled by ${prof.yearLord}</div>`;
       const annTheme=ANNUAL_THEME[prof.yearSign]||'';
       if(annTheme)h+=`<div style="font-size:13px;line-height:1.6;color:var(--bright);padding:8px 12px;margin-bottom:8px;border-radius:var(--r-sm);background:rgba(212,168,67,.08);border-left:2px solid var(--gold);font-style:italic">${annTheme}</div>`;
-      h+=`<div class="prof-detail-body">The ${prof.yearLord} becomes your Time Lord for this year — its themes and the house it sits in (natally) are foregrounded. Watch where ${prof.yearLord} is currently transiting, and any aspects it forms, for the year's main thread.</div>`;
+      h+=`<div class="prof-detail-body">${(function(){
+        const YL={Sun:'The Sun is your Time Lord — your identity, authority, and life direction set the year\'s main thread. Visibility increases. What you do this year defines how others see you.',Moon:'The Moon is your Time Lord — emotional life, family, domestic needs, and instinctive responses drive the year. Inner security matters more than outer achievement.',Mercury:'Mercury is your Time Lord — communication, learning, commerce, and daily mental activity drive the year. Information is your currency. Expect more writing, meetings, and decisions.',Venus:'Venus is your Time Lord — relationships, pleasure, beauty, and values set the year\'s tone. Love, art, and money are foregrounded. What you attract reflects what you value.',Mars:'Mars is your Time Lord — drive, conflict, courage, and physical energy dominate. The year demands action and initiative. Passivity is not an option. Channel the fire deliberately.',Jupiter:'Jupiter is your Time Lord — expansion, faith, opportunity, and generosity drive the year. Doors open. The risk is overextension. Growth is available in the areas Jupiter touches.',Saturn:'Saturn is your Time Lord — discipline, limitation, accountability, and long-term building define the year. What isn\'t working gets exposed. What is load-bearing gets stronger.'};
+        return (YL[prof.yearLord]||('The '+prof.yearLord+' becomes your Time Lord — its themes are foregrounded this year.'))+' Watch where '+prof.yearLord+' is currently transiting for the year\'s main thread.';
+      })()}</div>`;
       // Show year lord's current position and any active transits involving it
       if(cur[prof.yearLord]!==undefined){
         const ylSign=signOf(cur[prof.yearLord]);
@@ -5689,7 +5738,10 @@ function renderApp(){
       };
       const mTheme=MONTH_THEME[prof.monthSign]||'';
       if(mTheme)h+=`<div style="font-size:13px;line-height:1.6;color:var(--bright);padding:8px 12px;margin-bottom:8px;border-radius:var(--r-sm);background:rgba(155,109,255,.08);border-left:2px solid var(--violet);font-style:italic">${mTheme}</div>`;
-      h+=`<div class="prof-detail-body">Within the year, each month advances one sign. The monthly lord ${prof.monthLord} colors this month's texture — sub-themes, people, events that echo its nature. When ${prof.monthLord} is active in transits, the month's sub-plot intensifies.</div>`;
+      h+=`<div class="prof-detail-body">${(function(){
+        const ML={Sun:'The Sun as monthly lord puts your identity, authority, and visibility center stage this month. Lead from the front.',Moon:'The Moon as monthly lord makes this an emotionally driven month. Home, family, and inner security need attention. Trust feeling over strategy.',Mercury:'Mercury as monthly lord makes this a month of communication, learning, and movement. Information flows fast — process it deliberately.',Venus:'Venus as monthly lord foregrounds relationships, beauty, and values this month. Social life activates. Attract rather than pursue.',Mars:'Mars as monthly lord injects urgency and drive. This month demands action — passivity creates frustration. Move your body and your agenda.',Jupiter:'Jupiter as monthly lord opens doors this month. Say yes to more. Growth, opportunity, and generosity are themes. The risk is excess.',Saturn:'Saturn as monthly lord brings seriousness and accountability this month. Do the hard thing first. Structure protects you.'};
+        return (ML[prof.monthLord]||('The monthly lord '+prof.monthLord+' colors this month\'s texture — sub-themes, people, events that echo its nature.'))+' When '+prof.monthLord+' is active in transits, the month\'s sub-plot intensifies.';
+      })()}</div>`;
       // Monthly lord current position + transits
       if(cur[prof.monthLord]!==undefined){
         const mlSign=signOf(cur[prof.monthLord]);
@@ -5747,7 +5799,10 @@ function renderApp(){
     if(sunCardExpanded){
       h+=`<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--hairline)">`;
       // House context
-      if(sunHv.desc)h+=`<div style="font-size:12px;line-height:1.6;color:var(--text);margin-bottom:8px"><strong style="color:var(--gold)">House ${sunHouse} — ${sunHv.name}:</strong> ${houseVoiceDesc(sunHouse)}</div>`;
+      if(sunHv.desc){
+        const sunPIH=planetInHouse('Sun',sunHouse);
+        h+=`<div style="font-size:12px;line-height:1.6;color:var(--text);margin-bottom:8px"><strong style="color:var(--gold)">House ${sunHouse} — ${sunHv.name}:</strong> ${sunPIH||houseVoiceDesc(sunHouse)}</div>`;
+      }
       // Dignity
       if(sunDig)h+=`<div style="font-size:12px;line-height:1.5;color:var(--text);margin-bottom:8px"><strong style="color:var(--gold)">${sunDig.label}:</strong> ${sunDig.desc}</div>`;
       // Decan meaning
@@ -5759,6 +5814,61 @@ function renderApp(){
         for(const st of sunTransits.slice(0,4)){
           h+=`<div style="font-size:12px;line-height:1.5;color:var(--text);margin-bottom:4px">${pSVG(st.tp,12,'var(--text2)')} ${st.tp} ${st.aspect.name} (${st.aspect.orbActual.toFixed(1)}°, ${st.aspect.motion}) — ${st.interp?st.interp.summary:''}</div>`;
         }
+      }
+      h+=`</div>`;
+    }
+    h+=`</div>`;
+  }
+
+  // ── Moon Position Card (unified: phase + sign + decan + mansion) ──
+  {
+    const illum=Math.round((1-Math.cos(phaseAngle*Math.PI/180))/2*100);
+    const moonHouse=houseOf(cur.Moon);
+    const mhv=HOUSE_VOICE[moonHouse]||{};
+    const moonDig=getDignity('Moon',cur.Moon);
+    const moonDecan=computeDecan(cur.Moon);
+    const moonDecMeaning=moonDecan.meaning?moonDecan.meaning.replace(/^[A-Za-z]+ in [A-Za-z]+ decan \d+\.\s*/,''):'';
+    const msf=moonSignPhaseText(moonSign.name,mPhase.name);
+    const mansion=computeMansion(cur.Moon);
+
+    h+=`<div style="padding:14px 16px;margin-bottom:10px;border-radius:var(--r-lg);background:var(--card);border:1px solid var(--hairline);cursor:pointer" onclick="toggleMoon()">`;
+    h+=`<div style="display:flex;align-items:center;gap:12px">`;
+    h+=`<div style="flex-shrink:0">${renderMoonSVG(phaseAngle,36)}</div>`;
+    h+=`<div style="flex:1;min-width:0">`;
+    h+=`<div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--violet);margin-bottom:3px">Moon in ${moonSign.name} ${sSVG(moonSign.name,13,'var(--violet)')}</div>`;
+    h+=`<div style="font-size:13px;color:var(--bright)">${signOf(cur.Moon).degree}° · House ${moonHouse}${mhv.name?' · '+mhv.name:''}${moonDig?' · '+moonDig.label:''}</div>`;
+    h+=`<div style="font-size:11px;color:var(--text2);margin-top:3px">${mPhase.name} · ${illum}% lit · Decan ${moonDecan.decanNum}: ${moonDecan.card}</div>`;
+    h+=`</div>`;
+    h+=`<div style="flex-shrink:0;color:var(--text3);transition:transform .2s${moonExpanded?';transform:rotate(180deg)':''}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6,9 12,15 18,9"/></svg></div>`;
+    h+=`</div>`;
+    if(moonExpanded){
+      h+=`<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--hairline)">`;
+      // Phase + sign flavor
+      if(msf)h+=`<div style="font-size:12px;line-height:1.6;color:var(--text);margin-bottom:8px">${msf}</div>`;
+      // House context
+      if(mhv.name){const moonPIH=planetInHouse('Moon',moonHouse);h+=`<div style="font-size:12px;line-height:1.5;color:var(--text);margin-bottom:8px"><strong style="color:var(--violet)">House ${moonHouse} — ${mhv.name}:</strong> ${moonPIH||houseVoiceDesc(moonHouse)}</div>`;}
+      // Dignity
+      if(moonDig)h+=`<div style="font-size:12px;line-height:1.5;color:var(--text);margin-bottom:8px"><strong style="color:var(--violet)">${moonDig.label}:</strong> ${moonDig.desc}</div>`;
+      // Decan
+      if(moonDecMeaning)h+=`<div style="font-size:12px;line-height:1.5;color:var(--text);margin-bottom:8px"><strong style="color:var(--violet)">Decan ${moonDecan.decanNum} · ${moonDecan.card} — ${moonDecan.title}:</strong> ${moonDecMeaning}</div>`;
+      // Mansion
+      h+=`<div style="font-size:12px;line-height:1.5;color:var(--text);margin-bottom:8px"><strong style="color:var(--violet)">Mansion ${mansion.index}: ${mansion.name}</strong> <span style="font-size:10px;color:${mansion.nature==='favorable'?'var(--emerald)':'var(--crimson)'};text-transform:uppercase">${mansion.nature}</span>`;
+      if(mansion.good)h+=`<br><span style="color:var(--emerald)">Good for:</span> ${mansion.good}`;
+      if(mansion.avoid)h+=`<br><span style="color:var(--crimson)">Avoid:</span> ${mansion.avoid}`;
+      h+=`</div>`;
+      // Active transits to natal Moon
+      const moonTransits=transits.filter(t=>t.np==='Moon');
+      if(moonTransits.length>0){
+        h+=`<div style="font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--violet);margin:8px 0 4px">Transits to your Moon</div>`;
+        for(const mt of moonTransits.slice(0,4)){
+          h+=`<div style="font-size:12px;line-height:1.5;color:var(--text);margin-bottom:4px">${pSVG(mt.tp,12,'var(--text2)')} ${mt.tp} ${mt.aspect.name} (${mt.aspect.orbActual.toFixed(1)}°, ${mt.aspect.motion}) — ${mt.interp?mt.interp.summary:''}</div>`;
+        }
+      }
+      // VOC status inline
+      if(vocResult.voc){
+        const vocTotalMin=vocResult.endsIn?Math.round(vocResult.endsIn*24*60):0;
+        const vocH=Math.floor(vocTotalMin/60);const vocM=vocTotalMin%60;
+        h+=`<div style="font-size:12px;color:var(--violet);margin-top:6px;font-weight:600">Void-of-course — Moon enters ${vocResult.nextSign||'next sign'} in ${vocH>0?vocH+'h ':''}${vocM}m. Pause new starts.</div>`;
       }
       h+=`</div>`;
     }
@@ -5821,6 +5931,8 @@ function renderApp(){
       h+=`<div style="padding:10px 12px;margin-bottom:8px;border-radius:var(--r-md);background:var(--card);border:1px solid var(--gold-line);animation:fadeUp .2s ease both">`;
       h+=`<div style="font-size:12px;font-weight:600;color:var(--bright);margin-bottom:4px">${pSVG(ep,14,'var(--gold)')} ${ep} in ${eps.name} ${eps.degree}°${epMs.retrograde?' (retrograde)':epMs.stationary?' (stationary)':''}</div>`;
       h+=`<div style="font-size:11px;color:var(--text);line-height:1.5">House ${eph}${ephv.name?' — '+ephv.name:''}${epDig?' · '+epDig.label:''}</div>`;
+      const epPIH=planetInHouse(ep,eph);
+      if(epPIH)h+=`<div style="font-size:11px;color:var(--text);line-height:1.5;margin-top:4px">${epPIH}</div>`;
       if(epDig)h+=`<div style="font-size:11px;color:var(--text2);line-height:1.5;margin-top:4px">${epDig.desc}</div>`;
       if(epTransits.length>0){
         h+=`<div style="font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--gold);margin:6px 0 3px">Active aspects</div>`;
@@ -5884,20 +5996,24 @@ function renderApp(){
       h+=`<span style="color:var(--text3);transition:transform .2s${isShiftOpen?';transform:rotate(180deg)':''}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6,9 12,15 18,9"/></svg></span>`;
       h+=`</div>`;
       if(isShiftOpen){
-        const INGRESS_NOTES={
-          Sun:'When the Sun changes sign, the background tone of the season shifts. The new sign becomes the lens through which willpower, identity, and vitality express for the next 30 days.',
-          Mercury:'Mercury ingresses shift how you think, communicate, and process information. Expect a noticeable change in conversational style, mental focus, and what kinds of decisions feel natural.',
-          Venus:'Venus sign changes recolor what attracts you, how you relate, and what feels beautiful or valuable. Relationships, aesthetics, and spending patterns subtly recalibrate.',
-          Mars:'Mars ingresses change where your drive and aggression are directed. The new sign channels your energy, ambition, and conflict style differently. Physical energy shifts.',
-          Jupiter:'Jupiter sign changes are annual events that redirect growth, opportunity, and faith. The new sign becomes the area where expansion and excess play out for ~12 months.',
-          Saturn:'Saturn sign changes are multi-year structural shifts. The area of life ruled by the new sign comes under sustained pressure and restructuring for ~2.5 years.',
-          Uranus:'Uranus ingresses are generational — the new sign gets disrupted and revolutionized for ~7 years. Personal impact depends on your natal placements.',
-          Neptune:'Neptune sign changes are once-per-generation. The collective imagination, spirituality, and confusion shift their expression for ~14 years.',
-          Pluto:'Pluto ingresses mark decades-long power transformations. The sign being entered undergoes death and rebirth at the deepest structural level.',
-          Chiron:'Chiron sign changes redirect the wound-and-healing theme for ~4-8 years. The new sign becomes the area where pain teaches and healing happens.'
-        };
-        const shiftNote=INGRESS_NOTES[ig.planet]||'';
-        h+=`<div style="margin-top:6px;padding-top:6px;border-top:1px solid var(--hairline);font-size:12px;line-height:1.6;color:var(--text)">${shiftNote}</div>`;
+        const ingressNote=(function(){
+          const ISN={
+            Sun:{Aries:'Identity reignites. The solar year begins — willpower, initiative, and self-assertion take the lead. You feel the urge to start fresh, act first, and define yourself on your own terms. Physical energy surges.',Taurus:'Energy grounds. The restless fire of Aries gives way to steady earth. Focus shifts to material security, sensory pleasure, and building what lasts. Patience replaces urgency. The body wants comfort, good food, and tangible results.',Gemini:'Curiosity wakes up. The mind speeds up, conversations multiply, and information flows from every direction. Versatility matters more than depth. Social energy rises — you want to talk, learn, and move between ideas freely.',Cancer:'Attention turns inward and homeward. Emotional needs surface. Family, roots, and domestic life demand presence. The question shifts from "what do I want?" to "what makes me feel safe?" Nurturing and being nurtured become central.',Leo:'Self-expression ignites. Creativity, romance, and the desire to be seen step forward. Generosity increases alongside ego. The heart wants to play, create, and shine. Children, art, and pleasure take center stage.',Virgo:'Precision replaces spectacle. The focus narrows to health, routines, skills, and service. What is broken demands fixing. The mind turns analytical — editing, improving, getting the details right. Humility is the operating mode.',Libra:'Relationships take the spotlight. Partnerships, negotiations, and questions of fairness dominate. You see yourself through others. Aesthetic sensibility heightens. Balance and diplomacy replace Virgo\'s solitary refinement.',Scorpio:'Intensity deepens. The surface no longer satisfies — you want truth, transformation, and power. Shared resources, debts, sexuality, and hidden motivations come into focus. What was buried demands excavation.',Sagittarius:'The horizon expands. Travel, higher learning, philosophy, and belief systems call. Optimism and restlessness increase. The mind wants big ideas, not details. Faith — in something, anything — becomes fuel.',Capricorn:'Ambition crystallizes. Career, reputation, and long-term structure come into focus. The Sun enters its most serious, disciplined territory. You are measured by results, not intentions. Authority and responsibility weigh heavier.',Aquarius:'The collective enters focus. Community, friends, networks, and ideals take precedence over personal ambition. Unconventional thinking accelerates. The question shifts from "what do I achieve?" to "what do I contribute?"',Pisces:'Boundaries dissolve. The final sign of the zodiac brings endings, rest, and spiritual surrender. Imagination, compassion, and escapism intensify equally. The ego softens. What needs releasing becomes impossible to ignore.'},
+            Mercury:{Aries:'Thinking turns sharp and direct. Communication becomes blunt, impatient, competitive. Quick decisions come easily — nuance does not. Arguments spike. The mind wants to act, not deliberate.',Taurus:'Thinking slows down. Communication becomes deliberate, practical, and stubborn. You think about money, possessions, and tangible outcomes. Ideas that can\'t be grounded feel useless. Patience in conversation increases.',Gemini:'Mercury comes home. Thinking accelerates, curiosity peaks, and multitasking feels natural. Information overload is the risk. Conversations are quick, witty, and sometimes superficial. The mind is hungry and fast.',Cancer:'Thinking becomes emotional. Memory, nostalgia, and feelings color communication. You think about family, home, and security. Conversations become more personal and protective. Logic defers to intuition.',Leo:'Communication becomes dramatic and warm. You speak with more authority, creativity, and flair. The mind thinks in stories and images. Pride enters your words. Ideas want an audience.',Virgo:'Mercury comes home again. Analysis peaks — the mind is precise, critical, and detail-oriented. Editing, organizing, health research, and system improvement flow naturally. Anxiety about imperfection rises.',Libra:'Communication seeks balance and fairness. You weigh both sides carefully, sometimes to the point of indecision. Social grace in speech increases. Negotiations and diplomacy come naturally.',Scorpio:'Thinking goes deep. You investigate, probe, and refuse surface answers. Research ability peaks. Communication can become cutting or manipulative. Secrets attract your attention.',Sagittarius:'The mind expands. Big-picture thinking, philosophical conversations, and future planning dominate. Details bore you. You speak with more optimism and sometimes overpromise. Teaching and learning energize.',Capricorn:'Thinking becomes strategic and practical. Communication gets formal, cautious, and goal-oriented. You plan career moves, structure arguments, and think long-term. Small talk feels wasteful.',Aquarius:'Thinking turns innovative and detached. Ideas become unconventional, systematic, and future-oriented. You communicate about collective issues and technological solutions. Emotional conversations feel alien.',Pisces:'Thinking becomes dreamy and intuitive. Boundaries between imagination and fact blur. Communication is poetic but imprecise. You absorb other people\'s thoughts. Creative writing and music flow.'},
+            Venus:{Aries:'Desire becomes impulsive and direct. You want what you want and you want it now. Attraction is intense but impatient. Spending can be reckless. Romance becomes a conquest. Independence in relationships is non-negotiable.',Taurus:'Venus comes home. Pleasure, comfort, and beauty become paramount. Attraction is steady and sensual. Spending favors quality. Loyalty deepens. The body wants luxury, good food, and physical affection. Relationships stabilize.',Gemini:'Attraction becomes intellectual and playful. Flirting increases, commitment feels confining, and variety appeals more than depth. You spend on books, events, and social outings. Charm is verbal.',Cancer:'Love becomes nurturing and protective. You crave emotional security in relationships. Spending turns domestic — home, food, family. Sentimentality rises. You attract by caring, sometimes by clinging.',Leo:'Love becomes dramatic, generous, and visible. You want romance with grand gestures. Creativity in self-presentation peaks. Spending on self-expression and entertainment increases. You attract by shining.',Virgo:'Love becomes practical and modest. You show affection through service and attention to detail. Attraction is quiet and discerning. Spending becomes careful. Criticism can replace warmth if unchecked.',Libra:'Venus comes home again. Beauty, harmony, and partnership are paramount. Aesthetic sense peaks. Social grace is effortless. Spending on art, clothes, and shared experiences rises. Relationships balance.',Scorpio:'Desire intensifies. Attraction becomes all-or-nothing, jealous, possessive, and deeply transformative. Surface connections repel you. Spending can be secretive. Love becomes a power exchange.',Sagittarius:'Love becomes adventurous and freedom-seeking. You attract through optimism and expansiveness. Spending on travel and experiences increases. Commitment feels like a cage unless it includes growth.',Capricorn:'Love becomes serious and goal-oriented. You are attracted to ambition, stability, and maturity. Spending is strategic. Public image in relationships matters. Warmth is real but restrained.',Aquarius:'Love becomes unconventional and friendship-based. You attract through intellect and independence. Spending supports causes and technology. Emotional intimacy can feel threatening. Freedom is paramount.',Pisces:'Love becomes transcendent, sacrificial, and boundaryless. You idealize partners and absorb their emotions. Spending on art, charity, and escapism increases. Compassion replaces judgment. Illusion is the risk.'},
+            Mars:{Aries:'Mars comes home. Energy, aggression, and drive peak. Physical vitality surges. The impulse to act is overwhelming — patience vanishes. Conflict arrives quickly but also resolves quickly. Initiative is unstoppable.',Taurus:'Energy slows to a grind. Drive becomes stubborn and relentless rather than explosive. You fight for material security and what you already possess. Anger builds slowly but becomes immovable. Physical endurance peaks.',Gemini:'Energy fragments. You start many fights and finish few. Aggression becomes verbal — sharp words, debates, cutting remarks. Restless energy needs mental outlets. The hands and nervous system are activated.',Cancer:'Energy turns defensive and emotional. You fight to protect home, family, and feelings. Aggression is indirect — passive-aggression, sulking, guilt. Motivation fluctuates with mood. Domestic conflicts surface.',Leo:'Energy becomes bold and theatrical. You fight for recognition, creative expression, and pride. Physical vitality is strong and dramatic. Confrontation becomes a performance. Courage peaks.',Virgo:'Energy becomes precise and service-oriented. You fight through analysis, criticism, and relentless improvement. Aggression is channeled into work and health routines. Anxiety can replace healthy anger.',Libra:'Energy becomes diplomatic and indecisive. Direct confrontation is avoided in favor of passive strategies. Anger is aestheticized or suppressed. Motivation comes through partnership. Fairness becomes a battleground.',Scorpio:'Energy intensifies to its maximum. Drive becomes relentless, strategic, and all-consuming. You fight with total commitment and zero mercy. Power struggles escalate. Sexuality peaks. Nothing is halfway.',Sagittarius:'Energy expands outward. You fight for beliefs, freedom, and adventure. Physical restlessness demands travel or sport. Confrontation becomes philosophical. The body wants open space and big movement.',Capricorn:'Energy becomes disciplined and strategic. Ambition intensifies — you climb ruthlessly toward goals. Anger is cold and calculated. Physical effort serves long-term plans. Authority conflicts surface.',Aquarius:'Energy becomes erratic and ideological. You fight for principles and collective causes rather than personal gain. Rebellion and unpredictability mark your actions. Traditional methods bore you.',Pisces:'Energy dissolves. Motivation becomes confusing — you fight for fantasies or avoid fighting entirely. Aggression is passive or self-directed. Spiritual warrior energy can emerge but direction is hard to find.'},
+            Jupiter:{Aries:'Growth comes through bold initiative. Opportunity rewards those who act first and ask later. Self-confidence expands — sometimes into arrogance. Risk-taking is amplified. Independence is the path to abundance.',Taurus:'Growth comes through material building. Financial opportunities expand. Abundance manifests as physical comfort, possessions, and steady accumulation. Excess shows as overindulgence. Patience generates wealth.',Gemini:'Growth comes through communication and learning. Opportunities multiply through conversation, writing, and networking. Information abundance can overwhelm. Teaching and media bring expansion.',Cancer:'Growth comes through home, family, and emotional roots. Real estate, domestic expansion, and nurturing others generate opportunity. Generosity becomes protective. Emotional abundance.',Leo:'Growth comes through creative expression and visibility. Entertainment, children, romance, and art bring opportunity. Generosity becomes dramatic. Ego expansion is the excess risk. Confidence attracts.',Virgo:'Growth comes through service, health, and precision. Opportunities in healthcare, analysis, and system improvement expand. Excess shows as perfectionism. Skill development generates abundance.',Libra:'Growth comes through partnership and diplomacy. Legal matters, contracts, and one-on-one relationships bring opportunity. Excess shows as over-accommodation. Justice and beauty expand.',Scorpio:'Growth comes through transformation and shared resources. Inheritance, investment, and deep psychological work bring opportunity. Power accumulates. Excess shows as obsession with control.',Sagittarius:'Jupiter comes home. Maximum expansion in travel, education, philosophy, and publishing. Optimism peaks — sometimes recklessly. The world opens. Faith becomes fuel. Excess in everything.',Capricorn:'Growth comes through discipline and ambition. Career advancement rewards sustained effort. Expansion is slow, serious, and structural. Excess shows as workaholism. Authority increases.',Aquarius:'Growth comes through innovation and community. Networks, technology, and humanitarian work bring opportunity. Expansion is unconventional. Excess shows as detachment from reality.',Pisces:'Jupiter co-rules Pisces. Growth comes through spirituality, creativity, and compassion. Imagination expands without limit. Excess shows as escapism or savior complex. Boundless empathy.'},
+            Saturn:{Aries:'Discipline confronts impulse. Your initiative is tested — what you start must be sustainable. Identity undergoes structural pressure. Leadership requires accountability, not just boldness. Patience where you have none.',Taurus:'Discipline confronts comfort. Financial structures are tested — what you own must be earned and maintained. Material security requires austerity. Values are refined through restriction. Nothing you don\'t truly need survives.',Gemini:'Discipline confronts scattered thinking. Communication requires more rigor and precision. Learning becomes serious and structured. Commitments to ideas, siblings, or local community are tested. Less talking, more substance.',Cancer:'Discipline confronts emotional patterns. Family structures, home foundations, and emotional security are tested. Domestic responsibilities increase. Vulnerability requires walls, then the walls are tested. Deep roots or none.',Leo:'Discipline confronts self-expression. Creative output is held to a higher standard. Joy must be earned through effort. Authority over children, art, or romance is tested. Pride meets humility.',Virgo:'Discipline meets its natural home in work. Routines, health systems, and service commitments solidify. Perfectionism either becomes useful or breaks you. Skills are forged under pressure. The body demands attention.',Libra:'Discipline confronts relationships. Partnerships become contractual — what isn\'t working is exposed. Legal structures, marriage, and business agreements are tested under pressure. Fairness becomes a heavy obligation.',Scorpio:'Discipline confronts power. Control structures, shared resources, and psychological patterns are tested ruthlessly. What you\'ve been avoiding underground now demands a structural response. Transformation is mandatory.',Sagittarius:'Discipline confronts belief. Faith systems, higher education, and philosophical frameworks are tested. Travel becomes purposeful rather than adventurous. Teaching requires credentials, not just enthusiasm.',Capricorn:'Saturn comes home. Maximum structural pressure on career, reputation, and long-term goals. Authority is earned or stripped. Ambition meets reality. The hardest work of a generation. What you build now is load-bearing.',Aquarius:'Saturn co-rules Aquarius. Social structures, group commitments, and ideals are tested. Community responsibility becomes personal. Friendships are pruned to what\'s real. Innovation requires discipline, not just vision.',Pisces:'Discipline confronts dissolution. Spiritual practices, creative intuition, and emotional boundaries must find structure. Escapism is no longer available — Saturn demands you face what you\'ve been avoiding. Endings formalize.'},
+            Uranus:{Aries:'Revolution targets identity and self-assertion. Sudden breaks from who you were. Personal reinvention accelerates. Impulsive independence. The status quo of "who you are" gets shattered and rebuilt.',Taurus:'Revolution targets material stability. Financial systems, agriculture, land, and values undergo disruption. What felt permanently secure shifts unexpectedly. Technology transforms how we produce and own things.',Gemini:'Revolution targets communication and information. Media, education, and local networks are disrupted. New forms of communication emerge. The way people think, write, and share ideas changes fundamentally.',Cancer:'Revolution targets home, family, and emotional foundations. Domestic structures are disrupted. How people live, form families, and create security changes. Emotional patterns break and reform.',Leo:'Revolution targets self-expression and creativity. Art, entertainment, children, and romance are disrupted. New forms of creative expression emerge. How people play, love, and seek attention changes.',Virgo:'Revolution targets work and health. Employment structures, healthcare systems, and daily routines are disrupted. New approaches to service, analysis, and bodily wellness emerge.',Libra:'Revolution targets relationships and justice. Partnership structures, legal systems, and diplomatic norms are disrupted. How people relate one-on-one changes fundamentally.',Scorpio:'Revolution targets power structures and shared resources. Financial institutions, inheritance, and psychological frameworks are disrupted. Deep transformation becomes sudden rather than gradual.',Sagittarius:'Revolution targets belief systems and higher education. Religious institutions, travel, and philosophical frameworks are disrupted. How people find meaning changes.',Capricorn:'Revolution targets authority and career structures. Government, corporate hierarchy, and institutional foundations are disrupted. How society organizes power changes.',Aquarius:'Uranus comes home. Maximum disruption of social networks, technology, and collective ideals. Group identity, humanitarian movements, and the future itself become unstable and revolutionary.',Pisces:'Revolution targets spirituality and the unconscious. Mystical traditions, artistic expression, and collective imagination are disrupted. The boundary between real and unreal dissolves further.'},
+            Neptune:{Aries:'Collective imagination merges with identity and assertion. Idealization of warriors, pioneers, and self-made individuals. Confusion about who you are becomes widespread. Spiritual seeking becomes aggressive.',Taurus:'Collective imagination merges with material reality. Idealization of comfort, nature, and simplicity. Financial illusions or deceptions spread. Art becomes sensual and earthbound. Values become confused.',Gemini:'Collective imagination merges with communication. Information becomes unreliable — facts dissolve into narratives. Media becomes dreamlike. Art in language flourishes. Truth and fiction become harder to separate.',Cancer:'Collective imagination merges with home and family. Idealization of domestic life, motherhood, and belonging. Housing becomes confused or unstable. Emotional boundaries dissolve on a cultural level.',Leo:'Collective imagination merges with self-expression. Idealization of celebrity, children, and creative genius. Entertainment becomes transcendent or delusional. Romance is confused with spiritual union.',Virgo:'Collective imagination merges with service and health. Idealization of purity, analysis, and healing. Health practices become confused — miracle cures and false diagnoses. Service becomes sacrifice.',Libra:'Collective imagination merges with relationship. Idealization of partnership, beauty, and harmony. Justice becomes confused. Romantic illusion peaks. Art becomes socially transcendent.',Scorpio:'Collective imagination merges with power and depth. Idealization of transformation, occultism, and psychological depth. Financial deception spreads. The collective confronts its shadow through confusion.',Sagittarius:'Collective imagination merges with belief. Idealization of faith, travel, and philosophy. Religious confusion and spiritual bypassing spread. Art becomes mythological and expansive.',Capricorn:'Collective imagination merges with authority. Idealization of leadership dissolves into disillusionment. Institutional foundations become uncertain. Career paths dissolve and reform.',Aquarius:'Collective imagination merges with technology and collective ideals. Idealization of the future and human potential. Digital reality blurs with actual reality. Social movements become transcendent or delusional.',Pisces:'Neptune comes home. Maximum dissolution. Collective imagination has no boundaries. Spirituality, art, and confusion peak simultaneously. The era\'s defining question: what is real? The answer: less than you think.'},
+            Pluto:{Aries:'Collective power confronts identity. How individuals assert themselves undergoes death and rebirth. Warrior archetypes transform. Personal power is destroyed and rebuilt from zero.',Taurus:'Collective power confronts material reality. Wealth structures, agriculture, and values undergo destruction and total rebirth. What the world considers valuable is permanently altered.',Gemini:'Collective power confronts communication. Information systems, media, and education undergo deep transformation. How truth is transmitted and distorted changes at the root.',Cancer:'Collective power confronts family and emotional foundations. Domestic structures, national identity, and how people nurture are transformed. The meaning of home and security is destroyed and rebuilt.',Leo:'Collective power confronts self-expression. Creative norms, entertainment, and how people seek attention undergo total transformation. The nature of fame and creative authority changes.',Virgo:'Collective power confronts work and health. Employment structures, healthcare, and daily routines undergo total transformation. What constitutes useful work changes permanently.',Libra:'Collective power confronts relationship. How people partner, negotiate, and seek justice is transformed. Legal and diplomatic structures undergo death and rebirth.',Scorpio:'Pluto comes home. Maximum intensity. Power structures, shared resources, and collective psychology undergo the deepest possible transformation. Nothing hidden survives. Absolute death and rebirth.',Sagittarius:'Collective power confronts belief. Religious institutions, higher education, and philosophical systems undergo total transformation. What people believe in is destroyed and rebuilt.',Capricorn:'Collective power confronts authority. Government, corporate, and institutional power structures undergo total transformation. The nature of ambition and public achievement is permanently altered.',Aquarius:'Collective power confronts technology and social organization. How people group, network, and envision the future undergoes total transformation. Collective identity is destroyed and rebuilt.',Pisces:'Collective power confronts the unconscious. Spirituality, imagination, and collective delusion undergo total transformation. The era\'s shadow material surfaces for reckoning.'},
+            Chiron:{Aries:'The wound moves to identity. Pain around self-assertion, independence, and the right to exist surfaces. Healing comes through courage — learning to fight for yourself without apologizing for taking up space.',Taurus:'The wound moves to self-worth and material security. Pain around money, possessions, and bodily comfort surfaces. Healing comes through grounding — learning that you deserve stability without earning it.',Gemini:'The wound moves to communication and thinking. Pain around being heard, understood, or believed surfaces. Healing comes through finding your voice — learning that your words and ideas have value.',Cancer:'The wound moves to belonging and emotional safety. Pain around family, home, and nurturing surfaces. Healing comes through creating the safety you never had — learning to mother yourself.',Leo:'The wound moves to self-expression and visibility. Pain around creativity, recognition, and being seen surfaces. Healing comes through performing anyway — learning that your light doesn\'t diminish others.',Virgo:'The wound moves to competence and service. Pain around imperfection, usefulness, and health surfaces. Healing comes through self-compassion — learning that you don\'t have to be perfect to be valuable.',Libra:'The wound moves to relationships and fairness. Pain around partnership, rejection, and balance surfaces. Healing comes through honest relating — learning that love doesn\'t require self-erasure.',Scorpio:'The wound moves to power and vulnerability. Pain around trust, control, and intimacy surfaces. Healing comes through letting someone in — learning that vulnerability is not the same as weakness.',Sagittarius:'The wound moves to meaning and belief. Pain around faith, purpose, and the search for truth surfaces. Healing comes through embracing not-knowing — learning that doubt is not the enemy of wisdom.',Capricorn:'The wound moves to ambition and authority. Pain around failure, public image, and the pressure to achieve surfaces. Healing comes through redefining success — learning that your worth isn\'t your output.',Aquarius:'The wound moves to belonging in groups. Pain around feeling alien, excluded, or too different surfaces. Healing comes through radical acceptance — learning that your uniqueness is the contribution.',Pisces:'The wound moves to spiritual connection. Pain around dissolution, escapism, and the longing for transcendence surfaces. Healing comes through presence — learning that the divine is here, not elsewhere.'}
+          };
+          const planetNotes=ISN[ig.planet];
+          if(planetNotes&&planetNotes[ig.sign])return planetNotes[ig.sign];
+          return ig.planet+' enters '+ig.sign+'.';
+        })();
+        h+=`<div style="margin-top:6px;padding-top:6px;border-top:1px solid var(--hairline);font-size:12px;line-height:1.6;color:var(--text)">${ingressNote}</div>`;
         // Natal planets in the destination sign
         const destNatal=[];
         for(const np of['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto','Chiron']){
@@ -5943,6 +6059,8 @@ function renderApp(){
           h+=`<div style="padding:8px 10px;border-radius:var(--r-sm);background:rgba(61,217,160,.06);border-left:2px solid var(--emerald);margin-bottom:6px">`;
           h+=`<div style="font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--emerald);margin-bottom:3px">Remedy</div>`;
           h+=`<div style="font-size:12px;color:var(--text);line-height:1.5">${hardBrings(t.tp,'remedy')}</div>`;
+          const rhc=hardBringsHouse(t.house);
+          if(rhc)h+=`<div style="font-size:11px;color:var(--text2);line-height:1.5;margin-top:4px;font-style:italic">${rhc}</div>`;
           h+=`</div>`;
         }
         if(t.interp&&t.interp.advice)h+=`<div style="font-size:12px;color:var(--gold);font-style:italic">${t.interp.advice}</div>`;
@@ -5955,61 +6073,6 @@ function renderApp(){
     }
     h+=`</div>`;
   }
-
-  // Moon Phase (expandable)
-  {
-    const illum=Math.round((1-Math.cos(phaseAngle*Math.PI/180))/2*100);
-    const moonHouse=houseOf(cur.Moon);
-    const mhv=HOUSE_VOICE[moonHouse]||{};
-    const msf=moonSignPhaseText(moonSign.name,mPhase.name);
-    h+=`<div class="moon-card" onclick="toggleMoon()" style="cursor:pointer">`;
-    h+=`<div class="moon-visual">${renderMoonSVG(phaseAngle,48)}</div>`;
-    h+=`<div class="moon-info"><div class="moon-phase-name" style="font-size:15px">${mPhase.name} <span class="help" onclick="event.stopPropagation();showTip('Moon Phase')">?</span></div>`;
-    h+=`<div class="moon-detail">Moon in ${moonSign.name} ${sSVG(moonSign.name,14,'var(--violet)')} · House ${moonHouse} · ${illum}% lit</div>`;
-    h+=`<div class="moon-detail" style="opacity:.7;font-size:10px;margin-top:2px">${moonExpanded?'tap to collapse':'tap for emotional flavor'}</div>`;
-    h+=`</div></div>`;
-    if(moonExpanded){
-      h+=`<div class="moon-detail-panel">`;
-      if(msf)h+=`<div class="moon-flavor">${msf}</div>`;
-      if(mhv.name)h+=`<div class="moon-house-ctx"><strong>House ${moonHouse} · ${mhv.name}</strong>${mhv.desc?' — '+houseVoiceDesc(moonHouse):''}</div>`;
-      h+=`</div>`;
-    }
-  }
-
-  // ── Moon Decan Card (Picatrix face) ──
-  const moonDecan=computeDecan(cur.Moon);
-  // Strip leading "[Ruler] in [Sign] decan N." from meaning — already shown in card header
-  const moonDecMeaning=moonDecan.meaning?moonDecan.meaning.replace(/^[A-Za-z]+ in [A-Za-z]+ decan \d+\.\s*/,''):'';
-  h+=`<div class="decan-card" onclick="toggleDecan()">`;
-  h+=`<div class="dc-head"><div class="dc-title">${pSVG('Moon',14,'var(--violet)')} Moon in Decan ${moonDecan.decanNum} of ${moonDecan.signName}${moonDecan.keyword?`<span class="dc-keyword">${moonDecan.keyword}</span>`:''}<span class="help" onclick="event.stopPropagation();showTip('Decan')" style="margin-left:6px">?</span></div>`;
-  h+=`<div class="dc-num">${moonDecan.degIntoDecan.toFixed(1)}° / 10°</div></div>`;
-  h+=`<div class="dc-ruler-row">${pSVG(moonDecan.ruler,14,'var(--gold)')} Decan ruler: ${moonDecan.ruler}</div>`;
-  if(decanExpanded){
-    if(moonDecan.card)h+=`<div class="dc-image"><strong>Decan ${moonDecan.decanNum} · ${moonDecan.card}</strong> — ${moonDecan.title}</div>`;
-    if(moonDecMeaning)h+=`<div class="dc-indication">${moonDecMeaning}</div>`;
-    h+=`<div class="dc-collapsed" style="margin-top:6px">The Moon is currently in this decan. In the Golden Dawn system, each decan maps to a numbered pip card (decan 1 = pip 2, decan 2 = pip 3, decan 3 = pip 4). The tarot signature colours the day's emotional weather.</div>`;
-  } else {
-    h+=`<div class="dc-collapsed">Tap for the tarot card of this decan</div>`;
-  }
-  h+=`</div>`;
-
-  // ── Lunar Mansion Card ──
-  h+=`<div style="font-size:11px;line-height:1.55;color:var(--text3);padding:4px 2px 6px;letter-spacing:.1px">The Moon passes through one of 28 Picatrix mansions each day, coloring what actions the moment favors or warns against.</div>`;
-  const mansion=computeMansion(cur.Moon);
-  h+=`<div class="mansion-card ${mansion.nature}" onclick="toggleMansion()">`;
-  h+=`<div class="mc-head"><div class="mc-title">Mansion ${mansion.index}: ${mansion.name}<span class="mc-nature ${mansion.nature}">${mansion.nature}</span><span class="help" onclick="event.stopPropagation();showTip('Lunar Mansion')" style="margin-left:6px">?</span></div>`;
-  h+=`<div class="mc-num">${mansion.within.toFixed(1)}° / ${MANSION_ARC.toFixed(1)}°</div></div>`;
-  h+=`<div class="mc-eng">${mansion.eng}</div>`;
-  if(mansionExpanded){
-    h+=`<div class="mansion-body">`;
-    if(mansion.good)h+=`<div class="mc-body"><strong>Good for:</strong> ${mansion.good}</div>`;
-    if(mansion.avoid)h+=`<div class="mc-body" style="margin-top:4px"><strong>Avoid:</strong> ${mansion.avoid}</div>`;
-    h+=`<div class="mc-body" style="margin-top:6px;font-size:10.5px;color:var(--text3);font-style:italic">The 28 Manazil al-Qamar — traditional magical indications from Picatrix. Most potent when the Moon is in this mansion.</div>`;
-    h+=`</div>`;
-  } else {
-    h+=`<div class="mc-body" style="color:var(--text3);font-size:11px">Tap for Picatrix indications</div>`;
-  }
-  h+=`</div>`;
 
   h+=`</div>`;/* /t-day */
   h+=`<div class="t-zone t-depth">`;
@@ -6481,7 +6544,10 @@ function renderApp(){
       const htExists=HARD_BRINGS[t.tp]||HARD_BRINGS_V[t.tp];
       if(t.aspect.type==='hard'&&htExists){
         const remedyText=hardBrings(t.tp,'remedy');
-        if(remedyText)h+=`<div style="font-size:12px;line-height:1.5;padding:8px 10px;margin-top:6px;border-radius:var(--r-sm);background:rgba(61,217,160,.06);border-left:2px solid var(--emerald);color:var(--text)"><span style="font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--emerald)">Remedy</span><br>${remedyText}</div>`;
+        if(remedyText){
+          const rhcNow=hardBringsHouse(t.house);
+          h+=`<div style="font-size:12px;line-height:1.5;padding:8px 10px;margin-top:6px;border-radius:var(--r-sm);background:rgba(61,217,160,.06);border-left:2px solid var(--emerald);color:var(--text)"><span style="font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--emerald)">Remedy</span><br>${remedyText}${rhcNow?'<br><span style="font-style:italic;color:var(--text2)">'+rhcNow+'</span>':''}</div>`;
+        }
       }
 
       // Expandable deep detail
@@ -6490,7 +6556,7 @@ function renderApp(){
       // Hard transits get three-part frame (full detail)
       if(t.aspect.type==='hard'&&htExists){
         h+=`<div class="ht-frame">`;
-        h+=`<div class="ht-section brings"><div class="ht-label">What it tends to bring</div><div class="ht-text">${hardBrings(t.tp,'brings')}</div></div>`;
+        h+=`<div class="ht-section brings"><div class="ht-label">What it tends to bring</div><div class="ht-text">${hardBrings(t.tp,'brings')}${hardBringsHouse(t.house)?'<div style="margin-top:4px;font-style:italic;color:var(--text2)">'+hardBringsHouse(t.house)+'</div>':''}</div></div>`;
         h+=`<div class="ht-section remedy"><div class="ht-label">What works against it</div><div class="ht-text">${hardBrings(t.tp,'remedy')}</div></div>`;
         const liftsDate=t.exactDate?fmtExactDate(t.exactDate):'';
         const sepInfo=t.aspect.motion==='separating'?'Already fading.':t.aspect.motion==='exact'?`Exact now — peak intensity.${liftsDate?' Begins easing after '+liftsDate+'.':''}`:liftsDate?`Building toward exact ${liftsDate}. Eases within ${t.duration} after peak.`:`Active for approximately ${t.duration}.`;
@@ -6761,7 +6827,8 @@ function renderApp(){
     // Expandable detail
     h+=`<div class="natal-expand ${isOpen?'open':''}"><div style="padding:12px 0 0;border-top:1px solid var(--surface);margin-top:10px">`;
     if(dig)h+=`<div style="font-size:12px;line-height:1.6;color:var(--text);margin-bottom:8px"><strong style="color:${dig.color}">${dig.label}:</strong> ${dig.desc}</div>`;
-    h+=`<div style="font-size:12px;line-height:1.6;color:var(--text);margin-bottom:8px"><strong>House ${house} (${hv.name||''}):</strong> ${houseVoiceDesc(house)}</div>`;
+    const nPIH=planetInHouse(p,house);
+    h+=`<div style="font-size:12px;line-height:1.6;color:var(--text);margin-bottom:8px"><strong>House ${house} (${hv.name||''}):</strong> ${nPIH||houseVoiceDesc(house)}</div>`;
     // House ruler connection
     const ruler=RULERS[sign.name];
     if(ruler&&NATAL[ruler]!==undefined){

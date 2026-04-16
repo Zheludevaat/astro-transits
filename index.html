@@ -423,14 +423,14 @@ html.light .header{background:rgba(244,240,230,.82)}
   background:rgba(5,8,26,.88);-webkit-backdrop-filter:blur(28px) saturate(1.3);backdrop-filter:blur(28px) saturate(1.3);
   border-top:1px solid var(--gold-line);padding:6px 0 calc(var(--safe-bottom) + 4px);z-index:100;
   box-shadow:0 -8px 20px rgba(0,0,0,.35)}
-.tab-bar button{display:flex;flex-direction:column;align-items:center;gap:4px;padding:7px 14px;color:var(--text3);
-  font-size:var(--fs-label);font-weight:700;cursor:pointer;border:none;background:none;text-transform:uppercase;
-  letter-spacing:.7px;transition:color .15s,transform .1s ease;position:relative;min-width:56px}
+.tab-bar button{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 6px;color:var(--text3);
+  font-size:9px;font-weight:700;cursor:pointer;border:none;background:none;text-transform:uppercase;
+  letter-spacing:.5px;transition:color .15s,transform .1s ease;position:relative;min-width:0;flex:1 1 0}
 .tab-bar button:active{transform:scale(.94)}
 .tab-bar button.active{color:var(--gold);filter:drop-shadow(0 0 6px rgba(212,168,67,.35))}
 .tab-bar button.active::after{content:'';position:absolute;top:-7px;left:50%;transform:translateX(-50%);
   width:22px;height:2px;background:var(--gold);border-radius:2px;box-shadow:0 0 8px var(--gold-glow)}
-.tab-bar button svg{width:20px;height:20px}
+.tab-bar button svg{width:18px;height:18px}
 
 .tab-content{display:none}
 .tab-content.active{display:block;animation:tabFadeIn .35s ease-out both}
@@ -1115,6 +1115,447 @@ html.light .guidance-preview:not(.expanded)::after{background:linear-gradient(tr
 @keyframes splashTextIn{from{opacity:0;transform:translateY(8px)}to{opacity:.7;transform:translateY(0)}}
 @keyframes splashNameIn{from{opacity:0;letter-spacing:.2em}to{opacity:1;letter-spacing:.08em}}
 @keyframes splashEnterPulse{0%{opacity:0;transform:translateY(6px)}30%{opacity:.8;transform:translateY(0)}60%{opacity:.4}100%{opacity:.8}}
+
+/* TAB BAR ADJUSTMENTS FOR 7 TABS */
+.tab-bar {
+  justify-content: flex-start;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  gap: 0;
+}
+.tab-bar button {
+  flex: 0 0 auto;
+  padding: 0.5rem 0.6rem;
+  font-size: 0.7rem;
+  min-width: 56px;
+  gap: 0.3rem;
+}
+
+/* SYNASTRY SECTION */
+.synastry-container {
+  padding: 1rem;
+}
+
+.chart-selector {
+  margin-bottom: 1.5rem;
+}
+
+.chart-selector select {
+  width: 100%;
+  padding: 0.6rem;
+  background-color: var(--card);
+  color: var(--text);
+  border: 1px solid var(--gold-line);
+  border-radius: var(--r-sm);
+  font-size: 0.95rem;
+}
+
+.add-chart-btn, .edit-chart-btn, .delete-chart-btn {
+  padding: 0.5rem 1rem;
+  background-color: var(--gold);
+  color: var(--bg);
+  border: none;
+  border-radius: var(--r-sm);
+  font-weight: 600;
+  cursor: pointer;
+  margin-right: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.add-chart-btn:active, .edit-chart-btn:active, .delete-chart-btn:active {
+  opacity: 0.8;
+}
+
+.delete-chart-btn {
+  background-color: var(--crimson);
+}
+
+.chart-form-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(10,15,30,0.95);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.chart-form-modal.hidden {
+  display: none;
+}
+
+.chart-form-panel {
+  background-color: var(--card);
+  border-top: 2px solid var(--gold);
+  padding: 1.5rem;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: var(--r-md) var(--r-md) 0 0;
+}
+
+.chart-form-panel h2 {
+  color: var(--gold);
+  margin-bottom: 1.5rem;
+  font-size: 1.3rem;
+}
+
+.form-group {
+  margin-bottom: 1.2rem;
+}
+
+.form-group label {
+  display: block;
+  color: var(--text2);
+  font-size: 0.85rem;
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+}
+
+.form-group input, .form-group select {
+  width: 100%;
+  padding: 0.6rem;
+  background-color: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--gold-line);
+  border-radius: var(--r-sm);
+  font-size: 0.95rem;
+  box-sizing: border-box;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.form-row.three {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.form-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.form-buttons button {
+  flex: 1;
+  padding: 0.7rem;
+  border: none;
+  border-radius: var(--r-sm);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.form-buttons .save-btn {
+  background-color: var(--gold);
+  color: var(--bg);
+}
+
+.form-buttons .cancel-btn {
+  background-color: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--gold-line);
+}
+
+/* SYNASTRY BIWHEEL */
+.biwheel-container {
+  display: flex;
+  justify-content: center;
+  margin: 1.5rem 0;
+  overflow-x: auto;
+}
+
+.biwheel-svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* SYNASTRY NARRATIVE */
+.synastry-narrative {
+  background-color: var(--card);
+  border-left: 3px solid var(--violet);
+  padding: 1rem;
+  border-radius: var(--r-sm);
+  margin: 1.5rem 0;
+  line-height: 1.6;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+/* SYNASTRY ASPECT GRID */
+.aspect-grid {
+  display: grid;
+  grid-template-columns: 60px repeat(auto-fit, minmax(50px, 1fr));
+  gap: 2px;
+  background-color: var(--surface);
+  padding: 0.5rem;
+  border-radius: var(--r-sm);
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+
+.grid-header {
+  background-color: var(--surface);
+  color: var(--text2);
+  font-size: 0.65rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.3rem;
+  text-align: center;
+  min-height: 40px;
+}
+
+.grid-cell {
+  background-color: var(--bg);
+  border: 1px solid var(--hairline);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.grid-cell:active {
+  background-color: var(--card-hover);
+}
+
+.grid-cell svg {
+  width: 28px;
+  height: 28px;
+}
+
+/* SYNASTRY ASPECT INTERPRETATION */
+.aspect-interpretation {
+  background-color: var(--card);
+  border: 1px solid var(--gold-line);
+  border-radius: var(--r-sm);
+  padding: 1rem;
+  margin: 1rem 0;
+  color: var(--text);
+}
+
+.aspect-interpretation .header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.8rem;
+  cursor: pointer;
+}
+
+.aspect-interpretation .header svg {
+  width: 24px;
+  height: 24px;
+}
+
+.aspect-interpretation .title {
+  font-weight: 600;
+  color: var(--gold);
+  font-size: 1rem;
+}
+
+.aspect-interpretation .detail {
+  color: var(--text2);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  margin-top: 0.5rem;
+}
+
+/* TRADITIONAL INDICATORS CARD */
+.traditional-indicators {
+  background-color: var(--card);
+  border: 1px solid var(--violet);
+  border-radius: var(--r-sm);
+  padding: 1rem;
+  margin: 1.5rem 0;
+}
+
+.traditional-indicators h3 {
+  color: var(--violet);
+  font-size: 0.95rem;
+  margin-bottom: 0.8rem;
+}
+
+.indicator-item {
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--hairline);
+  font-size: 0.85rem;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.indicator-item:last-child {
+  border-bottom: none;
+}
+
+.indicator-label {
+  color: var(--text2);
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.2rem;
+}
+
+/* ASTROCARTOGRAPHY SECTION */
+.astrocarto-container {
+  padding: 1rem 0;
+}
+
+.astrocarto-chart-selector {
+  padding: 1rem;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.astrocarto-chart-selector select {
+  width: 100%;
+  padding: 0.6rem;
+  background-color: var(--card);
+  color: var(--text);
+  border: 1px solid var(--gold-line);
+  border-radius: var(--r-sm);
+  font-size: 0.95rem;
+}
+
+.planet-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 1rem;
+  background-color: var(--surface);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.planet-toggle {
+  flex: 1;
+  min-width: 45px;
+  padding: 0.4rem 0.5rem;
+  background-color: var(--card);
+  border: 1px solid var(--gold-line);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-size: 0.65rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+}
+
+.planet-toggle.active {
+  background-color: var(--gold);
+  border-color: var(--gold);
+  color: var(--bg);
+}
+
+.planet-toggle svg {
+  width: 16px;
+  height: 16px;
+}
+
+.map-container {
+  position: relative;
+  width: 100%;
+  background-color: var(--bg);
+  border: 1px solid var(--hairline);
+}
+
+.map-container svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.map-pin {
+  fill: var(--crimson);
+  stroke: var(--gold);
+  stroke-width: 1.5;
+}
+
+.acarto-info-card {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--card);
+  border-top: 2px solid var(--gold);
+  padding: 1.5rem;
+  max-height: 60vh;
+  overflow-y: auto;
+  border-radius: var(--r-md) var(--r-md) 0 0;
+  z-index: 100;
+  animation: slideUp 0.3s ease-out;
+}
+
+.acarto-info-card.hidden {
+  display: none;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.acarto-info-title {
+  color: var(--gold);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.8rem;
+}
+
+.acarto-info-location {
+  color: var(--text2);
+  font-size: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.acarto-info-detail {
+  color: var(--text);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.acarto-close-btn {
+  width: 100%;
+  padding: 0.6rem;
+  background-color: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--gold-line);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* EMPTY STATE */
+.empty-state {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--text2);
+}
+
+.empty-state-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.empty-state p {
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
 </style>
 </head>
 <body>
@@ -4840,6 +5281,17 @@ function pChG(name,x,y,sz,col,op){
 // ══════════════════════════════════════════════════════════════
 
 let expandedCards={},dayOffset=0,activeTab='home',activeFilter='all';
+let savedCharts=[];
+let selectedChartId=null;
+let synAspects=[];
+let synExpanded=null;
+let showChartForm=false;
+let editingChartId=null;
+let acPlanetToggles={Sun:true,Moon:true,Venus:true,Mars:true,Jupiter:true,Saturn:true,Mercury:false,Uranus:false,Neptune:false,Pluto:false,Chiron:false,NorthNode:false};
+let acTapInfo=null;
+let acSelectedChartId='alexander';
+let acAstrocartoLines=null;
+
 let todayZone=(function(){try{return localStorage.getItem('today_zone_v1')||'all';}catch(e){return 'all';}})();
 function setTodayZone(z){todayZone=z;try{localStorage.setItem('today_zone_v1',z);}catch(e){}renderApp();window.scrollTo({top:0,behavior:'smooth'});}
 
@@ -5228,6 +5680,1570 @@ function compute7Day(baseJd){
 // ══════════════════════════════════════════════════════════════
 // MAIN RENDER
 // ══════════════════════════════════════════════════════════════
+
+
+// ============================================================================
+// SECTION 3: CHART MANAGEMENT FUNCTIONS
+// ============================================================================
+
+function loadCharts() {
+  const stored = localStorage.getItem('astro-charts');
+  if (stored) {
+    savedCharts = JSON.parse(stored);
+  } else {
+    // Ensure Alexander is the default
+    savedCharts = [
+      {
+        id: 'alexander',
+        name: 'Alexander',
+        year: BIRTH.year,
+        month: BIRTH.month,
+        day: BIRTH.day,
+        hour: BIRTH.hour,
+        lat: BIRTH.lat,
+        lon: BIRTH.lon,
+        tz: -4
+      }
+    ];
+    saveCharts();
+  }
+  // If Alexander doesn't exist, add it
+  if (!savedCharts.find(c => c.id === 'alexander')) {
+    savedCharts.unshift({
+      id: 'alexander',
+      name: 'Alexander',
+      year: BIRTH.year,
+      month: BIRTH.month,
+      day: BIRTH.day,
+      hour: BIRTH.hour,
+      lat: BIRTH.lat,
+      lon: BIRTH.lon,
+      tz: -4
+    });
+    saveCharts();
+  }
+}
+
+function saveCharts() {
+  localStorage.setItem('astro-charts', JSON.stringify(savedCharts));
+}
+
+function addChart(chartData) {
+  chartData.id = 'chart-' + Date.now();
+  savedCharts.push(chartData);
+  selectedChartId = chartData.id;
+  saveCharts();
+}
+
+function deleteChart(id) {
+  if (id === 'alexander') return; // Cannot delete Alexander
+  savedCharts = savedCharts.filter(c => c.id !== id);
+  if (selectedChartId === id) {
+    selectedChartId = null;
+  }
+  saveCharts();
+}
+
+function getChartNatal(chart) {
+  const jd = julianDate(chart.year, chart.month, chart.day, chart.hour - (chart.tz || 0) / 24);
+  const natal = computeAll(jd);
+  natal.asc = computeAsc(jd, chart.lat, chart.lon);
+  natal.mc = computeMC(jd, chart.lon);
+  return { natal, jd };
+}
+
+function computeWholeSignHouses(ascLon) {
+  const houses = [];
+  for (let i = 0; i < 12; i++) {
+    houses[i] = (ascLon + i * 30) % 360;
+  }
+  return houses;
+}
+
+// ============================================================================
+// SECTION 4: SYNASTRY COMPUTATION
+// ============================================================================
+
+function computeSynastryAspects(natalA, natalB) {
+  const aspects = [];
+  const planets = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto', 'Chiron', 'NorthNode'];
+  const angleLons = { asc: natalA.asc, mc: natalA.mc };
+  const angleLonsB = { asc: natalB.asc, mc: natalB.mc };
+
+  const allPlanetsA = { ...natalA, ...angleLons };
+  const allPlanetsB = { ...natalB, ...angleLonsB };
+
+  const keys = [...planets, 'asc', 'mc'];
+
+  for (let pA of keys) {
+    if (!(pA in allPlanetsA)) continue;
+    for (let pB of keys) {
+      if (!(pB in allPlanetsB)) continue;
+
+      const lonA = allPlanetsA[pA];
+      const lonB = allPlanetsB[pB];
+
+      const diff = Math.abs(lonA - lonB);
+      const minDiff = Math.min(diff, 360 - diff);
+
+      const orbs = {
+        conjunction: 8,
+        opposition: 8,
+        trine: 6,
+        sextile: 5,
+        square: 6
+      };
+
+      let aspect = null;
+      let orbActual = 360;
+
+      for (let [asp, orb] of Object.entries(orbs)) {
+        let ang = 0;
+        if (asp === 'conjunction') ang = 0;
+        else if (asp === 'opposition') ang = 180;
+        else if (asp === 'trine') ang = 120;
+        else if (asp === 'sextile') ang = 60;
+        else if (asp === 'square') ang = 90;
+
+        const d1 = Math.abs(minDiff - ang);
+        const d2 = Math.abs(minDiff - (360 - ang));
+        const d = Math.min(d1, d2);
+
+        if (d < orb && d < orbActual) {
+          aspect = asp;
+          orbActual = d;
+        }
+      }
+
+      if (aspect) {
+        aspects.push({
+          pA,
+          pB,
+          aspect,
+          orbActual: orbActual.toFixed(2),
+          type: ['conjunction', 'trine', 'sextile'].includes(aspect) ? 'easy' : 'challenging'
+        });
+      }
+    }
+  }
+
+  return aspects.sort((a, b) => parseFloat(a.orbActual) - parseFloat(b.orbActual));
+}
+
+function computeSynastryTraditional(natalA, housesA, natalB, housesB, jdA, jdB) {
+  const traditional = {
+    lunarContact: false,
+    lunarContactType: '',
+    venusMarsMutual: false,
+    saturnContacts: 0,
+    mutualReceptions: 0,
+    seventhRulerCheck: '',
+    eroticsConnection: false
+  };
+
+  // Check for tight Sun-Moon contact
+  const sunMoonDiff = Math.abs(natalA.Sun - natalB.Moon);
+  const sunMoonDiff2 = Math.abs(360 - sunMoonDiff);
+  const sunMoonMinDiff = Math.min(sunMoonDiff, sunMoonDiff2);
+  if (sunMoonMinDiff < 8) {
+    traditional.lunarContact = true;
+    traditional.lunarContactType = sunMoonMinDiff < 4 ? 'conjunction' : 'near-conjunction';
+  }
+
+  // Check for Venus-Mars contact
+  const venusMars = Math.abs(natalA.Venus - natalB.Mars);
+  const venusMars2 = Math.abs(360 - venusMars);
+  const venusMarsDiff = Math.min(venusMars, venusMars2);
+  if (venusMarsDiff < 7) {
+    traditional.venusMarsMutual = true;
+  }
+
+  // Count Saturn contacts (hard aspects)
+  traditional.saturnContacts = synAspects.filter(a =>
+    (a.pA === 'Saturn' || a.pB === 'Saturn') &&
+    (a.type === 'challenging')
+  ).length;
+
+  return traditional;
+}
+
+function generateSynastryNarrative(aspects, traditional) {
+  let narrative = '';
+
+  const easy = aspects.filter(a => a.type === 'easy').length;
+  const hard = aspects.filter(a => a.type === 'challenging').length;
+
+  narrative += `This synastry reveals ${easy} harmonious aspects and ${hard} challenging ones, `;
+
+  if (traditional.lunarContact) {
+    narrative += `with a significant Sun-Moon contact indicating emotional resonance. `;
+  }
+
+  if (traditional.venusMarsMutual) {
+    narrative += `Venus-Mars contact suggests passionate attraction and mutual desire. `;
+  }
+
+  if (traditional.saturnContacts > 2) {
+    narrative += `Multiple Saturn contacts point to karmic lessons and serious commitment potential. `;
+  } else if (traditional.saturnContacts === 0) {
+    narrative += `The absence of Saturn contacts suggests ease of connection without restrictive lessons. `;
+  }
+
+  const sunMoonAsp = aspects.find(a =>
+    (a.pA === 'Sun' && a.pB === 'Moon') ||
+    (a.pA === 'Moon' && a.pB === 'Sun')
+  );
+
+  const venusMarsAsp = aspects.find(a =>
+    (a.pA === 'Venus' && a.pB === 'Mars') ||
+    (a.pA === 'Mars' && a.pB === 'Venus')
+  );
+
+  if (sunMoonAsp && sunMoonAsp.aspect === 'conjunction') {
+    narrative += `The luminaries are joined, suggesting a deeply intuitive understanding. `;
+  }
+
+  narrative += `Together, this pairing offers both growth opportunities and genuine compatibility.`;
+
+  return narrative;
+}
+
+// ============================================================================
+// SECTION 5: SYNASTRY BIWHEEL RENDERER
+// ============================================================================
+
+function renderSynastryWheel(natalA, housesA, natalB, housesB, synAspects, size = 400) {
+  size = Math.min(size, 400);
+  const cx = size / 2;
+  const cy = size / 2;
+  const r1 = size / 2 - 20;
+  const r2 = r1 - 35;
+  const r3 = r2 - 30;
+
+  let svg = `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="background-color: var(--bg);">`;
+
+  // Defs for filter and gradients
+  svg += `<defs>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>`;
+
+  // Background
+  svg += `<circle cx="${cx}" cy="${cy}" r="${r1}" fill="var(--bg)" stroke="var(--gold-line)" stroke-width="1"/>`;
+
+  // House lines (A's - solid gold)
+  for (let i = 0; i < 12; i++) {
+    const ang = housesA[i] * DEG;
+    const x1 = cx + r2 * Math.cos(ang);
+    const y1 = cy + r2 * Math.sin(ang);
+    const x2 = cx + r1 * Math.cos(ang);
+    const y2 = cy + r1 * Math.sin(ang);
+    svg += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--gold-line)" stroke-width="0.5"/>`;
+  }
+
+  // House lines (B's - dashed violet)
+  for (let i = 0; i < 12; i++) {
+    const ang = housesB[i] * DEG;
+    const x1 = cx + r1 * Math.cos(ang);
+    const y1 = cy + r1 * Math.sin(ang);
+    const x2 = cx + r3 * Math.cos(ang);
+    const y2 = cy + r3 * Math.sin(ang);
+    svg += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--violet)" stroke-width="0.5" stroke-dasharray="2,2"/>`;
+  }
+
+  // Inner ring separators
+  svg += `<circle cx="${cx}" cy="${cy}" r="${r2}" fill="none" stroke="var(--gold-line)" stroke-width="0.5"/>`;
+  svg += `<circle cx="${cx}" cy="${cy}" r="${r3}" fill="none" stroke="var(--violet)" stroke-width="0.5" stroke-dasharray="2,2"/>`;
+
+  // A's planets (outer ring - gold)
+  const planetsA = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto', 'Chiron', 'NorthNode'];
+  for (let p of planetsA) {
+    if (!(p in natalA)) continue;
+    const lon = natalA[p];
+    const ang = lon * DEG;
+    const x = cx + r2 * Math.cos(ang);
+    const y = cy + r2 * Math.sin(ang);
+    svg += `<g transform="translate(${x},${y})">`;
+    svg += pSVG(p, 18, 'var(--gold)');
+    svg += `</g>`;
+  }
+
+  // A's ASC/MC (outer ring)
+  let ang = natalA.asc * DEG;
+  let x = cx + r2 * Math.cos(ang);
+  let y = cy + r2 * Math.sin(ang);
+  svg += `<g transform="translate(${x},${y})">`;
+  svg += `<circle cx="0" cy="0" r="8" fill="none" stroke="var(--gold)" stroke-width="1"/>`;
+  svg += `<text x="0" y="3" font-size="8" fill="var(--gold)" text-anchor="middle" font-weight="600">AC</text>`;
+  svg += `</g>`;
+
+  ang = natalA.mc * DEG;
+  x = cx + r2 * Math.cos(ang);
+  y = cy + r2 * Math.sin(ang);
+  svg += `<g transform="translate(${x},${y})">`;
+  svg += `<circle cx="0" cy="0" r="8" fill="none" stroke="var(--gold)" stroke-width="1"/>`;
+  svg += `<text x="0" y="3" font-size="8" fill="var(--gold)" text-anchor="middle" font-weight="600">MC</text>`;
+  svg += `</g>`;
+
+  // B's planets (inner ring - azure)
+  for (let p of planetsA) {
+    if (!(p in natalB)) continue;
+    const lon = natalB[p];
+    const ang = lon * DEG;
+    const x = cx + r3 * Math.cos(ang);
+    const y = cy + r3 * Math.sin(ang);
+    svg += `<g transform="translate(${x},${y})">`;
+    svg += pSVG(p, 16, 'var(--azure)');
+    svg += `</g>`;
+  }
+
+  // B's ASC/MC (inner ring)
+  ang = natalB.asc * DEG;
+  x = cx + r3 * Math.cos(ang);
+  y = cy + r3 * Math.sin(ang);
+  svg += `<g transform="translate(${x},${y})">`;
+  svg += `<circle cx="0" cy="0" r="7" fill="none" stroke="var(--azure)" stroke-width="1"/>`;
+  svg += `<text x="0" y="2.5" font-size="7" fill="var(--azure)" text-anchor="middle" font-weight="600">AC</text>`;
+  svg += `</g>`;
+
+  ang = natalB.mc * DEG;
+  x = cx + r3 * Math.cos(ang);
+  y = cy + r3 * Math.sin(ang);
+  svg += `<g transform="translate(${x},${y})">`;
+  svg += `<circle cx="0" cy="0" r="7" fill="none" stroke="var(--azure)" stroke-width="1"/>`;
+  svg += `<text x="0" y="2.5" font-size="7" fill="var(--azure)" text-anchor="middle" font-weight="600">MC</text>`;
+  svg += `</g>`;
+
+  // Aspect lines (inter-chart only)
+  const rAsp = (r2 + r3) / 2;
+  for (let asp of synAspects.slice(0, 20)) { // Limit to avoid clutter
+    const lonA = natalA[asp.pA] || natalA[asp.pA === 'asc' ? 'asc' : 'mc'];
+    const lonB = natalB[asp.pB] || natalB[asp.pB === 'asc' ? 'asc' : 'mc'];
+
+    if (lonA === undefined || lonB === undefined) continue;
+
+    const angA = lonA * DEG;
+    const angB = lonB * DEG;
+
+    const x1 = cx + rAsp * Math.cos(angA);
+    const y1 = cy + rAsp * Math.sin(angA);
+    const x2 = cx + rAsp * Math.cos(angB);
+    const y2 = cy + rAsp * Math.sin(angB);
+
+    const aspColor = asp.type === 'easy' ? 'var(--emerald)' : 'var(--crimson)';
+    const aspOpacity = 0.4;
+
+    svg += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${aspColor}" stroke-width="1" opacity="${aspOpacity}"/>`;
+  }
+
+  // Center labels
+  svg += `<circle cx="${cx}" cy="${cy}" r="35" fill="var(--bg)" stroke="var(--gold-line)" stroke-width="1"/>`;
+  svg += `<text x="${cx}" y="${cy - 10}" font-size="10" fill="var(--gold)" text-anchor="middle" font-weight="600">You</text>`;
+  svg += `<text x="${cx}" y="${cy + 8}" font-size="10" fill="var(--azure)" text-anchor="middle" font-weight="600">Partner</text>`;
+
+  svg += `</svg>`;
+  return svg;
+}
+
+// ============================================================================
+// SECTION 6: SYNASTRY ASPECT GRID
+// ============================================================================
+
+function renderSynastryGrid(natalA, natalB, synAspects) {
+  const planetsA = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn'];
+  const planetsB = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn'];
+
+  let html = `<div class="aspect-grid">`;
+
+  // Header row
+  html += `<div class="grid-header" style="border-right: 1px solid var(--hairline);"></div>`;
+  for (let p of planetsA) {
+    html += `<div class="grid-header">${p.substring(0, 3)}</div>`;
+  }
+
+  // Data rows
+  for (let pB of planetsB) {
+    html += `<div class="grid-header" style="border-right: 1px solid var(--hairline); justify-content: flex-end; padding-right: 0.3rem;">${pB.substring(0, 3)}</div>`;
+
+    for (let pA of planetsA) {
+      const asp = synAspects.find(a =>
+        (a.pA === pA && a.pB === pB) ||
+        (a.pA === pB && a.pB === pA)
+      );
+
+      html += `<div class="grid-cell" onclick="synExpanded='${pA}-${pB}'; renderApp();">`;
+
+      if (asp) {
+        const aspColor = asp.type === 'easy' ? 'var(--emerald)' : 'var(--crimson)';
+        html += aSVG(asp.aspect, 24, aspColor);
+      }
+
+      html += `</div>`;
+    }
+  }
+
+  html += `</div>`;
+
+  // Expanded interpretation if selected
+  if (synExpanded) {
+    const [pA, pB] = synExpanded.split('-');
+    const asp = synAspects.find(a =>
+      (a.pA === pA && a.pB === pB) ||
+      (a.pA === pB && a.pB === pA)
+    );
+
+    if (asp) {
+      const interpKey = `${asp.pA}-${asp.pB}|${asp.aspect}`;
+      const interp = getSynastryInterpretation(interpKey, asp);
+
+      html += `<div class="aspect-interpretation">
+        <div class="header" onclick="synExpanded=null; renderApp();">
+          ${pSVG(asp.pA, 20, 'var(--gold)')}
+          ${aSVG(asp.aspect, 16, asp.type === 'easy' ? 'var(--emerald)' : 'var(--crimson)')}
+          ${pSVG(asp.pB, 20, 'var(--azure)')}
+          <span class="title">${asp.pA} ${asp.aspect} ${asp.pB}</span>
+        </div>
+        <div class="detail">${interp.detail}</div>
+      </div>`;
+    }
+  }
+
+  return html;
+}
+
+// ============================================================================
+// SECTION 7: ASTROCARTOGRAPHY COMPUTATION
+// ============================================================================
+
+function computeAstroCartoLines(birthJD, natalPositions) {
+  const T = jdToT(birthJD);
+  const GAST = getGAST(T);
+  const RAD = Math.PI / 180;
+  const DEG = 180 / Math.PI;
+
+  const lines = {};
+  const planets = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto', 'Chiron', 'NorthNode'];
+
+  for (let planet of planets) {
+    if (!(planet in natalPositions)) continue;
+
+    const lon = natalPositions[planet];
+    const ra = lonToRA(lon);
+    const dec = lonToDec(lon);
+
+    // MC line (single meridian at this RA)
+    const mcLon = ((ra - GAST + 360) % 360);
+    lines[planet] = {
+      mc: mcLon,
+      ic: (mcLon + 180) % 360,
+      asc: computeASCLine(ra, dec),
+      dsc: computeDSCLine(ra, dec)
+    };
+  }
+
+  return lines;
+}
+
+function lonToRA(lon) {
+  const DEG = Math.PI / 180;
+  const RAD = 180 / Math.PI;
+  const OBLIQ = 23.4392911 * DEG;
+
+  const sinRA = Math.sin(lon * DEG) * Math.cos(OBLIQ);
+  const cosRA = Math.cos(lon * DEG);
+
+  return Math.atan2(sinRA, cosRA) * RAD;
+}
+
+function lonToDec(lon) {
+  const DEG = Math.PI / 180;
+  const RAD = 180 / Math.PI;
+  const OBLIQ = 23.4392911 * DEG;
+
+  const sinDec = Math.sin(lon * DEG) * Math.sin(OBLIQ);
+
+  return Math.asin(sinDec) * RAD;
+}
+
+function computeASCLine(ra, dec) {
+  const DEG = Math.PI / 180;
+  const RAD = 180 / Math.PI;
+  const points = [];
+
+  for (let lat = -66; lat <= 66; lat += 6) {
+    const lon = raDecToLon(ra, dec, lat);
+    points.push({ lat, lon: (lon + 360) % 360 });
+  }
+
+  return points;
+}
+
+function computeDSCLine(ra, dec) {
+  const points = [];
+
+  for (let lat = -66; lat <= 66; lat += 6) {
+    const lon = raDecToLon(ra, dec, lat);
+    points.push({ lat, lon: (lon + 180) % 360 });
+  }
+
+  return points;
+}
+
+function raDecToLon(ra, dec, lat) {
+  const DEG = Math.PI / 180;
+  const RAD = 180 / Math.PI;
+  const OBLIQ = 23.4392911 * DEG;
+
+  const latRad = lat * DEG;
+  const raRad = ra * DEG;
+  const decRad = dec * DEG;
+
+  const y = Math.sin(raRad) * Math.cos(decRad);
+  const x = Math.sin(decRad) * Math.cos(OBLIQ) - Math.cos(raRad) * Math.cos(decRad) * Math.sin(OBLIQ);
+
+  return Math.atan2(y, x) * RAD;
+}
+
+function getGAST(T) {
+  // Simplified GAST calculation
+  const JD = 2451545.0 + T * 36525;
+  const D = JD - 2451545;
+  const gmst = (18.697374558 + 24.06570982441908 * D) % 24;
+  return gmst * 15;
+}
+
+// ============================================================================
+// SECTION 8: WORLD MAP SVG + RENDERING
+// ============================================================================
+
+const WORLD_COASTLINE = `
+M 30,-10 L 35,-8 L 40,-12 L 45,-10 L 50,-15 L 55,-12 L 60,-18 L 65,-15 L 70,-20 L 75,-18 L 80,-22 L 85,-20 L 90,-25 L 95,-22 L 100,-28 L 105,-25 L 110,-30 L 115,-28 L 120,-32 L 125,-30 L 130,-35 L 135,-32 L 140,-38 L 145,-35 L 150,-40 L 155,-38 L 160,-42 L 165,-40 L 170,-45 L 175,-42 L 180,-48 L -175,-45 L -170,-42 L -165,-40 L -160,-42 L -155,-38 L -150,-40 L -145,-35 L -140,-38 L -135,-32 L -130,-35 L -125,-30 L -120,-32 L -115,-28 L -110,-30 L -105,-25 L -100,-28 L -95,-22 L -90,-25 L -85,-20 L -80,-22 L -75,-18 L -70,-20 L -65,-15 L -60,-18 L -55,-12 L -50,-15 L -45,-10 L -40,-12 L -35,-8 L -30,-10 L -25,-5 L -20,-8 L -15,-2 L -10,-5 L -5,0 L 0,2 L 5,-2 L 10,0 L 15,5 L 20,8 L 25,10 L 30,8 L 35,12 L 40,15 L 45,18 L 50,20 L 55,25 L 60,28 L 65,30 L 70,32 L 75,35 L 80,38 L 85,40 L 90,42 L 95,45 L 100,48 L 105,50 L 110,52 L 115,55 L 120,58 L 125,60 L 130,62 L 135,65 L 140,68 L 145,70 L 150,72 L 155,75 L 160,78 L 165,80 L 170,82 L 175,85 Z
+M -170,45 L -165,48 L -160,50 L -155,52 L -150,55 L -145,58 L -140,60 L -135,62 L -130,65 L -125,68 L -120,70 L -115,72 L -110,75 L -105,78 L -100,80 L -95,82 L -90,85 L -85,88 L -80,90 L -75,88 L -70,85 L -65,82 L -60,80 L -55,78 L -50,75 L -45,72 L -40,70 L -35,68 L -30,65 L -25,62 L -20,60 L -15,58 L -10,55 L -5,52 L 0,50 L 5,48 L 10,45 L 15,40 L 20,35 L 25,30 L 30,25 L 35,20 L 40,15 L 45,10 L 50,8 L 55,5 L 60,2 L 65,0 L 70,-2 L 75,-5 L 80,-8 L 85,-10 L 90,-12 L 95,-15 L 100,-18 L 105,-20 L 110,-22 L 115,-25 L 120,-28 L 125,-30 L 130,-32 L 135,-35 L 140,-38 L 145,-40 L 150,-42 L 155,-45 L 160,-48 L 165,-50 L 170,-52 L 175,-55 Z
+M 100,-45 L 105,-48 L 110,-50 L 115,-52 L 120,-50 L 125,-48 L 130,-45 L 135,-42 L 140,-40 L 145,-38 L 150,-35 L 155,-32 L 160,-30 L 165,-28 L 170,-25 L 175,-22 L 180,-20 L -175,-22 L -170,-25 L -165,-28 L -160,-30 L -155,-32 L -150,-35 L -145,-38 L -140,-40 L -135,-42 L -130,-45 L -125,-48 L -120,-50 L -115,-52 L -110,-50 L -105,-48 L -100,-45 Z
+`;
+
+function renderAstroCartoMap(lines, toggles, tapInfo, width = 400, height = 250) {
+  const aspect = width / height;
+  const svgWidth = width;
+  const svgHeight = height;
+
+  let svg = `<svg width="${svgWidth}" height="${svgHeight}" viewBox="0 0 360 180" style="background-color: var(--bg);" class="map-container">`;
+
+  // Defs
+  svg += `<defs>
+    <filter id="ac-glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <linearGradient id="ocean-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color: var(--bg); stop-opacity: 1"/>
+      <stop offset="100%" style="stop-color: var(--surface); stop-opacity: 1"/>
+    </linearGradient>
+  </defs>`;
+
+  // Ocean background
+  svg += `<rect width="360" height="180" fill="url(#ocean-gradient)"/>`;
+
+  // Coastlines
+  svg += `<path d="${WORLD_COASTLINE}" fill="var(--card)" stroke="var(--violet)" stroke-width="0.3" opacity="0.6"/>`;
+
+  // Graticule (light grid)
+  for (let lon = 0; lon < 360; lon += 30) {
+    svg += `<line x1="${lon}" y1="0" x2="${lon}" y2="180" stroke="var(--hairline)" stroke-width="0.2" opacity="0.3"/>`;
+  }
+  for (let lat = -60; lat <= 60; lat += 30) {
+    const y = 90 - lat;
+    svg += `<line x1="0" y1="${y}" x2="360" y2="${y}" stroke="var(--hairline)" stroke-width="0.2" opacity="0.3"/>`;
+  }
+
+  // Equator emphasis
+  svg += `<line x1="0" y1="90" x2="360" y2="90" stroke="var(--gold-line)" stroke-width="0.5" opacity="0.3"/>`;
+
+  // Planet lines
+  const activePlanets = Object.keys(toggles).filter(p => toggles[p]);
+  const planetColors = {
+    Sun: 'var(--gold)',
+    Moon: 'var(--pearl)',
+    Mercury: 'var(--text2)',
+    Venus: 'var(--emerald)',
+    Mars: 'var(--crimson)',
+    Jupiter: 'var(--violet)',
+    Saturn: 'var(--text3)',
+    Uranus: 'var(--azure)',
+    Neptune: 'rgba(147, 112, 219, 0.6)',
+    Pluto: 'rgba(220, 20, 60, 0.5)',
+    Chiron: 'var(--text)',
+    NorthNode: 'var(--gold)'
+  };
+
+  if (lines) {
+    for (let planet of activePlanets) {
+      if (!(planet in lines)) continue;
+
+      const planetLine = lines[planet];
+      const color = planetColors[planet] || 'var(--text2)';
+
+      // MC line (vertical)
+      const mcLon = planetLine.mc;
+      svg += `<line x1="${mcLon}" y1="0" x2="${mcLon}" y2="180" stroke="${color}" stroke-width="1.5" opacity="0.7" filter="url(#ac-glow)"/>`;
+
+      // IC line (vertical, opposite)
+      const icLon = planetLine.ic;
+      svg += `<line x1="${icLon}" y1="0" x2="${icLon}" y2="180" stroke="${color}" stroke-width="1.5" opacity="0.5" stroke-dasharray="3,2"/>`;
+
+      // ASC line (polyline through points)
+      if (planetLine.asc && planetLine.asc.length > 0) {
+        let pathData = `M ${planetLine.asc[0].lon} ${90 - planetLine.asc[0].lat}`;
+        for (let i = 1; i < planetLine.asc.length; i++) {
+          const pt = planetLine.asc[i];
+          pathData += ` L ${pt.lon} ${90 - pt.lat}`;
+        }
+        svg += `<path d="${pathData}" fill="none" stroke="${color}" stroke-width="1" opacity="0.6" filter="url(#ac-glow)"/>`;
+      }
+
+      // DSC line (polyline through points)
+      if (planetLine.dsc && planetLine.dsc.length > 0) {
+        let pathData = `M ${planetLine.dsc[0].lon} ${90 - planetLine.dsc[0].lat}`;
+        for (let i = 1; i < planetLine.dsc.length; i++) {
+          const pt = planetLine.dsc[i];
+          pathData += ` L ${pt.lon} ${90 - pt.lat}`;
+        }
+        svg += `<path d="${pathData}" fill="none" stroke="${color}" stroke-width="1" opacity="0.4" stroke-dasharray="2,1"/>`;
+      }
+    }
+  }
+
+  // Tap info pin
+  if (tapInfo) {
+    const pinX = tapInfo.lon;
+    const pinY = 90 - tapInfo.lat;
+    svg += `<circle cx="${pinX}" cy="${pinY}" r="4" class="map-pin" filter="url(#ac-glow)"/>`;
+    svg += `<circle cx="${pinX}" cy="${pinY}" r="6" fill="none" stroke="var(--gold)" stroke-width="0.5" opacity="0.5"/>`;
+  }
+
+  svg += `</svg>`;
+  return svg;
+}
+
+// ============================================================================
+// SECTION 9: ASTROCARTOGRAPHY VOICE
+// ============================================================================
+
+const ASTROCARTO_VOICE = {
+  Sun: {
+    mc: {
+      title: 'Sun Culminating',
+      short: 'Prominence, achievement, visibility, and leadership in your career and public life.',
+      detail: 'The Sun at the Midheaven of your astrocartography map marks the culmination point, where your essential identity and creative power reach their zenith. Here you experience recognition, success, and the ability to manifest your will in the world. This line favors professional achievement, public standing, and leadership roles. Traditionally, those living on or frequently visiting this line report increased confidence, clarity of purpose, and the ease of stepping into positions of authority and influence.'
+    },
+    ic: {
+      title: 'Sun at the Root',
+      short: 'Grounding, family legacy, inner strength, and personal foundation building.',
+      detail: 'The IC (Imum Coeli) marks the foundation and root of your astrocartography map. The Sun here strengthens your inner core, family connections, and sense of personal grounding. This line emphasizes private achievement, home-based success, and the establishment of a secure personal foundation. People living on this line often develop a strong sense of purpose rooted in family legacy, real estate investment, or creating a sanctuary that reflects their essential self.'
+    },
+    asc: {
+      title: 'Sun Rising',
+      short: 'Personal magnetism, first impressions, vitality, and natural confidence.',
+      detail: 'The Sun rising on the Ascendant creates a powerful line of personal magnetism and vital expression. Your appearance, demeanor, and immediate presence radiate confidence and warmth. This line is famous for increasing physical vitality, attractiveness, and the ability to make strong first impressions. Many report feeling more like themselves, more energized, and more naturally charismatic when on their Sun Ascendant line.'
+    },
+    dsc: {
+      title: 'Sun Setting',
+      short: 'Partnership, relationship enhancement, and shared creative projects.',
+      detail: 'The Sun on the Descendant activates relationship dynamics and partnership potential. This line is traditionally associated with marriage, business partnerships, and collaborative ventures that benefit from mutual creativity and warmth. Here you tend to attract partners who honor your essential nature, and you naturally shine in one-on-one relationships. The line emphasizes compromise, though, so pure self-expression may need tempering for the sake of the partnership.'
+    }
+  },
+
+  Moon: {
+    mc: {
+      title: 'Moon Culminating',
+      short: 'Emotional public engagement, nurturing leadership, and intuitive career guidance.',
+      detail: 'The Moon at the MC brings emotional intelligence to professional life and public standing. Your career may involve nurturing, counseling, hospitality, real estate, or public service. You excel in roles where emotional attunement and intuition guide decisions. This line often produces excellent teachers, therapists, and leaders who lead with empathy rather than authority. Your public reputation rests on emotional reliability and the sense that you truly care.'
+    },
+    ic: {
+      title: 'Moon at the Root',
+      short: 'Deep emotional security, family sanctuary, and ancestral connection.',
+      detail: 'The Moon at the IC activates the deepest emotional needs and family ties. This is a line of profound security, where you connect with ancestral roots and the emotional foundation of your being. Here, home becomes a true sanctuary, family relationships deepen, and you feel safe to explore your emotional depths. Many report healing from past wounds and finding comfort in place when on this line. It supports gardening, cooking, and establishing a nurturing home environment.'
+    },
+    asc: {
+      title: 'Moon Rising',
+      short: 'Emotional openness, receptivity, and compassionate personal magnetism.',
+      detail: 'The Moon on the Ascendant softens your presence and increases emotional accessibility. You appear more vulnerable, caring, and psychically sensitive. This line draws others to you because of your emotional attunement and genuine interest in their inner worlds. It\'s excellent for personal work, creative expression, and relationships where emotional honesty matters. Note that you may also absorb others\' emotions more readily, so boundaries are beneficial.'
+    },
+    dsc: {
+      title: 'Moon Setting',
+      short: 'Emotional partnership, intimate connection, and co-created nurturing.',
+      detail: 'The Moon on the Descendant deepens emotional bonds in partnerships. This line strengthens your ability to nurture and be nurtured in relationships, creating interdependence and emotional safety with partners. Marriages and long-term partnerships often flourish here due to the enhanced emotional resonance between partners. The focus shifts toward what you share and build together, rather than individual achievement.'
+    }
+  },
+
+  Mercury: {
+    mc: {
+      title: 'Mercury Culminating',
+      short: 'Communication mastery, intellectual recognition, and teaching excellence.',
+      detail: 'Mercury at the MC elevates your professional communication and intellectual standing. You excel in writing, speaking, teaching, and information-based careers. Your ideas gain traction in the public sphere, and you naturally attract opportunities to share your knowledge. This line supports journalism, academia, sales, and any work requiring clear articulation. Colleagues recognize your intelligence and wit, making advancement through merit likely.'
+    },
+    ic: {
+      title: 'Mercury at the Root',
+      short: 'Local communication, community connection, and intellectual grounding.',
+      detail: 'Mercury at the IC brings mental clarity and strengthens local community ties. Your mind feels sharper at home, and you naturally become a local information hub or community connector. This line supports writing projects, intellectual hobbies, and local business ventures. Your home environment becomes rich with books, conversation, and mental stimulation. Many report improved memory and clearer thinking when settled on this line.'
+    },
+    asc: {
+      title: 'Mercury Rising',
+      short: 'Quick wit, mental agility, and expressive personal presence.',
+      detail: 'Mercury on the Ascendant sharpens your intellect and makes you appear bright and articulate. Your quick wit and curiosity make you engaging company, and others enjoy your conversation. This line supports study, learning new skills, and short-distance travel. You naturally attract intellectual partnerships and collaborations. The potential downside: others may perceive you as scattered or overly intellectual rather than emotionally grounded.'
+    },
+    dsc: {
+      title: 'Mercury Setting',
+      short: 'Intellectual partnership, communicative rapport, and mutual growth.',
+      detail: 'Mercury on the Descendant creates mental rapport and communicative ease in partnerships. You and your partner understand each other\'s thinking and can discuss issues openly. This line is excellent for professional partnerships, co-authored work, and relationships based on shared interests and conversation. However, the intellectual focus may sometimes overshadow emotional intimacy, so balance is important.'
+    }
+  },
+
+  Venus: {
+    mc: {
+      title: 'Venus Culminating',
+      short: 'Professional charm, financial success, and valued public presence.',
+      detail: 'Venus at the MC brings charm, diplomacy, and financial success to your career. You excel in beauty-related fields (fashion, design, cosmetics), arts, counseling, or any work involving aesthetics and relationships. Your public reputation is warm and appealing, and others naturally want to work with you. This line often supports financial gain through your personal appeal and talents. Success comes through grace rather than force.'
+    },
+    ic: {
+      title: 'Venus at the Root',
+      short: 'Domestic beauty, sensory pleasure, and comfortable home life.',
+      detail: 'Venus at the IC brings comfort, beauty, and pleasure to your private life and home environment. Your home becomes a place of genuine beauty and hospitality, where you enjoy cooking, gardening, and making your space aesthetically pleasing. This line supports real estate success and investment. Relationships with family members tend to be warmer and more harmonious. Life feels more sensually enjoyable and less stressful.'
+    },
+    asc: {
+      title: 'Venus Rising',
+      short: 'Personal attractiveness, warmth, and natural charm.',
+      detail: 'Venus on the Ascendant increases your personal attractiveness, not just physically but in demeanor and presence. You appear warm, approachable, and aesthetically pleasing to others. This line enhances romance, social popularity, and the natural desire of others to be around you. However, some may project their ideals onto you, so maintain clear boundaries about your actual values and preferences.'
+    },
+    dsc: {
+      title: 'Venus Setting',
+      short: 'Romantic attraction, partnership harmony, and relationship ease.',
+      detail: 'Venus on the Descendant is traditionally one of the most favorable lines for marriage and romantic partnership. Here you attract partners easily, relationships flow with less friction, and you naturally prioritize the partnership\'s happiness. Financial partnerships and joint ventures also tend to succeed. The potential shadow: you may compromise too much of yourself for the sake of harmony.'
+    }
+  },
+
+  Mars: {
+    mc: {
+      title: 'Mars Culminating',
+      short: 'Professional ambition, competitive success, and visible power.',
+      detail: 'Mars at the MC drives professional ambition and visible achievement. You excel in competitive fields, leadership roles, and work requiring courage and assertion. Your career gains momentum through directness and willingness to act decisively. Colleagues recognize your drive and power, though some may find you intimidating. This line supports military, athletics, surgery, engineering, and other fields requiring precision and force. Success comes through assertion and victory.'
+    },
+    ic: {
+      title: 'Mars at the Root',
+      short: 'Physical vitality, personal courage, and grounded action.',
+      detail: 'Mars at the IC strengthens your physical body, courage, and willingness to act at the foundation level. You have energy for building, renovating, and establishing your home as a strong base. This line supports physical training, martial arts, and work involving physical strength. Your inner reserves of determination deepen, and you feel less afraid to face internal or external challenges. Sex drive often increases, and relationships become more passionate.'
+    },
+    asc: {
+      title: 'Mars Rising',
+      short: 'Physical vitality, boldness, and direct personal presence.',
+      detail: 'Mars on the Ascendant energizes your physical body and projects a bold, confident presence. You appear strong, direct, and unafraid. This line increases physical attractiveness in a powerful (rather than soft) way and tends to draw those who appreciate strength and assertiveness. Athletic ability and physical courage shine. Note: others may perceive you as aggressive or too direct, so awareness of how you come across is valuable.'
+    },
+    dsc: {
+      title: 'Mars Setting',
+      short: 'Passionate partnership, sexual attraction, and dynamic engagement.',
+      detail: 'Mars on the Descendant brings passion and intensity to partnerships and sexual relationships. Here you attract partners with strength and charisma, and the relationship crackles with energy and desire. Passion flows easily, though so does conflict if not managed carefully. This line supports partnerships based on shared goals and mutual admiration. The caution: intense passion can become destructive, so conscious communication is important.'
+    }
+  },
+
+  Jupiter: {
+    mc: {
+      title: 'Jupiter Culminating',
+      short: 'Expansion, success, good fortune, and leadership opportunity.',
+      detail: 'Jupiter at the MC is traditionally one of the most fortunate placements in astrocartography. Your career expands naturally, opportunities come easily, and you enjoy public recognition and esteem. This line supports law, higher education, philosophy, international business, and any field involving wisdom and expansion. Financial success often follows naturally. Others perceive you as fortunate, wise, and worthy of trust. Success comes through generosity and broad vision.'
+    },
+    ic: {
+      title: 'Jupiter at the Root',
+      short: 'Family expansion, abundance at home, and philosophical grounding.',
+      detail: 'Jupiter at the IC brings expansion, abundance, and philosophical contentment to your private life and home. Your family grows (children, extended family), and your home becomes a gathering place of warmth and generosity. Real estate investments often succeed. This line supports a sense of spiritual belonging and comfort in your foundation. Life feels blessed, and you naturally attract good fortune in domestic matters.'
+    },
+    asc: {
+      title: 'Jupiter Rising',
+      short: 'Optimism, generosity, and naturally lucky personal presence.',
+      detail: 'Jupiter on the Ascendant broadcasts optimism and good fortune. You appear lucky, generous, and naturally blessed to others. This line attracts people who want to help you and support your goals. Your confidence and faith in the future make you a natural leader and inspiration. The shadow: others may expect constant largesse, and you might overextend yourself in generosity.'
+    },
+    dsc: {
+      title: 'Jupiter Setting',
+      short: 'Partnership expansion, mutual growth, and shared luck.',
+      detail: 'Jupiter on the Descendant brings expansion and good fortune to partnerships. Relationships bloom here, whether romantic or business. Both partners tend to grow and benefit from the union. This line supports marriage, business partnerships, and any ventures requiring mutual expansion. The relationship feels blessed and easy. The caution: excessive indulgence (financial or otherwise) can occur if both partners are careless.'
+    }
+  },
+
+  Saturn: {
+    mc: {
+      title: 'Saturn Culminating',
+      short: 'Professional mastery, serious achievement, and earned authority.',
+      detail: 'Saturn at the MC demands professional responsibility and offers long-term success through discipline. Your career builds slowly but solidly, and your reputation rests on competence and reliability. This line supports government, law, engineering, architecture, and fields requiring deep expertise and ethical commitment. Others perceive you as serious and trustworthy. Success comes through consistent effort, not luck. Your highest achievements arrive after sustained work.'
+    },
+    ic: {
+      title: 'Saturn at the Root',
+      short: 'Stability, family responsibility, and ancestral lessons.',
+      detail: 'Saturn at the IC anchors you to your foundations with profound stability. This line often involves reconnecting with family duty or learning lessons from ancestors. Your home and private life become more structured and secure, though sometimes restrictive. Real estate often appreciates steadily. Relationships with parents may deepen, along with the weight of family responsibility. Ultimately, this line provides unshakeable grounding.'
+    },
+    asc: {
+      title: 'Saturn Rising',
+      short: 'Serious demeanor, quiet dignity, and earned respect.',
+      detail: 'Saturn on the Ascendant makes you appear serious, mature, and dignified beyond your years. Others take you seriously, though you may seem distant or stern. This line supports authority positions and work requiring careful judgment. Your personal magnetism is quiet and based on demonstrated competence rather than charm. Relationships tend to be with older, serious partners or those respecting your boundaries. Over time, this line can feel isolating unless you consciously soften.'
+    },
+    dsc: {
+      title: 'Saturn Setting',
+      short: 'Committed partnership, mature love, and karmic bonds.',
+      detail: 'Saturn on the Descendant brings seriousness and commitment to partnerships. Relationships here are lasting, mature, and often karmic—you meet partners to learn mutual lessons. This line supports marriage, though the early stages may feel restrictive or duty-bound. Over time, the relationship deepens into genuine partnership and mutual respect. Financial contracts and business partnerships are reliable here. Love grows slowly and lasts.'
+    }
+  },
+
+  Uranus: {
+    mc: {
+      title: 'Uranus Culminating',
+      short: 'Revolutionary change, innovation, and unexpected professional transformation.',
+      detail: 'Uranus at the MC brings sudden change, innovation, and the breaking of traditional boundaries in your career. Your professional path is unusual and may involve technology, science, activism, or any field promoting progress and change. This line brings sudden opportunity but also upheaval, so adaptability is essential. Your public reputation is as someone unconventional and forward-thinking. Success comes through embracing change and thinking ahead of the curve.'
+    },
+    ic: {
+      title: 'Uranus at the Root',
+      short: 'Domestic innovation, family freedom, and unconventional foundations.',
+      detail: 'Uranus at the IC disrupts traditional home and family patterns, for better or worse. You may establish an unconventional living situation or break family patterns that no longer serve. This line supports technology-based home ventures and unique real estate situations. Family dynamics shift unexpectedly, and you likely seek freedom from restrictive family patterns. Innovation and experimentation in your domestic life flourish here.'
+    },
+    asc: {
+      title: 'Uranus Rising',
+      short: 'Unique presence, unconventional magnetism, and magnetic eccentricity.',
+      detail: 'Uranus on the Ascendant makes you appear unique, avant-garde, and magnetically unusual. Others find you intriguing and remember you clearly. This line supports creative and technical work and attracts those who value individuality. Your personal magnetism is based on being different, not fitting in. Relationships tend to be unusual or non-traditional. The shadow: conventional society may judge you as too far outside the norm.'
+    },
+    dsc: {
+      title: 'Uranus Setting',
+      short: 'Unconventional partnership, freedom-based relationship, and mutual independence.',
+      detail: 'Uranus on the Descendant brings unconventional partnership and an emphasis on mutual freedom. You attract partners who are unique, independent-minded, or technology-focused. The relationship itself may be unconventional (open, long-distance, or non-traditional arrangement). Both partners value independence highly. Commitment is based on freedom rather than obligation. The challenge: maintaining genuine intimacy while honoring autonomy.'
+    }
+  },
+
+  Neptune: {
+    mc: {
+      title: 'Neptune Culminating',
+      short: 'Spiritual career, artistic recognition, and inspired public service.',
+      detail: 'Neptune at the MC brings spiritual, artistic, or compassionate dimensions to your career. You may work in art, music, healing, spirituality, or any field requiring imagination and idealism. Your public image is ethereal and inspiring, though sometimes vague. This line supports dream-work and visionary projects but can also bring confusion about career direction if you don\'t ground your ideals. Success comes through following your spiritual or creative calling.'
+    },
+    ic: {
+      title: 'Neptune at the Root',
+      short: 'Spiritual home, artistic sanctuary, and transcendent grounding.',
+      detail: 'Neptune at the IC makes your home a spiritual or artistic sanctuary. You may be drawn to sacred or beautiful locations with strong spiritual atmosphere. This line supports meditation, creative retreats, and spiritual community living. Family relationships may feel mystical or confusing, with some secrets or illusions. Grounding practices are important to prevent escapism. At its best, this line connects you deeply to universal love.'
+    },
+    asc: {
+      title: 'Neptune Rising',
+      short: 'Ethereal presence, compassionate allure, and spiritual magnetism.',
+      detail: 'Neptune on the Ascendant gives you an ethereal, dreamy, and spiritually magnetic presence. You appear mysterious, artistic, and compassionate to others, who often project their ideals onto you. This line supports spiritual teachers, artists, and healers. Your challenge is maintaining clear boundaries and personal identity, as others may blur the line between you and them. Self-care and clear grounding are essential.'
+    },
+    dsc: {
+      title: 'Neptune Setting',
+      short: 'Mystical partnership, idealized love, and spiritual communion.',
+      detail: 'Neptune on the Descendant brings a spiritual, mystical quality to partnerships. You attract partners with artistic or spiritual depth, and the relationship feels transcendent or idealized. This line supports spiritual partnerships, artistic collaborations, and deeply intuitive bonds. The caution: confusion, illusion, and enabling are risks if you lose yourself in the relationship. Maintaining clear communication and boundaries protects both partners.'
+    }
+  },
+
+  Pluto: {
+    mc: {
+      title: 'Pluto Culminating',
+      short: 'Transformative power, deep authority, and profound professional change.',
+      detail: 'Pluto at the MC brings transformative power and deep authority to your career. You may work in psychology, investigation, finance, or any field involving transformation and power dynamics. Your professional influence is quiet but profound, and you naturally command respect. This line supports healing professions and work involving shadow material. Success comes through understanding deep power dynamics and using them ethically. Your career will undergo major transformations.'
+    },
+    ic: {
+      title: 'Pluto at the Root',
+      short: 'Psychological depth, family transformation, and ancestral healing.',
+      detail: 'Pluto at the IC brings deep psychological work and potential family transformation. This line often involves confronting family secrets, ancestral patterns, and psychological wounds. Real estate may involve purchasing property requiring deep renovation. Your home becomes a place of deep personal work and healing. Relationships with family members intensify and transform. At its best, this line supports profound healing and psychological depth.'
+    },
+    asc: {
+      title: 'Pluto Rising',
+      short: 'Intense presence, magnetic power, and psychological magnetism.',
+      detail: 'Pluto on the Ascendant gives you a powerful, intense, and magnetically mysterious presence. People instinctively sense your psychological depth and power, even if you don\'t speak much. This line attracts those interested in psychology, power dynamics, and transformation. You naturally command attention and respect. The shadow: people may fear you or project their shadow onto you. Awareness of your impact on others is crucial.'
+    },
+    dsc: {
+      title: 'Pluto Setting',
+      short: 'Intense partnership, soul-level bonding, and transformative love.',
+      detail: 'Pluto on the Descendant creates intense, soul-level partnerships with deep power dynamics. These relationships transform both partners fundamentally, often through periods of deep challenge and renewal. Sexual and psychological intimacy runs deep. Possessiveness and control issues can surface, so conscious awareness of power dynamics is essential. At its best, this line creates partnerships that facilitate profound personal evolution for both partners.'
+    }
+  },
+
+  Chiron: {
+    mc: {
+      title: 'Chiron Culminating',
+      short: 'Healing career, mentoring wisdom, and transformative teaching.',
+      detail: 'Chiron at the MC brings healing and mentoring to your professional life. You may work as a therapist, healer, teacher, or mentor, using your own wounds as the source of your teaching. Your career emphasizes bridging gaps and helping others overcome what you\'ve overcome. Public recognition comes through your compassionate wisdom. This line supports work that transforms others\' wounds into strength. Your greatest professional gifts arise from your greatest challenges.'
+    },
+    ic: {
+      title: 'Chiron at the Root',
+      short: 'Family healing, ancestral wounds, and personal integration.',
+      detail: 'Chiron at the IC brings ancestral and family wound healing to your foundation. You may resolve old family patterns or help family members heal. This line supports deep personal therapy work and home-based healing practices. Your sense of belonging in your family or homeland deepens as old wounds integrate. Domestic life becomes a place of genuine healing and wholeness.'
+    },
+    asc: {
+      title: 'Chiron Rising',
+      short: 'Healer\'s presence, wounded wisdom, and compassionate magnetism.',
+      detail: 'Chiron on the Ascendant makes you appear as a healer or mentor figure to others. Your presence naturally invites people to share their wounds and seek your wisdom. This line draws those who need healing and mentoring. Your personal magnetism comes from your acceptance of your own wounds and your willingness to help others integrate theirs. Balance self-care with helping others.'
+    },
+    dsc: {
+      title: 'Chiron Setting',
+      short: 'Healing partnership, mutual mentoring, and integrated love.',
+      detail: 'Chiron on the Descendant brings mutual healing and mentoring to partnerships. Both partners help each other transform their deepest wounds into wisdom. This line supports partnerships based on shared growth and mutual understanding of each other\'s sensitive areas. Sexual and emotional intimacy develops through vulnerability and acceptance. The relationship becomes a container for genuine healing and integration.'
+    }
+  },
+
+  NorthNode: {
+    mc: {
+      title: 'North Node Culminating',
+      short: 'Karmic career purpose, destined recognition, and soul-directed achievement.',
+      detail: 'The North Node at the MC points to your karmic career purpose. Your professional achievements align with your soul\'s evolutionary direction. This line supports work that feels deeply meaningful and purposeful, even if challenging. Recognition comes as you align with your true calling. This is not an easy line—it requires that you grow and step into your highest potential. Your career becomes a vehicle for soul evolution.'
+    },
+    ic: {
+      title: 'North Node at the Root',
+      short: 'Karmic home foundation, soul-directed grounding, and destined belonging.',
+      detail: 'The North Node at the IC points to your soul\'s needs for grounding and belonging. This line involves establishing roots that align with your evolutionary path. Your home and family become part of your soul\'s curriculum. You may be drawn to places or family situations that facilitate growth, even if challenging. Finding true home becomes a spiritual quest and achievement.'
+    },
+    asc: {
+      title: 'North Node Rising',
+      short: 'Karmic personal purpose, destined magnetism, and soul-directed identity.',
+      detail: 'The North Node on the Ascendant points to your karmic personal purpose and destined identity. You naturally attract situations and people that push you toward your highest potential. Your personal magnetism draws those who support your growth. This line is not always comfortable, as it challenges you to become your best self. Authenticity and courage become your superpowers.'
+    },
+    dsc: {
+      title: 'North Node Setting',
+      short: 'Karmic partnership, soul-directed relationships, and destined bonding.',
+      detail: 'The North Node on the Descendant points to karmic partnership and soul-directed relationships. You attract partners who facilitate your evolution, often through challenge as much as ease. The relationship serves your growth, even when difficult. This line supports partnerships with spiritual or karmic purpose. Love becomes a path of conscious evolution for both partners.'
+    }
+  }
+};
+
+// ============================================================================
+// SECTION 10: SYNASTRY VOICE (INTERPRETATION DATABASE)
+// ============================================================================
+
+const SYNASTRY_VOICE = {
+  // Sun aspects
+  'Sun-Sun|conjunction': {
+    feel: 'A natural sense of sameness and mutual understanding of each other\'s core identity.',
+    detail: 'You recognize yourselves in each other, sharing similar life purposes and essential natures. This creates ease in understanding each other\'s motivations and goals, though there\'s also potential for rivalry over dominance. Your combined presence is notably strong.'
+  },
+  'Sun-Sun|opposition': {
+    feel: 'Opposite expressions of purpose that either polarize or perfectly complement.',
+    detail: 'You approach life from fundamentally different angles, which can create friction or perfect balance depending on intention. The challenge is to appreciate rather than oppose each other\'s styles. This aspect often indicates growth through accepting differences.'
+  },
+  'Sun-Sun|trine': {
+    feel: 'Effortless mutual respect and admiration of each other\'s way of being.',
+    detail: 'You naturally support each other\'s individual expression and growth. There\'s a harmonious recognition of each other\'s strengths that makes partnership feel natural and fulfilling. This is one of the easiest placements for genuine collaboration.'
+  },
+  'Sun-Sun|square': {
+    feel: 'Competitive tension that either motivates or frustrates both partners.',
+    detail: 'You challenge each other\'s sense of self, which can either spur growth or create friction. The key is channeling this competitive energy constructively. Together you accomplish more than either would alone, but cooperation doesn\'t come naturally.'
+  },
+  'Sun-Sun|sextile': {
+    feel: 'Comfortable support and gentle encouragement of each other\'s personal goals.',
+    detail: 'You appreciate each other\'s individuality and naturally help each other shine. The aspect provides ease without the risk of taking each other for granted. Partnership strengthens each person\'s sense of purpose.'
+  },
+
+  // Sun-Moon
+  'Sun-Moon|conjunction': {
+    feel: 'Deep emotional and psychological attunement; you feel understood at a fundamental level.',
+    detail: 'This is one of the most significant synastry contacts. One person\'s conscious identity (Sun) illuminates the other\'s emotional depths (Moon), creating profound mutual understanding. The Moon person feels seen and valued; the Sun person gains emotional richness. This creates a karmic bond and strong sense of destiny together.'
+  },
+  'Sun-Moon|opposition': {
+    feel: 'Opposing emotional and personal styles that create tension and fascination.',
+    detail: 'The Sun person\'s way of being triggers the Moon person\'s deepest emotional reactions. This can manifest as attraction to someone who both attracts and unsettles you. The dynamic demands maturity to appreciate opposites rather than demand sameness.'
+  },
+  'Sun-Moon|trine': {
+    feel: 'Easy emotional understanding; the Moon person naturally feels safe with the Sun person.',
+    detail: 'This aspect creates genuine emotional compatibility. The Sun person\'s warmth makes the Moon person feel secure and understood. Emotional needs are naturally met, and both partners feel genuinely supported. This is one of the most harmonious aspects for long-term partnership.'
+  },
+  'Sun-Moon|square': {
+    feel: 'Emotional friction that challenges both partners to grow emotionally and psychologically.',
+    detail: 'The Sun person may feel emotionally misunderstood or overwhelmed by the Moon person\'s reactions. The Moon person struggles with the Sun person\'s apparent emotional detachment. This aspect requires conscious emotional communication and the willingness to meet each other halfway.'
+  },
+  'Sun-Moon|sextile': {
+    feel: 'Comfortable emotional support and understanding without demanding complete sameness.',
+    detail: 'The Sun person naturally supports the Moon person\'s emotional needs, and the Moon person intuitively understands what the Sun person needs to feel appreciated. This aspect provides emotional ease with enough difference to keep the partnership interesting.'
+  },
+
+  // Venus-Mars
+  'Venus-Mars|conjunction': {
+    feel: 'Immediate sexual and romantic attraction; raw desire and affection mingle.',
+    detail: 'This is one of the most potent synastry contacts for passion and chemistry. The Venus person finds the Mars person deeply attractive, while the Mars person is powerfully drawn to pursue. Sexual passion runs high, but lasting partnership requires moving beyond pure chemistry to deeper commitment.'
+  },
+  'Venus-Mars|opposition': {
+    feel: 'Magnetic attraction that can become volatile; desire meets resistance.',
+    detail: 'The Venus-Mars opposition creates intense fascination and sexual tension, but the dynamics can become adversarial. The Mars person may pursue too aggressively while the Venus person withdraws. The aspect demands mutual respect and clear communication about desires and boundaries.'
+  },
+  'Venus-Mars|trine': {
+    feel: 'Harmonious blend of passion and affection; desire expressed with tenderness.',
+    detail: 'This aspect creates genuine sexual and romantic compatibility. Passion flows naturally without aggression, and affection is expressed in mutually satisfying ways. Both partners feel desired and appreciated. This aspect supports both passion and lasting commitment.'
+  },
+  'Venus-Mars|square': {
+    feel: 'Sexual frustration or mismatch in desire; passion and affection clash.',
+    detail: 'One partner\'s desire doesn\'t align with the other\'s sense of how affection should be expressed. This can create either ongoing frustration or exciting challenge, depending on how the couple approaches it. Sexual compatibility requires conscious negotiation.'
+  },
+  'Venus-Mars|sextile': {
+    feel: 'Flirtatious ease and natural romantic chemistry.',
+    detail: 'Mars person gently pursues while Venus person enjoys being desired in a balanced way. Passion and affection combine naturally without the intensity of conjunction or the friction of square. This is a supportive aspect for romance and physical intimacy.'
+  },
+
+  // Mercury-Mercury
+  'Mercury-Mercury|conjunction': {
+    feel: 'Perfect mental attunement; you finish each other\'s sentences and think alike.',
+    detail: 'This creates excellent communication and shared intellectual interests. You understand each other\'s thinking without explanation, which makes conversation effortless. The risk is that you can become too much alike mentally, missing the stimulation of different perspectives.'
+  },
+  'Mercury-Mercury|opposition': {
+    feel: 'Different thinking styles that either complement or create constant debate.',
+    detail: 'You approach problems, communication, and learning from opposite angles. This can create stimulating discussion or unending argument depending on how you handle differences. The key is valuing how each person\'s mind works rather than insisting on agreement.'
+  },
+  'Mercury-Mercury|trine': {
+    feel: 'Easy intellectual rapport and compatible communication styles.',
+    detail: 'Conversation flows naturally, and you understand each other\'s communication preferences. Intellectual interests align easily, and you support each other\'s learning and growth. This aspect creates a partnership where ideas flow freely and collaboration is easy.'
+  },
+  'Mercury-Mercury|square': {
+    feel: 'Misunderstandings and communication friction despite good intentions.',
+    detail: 'You tend to talk past each other or have different priorities in what\'s important to discuss. This requires conscious effort to hear and be heard. The friction can push both partners to communicate more clearly and intentionally.'
+  },
+  'Mercury-Mercury|sextile': {
+    feel: 'Friendly, easy conversation and genuine interest in each other\'s thoughts.',
+    detail: 'You enjoy talking with each other and naturally support each other\'s intellectual pursuits. Communication is easy without being so similar that you lose individual perspective. This aspect supports genuine intellectual partnership.'
+  },
+
+  // Jupiter-Jupiter
+  'Jupiter-Jupiter|conjunction': {
+    feel: 'Mutual expansion and a shared sense of possibility and good fortune.',
+    detail: 'Together you believe in bigger possibilities and tend to attract luck and opportunity. This can create wonderful expansion, but also financial or other overindulgence if not monitored. The partnership amplifies both people\'s natural optimism and generosity.'
+  },
+  'Jupiter-Jupiter|opposition': {
+    feel: 'Competing visions of expansion that can either create balance or excess.',
+    detail: 'You each have different ideas about growth and expansion. If you honor each other\'s vision, this creates comprehensive life planning; if not, it can mean constant disagreement about direction and values.'
+  },
+  'Jupiter-Jupiter|trine': {
+    feel: 'Shared vision and natural alignment in values and life direction.',
+    detail: 'You naturally want the same things in life and support each other\'s growth and expansion. This aspect creates genuine partnership where both people flourish. Together you achieve more than either would alone.'
+  },
+  'Jupiter-Jupiter|square': {
+    feel: 'Different values or approaches to growth that create tension and negotiation.',
+    detail: 'You each have strong opinions about what makes life good and how to succeed. This can push both partners to clarify their true values, or it can create ongoing friction about priorities and direction.'
+  },
+  'Jupiter-Jupiter|sextile': {
+    feel: 'Supportive approach to each other\'s growth and shared optimism.',
+    detail: 'You naturally encourage each other\'s expansion without pushing so hard that it becomes overwhelming. The partnership brings genuine opportunity and good fortune to both. This is one of the most benefic aspects for long-term partnership.'
+  },
+
+  // Saturn-Saturn
+  'Saturn-Saturn|conjunction': {
+    feel: 'Mutual commitment to responsibility and shared understanding of duty.',
+    detail: 'You both take partnership seriously and are willing to do the work required for lasting commitment. Together you build something substantial and enduring. The potential shadow is taking each other too seriously or becoming overly formal.'
+  },
+  'Saturn-Saturn|opposition': {
+    feel: 'Opposing approaches to commitment that demand mutual negotiation.',
+    detail: 'You each have different ideas about responsibility, time, and what\'s required in partnership. This can create either balanced perspectives or constant tension about obligations and restrictions.'
+  },
+  'Saturn-Saturn|trine': {
+    feel: 'Easy alignment on commitment and shared values around stability and responsibility.',
+    detail: 'You naturally understand each other\'s need for structure and commitment. Partnership feels grounded and secure. Together you build something lasting and meaningful without the weight of forced obligation.'
+  },
+  'Saturn-Saturn|square': {
+    feel: 'Karmic tension around commitment, responsibility, and control.',
+    detail: 'You challenge each other\'s approach to duty and obligation, which can feel restrictive or irresponsible depending on perspective. This aspect often involves learning to balance freedom and commitment, spontaneity and structure.'
+  },
+  'Saturn-Saturn|sextile': {
+    feel: 'Comfortable alignment on what\'s necessary for partnership to work.',
+    detail: 'You both understand the work required in partnership and are willing to invest time and effort. The relationship feels grounded without being burdensome. This aspect supports lasting, mature partnerships.'
+  },
+
+  // Venus-Venus
+  'Venus-Venus|conjunction': {
+    feel: 'Compatible values and aesthetics; you like the same things.',
+    detail: 'Your sense of beauty, values, and what makes life pleasant are nearly identical. This creates ease in lifestyle choices and financial decisions. The risk is becoming too comfortable or not challenging each other to grow aesthetically or morally.'
+  },
+  'Venus-Venus|opposition': {
+    feel: 'Opposite aesthetics and values that either complement or conflict.',
+    detail: 'You\'re drawn to different things and have different ideas about beauty, spending, and pleasure. This can create interesting balance or ongoing compromise about lifestyle and aesthetic choices.'
+  },
+  'Venus-Venus|trine': {
+    feel: 'Easy appreciation of each other\'s tastes and values.',
+    detail: 'You naturally support each other\'s aesthetic interests and life pleasures. Shared activities feel effortless, and you enjoy similar environments. This creates genuine lifestyle compatibility without demanding sameness.'
+  },
+  'Venus-Venus|square': {
+    feel: 'Different preferences that require compromise and negotiation.',
+    detail: 'Your aesthetics and values don\'t naturally align, which means constant decisions about shared spaces and lifestyle. This aspect pushes partners to communicate about values and find middle ground.'
+  },
+  'Venus-Venus|sextile': {
+    feel: 'Comfortable compatibility in values and taste without rigid sameness.',
+    detail: 'You appreciate each other\'s aesthetic choices and share enough values to create ease in lifestyle decisions. This aspect provides compatibility that feels natural but doesn\'t require identical preferences.'
+  },
+
+  // Mars-Mars
+  'Mars-Mars|conjunction': {
+    feel: 'Matched ambition and energy; you drive each other forward.',
+    detail: 'Together you\'re a powerhouse of action and ambition. The challenge is that you may compete rather than cooperate, or wear each other out with constant intensity. Channeling combined energy into shared goals creates magic.'
+  },
+  'Mars-Mars|opposition': {
+    feel: 'Opposing drives that create either productive tension or conflict.',
+    detail: 'You have different ideas about how to pursue goals and what\'s worth fighting for. This can create inspiring challenges or exhausting conflict depending on mutual respect. Balance comes from honoring both styles of action.'
+  },
+  'Mars-Mars|trine': {
+    feel: 'Compatible energy and drive; you motivate each other naturally.',
+    detail: 'You work well together and inspire each other to take action. Energy flows smoothly without constant competition or need to prove yourself. This aspect creates genuine collaborative power.'
+  },
+  'Mars-Mars|square': {
+    feel: 'Clashing drives and competitive energy that demands conscious management.',
+    detail: 'You each want to lead and may undermine each other\'s projects. This aspect works best when energy is channeled into shared goals rather than competing agendas. The friction can motivate or frustrate depending on context.'
+  },
+  'Mars-Mars|sextile': {
+    feel: 'Supportive, complementary energy and natural motivation for each other.',
+    detail: 'You inspire each other to action without the friction of square or the overwhelming intensity of conjunction. Energy combines productively, and you naturally support each other\'s pursuits.'
+  },
+
+  // Moon-Moon
+  'Moon-Moon|conjunction': {
+    feel: 'Deep emotional sameness; you feel the same feelings at the same time.',
+    detail: 'This creates profound emotional security and understanding. You intuitively know how each other feels and what each other needs. The potential shadow is that you can reinforce each other\'s emotional patterns without growing beyond them.'
+  },
+  'Moon-Moon|opposition': {
+    feel: 'Opposing emotional natures that create tension or beautiful balance.',
+    detail: 'You process emotions differently and may misunderstand each other\'s reactions. One person\'s comfort is the other\'s source of anxiety. This aspect requires genuine empathy and understanding of different emotional languages.'
+  },
+  'Moon-Moon|trine': {
+    feel: 'Easy emotional understanding and natural emotional support.',
+    detail: 'You intuitively understand each other\'s emotional needs and naturally provide what\'s needed. Emotional compatibility feels easy and secure. This is one of the best aspects for genuine emotional partnership.'
+  },
+  'Moon-Moon|square': {
+    feel: 'Emotional friction that challenges both partners to grow emotionally.',
+    detail: 'You have different emotional needs and responses, which can feel invalidating to both. This aspect pushes partners to truly listen and honor different emotional languages. Growth comes through accepting differences.'
+  },
+  'Moon-Moon|sextile': {
+    feel: 'Comfortable emotional compatibility without demanding complete sameness.',
+    detail: 'You understand each other\'s emotional nature and naturally support each other\'s needs. Emotional ease combines with enough difference to keep the partnership interesting and growing.'
+  },
+
+  // Sun-Venus
+  'Sun-Venus|conjunction': {
+    feel: 'Natural romantic attraction and admiration; the Venus person adores the Sun person.',
+    detail: 'The Venus person finds the Sun person inherently attractive and charming. The Sun person feels appreciated and loved. This creates natural romantic feelings and genuine affection. The aspect supports both initial attraction and lasting appreciation.'
+  },
+  'Sun-Venus|opposition': {
+    feel: 'Magnetic attraction tinged with a sense that the Venus person wants to change the Sun person.',
+    detail: 'The Venus person is strongly attracted but may have an agenda about how the Sun person should be. The Sun person feels admired but also critiqued. The aspect requires that the Venus person truly accept the Sun person as they are.'
+  },
+  'Sun-Venus|trine': {
+    feel: 'Effortless admiration and affection; the Venus person naturally loves the Sun person.',
+    detail: 'The Venus person appreciates the Sun person\'s essential nature without wanting to change anything. The Sun person feels genuinely loved and valued. This creates lasting affection and appreciation.'
+  },
+  'Sun-Venus|square': {
+    feel: 'Attraction mixed with a sense that values or ways of being don\'t quite align.',
+    detail: 'The Venus person is attracted to the Sun person but struggles with accepting their essential nature. The Sun person senses the criticism beneath the attraction. This aspect requires work to separate genuine affection from judgment.'
+  },
+  'Sun-Venus|sextile': {
+    feel: 'Easy romantic attraction and natural appreciation of each other.',
+    detail: 'The Venus person finds the Sun person attractive in an uncomplicated way, and the Sun person feels appreciated. This aspect creates genuine affection without the intensity of conjunction or the friction of square.'
+  },
+
+  // Sun-Mars
+  'Sun-Mars|conjunction': {
+    feel: 'Powerful sexual attraction and driven mutual pursuit.',
+    detail: 'This is one of the most potent synastry aspects for chemistry and passion. The Mars person is intensely drawn to pursue the Sun person, and the Sun person feels powerfully desired. The energy is overwhelming and intoxicating.'
+  },
+  'Sun-Mars|opposition': {
+    feel: 'Magnetic but volatile attraction; desire meets the pull to resist.',
+    detail: 'The intense attraction can become adversarial, with the Mars person pursuing and the Sun person either submitting or resisting. The dynamic contains both passion and potential power struggle. Sexual tension runs extremely high.'
+  },
+  'Sun-Mars|trine': {
+    feel: 'Harmonious sexual attraction without aggressive pursuit.',
+    detail: 'The Mars person is drawn to the Sun person, but the pursuit feels welcome rather than threatening. The Sun person is genuinely happy to be desired. Together the energy is hot but controllable, passionate but not chaotic.'
+  },
+  'Sun-Mars|square': {
+    feel: 'Sexual tension mixed with frustration and misalignment of desire.',
+    detail: 'The Mars person may pursue too aggressively for the Sun person\'s comfort, or the Sun person may feel the pursuit is not what they want. This aspect requires clear communication about desire and boundaries.'
+  },
+  'Sun-Mars|sextile': {
+    feel: 'Flirty, attractive chemistry that\'s fun and not overwhelming.',
+    detail: 'The Mars person is attracted and gently pursues; the Sun person enjoys being desired. The aspect creates sexual chemistry without the intensity of conjunction or the friction of square.'
+  }
+};
+
+function getSynastryInterpretation(key, aspect) {
+  // Try exact key
+  if (SYNASTRY_VOICE[key]) return SYNASTRY_VOICE[key];
+
+  // Try reversed planets
+  const [pA, pB] = key.split('|')[0].split('-');
+  const revKey = `${pB}-${pA}|${aspect.aspect}`;
+  if (SYNASTRY_VOICE[revKey]) return SYNASTRY_VOICE[revKey];
+
+  // Fallback generic
+  return {
+    feel: `A ${aspect.aspect} aspect between ${aspect.pA} and ${aspect.pB}.`,
+    detail: `This ${aspect.type} aspect suggests ${aspect.type === 'easy' ? 'harmony and support' : 'tension and growth potential'} between these planetary energies in the synastry chart.`
+  };
+}
+
+// ============================================================================
+// SECTION 11: TAB CONTENT RENDERING
+// ============================================================================
+
+function renderSynastryTab() {
+  loadCharts();
+
+  let h = '';
+
+  if (savedCharts.length <= 1) {
+    h += `<div class="synastry-container">
+      <div class="empty-state">
+        <div class="empty-state-icon">+</div>
+        <p>Add someone to compare your charts</p>
+        <button class="add-chart-btn" onclick="showChartForm=true; editingChartId=null; renderApp();">Add Person</button>
+      </div>
+    </div>`;
+    return h;
+  }
+
+  h += `<div class="synastry-container">`;
+
+  // Chart selector
+  h += `<div class="chart-selector">
+    <label style="color: var(--text2); font-size: 0.85rem; margin-bottom: 0.4rem; display: block;">Compare with:</label>
+    <select onchange="selectedChartId=this.value; synAspects=[]; synExpanded=null; renderApp();">
+      <option value="">-- Select a chart --</option>`;
+
+  for (let chart of savedCharts) {
+    if (chart.id === 'alexander') continue;
+    h += `<option value="${chart.id}" ${selectedChartId === chart.id ? 'selected' : ''}>${chart.name}</option>`;
+  }
+
+  h += `</select>
+    <button class="add-chart-btn" onclick="showChartForm=true; editingChartId=null; renderApp();">Add Person</button>`;
+
+  if (selectedChartId) {
+    h += `<button class="edit-chart-btn" onclick="editingChartId='${selectedChartId}'; showChartForm=true; renderApp();">Edit</button>
+    <button class="delete-chart-btn" onclick="deleteChart('${selectedChartId}'); selectedChartId=null; renderApp();">Delete</button>`;
+  }
+
+  h += `</div>`;
+
+  if (selectedChartId) {
+    const chartA = savedCharts.find(c => c.id === 'alexander');
+    const chartB = savedCharts.find(c => c.id === selectedChartId);
+
+    if (chartA && chartB) {
+      const { natal: natalA, jd: jdA } = getChartNatal(chartA);
+      const { natal: natalB, jd: jdB } = getChartNatal(chartB);
+
+      const housesA = computeWholeSignHouses(natalA.asc);
+      const housesB = computeWholeSignHouses(natalB.asc);
+
+      synAspects = computeSynastryAspects(natalA, natalB);
+      const traditional = computeSynastryTraditional(natalA, housesA, natalB, housesB, jdA, jdB);
+
+      // Biwheel
+      h += `<div class="biwheel-container">`;
+      h += renderSynastryWheel(natalA, housesA, natalB, housesB, synAspects, 350);
+      h += `</div>`;
+
+      // Narrative
+      const narrative = generateSynastryNarrative(synAspects, traditional);
+      h += `<div class="synastry-narrative">${narrative}</div>`;
+
+      // Traditional indicators
+      h += `<div class="traditional-indicators">
+        <h3>Traditional Indicators</h3>`;
+
+      h += `<div class="indicator-item">
+        <span class="indicator-label">Lunar Contact</span>
+        ${traditional.lunarContact ? `Strong Sun-Moon contact (${traditional.lunarContactType})` : 'No strong lunar contact'}
+      </div>`;
+
+      h += `<div class="indicator-item">
+        <span class="indicator-label">Venus-Mars Connection</span>
+        ${traditional.venusMarsMutual ? 'Strong mutual attraction and passion' : 'No strong Venus-Mars contact'}
+      </div>`;
+
+      h += `<div class="indicator-item">
+        <span class="indicator-label">Saturn Contacts</span>
+        ${traditional.saturnContacts} challenging Saturn aspects (karmic lessons and commitment depth)
+      </div>`;
+
+      h += `</div>`;
+
+      // Aspect grid
+      h += renderSynastryGrid(natalA, natalB, synAspects);
+    }
+  }
+
+  h += `</div>`;
+
+  // Form modal
+  if (showChartForm) {
+    h += renderChartFormModal();
+  }
+
+  return h;
+}
+
+function renderAstroCartoTab() {
+  loadCharts();
+
+  let h = '';
+
+  h += `<div class="astrocarto-container">`;
+
+  // Chart selector
+  if (savedCharts.length > 1) {
+    h += `<div class="astrocarto-chart-selector">
+      <select onchange="acSelectedChartId=this.value; acTapInfo=null; renderApp();">`;
+
+    for (let chart of savedCharts) {
+      h += `<option value="${chart.id}" ${acSelectedChartId === chart.id ? 'selected' : ''}>${chart.name}</option>`;
+    }
+
+    h += `</select>
+    </div>`;
+  }
+
+  const selectedChart = savedCharts.find(c => c.id === acSelectedChartId);
+
+  if (selectedChart) {
+    const { natal: natalPos, jd } = getChartNatal(selectedChart);
+
+    if (!acArtrocartoLines || acArtrocartoLines.chart !== acSelectedChartId) {
+      acArtrocartoLines = computeAstroCartoLines(jd, natalPos);
+      acArtrocartoLines.chart = acSelectedChartId;
+    }
+
+    // Planet toggles
+    h += `<div class="planet-toggles">`;
+    for (let planet of ['Sun', 'Moon', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Mercury', 'Uranus', 'Neptune', 'Pluto', 'Chiron', 'NorthNode']) {
+      const active = acPlanetToggles[planet];
+      h += `<button class="planet-toggle ${active ? 'active' : ''}" onclick="acPlanetToggles['${planet}']=!acPlanetToggles['${planet}']; renderApp();">`;
+      h += pSVG(planet, 16, active ? 'var(--bg)' : 'var(--text)');
+      h += `<span style="font-size:0.6rem;">${planet.substring(0,3)}</span>`;
+      h += `</button>`;
+    }
+    h += `</div>`;
+
+    // Map
+    const mapWidth = Math.min(window.innerWidth - 20, 450);
+    h += `<div class="map-container" onclick="handleMapClick(event, this, acArtrocartoLines)">`;
+    h += renderAstroCartoMap(acArtrocartoLines, acPlanetToggles, acTapInfo, mapWidth, mapWidth / 2);
+    h += `</div>`;
+
+    // Info card
+    if (acTapInfo) {
+      h += `<div class="acarto-info-card">`;
+      h += `<div class="acarto-info-title">${acTapInfo.nearestLine.planet} ${acTapInfo.nearestLine.angleType}</div>`;
+      h += `<div class="acarto-info-location">Lat: ${acTapInfo.lat.toFixed(1)}, Lon: ${acTapInfo.lon.toFixed(1)}</div>`;
+
+      const voice = ASTROCARTO_VOICE[acTapInfo.nearestLine.planet];
+      const angleData = voice[acTapInfo.nearestLine.angleType.toLowerCase()];
+
+      if (angleData) {
+        h += `<div class="acarto-info-detail">${angleData.detail}</div>`;
+      }
+
+      h += `<button class="acarto-close-btn" onclick="acTapInfo=null; renderApp();">Close</button>`;
+      h += `</div>`;
+    }
+  }
+
+  h += `</div>`;
+
+  return h;
+}
+
+function handleMapClick(evt, svgEl, lines) {
+  const rect = svgEl.querySelector('svg').getBoundingClientRect();
+  const x = evt.clientX - rect.left;
+  const y = evt.clientY - rect.top;
+
+  const svg = svgEl.querySelector('svg');
+  const viewBox = svg.getAttribute('viewBox').split(' ');
+  const vbWidth = parseFloat(viewBox[2]);
+  const vbHeight = parseFloat(viewBox[3]);
+
+  const lon = (x / rect.width) * vbWidth;
+  const lat = 90 - (y / rect.height) * vbHeight;
+
+  // Find nearest line
+  let nearest = null;
+  let minDist = Infinity;
+
+  for (let planet of Object.keys(acPlanetToggles)) {
+    if (!acPlanetToggles[planet]) continue;
+    if (!(planet in lines)) continue;
+
+    const planetLine = lines[planet];
+
+    // MC line
+    const mcDist = Math.abs(lon - planetLine.mc);
+    if (mcDist < minDist) {
+      minDist = mcDist;
+      nearest = { planet, angleType: 'mc' };
+    }
+
+    // IC line
+    const icDist = Math.abs(lon - planetLine.ic);
+    if (icDist < minDist) {
+      minDist = icDist;
+      nearest = { planet, angleType: 'ic' };
+    }
+
+    // ASC line
+    if (planetLine.asc) {
+      for (let pt of planetLine.asc) {
+        const dist = Math.sqrt(Math.pow(lon - pt.lon, 2) + Math.pow(lat - pt.lat, 2));
+        if (dist < minDist) {
+          minDist = dist;
+          nearest = { planet, angleType: 'asc' };
+        }
+      }
+    }
+
+    // DSC line
+    if (planetLine.dsc) {
+      for (let pt of planetLine.dsc) {
+        const dist = Math.sqrt(Math.pow(lon - pt.lon, 2) + Math.pow(lat - pt.lat, 2));
+        if (dist < minDist) {
+          minDist = dist;
+          nearest = { planet, angleType: 'dsc' };
+        }
+      }
+    }
+  }
+
+  if (nearest && minDist < 20) {
+    acTapInfo = { lat, lon, nearestLine: nearest };
+  }
+
+  renderApp();
+}
+
+// ============================================================================
+// SECTION 12: CHART INPUT FORM MODAL
+// ============================================================================
+
+function renderChartFormModal() {
+  let h = '';
+
+  let formData = {};
+  if (editingChartId && editingChartId !== 'alexander') {
+    const chart = savedCharts.find(c => c.id === editingChartId);
+    if (chart) {
+      formData = { ...chart };
+    }
+  } else {
+    formData = {
+      name: '',
+      year: new Date().getFullYear(),
+      month: 1,
+      day: 1,
+      hour: 12,
+      minute: 0,
+      lat: 0,
+      lon: 0,
+      tz: 0
+    };
+  }
+
+  h += `<div class="chart-form-modal">
+    <div class="chart-form-panel">
+      <h2>${editingChartId ? 'Edit Chart' : 'Add Person'}</h2>
+
+      <div class="form-group">
+        <label>Name *</label>
+        <input type="text" id="chart-name" value="${formData.name || ''}" placeholder="Full name">
+      </div>
+
+      <div class="form-group">
+        <label>Birth Date *</label>
+        <div class="form-row three">
+          <input type="number" id="chart-month" min="1" max="12" value="${formData.month || 1}" placeholder="Month">
+          <input type="number" id="chart-day" min="1" max="31" value="${formData.day || 1}" placeholder="Day">
+          <input type="number" id="chart-year" value="${formData.year || 2000}" placeholder="Year">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Birth Time *</label>
+        <div class="form-row">
+          <input type="number" id="chart-hour" min="0" max="23" value="${Math.floor(formData.hour || 12)}" placeholder="Hour">
+          <input type="number" id="chart-minute" min="0" max="59" value="${Math.round(((formData.hour || 12) % 1) * 60)}" placeholder="Minute">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Timezone (UTC offset in hours)</label>
+        <input type="number" id="chart-tz" step="0.5" min="-12" max="14" value="${formData.tz || 0}" placeholder="Timezone">
+      </div>
+
+      <div class="form-group">
+        <label>Latitude (decimal degrees)</label>
+        <input type="number" id="chart-lat" step="0.0001" min="-90" max="90" value="${formData.lat || 0}" placeholder="Latitude">
+      </div>
+
+      <div class="form-group">
+        <label>Longitude (decimal degrees)</label>
+        <input type="number" id="chart-lon" step="0.0001" min="-180" max="180" value="${formData.lon || 0}" placeholder="Longitude">
+      </div>
+
+      <div class="form-buttons">
+        <button class="save-btn" onclick="saveChartFromForm();">Save</button>
+        <button class="cancel-btn" onclick="showChartForm=false; editingChartId=null; renderApp();">Cancel</button>
+      </div>
+    </div>
+  </div>`;
+
+  return h;
+}
+
+function saveChartFromForm() {
+  const name = document.getElementById('chart-name').value.trim();
+  const month = parseInt(document.getElementById('chart-month').value);
+  const day = parseInt(document.getElementById('chart-day').value);
+  const year = parseInt(document.getElementById('chart-year').value);
+  const hour = parseInt(document.getElementById('chart-hour').value);
+  const minute = parseInt(document.getElementById('chart-minute').value);
+  const tz = parseFloat(document.getElementById('chart-tz').value);
+  const lat = parseFloat(document.getElementById('chart-lat').value);
+  const lon = parseFloat(document.getElementById('chart-lon').value);
+
+  if (!name || isNaN(month) || isNaN(day) || isNaN(year) || isNaN(lat) || isNaN(lon)) {
+    alert('Please fill in all required fields');
+    return;
+  }
+
+  const chartData = {
+    name,
+    year,
+    month,
+    day,
+    hour: hour + minute / 60,
+    lat,
+    lon,
+    tz
+  };
+
+  if (editingChartId && editingChartId !== 'alexander') {
+    const idx = savedCharts.findIndex(c => c.id === editingChartId);
+    if (idx >= 0) {
+      savedCharts[idx] = { ...savedCharts[idx], ...chartData };
+    }
+  } else {
+    addChart(chartData);
+  }
+
+  saveCharts();
+  showChartForm = false;
+  editingChartId = null;
+  renderApp();
+}
+
+// ============================================================================
+// EXPORT: CSS for injection
+// ============================================================================
+
+window.SYNASTRY_ASTROCARTO_CSS = SYNASTRY_ASTROCARTO_CSS;
+
 
 function renderApp(){
   const now=getTargetDate();const isToday=dayOffset===0;
@@ -6897,6 +8913,21 @@ function renderApp(){
   }
   h+=`</div>`;
 
+  // ══════════ SYNASTRY TAB ══════════
+  h+=`<div class="tab-content ${activeTab==='synastry'?'active':''}">`;
+  h+=renderSynastryTab();
+  h+=`</div>`;
+
+  // ══════════ MAP TAB ══════════
+  h+=`<div class="tab-content ${activeTab==='map'?'active':''}">`;
+  h+=renderAstroCartoTab();
+  h+=`</div>`;
+
+  // ══════════ CHART FORM MODAL ══════════
+  if(showChartForm){
+    h+=renderChartFormModal();
+  }
+
   // ══════════ TAB BAR ══════════
   const svgToday=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><line x1="12" y1="3" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="21"/><line x1="3" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="21" y2="12"/></svg>`;
   const svgChart=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><line x1="12" y1="3" x2="12" y2="21"/><line x1="3" y1="12" x2="21" y2="12"/></svg>`;
@@ -6910,6 +8941,10 @@ function renderApp(){
   tabBarHtml+=`<button class="${activeTab==='chart'?'active':''}" onclick="switchTab('chart')">${svgChart}<span>Chart</span></button>`;
   tabBarHtml+=`<button class="${activeTab==='lore'?'active':''}" onclick="switchTab('lore')">${svgLore}<span>Lore</span></button>`;
   tabBarHtml+=`<button class="${activeTab==='natal'?'active':''}" onclick="switchTab('natal')">${svgNatal}<span>Natal</span></button>`;
+  const svgSynastry=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="12" r="7"/><circle cx="15" cy="12" r="7"/></svg>`;
+  const svgMap=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/></svg>`;
+  tabBarHtml+=`<button class="${activeTab==='synastry'?'active':''}" onclick="switchTab('synastry')">${svgSynastry}<span>Relate</span></button>`;
+  tabBarHtml+=`<button class="${activeTab==='map'?'active':''}" onclick="switchTab('map')">${svgMap}<span>Map</span></button>`;
 
   document.getElementById('app').innerHTML=h;
   document.getElementById('tab-bar-host').innerHTML=tabBarHtml;
@@ -6996,6 +9031,7 @@ document.addEventListener('scroll',()=>{
   if(fab){if(window.scrollY>500)fab.classList.add('show');else fab.classList.remove('show');}
 });
 
+loadCharts();
 renderApp();
 setInterval(()=>{if(dayOffset===0)renderApp();},10*60*1000);
 

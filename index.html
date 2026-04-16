@@ -77,16 +77,34 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 @keyframes tabFadeIn{from{opacity:0}to{opacity:1}}
 @keyframes wheelDraw{from{opacity:0;transform:scale(.85) rotate(-8deg)}to{opacity:1;transform:scale(1) rotate(0deg)}}
 @media (prefers-reduced-motion:reduce){
+  @keyframes atmos{0%,100%{background-position:center}}
   @keyframes fadeUp{from{opacity:1}to{opacity:1}}
   @keyframes pulseGlow{0%,100%{box-shadow:none}}
   @keyframes expandIn{from{opacity:1}to{opacity:1}}
   @keyframes scaleIn{from{opacity:1}to{opacity:1}}
   @keyframes slideSheetUp{from{transform:none}to{transform:none}}
+  @keyframes slideUp{from{transform:none}to{transform:none}}
   @keyframes ringFill{from{}to{}}
   @keyframes breatheGlow{0%,100%{box-shadow:none}}
   @keyframes zoneIn{from{opacity:1}to{opacity:1}}
   @keyframes tabFadeIn{from{opacity:1}to{opacity:1}}
   @keyframes wheelDraw{from{opacity:1}to{opacity:1}}
+  @keyframes homeFadeUp{from{opacity:1}to{opacity:1}}
+  @keyframes homePulse{0%,100%{opacity:1;transform:none}}
+  @keyframes homeOrbit{from{transform:none}to{transform:none}}
+  @keyframes homeCounterOrbit{from{transform:none}to{transform:none}}
+  @keyframes starTwinkle{0%,100%{opacity:1}}
+  @keyframes moonGlow{0%,100%{filter:none}}
+  @keyframes verdictReveal{from{opacity:1;letter-spacing:normal}to{opacity:1;letter-spacing:normal}}
+  @keyframes homeShimmer{0%,100%{transform:none}}
+  @keyframes splashOrbitIn{from{opacity:1;transform:none}to{opacity:1;transform:none}}
+  @keyframes splashTextIn{from{opacity:.7}to{opacity:.7}}
+  @keyframes splashNameIn{from{opacity:1}to{opacity:1}}
+  @keyframes splashEnterPulse{0%,100%{opacity:.8}}
+  @keyframes synth-spin{from{transform:none}to{transform:none}}
+  @keyframes pulse{0%,100%{opacity:1}}
+  @keyframes glow{0%,100%{box-shadow:none}}
+  @keyframes chevSpin{from{transform:none}to{transform:none}}
 }
 
 /* ── Universal expand/reveal animations ── */
@@ -938,8 +956,7 @@ html.light .tooltip-popup{background:#ffffff;border-color:rgba(0,0,0,.12);box-sh
   border-radius:var(--r-md);box-shadow:var(--shadow);cursor:pointer;transition:all .15s}
 .pos-item:active{background:var(--card-hover)}
 
-/* ── Animations ── */
-@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+/* ── Supplemental Animations ── */
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
 @keyframes glow{0%,100%{box-shadow:0 0 8px rgba(212,168,67,.15)}50%{box-shadow:0 0 20px rgba(212,168,67,.3)}}

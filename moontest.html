@@ -1,0 +1,35 @@
+<!DOCTYPE html><html><head><style>
+body{background:#111;color:#fff;font-family:sans-serif;padding:20px}
+.row{display:flex;flex-wrap:wrap;gap:20px}
+.cell{text-align:center}
+</style></head><body>
+<h2>Moon phase SVG test</h2>
+<div class="row" id="r"></div>
+<script>
+const DEG=Math.PI/180;
+function moonPhaseSvg(phaseAngle,size){
+  const r=size/2-2;const cx=size/2,cy=size/2;
+  const illum=(1-Math.cos(phaseAngle*DEG))/2;
+  const waxing=phaseAngle<180;
+  const termR=Math.abs(r*Math.cos(phaseAngle*DEG));
+  let litPath;
+  if(illum<.5){
+    if(waxing){
+      litPath=`M ${cx} ${cy-r} A ${r} ${r} 0 0 1 ${cx} ${cy+r} A ${termR} ${r} 0 0 0 ${cx} ${cy-r} Z`;
+    } else {
+      litPath=`M ${cx} ${cy-r} A ${r} ${r} 0 0 0 ${cx} ${cy+r} A ${termR} ${r} 0 0 1 ${cx} ${cy-r} Z`;
+    }
+  } else {
+    if(waxing){
+      litPath=`M ${cx} ${cy-r} A ${r} ${r} 0 0 1 ${cx} ${cy+r} A ${termR} ${r} 0 0 1 ${cx} ${cy-r} Z`;
+    } else {
+      litPath=`M ${cx} ${cy-r} A ${r} ${r} 0 0 0 ${cx} ${cy+r} A ${termR} ${r} 0 0 0 ${cx} ${cy-r} Z`;
+    }
+  }
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"><circle cx="${cx}" cy="${cy}" r="${r}" fill="#222" stroke="#666"/><path d="${litPath}" fill="#ffd"/></svg>`;
+}
+const tests=[5,30,45,90,135,170,180,210,225,270,315,346];
+const labels=['New','Wax Cres 30','Wax Cres 45','First Q','Wax Gib','Wax Gib 170','Full','Wan Gib 210','Wan Gib','Last Q','Wan Cres','Today 346'];
+const r=document.getElementById('r');
+tests.forEach((p,i)=>{const d=document.createElement('div');d.className='cell';d.innerHTML=moonPhaseSvg(p,80)+'<div>'+labels[i]+'<br>'+p+'°</div>';r.appendChild(d);});
+</script></body></html>

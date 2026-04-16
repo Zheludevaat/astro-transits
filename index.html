@@ -1447,29 +1447,28 @@ html.light .guidance-preview:not(.expanded)::after{background:linear-gradient(tr
 }
 
 .planet-toggles {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  padding: 1rem;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.35rem;
+  padding: 0.6rem;
   background-color: var(--surface);
   border-bottom: 1px solid var(--hairline);
 }
 
 .planet-toggle {
-  flex: 1;
-  min-width: 45px;
-  padding: 0.4rem 0.5rem;
+  padding: 0.3rem 0.2rem;
   background-color: var(--card);
   border: 1px solid var(--gold-line);
   border-radius: var(--r-sm);
   color: var(--text);
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   cursor: pointer;
   transition: all 0.2s;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.2rem;
+  gap: 0.15rem;
 }
 
 .planet-toggle.active {
@@ -6268,8 +6267,9 @@ function renderAstroCartoMap(lines, toggles, tapInfo, width = 400, height = 250)
   // Ocean background
   svg += `<rect width="360" height="180" fill="url(#ocean-gradient)"/>`;
 
-  // Coastlines
-  svg += `<path d="${WORLD_COASTLINE}" fill="var(--card)" stroke="var(--violet)" stroke-width="0.3" opacity="0.6"/>`;
+  // Coastlines — path data is in geographic coords (lon -180..180, lat -90..90)
+  // Transform to SVG coords: x' = lon + 180, y' = 90 - lat
+  svg += `<g transform="translate(180, 90) scale(1, -1)"><path d="${WORLD_COASTLINE}" fill="var(--card)" stroke="var(--violet)" stroke-width="0.3" opacity="0.6"/></g>`;
 
   // Graticule (light grid)
   for (let lon = 0; lon < 360; lon += 30) {

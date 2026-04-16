@@ -978,31 +978,51 @@ html.light .guidance-preview:not(.expanded)::after{background:linear-gradient(tr
 .home-jump button:hover{border-color:var(--gold);color:var(--gold)}
 .home-jump button:active{transform:scale(.96)}
 /* App Loader */
-.app-loader{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);z-index:9999;transition:opacity .5s ease}
+.app-loader{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);z-index:9999;transition:opacity .8s cubic-bezier(.4,0,.2,1);cursor:pointer;-webkit-tap-highlight-color:transparent;overflow:hidden}
+.app-loader::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,rgba(255,200,120,.04) 0%,transparent 70%);pointer-events:none}
 .app-loader.hide{opacity:0;pointer-events:none}
-.app-loader-orbit{position:relative;width:120px;height:120px}
-.app-loader-orbit .center-sun{position:absolute;top:50%;left:50%;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;background:radial-gradient(circle,#ffc870,#ff8c42);box-shadow:0 0 20px rgba(255,200,120,.6);animation:homePulse 2s ease-in-out infinite}
-.app-loader-orbit .ring{position:absolute;inset:0;border:1px solid rgba(255,200,120,.15);border-radius:50%}
-.app-loader-orbit .ring-1{inset:20px;animation:homeOrbit 4s linear infinite}
-.app-loader-orbit .ring-2{inset:10px;border-color:rgba(180,140,255,.18);animation:homeCounterOrbit 6s linear infinite}
-.app-loader-orbit .ring-3{inset:0;border-color:rgba(120,220,180,.12);animation:homeOrbit 9s linear infinite}
-.app-loader-orbit .planet{position:absolute;width:8px;height:8px;border-radius:50%;top:-4px;left:50%;margin-left:-4px}
-.app-loader-orbit .ring-1 .planet{background:#ffc870;box-shadow:0 0 8px rgba(255,200,120,.8)}
-.app-loader-orbit .ring-2 .planet{background:#b48cff;box-shadow:0 0 8px rgba(180,140,255,.8)}
-.app-loader-orbit .ring-3 .planet{background:#78dcb4;box-shadow:0 0 8px rgba(120,220,180,.8)}
-.app-loader-title{margin-top:26px;font-size:11px;color:var(--text2);letter-spacing:.25em;text-transform:uppercase;animation:starTwinkle 2.5s ease-in-out infinite}
+.app-loader-orbit{position:relative;width:140px;height:140px;opacity:0;animation:splashOrbitIn 1.8s ease-out .3s both}
+@keyframes splashOrbitIn{from{opacity:0;transform:scale(.6) rotate(-30deg)}to{opacity:1;transform:scale(1) rotate(0deg)}}
+.app-loader-orbit .center-sun{position:absolute;top:50%;left:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:radial-gradient(circle,#ffc870,#ff8c42);box-shadow:0 0 24px rgba(255,200,120,.6),0 0 60px rgba(255,200,120,.15);animation:homePulse 2.5s ease-in-out infinite}
+.app-loader-orbit .ring{position:absolute;inset:0;border:1px solid rgba(255,200,120,.12);border-radius:50%}
+.app-loader-orbit .ring-1{inset:25px;animation:homeOrbit 5s linear infinite}
+.app-loader-orbit .ring-2{inset:12px;border-color:rgba(180,140,255,.15);animation:homeCounterOrbit 7s linear infinite}
+.app-loader-orbit .ring-3{inset:0;border-color:rgba(120,220,180,.1);animation:homeOrbit 11s linear infinite}
+.app-loader-orbit .planet{position:absolute;width:7px;height:7px;border-radius:50%;top:-3.5px;left:50%;margin-left:-3.5px}
+.app-loader-orbit .ring-1 .planet{background:#ffc870;box-shadow:0 0 10px rgba(255,200,120,.9)}
+.app-loader-orbit .ring-2 .planet{background:#b48cff;box-shadow:0 0 10px rgba(180,140,255,.9)}
+.app-loader-orbit .ring-3 .planet{background:#78dcb4;box-shadow:0 0 10px rgba(120,220,180,.9)}
+.app-loader-title{margin-top:32px;font-size:11px;color:var(--text2);letter-spacing:.3em;text-transform:uppercase;opacity:0;animation:splashTextIn 1.4s ease-out 1.2s both}
+.app-loader-name{margin-top:16px;font-size:22px;font-weight:300;color:var(--bright);letter-spacing:.08em;opacity:0;animation:splashNameIn 1.6s ease-out 2s both}
+.app-loader-date{margin-top:8px;font-size:12px;color:var(--text2);letter-spacing:.15em;opacity:0;animation:splashTextIn 1.2s ease-out 2.6s both}
+.app-loader-enter{margin-top:36px;font-size:10px;color:var(--gold);letter-spacing:.25em;text-transform:uppercase;opacity:0;animation:splashEnterPulse 2s ease-in-out 3.4s both}
+@keyframes splashTextIn{from{opacity:0;transform:translateY(8px)}to{opacity:.7;transform:translateY(0)}}
+@keyframes splashNameIn{from{opacity:0;letter-spacing:.2em}to{opacity:1;letter-spacing:.08em}}
+@keyframes splashEnterPulse{0%{opacity:0;transform:translateY(6px)}30%{opacity:.8;transform:translateY(0)}60%{opacity:.4}100%{opacity:.8}}
 </style>
 </head>
 <body>
-<div id="app-loader" class="app-loader">
+<div id="app-loader" class="app-loader" onclick="dismissSplash()">
   <div class="app-loader-orbit">
     <div class="ring ring-3"><div class="planet"></div></div>
     <div class="ring ring-2"><div class="planet"></div></div>
     <div class="ring ring-1"><div class="planet"></div></div>
     <div class="center-sun"></div>
   </div>
-  <div class="app-loader-title">Aligning the heavens…</div>
+  <div class="app-loader-title">Aligning the heavens</div>
+  <div class="app-loader-name" id="splash-name"></div>
+  <div class="app-loader-date" id="splash-date"></div>
+  <div class="app-loader-enter">tap to enter</div>
 </div>
+<script>
+(function(){
+  const now=new Date();
+  const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  document.getElementById('splash-name').textContent='Alexander';
+  document.getElementById('splash-date').textContent=days[now.getDay()]+', '+months[now.getMonth()]+' '+now.getDate();
+})();
+</script>
 <div id="app" class="container"></div>
 <nav id="tab-bar-host" class="tab-bar"></nav>
 <button id="fab-top" class="fab-top" aria-label="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
@@ -6210,8 +6230,7 @@ function renderApp(){
 
   document.getElementById('app').innerHTML=h;
   document.getElementById('tab-bar-host').innerHTML=tabBarHtml;
-  const loader=document.getElementById('app-loader');
-  if(loader&&!loader.classList.contains('hide')){setTimeout(()=>{loader.classList.add('hide');setTimeout(()=>loader.remove(),600);},400);}
+  // Splash is dismissed by tap — see dismissSplash()
 
   // Sync body data-zone for CSS filtering (only meaningful on Today tab)
   document.body.setAttribute('data-zone', activeTab==='today'?todayZone:'all');
@@ -6250,6 +6269,14 @@ function navToday(){
     app.classList.add('slide-in');
     setTimeout(()=>app.classList.remove('slide-in'),150);
   },120);
+}
+let splashDismissed=false;
+function dismissSplash(){
+  if(splashDismissed)return;splashDismissed=true;
+  const loader=document.getElementById('app-loader');
+  if(!loader)return;
+  loader.classList.add('hide');
+  setTimeout(()=>{loader.remove();},900);
 }
 function switchTab(tab){activeTab=tab;renderApp();window.scrollTo(0,0);}
 function toggleCard(id){

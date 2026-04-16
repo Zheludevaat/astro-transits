@@ -4887,6 +4887,14 @@ function setSynthOutputCollapsed(v){synthOutputCollapsed=v;try{localStorage.setI
 function toggleSynthOutput(){setSynthOutputCollapsed(!synthOutputCollapsed);}
 let expandedLot=null;
 function toggleLot(name){expandedLot=expandedLot===name?null:name;renderApp();}
+let sunCardExpanded=false;
+function toggleSunCard(){sunCardExpanded=!sunCardExpanded;renderApp();}
+let expandedPlanet=null;
+function togglePlanet(p){expandedPlanet=expandedPlanet===p?null:p;renderApp();}
+let expandedShift=null;
+function toggleShift(p){expandedShift=expandedShift===p?null:p;renderApp();}
+let expandedDayTransit=null;
+function toggleDayTransit(id){expandedDayTransit=expandedDayTransit===id?null:id;renderApp();}
 
 // ── Journal state ──
 let journalMood=null;
@@ -5544,149 +5552,6 @@ function renderApp(){
   h+=`</div>`;/* /t-now */
   h+=`<div class="t-zone t-day">`;
 
-  // ── Sun Position Card ──
-  {
-    const sunSign=signOf(cur.Sun);
-    const sunHouse=houseOf(cur.Sun);
-    const sunHv=HOUSE_VOICE[sunHouse]||{};
-    const sunDig=getDignity('Sun',cur.Sun);
-    const sunDec=computeDecan(cur.Sun);
-    const sunDecMeaning=sunDec.meaning?sunDec.meaning.replace(/^[A-Za-z]+ in [A-Za-z]+ decan \d+\.\s*/,''):'';
-    h+=`<div style="display:flex;align-items:center;gap:12px;padding:14px 16px;margin-bottom:10px;border-radius:var(--r-lg);background:var(--card);border:1px solid var(--hairline)">`;
-    h+=`<div style="flex-shrink:0">${pSVG('Sun',28,'var(--gold)')}</div>`;
-    h+=`<div style="flex:1;min-width:0">`;
-    h+=`<div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--gold);margin-bottom:3px">Sun in ${sunSign.name} ${sSVG(sunSign.name,13,'var(--gold)')}</div>`;
-    h+=`<div style="font-size:13px;color:var(--bright)">${sunSign.degree}° · House ${sunHouse}${sunHv.name?' · '+sunHv.name:''}${sunDig?' · '+sunDig.label:''}</div>`;
-    h+=`<div style="font-size:11px;color:var(--text2);margin-top:3px">Decan ${sunDec.decanNum}: ${sunDec.card} — ${sunDec.title}</div>`;
-    h+=`</div></div>`;
-  }
-
-  // ── Current Sky: Planetary Positions ──
-  {
-    const skyPlanets=['Mercury','Venus','Mars','Jupiter','Saturn'];
-    h+=`<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-bottom:12px">`;
-    for(const p of skyPlanets){
-      const ps=signOf(cur[p]);
-      const ph=houseOf(cur[p]);
-      const ms=motionStatus(p,jd);
-      const rxFlag=ms.retrograde?' Rx':ms.stationary?' St':'';
-      h+=`<div style="text-align:center;padding:8px 4px;border-radius:var(--r-md);background:var(--card);border:1px solid var(--hairline)">`;
-      h+=`<div>${pSVG(p,18,'var(--bright)')}</div>`;
-      h+=`<div style="font-size:10px;font-weight:600;color:var(--bright);margin-top:3px">${ps.abbr}</div>`;
-      h+=`<div style="font-size:9px;color:var(--text3)">H${ph}${rxFlag}</div>`;
-      h+=`</div>`;
-    }
-    h+=`</div>`;
-    // Outer planets row (smaller, less emphasis)
-    const outerPlanets=['Uranus','Neptune','Pluto','Chiron','NorthNode'];
-    h+=`<div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:14px">`;
-    for(const p of outerPlanets){
-      const ps=signOf(cur[p]);
-      const ms=motionStatus(p,jd);
-      const rxFlag=ms.retrograde?' Rx':ms.stationary?' St':'';
-      const label=p==='NorthNode'?'N.Node':p;
-      h+=`<span style="font-size:10px;color:var(--text3);display:inline-flex;align-items:center;gap:3px">${pSVG(p,12,'var(--text3)')} ${ps.abbr}${rxFlag}</span>`;
-    }
-    h+=`</div>`;
-  }
-
-  // ── Planetary Day Liturgy ──
-  if(pHours&&PLANETARY_LITURGY[pHours.dayRuler]){
-    const lit=PLANETARY_LITURGY[pHours.dayRuler];
-    h+=`<div class="liturgy-card" onclick="toggleLiturgy()">`;
-    h+=`<div class="lit-head"><span class="lit-title">${pSVG(pHours.dayRuler,14,'var(--violet)')} ${lit.weekday} Liturgy</span>`;
-    h+=`<span class="section-chev ${liturgyExpanded?'open':''}">&#9654;</span></div>`;
-    h+=`<div class="lit-day">Day of ${pHours.dayRuler}</div>`;
-    h+=`<div class="lit-ruler">${lit.intent}</div>`;
-    if(liturgyExpanded){
-      h+=`<div class="lit-body"><div class="lit-focus">${lit.focus}</div>`;
-      h+=`<div class="lit-avoid"><strong>Avoid:</strong> ${lit.avoid}</div>`;
-      h+=`<div class="lit-correspondences">`;
-      h+=`<div class="lit-corr-row"><span class="lit-corr-k">Color</span><span class="lit-corr-v">${lit.color}</span></div>`;
-      h+=`<div class="lit-corr-row"><span class="lit-corr-k">Metal</span><span class="lit-corr-v">${lit.metal}</span></div>`;
-      h+=`<div class="lit-corr-row"><span class="lit-corr-k">Stone</span><span class="lit-corr-v">${lit.stone}</span></div>`;
-      h+=`<div class="lit-corr-row"><span class="lit-corr-k">Incense</span><span class="lit-corr-v">${lit.incense}</span></div>`;
-      h+=`<div class="lit-corr-row"><span class="lit-corr-k">Herb</span><span class="lit-corr-v">${lit.herb}</span></div>`;
-      h+=`<div class="lit-corr-row"><span class="lit-corr-k">Direction</span><span class="lit-corr-v">${lit.direction}</span></div>`;
-      h+=`<div class="lit-corr-row"><span class="lit-corr-k">Number</span><span class="lit-corr-v">${lit.number}</span></div>`;
-      h+=`</div>`;
-      h+=`<div class="lit-medit">"${lit.meditation}"</div></div>`;
-    } else {
-      h+=`<div class="lit-collapsed">Tap for correspondences, focus, and the day\'s meditation.</div>`;
-    }
-    h+=`</div>`;
-  }
-
-  // ── Annual Theme by profected sign ──
-  const ANNUAL_THEME={
-    Aries:'A year of initiative — new starts, self-assertion, and confronting what you have been avoiding.',
-    Taurus:'A year of consolidation — money, comfort, what you own, and what you value enough to hold.',
-    Gemini:'A year of information — learning, communicating, short trips, siblings, curiosity as engine.',
-    Cancer:'A year of roots — home, family, emotional foundations, what makes you feel secure.',
-    Leo:'A year of expression — creativity, romance, children, pleasure, and the courage to be seen.',
-    Virgo:'A year of refinement — health, routines, service, skill-building, and fixing what is broken.',
-    Libra:'A year of relationship — partnerships, contracts, negotiation, the mirror of other people.',
-    Scorpio:'A year of depth — shared resources, debts, transformation, sex, death, and what is hidden.',
-    Sagittarius:'A year of expansion — travel, higher education, publishing, belief systems, reaching further.',
-    Capricorn:'A year of structure — career, reputation, authority, ambition, and long-term commitments.',
-    Aquarius:'A year of community — friends, networks, collective causes, and your vision for the future.',
-    Pisces:'A year of dissolution — endings, rest, spirituality, surrender, and preparation for rebirth.'
-  };
-
-  // ── Profection Row (tap chip for detail panel; tap ? for glossary) ──
-  h+=`<div class="profection-row">`;
-  const yearLordActive=transits.some(t=>(t.tp===prof.yearLord||t.np===prof.yearLord)&&t.importance>10);
-  const ylaHtml=yearLordActive?`<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--emerald);margin-left:4px;vertical-align:middle;box-shadow:0 0 4px var(--emerald)"></span>`:'';
-  h+=`<div class="prof-chip ${profExpanded==='year'?'open':''}" onclick="toggleProf('year')"><div><div class="prof-label">Year${ylaHtml} <span class="help" onclick="event.stopPropagation();showTip('Profection')">?</span></div><div class="prof-val">${pSVG(prof.yearLord,14,'var(--gold)')} ${prof.yearSign}</div></div></div>`;
-  h+=`<div class="prof-chip ${profExpanded==='month'?'open':''}" onclick="toggleProf('month')"><div><div class="prof-label">Month <span class="help" onclick="event.stopPropagation();showTip('Profection')">?</span></div><div class="prof-val">${pSVG(prof.monthLord,14,'var(--violet)')} ${prof.monthSign}</div></div></div>`;
-  h+=`<div class="prof-chip ${profExpanded==='sect'?'open':''}" onclick="toggleProf('sect')"><div><div class="prof-label">Sect Light <span class="help" onclick="event.stopPropagation();showTip('Sect Light')">?</span></div><div class="prof-val">${pSVG(SECT.sectLight,14,'var(--azure)')} ${SECT.sectLight}</div></div></div>`;
-  h+=`</div>`;
-  if(profExpanded){
-    h+=`<div class="prof-detail">`;
-    if(profExpanded==='year'){
-      h+=`<div class="prof-detail-head">Year ${prof.ageYears} · Profected to ${prof.yearSign}, ruled by ${prof.yearLord}</div>`;
-      const annTheme=ANNUAL_THEME[prof.yearSign]||'';
-      if(annTheme)h+=`<div style="font-size:13px;line-height:1.6;color:var(--bright);padding:8px 12px;margin-bottom:8px;border-radius:var(--r-sm);background:rgba(212,168,67,.08);border-left:2px solid var(--gold);font-style:italic">${annTheme}</div>`;
-      h+=`<div class="prof-detail-body">The ${prof.yearLord} becomes your Time Lord for this year — its themes and the house it sits in (natally) are foregrounded. Watch where ${prof.yearLord} is currently transiting, and any aspects it forms, for the year's main thread.</div>`;
-      // Show year lord's current position and any active transits involving it
-      if(cur[prof.yearLord]!==undefined){
-        const ylSign=signOf(cur[prof.yearLord]);
-        const ylHouse=houseOf(cur[prof.yearLord]);
-        const ylDig=getDignity(prof.yearLord,cur[prof.yearLord]);
-        const ylMs=motionStatus(prof.yearLord,jd);
-        const ylRx=ylMs.retrograde?' (retrograde)':ylMs.stationary?' (stationary)':'';
-        h+=`<div style="margin-top:6px;padding:8px 10px;border-radius:var(--r-sm);background:rgba(212,168,67,.06);border-left:2px solid var(--gold)">`;
-        h+=`<div style="font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--gold);margin-bottom:4px">${prof.yearLord} right now</div>`;
-        h+=`<div style="font-size:12px;color:var(--text)">${pSVG(prof.yearLord,14,'var(--gold)')} ${ylSign.name} ${ylSign.degree}° · House ${ylHouse}${ylDig?' · '+ylDig.label:''}${ylRx}</div>`;
-        const ylTransits=transits.filter(t=>t.tp===prof.yearLord||t.np===prof.yearLord);
-        if(ylTransits.length>0){
-          for(const yt of ylTransits.slice(0,3)){
-            const other=yt.tp===prof.yearLord?yt.np:yt.tp;
-            h+=`<div style="font-size:11px;color:var(--text2);margin-top:3px">${yt.aspect.name} natal ${other} (${yt.aspect.orbActual.toFixed(1)}°, ${yt.aspect.motion})</div>`;
-          }
-        }
-        h+=`</div>`;
-      }
-    } else if(profExpanded==='month'){
-      h+=`<div class="prof-detail-head">This month · Profected to ${prof.monthSign}, ruled by ${prof.monthLord}</div>`;
-      h+=`<div class="prof-detail-body">Within the year, each month advances one sign. The monthly lord ${prof.monthLord} colors this month's texture — sub-themes, people, events that echo its nature.</div>`;
-    } else if(profExpanded==='sect'){
-      h+=`<div class="prof-detail-head">Your Sect Light · ${SECT.sectLight} (${SECT.isNocturnal?'Nocturnal':'Diurnal'} chart)</div>`;
-      h+=`<div class="prof-detail-body">Born with the ${SECT.isNocturnal?'Sun below':'Sun above'} the horizon, your core vitality is guided by the ${SECT.sectLight}. The ${SECT.sectLight}'s condition in your natal chart is the single most important significator of your overall fortunes — treat its transits and progressions with extra weight.</div>`;
-      // Current transits to the sect light
-      const slTransits=transits.filter(t=>t.np===SECT.sectLight);
-      if(slTransits.length>0){
-        h+=`<div style="margin-top:8px;padding:8px 10px;border-radius:var(--r-sm);background:rgba(74,158,255,.06);border-left:2px solid var(--azure)">`;
-        h+=`<div style="font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--azure);margin-bottom:4px">Active transits to your ${SECT.sectLight}</div>`;
-        for(const st of slTransits.slice(0,3)){
-          h+=`<div style="font-size:12px;line-height:1.5;color:var(--text);margin-bottom:2px">${pSVG(st.tp,12,'var(--text2)')} ${st.tp} ${st.aspect.name} (${st.aspect.orbActual.toFixed(1)}°, ${st.aspect.motion}) — ${st.interp?st.interp.summary:''}</div>`;
-        }
-        h+=`</div>`;
-      }
-    }
-    h+=`</div>`;
-  }
-
   // Energy Meter (expandable — arc ring + tone word, tap for breakdown)
   {
     const eColor=vibe.score>=7?'var(--azure)':vibe.score<=3?'var(--crimson)':'var(--gold)';
@@ -5756,7 +5621,254 @@ function renderApp(){
     h+=`<div style="font-size:12px;line-height:1.6;color:var(--text);padding:6px 16px 10px;margin-top:-4px;opacity:.85"><em>${tGuid}</em></div>`;
   }
 
-  // ── Upcoming Sign Changes ──
+  // ── Annual Theme by profected sign ──
+  const ANNUAL_THEME={
+    Aries:'A year of initiative — new starts, self-assertion, and confronting what you have been avoiding.',
+    Taurus:'A year of consolidation — money, comfort, what you own, and what you value enough to hold.',
+    Gemini:'A year of information — learning, communicating, short trips, siblings, curiosity as engine.',
+    Cancer:'A year of roots — home, family, emotional foundations, what makes you feel secure.',
+    Leo:'A year of expression — creativity, romance, children, pleasure, and the courage to be seen.',
+    Virgo:'A year of refinement — health, routines, service, skill-building, and fixing what is broken.',
+    Libra:'A year of relationship — partnerships, contracts, negotiation, the mirror of other people.',
+    Scorpio:'A year of depth — shared resources, debts, transformation, sex, death, and what is hidden.',
+    Sagittarius:'A year of expansion — travel, higher education, publishing, belief systems, reaching further.',
+    Capricorn:'A year of structure — career, reputation, authority, ambition, and long-term commitments.',
+    Aquarius:'A year of community — friends, networks, collective causes, and your vision for the future.',
+    Pisces:'A year of dissolution — endings, rest, spirituality, surrender, and preparation for rebirth.'
+  };
+
+  // ── Profection Row (tap chip for detail panel; tap ? for glossary) ──
+  h+=`<div class="profection-row">`;
+  const yearLordActive=transits.some(t=>(t.tp===prof.yearLord||t.np===prof.yearLord)&&t.importance>10);
+  const ylaHtml=yearLordActive?`<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--emerald);margin-left:4px;vertical-align:middle;box-shadow:0 0 4px var(--emerald)"></span>`:'';
+  h+=`<div class="prof-chip ${profExpanded==='year'?'open':''}" onclick="toggleProf('year')"><div><div class="prof-label">Year${ylaHtml} <span class="help" onclick="event.stopPropagation();showTip('Profection')">?</span></div><div class="prof-val">${pSVG(prof.yearLord,14,'var(--gold)')} ${prof.yearSign}</div></div></div>`;
+  h+=`<div class="prof-chip ${profExpanded==='month'?'open':''}" onclick="toggleProf('month')"><div><div class="prof-label">Month <span class="help" onclick="event.stopPropagation();showTip('Profection')">?</span></div><div class="prof-val">${pSVG(prof.monthLord,14,'var(--violet)')} ${prof.monthSign}</div></div></div>`;
+  h+=`<div class="prof-chip ${profExpanded==='sect'?'open':''}" onclick="toggleProf('sect')"><div><div class="prof-label">Sect Light <span class="help" onclick="event.stopPropagation();showTip('Sect Light')">?</span></div><div class="prof-val">${pSVG(SECT.sectLight,14,'var(--azure)')} ${SECT.sectLight}</div></div></div>`;
+  h+=`</div>`;
+  if(profExpanded){
+    h+=`<div class="prof-detail">`;
+    if(profExpanded==='year'){
+      h+=`<div class="prof-detail-head">Year ${prof.ageYears} · Profected to ${prof.yearSign}, ruled by ${prof.yearLord}</div>`;
+      const annTheme=ANNUAL_THEME[prof.yearSign]||'';
+      if(annTheme)h+=`<div style="font-size:13px;line-height:1.6;color:var(--bright);padding:8px 12px;margin-bottom:8px;border-radius:var(--r-sm);background:rgba(212,168,67,.08);border-left:2px solid var(--gold);font-style:italic">${annTheme}</div>`;
+      h+=`<div class="prof-detail-body">The ${prof.yearLord} becomes your Time Lord for this year — its themes and the house it sits in (natally) are foregrounded. Watch where ${prof.yearLord} is currently transiting, and any aspects it forms, for the year's main thread.</div>`;
+      // Show year lord's current position and any active transits involving it
+      if(cur[prof.yearLord]!==undefined){
+        const ylSign=signOf(cur[prof.yearLord]);
+        const ylHouse=houseOf(cur[prof.yearLord]);
+        const ylDig=getDignity(prof.yearLord,cur[prof.yearLord]);
+        const ylMs=motionStatus(prof.yearLord,jd);
+        const ylRx=ylMs.retrograde?' (retrograde)':ylMs.stationary?' (stationary)':'';
+        h+=`<div style="margin-top:6px;padding:8px 10px;border-radius:var(--r-sm);background:rgba(212,168,67,.06);border-left:2px solid var(--gold)">`;
+        h+=`<div style="font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--gold);margin-bottom:4px">${prof.yearLord} right now</div>`;
+        h+=`<div style="font-size:12px;color:var(--text)">${pSVG(prof.yearLord,14,'var(--gold)')} ${ylSign.name} ${ylSign.degree}° · House ${ylHouse}${ylDig?' · '+ylDig.label:''}${ylRx}</div>`;
+        const ylTransits=transits.filter(t=>t.tp===prof.yearLord||t.np===prof.yearLord);
+        if(ylTransits.length>0){
+          for(const yt of ylTransits.slice(0,3)){
+            const other=yt.tp===prof.yearLord?yt.np:yt.tp;
+            h+=`<div style="font-size:11px;color:var(--text2);margin-top:3px">${yt.aspect.name} natal ${other} (${yt.aspect.orbActual.toFixed(1)}°, ${yt.aspect.motion})</div>`;
+          }
+        }
+        h+=`</div>`;
+      }
+    } else if(profExpanded==='month'){
+      h+=`<div class="prof-detail-head">This month · Profected to ${prof.monthSign}, ruled by ${prof.monthLord}</div>`;
+      const MONTH_THEME={
+        Aries:'Self-assertion and new starts dominate this month. What you initiate now sets the tone. Act on what you want, not what others expect.',
+        Taurus:'Material security and sensory pleasure are foregrounded. Attend to finances, possessions, and what you value enough to protect.',
+        Gemini:'Communication, learning, and local movement pick up. Expect more conversations, errands, and information to process.',
+        Cancer:'Home, family, and emotional roots surface. Domestic matters need attention. What makes you feel safe is the question.',
+        Leo:'Creative expression, romance, and visibility. You need to be seen this month. Make things, play, take risks you enjoy.',
+        Virgo:'Health, routines, and service. Fix what is broken, refine your systems, attend to the body. Craft over spectacle.',
+        Libra:'Relationships and contracts. Other people are the main event. Negotiate, commit, or confront what is unbalanced.',
+        Scorpio:'Shared resources, debts, power dynamics, and what is hidden. Go deeper. Transformation is available but not free.',
+        Sagittarius:'Expansion through travel, education, publishing, or belief. Reach beyond your usual range. Faith and adventure.',
+        Capricorn:'Career, reputation, and authority. What you build this month is visible and lasting. Ambition is appropriate.',
+        Aquarius:'Community, friends, and collective vision. Your network matters more than your solo effort this month.',
+        Pisces:'Rest, endings, spirituality, and the unseen. Let go of what has served its purpose. Prepare the ground for what comes next.'
+      };
+      const mTheme=MONTH_THEME[prof.monthSign]||'';
+      if(mTheme)h+=`<div style="font-size:13px;line-height:1.6;color:var(--bright);padding:8px 12px;margin-bottom:8px;border-radius:var(--r-sm);background:rgba(155,109,255,.08);border-left:2px solid var(--violet);font-style:italic">${mTheme}</div>`;
+      h+=`<div class="prof-detail-body">Within the year, each month advances one sign. The monthly lord ${prof.monthLord} colors this month's texture — sub-themes, people, events that echo its nature. When ${prof.monthLord} is active in transits, the month's sub-plot intensifies.</div>`;
+      // Monthly lord current position + transits
+      if(cur[prof.monthLord]!==undefined){
+        const mlSign=signOf(cur[prof.monthLord]);
+        const mlHouse=houseOf(cur[prof.monthLord]);
+        const mlDig=getDignity(prof.monthLord,cur[prof.monthLord]);
+        const mlMs=motionStatus(prof.monthLord,jd);
+        const mlRx=mlMs.retrograde?' (retrograde)':mlMs.stationary?' (stationary)':'';
+        h+=`<div style="margin-top:6px;padding:8px 10px;border-radius:var(--r-sm);background:rgba(155,109,255,.06);border-left:2px solid var(--violet)">`;
+        h+=`<div style="font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--violet);margin-bottom:4px">${prof.monthLord} right now</div>`;
+        h+=`<div style="font-size:12px;color:var(--text)">${pSVG(prof.monthLord,14,'var(--violet)')} ${mlSign.name} ${mlSign.degree}° · House ${mlHouse}${mlDig?' · '+mlDig.label:''}${mlRx}</div>`;
+        const mlTransits=transits.filter(t=>t.tp===prof.monthLord||t.np===prof.monthLord);
+        if(mlTransits.length>0){
+          for(const mt of mlTransits.slice(0,3)){
+            const other=mt.tp===prof.monthLord?mt.np:mt.tp;
+            h+=`<div style="font-size:11px;color:var(--text2);margin-top:3px">${mt.aspect.name} natal ${other} (${mt.aspect.orbActual.toFixed(1)}°, ${mt.aspect.motion})</div>`;
+          }
+        }
+        h+=`</div>`;
+      }
+    } else if(profExpanded==='sect'){
+      h+=`<div class="prof-detail-head">Your Sect Light · ${SECT.sectLight} (${SECT.isNocturnal?'Nocturnal':'Diurnal'} chart)</div>`;
+      h+=`<div class="prof-detail-body">Born with the ${SECT.isNocturnal?'Sun below':'Sun above'} the horizon, your core vitality is guided by the ${SECT.sectLight}. The ${SECT.sectLight}'s condition in your natal chart is the single most important significator of your overall fortunes — treat its transits and progressions with extra weight.</div>`;
+      // Current transits to the sect light
+      const slTransits=transits.filter(t=>t.np===SECT.sectLight);
+      if(slTransits.length>0){
+        h+=`<div style="margin-top:8px;padding:8px 10px;border-radius:var(--r-sm);background:rgba(74,158,255,.06);border-left:2px solid var(--azure)">`;
+        h+=`<div style="font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--azure);margin-bottom:4px">Active transits to your ${SECT.sectLight}</div>`;
+        for(const st of slTransits.slice(0,3)){
+          h+=`<div style="font-size:12px;line-height:1.5;color:var(--text);margin-bottom:2px">${pSVG(st.tp,12,'var(--text2)')} ${st.tp} ${st.aspect.name} (${st.aspect.orbActual.toFixed(1)}°, ${st.aspect.motion}) — ${st.interp?st.interp.summary:''}</div>`;
+        }
+        h+=`</div>`;
+      }
+    }
+    h+=`</div>`;
+  }
+
+  // ── Sun Position Card (expandable) ──
+  {
+    const sunSign=signOf(cur.Sun);
+    const sunHouse=houseOf(cur.Sun);
+    const sunHv=HOUSE_VOICE[sunHouse]||{};
+    const sunDig=getDignity('Sun',cur.Sun);
+    const sunDec=computeDecan(cur.Sun);
+    const sunDecMeaning=sunDec.meaning?sunDec.meaning.replace(/^[A-Za-z]+ in [A-Za-z]+ decan \d+\.\s*/,''):'';
+    h+=`<div style="padding:14px 16px;margin-bottom:10px;border-radius:var(--r-lg);background:var(--card);border:1px solid var(--hairline);cursor:pointer" onclick="toggleSunCard()">`;
+    h+=`<div style="display:flex;align-items:center;gap:12px">`;
+    h+=`<div style="flex-shrink:0">${pSVG('Sun',28,'var(--gold)')}</div>`;
+    h+=`<div style="flex:1;min-width:0">`;
+    h+=`<div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--gold);margin-bottom:3px">Sun in ${sunSign.name} ${sSVG(sunSign.name,13,'var(--gold)')}</div>`;
+    h+=`<div style="font-size:13px;color:var(--bright)">${sunSign.degree}° · House ${sunHouse}${sunHv.name?' · '+sunHv.name:''}${sunDig?' · '+sunDig.label:''}</div>`;
+    h+=`<div style="font-size:11px;color:var(--text2);margin-top:3px">Decan ${sunDec.decanNum}: ${sunDec.card} — ${sunDec.title}</div>`;
+    h+=`</div>`;
+    h+=`<div style="flex-shrink:0;color:var(--text3);transition:transform .2s${sunCardExpanded?';transform:rotate(180deg)':''}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6,9 12,15 18,9"/></svg></div>`;
+    h+=`</div>`;
+    if(sunCardExpanded){
+      h+=`<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--hairline)">`;
+      // House context
+      if(sunHv.desc)h+=`<div style="font-size:12px;line-height:1.6;color:var(--text);margin-bottom:8px"><strong style="color:var(--gold)">House ${sunHouse} — ${sunHv.name}:</strong> ${houseVoiceDesc(sunHouse)}</div>`;
+      // Dignity
+      if(sunDig)h+=`<div style="font-size:12px;line-height:1.5;color:var(--text);margin-bottom:8px"><strong style="color:var(--gold)">${sunDig.label}:</strong> ${sunDig.desc}</div>`;
+      // Decan meaning
+      if(sunDecMeaning)h+=`<div style="font-size:12px;line-height:1.5;color:var(--text);margin-bottom:8px"><strong style="color:var(--gold)">Decan ${sunDec.decanNum} (${sunDec.card}):</strong> ${sunDecMeaning}</div>`;
+      // Active transits to natal Sun
+      const sunTransits=transits.filter(t=>t.np==='Sun');
+      if(sunTransits.length>0){
+        h+=`<div style="font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--gold);margin:8px 0 4px">Transits to your Sun</div>`;
+        for(const st of sunTransits.slice(0,4)){
+          h+=`<div style="font-size:12px;line-height:1.5;color:var(--text);margin-bottom:4px">${pSVG(st.tp,12,'var(--text2)')} ${st.tp} ${st.aspect.name} (${st.aspect.orbActual.toFixed(1)}°, ${st.aspect.motion}) — ${st.interp?st.interp.summary:''}</div>`;
+        }
+      }
+      h+=`</div>`;
+    }
+    h+=`</div>`;
+  }
+
+  // ── Planetary Day Liturgy ──
+  if(pHours&&PLANETARY_LITURGY[pHours.dayRuler]){
+    const lit=PLANETARY_LITURGY[pHours.dayRuler];
+    h+=`<div class="liturgy-card" onclick="toggleLiturgy()">`;
+    h+=`<div class="lit-head"><span class="lit-title">${pSVG(pHours.dayRuler,14,'var(--violet)')} ${lit.weekday} Liturgy</span>`;
+    h+=`<span class="section-chev ${liturgyExpanded?'open':''}">&#9654;</span></div>`;
+    h+=`<div class="lit-day">Day of ${pHours.dayRuler}</div>`;
+    h+=`<div class="lit-ruler">${lit.intent}</div>`;
+    if(liturgyExpanded){
+      h+=`<div class="lit-body"><div class="lit-focus">${lit.focus}</div>`;
+      h+=`<div class="lit-avoid"><strong>Avoid:</strong> ${lit.avoid}</div>`;
+      h+=`<div class="lit-correspondences">`;
+      h+=`<div class="lit-corr-row"><span class="lit-corr-k">Color</span><span class="lit-corr-v">${lit.color}</span></div>`;
+      h+=`<div class="lit-corr-row"><span class="lit-corr-k">Metal</span><span class="lit-corr-v">${lit.metal}</span></div>`;
+      h+=`<div class="lit-corr-row"><span class="lit-corr-k">Stone</span><span class="lit-corr-v">${lit.stone}</span></div>`;
+      h+=`<div class="lit-corr-row"><span class="lit-corr-k">Incense</span><span class="lit-corr-v">${lit.incense}</span></div>`;
+      h+=`<div class="lit-corr-row"><span class="lit-corr-k">Herb</span><span class="lit-corr-v">${lit.herb}</span></div>`;
+      h+=`<div class="lit-corr-row"><span class="lit-corr-k">Direction</span><span class="lit-corr-v">${lit.direction}</span></div>`;
+      h+=`<div class="lit-corr-row"><span class="lit-corr-k">Number</span><span class="lit-corr-v">${lit.number}</span></div>`;
+      h+=`</div>`;
+      h+=`<div class="lit-medit">"${lit.meditation}"</div></div>`;
+    } else {
+      h+=`<div class="lit-collapsed">Tap for correspondences, focus, and the day\'s meditation.</div>`;
+    }
+    h+=`</div>`;
+  }
+
+  // ── Current Sky: Planetary Positions (tappable) ──
+  {
+    const skyPlanets=['Mercury','Venus','Mars','Jupiter','Saturn'];
+    h+=`<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-bottom:4px">`;
+    for(const p of skyPlanets){
+      const ps=signOf(cur[p]);
+      const ph=houseOf(cur[p]);
+      const ms=motionStatus(p,jd);
+      const rxFlag=ms.retrograde?' Rx':ms.stationary?' St':'';
+      const isOpen=expandedPlanet===p;
+      h+=`<div style="text-align:center;padding:8px 4px;border-radius:var(--r-md);background:var(--card);border:1px solid ${isOpen?'var(--gold-line)':'var(--hairline)'};cursor:pointer" onclick="togglePlanet('${p}')">`;
+      h+=`<div>${pSVG(p,18,isOpen?'var(--gold)':'var(--bright)')}</div>`;
+      h+=`<div style="font-size:10px;font-weight:600;color:var(--bright);margin-top:3px">${ps.abbr}</div>`;
+      h+=`<div style="font-size:9px;color:var(--text3)">H${ph}${rxFlag}</div>`;
+      h+=`</div>`;
+    }
+    h+=`</div>`;
+    // Expanded planet detail
+    if(expandedPlanet&&skyPlanets.includes(expandedPlanet)){
+      const ep=expandedPlanet;
+      const eps=signOf(cur[ep]);
+      const eph=houseOf(cur[ep]);
+      const ephv=HOUSE_VOICE[eph]||{};
+      const epDig=getDignity(ep,cur[ep]);
+      const epMs=motionStatus(ep,jd);
+      const epTransits=transits.filter(t=>t.tp===ep||t.np===ep);
+      h+=`<div style="padding:10px 12px;margin-bottom:8px;border-radius:var(--r-md);background:var(--card);border:1px solid var(--gold-line);animation:fadeUp .2s ease both">`;
+      h+=`<div style="font-size:12px;font-weight:600;color:var(--bright);margin-bottom:4px">${pSVG(ep,14,'var(--gold)')} ${ep} in ${eps.name} ${eps.degree}°${epMs.retrograde?' (retrograde)':epMs.stationary?' (stationary)':''}</div>`;
+      h+=`<div style="font-size:11px;color:var(--text);line-height:1.5">House ${eph}${ephv.name?' — '+ephv.name:''}${epDig?' · '+epDig.label:''}</div>`;
+      if(epDig)h+=`<div style="font-size:11px;color:var(--text2);line-height:1.5;margin-top:4px">${epDig.desc}</div>`;
+      if(epTransits.length>0){
+        h+=`<div style="font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--gold);margin:6px 0 3px">Active aspects</div>`;
+        for(const et of epTransits.slice(0,3)){
+          const other=et.tp===ep?'natal '+et.np:et.tp;
+          h+=`<div style="font-size:11px;color:var(--text);line-height:1.4;margin-bottom:2px">${et.aspect.name} ${other} (${et.aspect.orbActual.toFixed(1)}°) — ${et.interp?et.interp.summary:''}</div>`;
+        }
+      }
+      if(epTransits.length===0)h+=`<div style="font-size:11px;color:var(--text3);margin-top:4px">No major aspects to natal planets right now.</div>`;
+      h+=`</div>`;
+    }
+    // Outer planets row (smaller, tappable too)
+    const outerPlanets=['Uranus','Neptune','Pluto','Chiron','NorthNode'];
+    h+=`<div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:4px">`;
+    for(const p of outerPlanets){
+      const ps=signOf(cur[p]);
+      const ms=motionStatus(p,jd);
+      const rxFlag=ms.retrograde?' Rx':ms.stationary?' St':'';
+      const isOpen=expandedPlanet===p;
+      h+=`<span style="font-size:10px;color:${isOpen?'var(--gold)':'var(--text3)'};display:inline-flex;align-items:center;gap:3px;cursor:pointer;padding:2px 4px;border-radius:4px;${isOpen?'background:var(--gold-soft)':''}" onclick="togglePlanet('${p}')">${pSVG(p,12,isOpen?'var(--gold)':'var(--text3)')} ${ps.abbr}${rxFlag}</span>`;
+    }
+    h+=`</div>`;
+    // Expanded outer planet detail
+    if(expandedPlanet&&outerPlanets.includes(expandedPlanet)){
+      const ep=expandedPlanet;
+      const eps=signOf(cur[ep]);
+      const eph=houseOf(cur[ep]);
+      const ephv=HOUSE_VOICE[eph]||{};
+      const epDig=getDignity(ep,cur[ep]);
+      const epMs=motionStatus(ep,jd);
+      const epTransits=transits.filter(t=>t.tp===ep||t.np===ep);
+      const epLabel=ep==='NorthNode'?'North Node':ep;
+      h+=`<div style="padding:10px 12px;margin-bottom:8px;border-radius:var(--r-md);background:var(--card);border:1px solid var(--gold-line);animation:fadeUp .2s ease both">`;
+      h+=`<div style="font-size:12px;font-weight:600;color:var(--bright);margin-bottom:4px">${pSVG(ep,14,'var(--gold)')} ${epLabel} in ${eps.name} ${eps.degree}°${epMs.retrograde?' (retrograde)':epMs.stationary?' (stationary)':''}</div>`;
+      h+=`<div style="font-size:11px;color:var(--text);line-height:1.5">House ${eph}${ephv.name?' — '+ephv.name:''}${epDig?' · '+epDig.label:''}</div>`;
+      if(epTransits.length>0){
+        h+=`<div style="font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--gold);margin:6px 0 3px">Active aspects</div>`;
+        for(const et of epTransits.slice(0,3)){
+          const other=et.tp===ep?'natal '+et.np:et.tp;
+          h+=`<div style="font-size:11px;color:var(--text);line-height:1.4;margin-bottom:2px">${et.aspect.name} ${other} (${et.aspect.orbActual.toFixed(1)}°) — ${et.interp?et.interp.summary:''}</div>`;
+        }
+      }
+      h+=`</div>`;
+    }
+    h+=`<div style="height:8px"></div>`;
+  }
+
+  // ── Upcoming Sign Changes (tappable) ──
   if(ingresses.length>0){
     h+=`<div style="margin:6px 0 12px">`;
     h+=`<div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text2);margin-bottom:6px">Upcoming Shifts</div>`;
@@ -5764,36 +5876,81 @@ function renderApp(){
       const curSign=signOf(cur[ig.planet]);
       const digNew=getDignity(ig.planet,ig.signIdx*30+15);
       const digNote=digNew?` — enters ${digNew.label.toLowerCase()}`:'';
-      h+=`<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;margin-bottom:4px;border-radius:var(--r-sm);background:var(--card);border:1px solid var(--hairline)">`;
+      const isShiftOpen=expandedShift===ig.planet;
+      h+=`<div style="padding:6px 10px;margin-bottom:4px;border-radius:var(--r-sm);background:var(--card);border:1px solid ${isShiftOpen?'var(--emerald-line)':'var(--hairline)'};cursor:pointer" onclick="toggleShift('${ig.planet}')">`;
+      h+=`<div style="display:flex;align-items:center;gap:8px">`;
       h+=`${pSVG(ig.planet,16,'var(--emerald)')}`;
-      h+=`<span style="font-size:12px;color:var(--text)">${ig.planet} ${sSVG(curSign.name,12,'var(--text3)')} ${curSign.name} &rarr; ${sSVG(ig.sign,12,'var(--emerald)')} ${ig.sign} in ${ig.days}d${digNote}</span>`;
+      h+=`<span style="font-size:12px;color:var(--text);flex:1">${ig.planet} ${sSVG(curSign.name,12,'var(--text3)')} ${curSign.name} &rarr; ${sSVG(ig.sign,12,'var(--emerald)')} ${ig.sign} in ${ig.days}d${digNote}</span>`;
+      h+=`<span style="color:var(--text3);transition:transform .2s${isShiftOpen?';transform:rotate(180deg)':''}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6,9 12,15 18,9"/></svg></span>`;
+      h+=`</div>`;
+      if(isShiftOpen){
+        const INGRESS_NOTES={
+          Sun:'When the Sun changes sign, the background tone of the season shifts. The new sign becomes the lens through which willpower, identity, and vitality express for the next 30 days.',
+          Mercury:'Mercury ingresses shift how you think, communicate, and process information. Expect a noticeable change in conversational style, mental focus, and what kinds of decisions feel natural.',
+          Venus:'Venus sign changes recolor what attracts you, how you relate, and what feels beautiful or valuable. Relationships, aesthetics, and spending patterns subtly recalibrate.',
+          Mars:'Mars ingresses change where your drive and aggression are directed. The new sign channels your energy, ambition, and conflict style differently. Physical energy shifts.',
+          Jupiter:'Jupiter sign changes are annual events that redirect growth, opportunity, and faith. The new sign becomes the area where expansion and excess play out for ~12 months.',
+          Saturn:'Saturn sign changes are multi-year structural shifts. The area of life ruled by the new sign comes under sustained pressure and restructuring for ~2.5 years.',
+          Uranus:'Uranus ingresses are generational — the new sign gets disrupted and revolutionized for ~7 years. Personal impact depends on your natal placements.',
+          Neptune:'Neptune sign changes are once-per-generation. The collective imagination, spirituality, and confusion shift their expression for ~14 years.',
+          Pluto:'Pluto ingresses mark decades-long power transformations. The sign being entered undergoes death and rebirth at the deepest structural level.',
+          Chiron:'Chiron sign changes redirect the wound-and-healing theme for ~4-8 years. The new sign becomes the area where pain teaches and healing happens.'
+        };
+        const shiftNote=INGRESS_NOTES[ig.planet]||'';
+        h+=`<div style="margin-top:6px;padding-top:6px;border-top:1px solid var(--hairline);font-size:12px;line-height:1.6;color:var(--text)">${shiftNote}</div>`;
+        // Natal planets in the destination sign
+        const destNatal=[];
+        for(const np of['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto','Chiron']){
+          if(NATAL[np]!==undefined&&Math.floor(NATAL[np]/30)===ig.signIdx)destNatal.push(np);
+        }
+        if(destNatal.length>0){
+          h+=`<div style="font-size:11px;color:var(--gold);margin-top:6px;font-weight:600">Your natal ${destNatal.join(', ')} ${destNatal.length>1?'are':'is'} in ${ig.sign} — this ingress activates ${destNatal.length>1?'them':'it'} directly.</div>`;
+        }
+      }
       h+=`</div>`;
     }
     h+=`</div>`;
   }
 
-  // ── Active Transits Summary (top 3) ──
+  // ── Active Transits Summary (top 5, expandable) ──
   if(transits.length>0){
     h+=`<div style="margin:8px 0 12px">`;
     h+=`<div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text2);margin-bottom:8px">Active Transits (${transits.length})</div>`;
-    const topT=transits.slice(0,3);
+    const topT=transits.slice(0,5);
     for(const t of topT){
       const tpName=t.tp==='NorthNode'?'N.Node':t.tp;
       const npName=t.np==='NorthNode'?'N.Node':t.np==='Ascendant'?'Ascendant':t.np==='MC'?'Midheaven':t.np;
       const hv=HOUSE_VOICE[t.house]||{};
       const cls=t.aspect.type==='hard'?'hard':t.aspect.type==='easy'?'easy':'conj';
       const borderColor=cls==='hard'?'var(--crimson)':cls==='easy'?'var(--emerald)':'var(--gold)';
-      h+=`<div style="padding:10px 12px;margin-bottom:6px;border-radius:var(--r-md);background:var(--card);border:1px solid var(--hairline);border-left:3px solid ${borderColor}">`;
+      const dtId=t.tp+'-'+t.np+'-'+t.aspect.name;
+      const dtOpen=expandedDayTransit===dtId;
+      h+=`<div style="padding:10px 12px;margin-bottom:6px;border-radius:var(--r-md);background:var(--card);border:1px solid ${dtOpen?'var(--gold-line)':'var(--hairline)'};border-left:3px solid ${borderColor};cursor:pointer" onclick="toggleDayTransit('${dtId}')">`;
       h+=`<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">`;
       h+=`${pSVG(t.tp,16,'var(--bright)')} <span style="color:var(--text3)">${aSVG(t.aspect.name,12,'var(--text3)')}</span> ${pSVG(t.np==='Ascendant'||t.np==='MC'?'Sun':t.np,16,'var(--text)')}`;
       h+=`<span style="font-size:12px;font-weight:600;color:var(--bright);flex:1">${tpName} ${t.aspect.name} ${npName}</span>`;
       h+=`<span style="font-size:10px;color:var(--text3)">${t.aspect.orbActual.toFixed(1)}° · ${t.aspect.motion}</span>`;
       h+=`</div>`;
       h+=`<div style="font-size:12px;line-height:1.5;color:var(--text)">${t.interp?t.interp.summary:''}</div>`;
-      if(hv.name)h+=`<div style="font-size:10px;color:var(--text3);margin-top:3px">H${t.house}: ${hv.name} · ${t.duration}</div>`;
+      if(hv.name)h+=`<div style="font-size:10px;color:var(--text3);margin-top:3px">H${t.house}: ${hv.name} · ${t.duration}${t.exactDate?' · Exact '+fmtExactDate(t.exactDate):''}</div>`;
+      if(dtOpen){
+        h+=`<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--hairline)">`;
+        if(t.interp&&t.interp.full)h+=`<div style="font-size:12px;line-height:1.7;color:var(--text);margin-bottom:6px">${t.interp.full.replace(/\n\n/g,'<br><br>')}</div>`;
+        if(t.interp&&t.interp.houseContext)h+=`<div style="font-size:12px;line-height:1.5;padding:8px 10px;background:var(--surface);border-radius:var(--r-sm);margin-bottom:6px"><strong>House ${t.house}:</strong> ${t.interp.houseContext}</div>`;
+        // Hard transit remedy
+        const htE=HARD_BRINGS[t.tp]||HARD_BRINGS_V[t.tp];
+        if(t.aspect.type==='hard'&&htE){
+          h+=`<div style="padding:8px 10px;border-radius:var(--r-sm);background:rgba(61,217,160,.06);border-left:2px solid var(--emerald);margin-bottom:6px">`;
+          h+=`<div style="font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--emerald);margin-bottom:3px">Remedy</div>`;
+          h+=`<div style="font-size:12px;color:var(--text);line-height:1.5">${hardBrings(t.tp,'remedy')}</div>`;
+          h+=`</div>`;
+        }
+        if(t.interp&&t.interp.advice)h+=`<div style="font-size:12px;color:var(--gold);font-style:italic">${t.interp.advice}</div>`;
+        h+=`</div>`;
+      }
       h+=`</div>`;
     }
-    if(transits.length>3){
+    if(transits.length>5){
       h+=`<div style="text-align:center;padding:8px;font-size:12px;color:var(--gold);cursor:pointer" onclick="switchTab('chart')">See all ${transits.length} transits &rarr;</div>`;
     }
     h+=`</div>`;

@@ -235,6 +235,23 @@ html.light .header{background:rgba(244,240,230,.82)}
   border:1px solid var(--gold-line);margin-left:4px;vertical-align:middle;line-height:1;flex-shrink:0}
 .help:active{transform:scale(.9)}
 
+/* ── VOC Banner ── */
+.voc-banner{display:flex;align-items:center;gap:10px;padding:12px 16px;margin-bottom:12px;
+  border-radius:var(--r-lg);background:var(--violet-soft);border:1.5px solid var(--violet-line);
+  color:var(--violet);font-size:var(--fs-body);font-weight:600;line-height:1.35;cursor:pointer;
+  animation:vocPulse 3s ease-in-out infinite}
+.voc-banner .voc-icon{flex-shrink:0;width:28px;height:28px;border-radius:50%;
+  background:var(--violet);display:flex;align-items:center;justify-content:center}
+.voc-banner .voc-icon svg{stroke:#fff;fill:none}
+.voc-banner .voc-body{flex:1;min-width:0}
+.voc-banner .voc-title{font-size:var(--fs-body);font-weight:700;letter-spacing:.3px}
+.voc-banner .voc-sub{font-size:var(--fs-sm);font-weight:500;opacity:.85;margin-top:2px}
+.voc-banner .voc-countdown{text-align:right;flex-shrink:0;font-variant-numeric:tabular-nums}
+.voc-banner .voc-cd-num{font-size:18px;font-weight:800;letter-spacing:.5px}
+.voc-banner .voc-cd-label{font-size:var(--fs-xs);font-weight:500;opacity:.7;text-transform:uppercase;letter-spacing:.5px}
+@keyframes vocPulse{0%,100%{border-color:var(--violet-line)}50%{border-color:var(--violet)}}
+@media(prefers-reduced-motion:reduce){.voc-banner{animation:none}}
+
 /* ── Energy Meter ── */
 .energy{display:flex;align-items:center;gap:14px;margin:10px 0 14px;padding:12px 16px;
   background:linear-gradient(180deg,rgba(255,255,255,.015),var(--card));border-radius:var(--r-md);
@@ -449,16 +466,25 @@ body[data-zone="depth"] .t-zone:not(.t-depth){display:none}
 #app.slide-right{opacity:0;transform:translateX(20px)}
 #app.slide-in{opacity:1;transform:translateX(0)}
 
-/* ── Consult Button ── */
-.consult-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;
-  padding:14px 20px;margin:14px 0 6px;border-radius:var(--r-lg);border:1px solid rgba(212,168,67,.3);
-  background:linear-gradient(135deg,rgba(212,168,67,.12) 0%,rgba(155,109,255,.08) 100%);
-  color:var(--gold);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;
-  letter-spacing:.3px;position:relative;overflow:hidden}
-.consult-btn::before{content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,rgba(212,168,67,.06),transparent 60%);opacity:0;transition:opacity .2s}
-.consult-btn:active{transform:scale(.98)}.consult-btn:active::before{opacity:1}
-.consult-btn svg{flex-shrink:0}
+/* ── Consult Preview (always visible) ── */
+.consult-preview{display:flex;align-items:center;gap:10px;width:100%;
+  padding:14px 16px;margin:10px 0 6px;border-radius:var(--r-lg);border:1px solid rgba(212,168,67,.25);
+  background:linear-gradient(135deg,rgba(212,168,67,.10) 0%,rgba(155,109,255,.06) 100%);
+  color:var(--bright);font-size:13px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.consult-preview:active{transform:scale(.98)}
+.consult-preview .cp-pre-icon{flex-shrink:0;width:32px;height:32px;border-radius:50%;
+  background:linear-gradient(135deg,rgba(212,168,67,.2),rgba(155,109,255,.15));
+  display:flex;align-items:center;justify-content:center}
+.consult-preview .cp-pre-body{flex:1;min-width:0}
+.consult-preview .cp-pre-title{font-size:11px;font-weight:700;letter-spacing:.8px;
+  text-transform:uppercase;color:var(--gold);margin-bottom:3px}
+.consult-preview .cp-pre-line{font-size:13px;line-height:1.5;color:var(--text);
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.consult-preview .cp-pre-mins{flex-shrink:0;text-align:right;font-variant-numeric:tabular-nums}
+.consult-preview .cp-pre-mins-num{font-size:16px;font-weight:800;color:var(--gold)}
+.consult-preview .cp-pre-mins-label{font-size:var(--fs-xs);color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+.consult-preview .cp-pre-chevron{flex-shrink:0;color:var(--text3);transition:transform .2s}
+.consult-preview.open .cp-pre-chevron{transform:rotate(180deg)}
 
 /* ── Consult Panel ── */
 .consult-panel{background:linear-gradient(135deg,rgba(212,168,67,.06) 0%,rgba(155,109,255,.04) 100%);
@@ -476,6 +502,14 @@ body[data-zone="depth"] .t-zone:not(.t-depth){display:none}
 .consult-panel .cp-hour-body{font-size:12px;line-height:1.6;color:var(--text)}
 .consult-panel .cp-close{position:absolute;top:6px;right:6px;background:none;border:none;
   color:var(--text3);font-size:20px;cursor:pointer;width:44px;height:44px;display:flex;align-items:center;justify-content:center}
+
+/* ── Transit Timing Arc ── */
+.timing-arc{display:flex;align-items:center;gap:6px;margin-top:6px;padding:4px 0}
+.timing-arc-bar{flex:1;height:3px;border-radius:2px;background:var(--hairline);position:relative;overflow:visible}
+.timing-arc-fill{position:absolute;top:0;left:0;height:100%;border-radius:2px;transition:width .3s}
+.timing-arc-dot{position:absolute;top:50%;width:8px;height:8px;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 4px currentColor}
+.timing-arc-labels{display:flex;justify-content:space-between;font-size:9px;color:var(--text3);letter-spacing:.3px;text-transform:uppercase;margin-top:1px}
+.timing-arc-labels .active{color:var(--bright);font-weight:700}
 
 /* ── Hard Transit Three-Part Frame ── */
 .ht-frame{margin-top:8px;font-size:12px;line-height:1.6}
@@ -5259,10 +5293,11 @@ function renderApp(){
     const t0=transits[0];
     const npL=t0.np==='NorthNode'?'N.Node':t0.np;
     const tpL=t0.tp==='NorthNode'?'N.Node':t0.tp;
+    const t0hv=HOUSE_VOICE[t0.house]||{};
     h+=`<div class="home-card" onclick="switchTab('today');setTodayZone('day')">`;
     h+=`<div class="home-card-label">Loudest Transit</div>`;
     h+=`<div class="home-card-value">${tpL} ${t0.aspect.name==='conjunction'?'☌':t0.aspect.name==='opposition'?'☍':t0.aspect.name==='square'?'□':t0.aspect.name==='trine'?'△':t0.aspect.name==='sextile'?'⚹':'·'} ${npL}</div>`;
-    h+=`<div class="home-card-sub">${t0.aspect.orbActual}° · ${t0.aspect.motion}</div>`;
+    h+=`<div class="home-card-sub">${t0.aspect.orbActual}° · ${t0.aspect.motion}${t0hv.name?' · H'+t0.house+': '+t0hv.name:''}</div>`;
     h+=`</div>`;
   } else {
     h+=`<div class="home-card"><div class="home-card-label">Loudest Transit</div><div class="home-card-value">Quiet sky</div></div>`;
@@ -5316,122 +5351,61 @@ function renderApp(){
 
   h+=`<div class="t-zone t-now">`;
 
-  // ── Consult Button ("What should I do right now?") ──
-  if(isToday&&!consultOpen){
-    h+=`<div class="consult-btn" onclick="openConsult()">`;
-    h+=`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>`;
-    h+=`What should I do right now?</div>`;
-  }
-  if(consultOpen&&isToday){
-    const consult=synthesizeConsult(transits,vibe,vocResult,moonSign,prof,pHours,isToday);
-    if(consult){
-      h+=`<div class="consult-panel">`;
-      h+=`<button class="cp-close" onclick="closeConsult()">&times;</button>`;
-      h+=`<div class="cp-title">${pSVG(consult.hourRuler,14,'var(--gold)')} Right Now</div>`;
-      h+=`<div class="cp-body">${consult.text}</div>`;
-      h+=`<div class="cp-factors">`;
-      h+=`<span class="cp-factor">${pSVG(consult.hourRuler,12,'var(--text2)')} ${consult.hourRuler} hour</span>`;
-      h+=`<span class="cp-factor">${pSVG('Moon',12,'var(--text2)')} Moon ${consult.factors.moon}</span>`;
-      h+=`<span class="cp-factor">${pSVG(prof.yearLord,12,'var(--text2)')} Year: ${prof.yearLord}</span>`;
-      h+=`<span class="cp-factor">Vibe: ${consult.factors.vibe}/10</span>`;
-      h+=`</div>`;
-      // Expanded hour guidance
-      const hp=consult.hourPurpose;
-      if(hp.good){
-        h+=`<div class="cp-hour">`;
-        h+=`<div class="cp-hour-title">${consult.hourRuler} Hour — ${consult.minsLeft}min left</div>`;
-        h+=`<div class="cp-hour-body"><strong style="color:var(--emerald)">Good for:</strong> ${hp.good}</div>`;
-        h+=`<div class="cp-hour-body" style="margin-top:4px"><strong style="color:var(--crimson)">Avoid:</strong> ${hp.avoid}</div>`;
-        h+=`</div>`;
-      }
-      h+=`</div>`;
-    }
-  }
-
-  // ── Electional Micro-Tool ("Choose a time") ──
-  if(isToday&&!electionalOpen){
-    h+=`<div class="elect-btn" onclick="openElectional()">`;
-    h+=`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>`;
-    h+=`Choose a time for something</div>`;
-  }
-  if(electionalOpen&&isToday){
-    h+=`<div class="elect-panel">`;
-    h+=`<button class="ep-close" onclick="closeElectional()">&times;</button>`;
-    h+=`<div class="ep-title">${pSVG('Jupiter',14,'var(--violet)')} Elect a Time</div>`;
-    h+=`<div class="ep-hint">What do you want to do? I'll find the three best windows in the next week.</div>`;
-    h+=`<div class="elect-tasks">`;
-    for(const [key,t] of Object.entries(ELECTIONAL_TASKS)){
-      const sel=electionalTask===key?' selected':'';
-      h+=`<div class="elect-task${sel}" onclick="pickElectionalTask('${key}')">${t.label}</div>`;
+  // ── VOC Persistent Banner ──
+  if(vocResult.voc){
+    const vocTotalMin=vocResult.endsIn?Math.round(vocResult.endsIn*24*60):0;
+    const vocH=Math.floor(vocTotalMin/60);
+    const vocM=vocTotalMin%60;
+    const vocTimeStr=vocH>0?`${vocH}h ${vocM}m`:`${vocM}m`;
+    const vocNext=vocResult.nextSign||'';
+    const vocSubText=vocNext?`Moon enters ${vocNext} in ${vocTimeStr}`:`Ends in ${vocTimeStr}`;
+    h+=`<div class="voc-banner" onclick="showTip('VOC_REC')">`;
+    h+=`<div class="voc-icon"><svg width="16" height="16" viewBox="0 0 24 24" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="15.5" x2="12" y2="16"/></svg></div>`;
+    h+=`<div class="voc-body">`;
+    h+=`<div class="voc-title">Void-of-Course Moon</div>`;
+    h+=`<div class="voc-sub">${vocSubText} &mdash; pause new starts</div>`;
+    h+=`</div>`;
+    if(vocTotalMin>0){
+      h+=`<div class="voc-countdown"><div class="voc-cd-num">${vocTimeStr}</div><div class="voc-cd-label">remaining</div></div>`;
     }
     h+=`</div>`;
-    if(electionalTask&&electionalResults){
-      const t=ELECTIONAL_TASKS[electionalTask];
-      h+=`<div style="font-size:11px;color:var(--text3);margin-bottom:6px;line-height:1.5"><em>${t.notes}</em></div>`;
-      if(electionalResults.length===0){
-        h+=`<div style="font-size:12px;color:var(--text2);padding:10px">No clearly favorable windows found in the next week. Consider waiting, or proceed with the best available hour.</div>`;
-      } else {
-        h+=`<div class="elect-windows">`;
-        for(let i=0;i<electionalResults.length;i++){
-          const w=electionalResults[i];
-          const rankCls=i===0?'':i===1?'rank2':'rank3';
-          const poorCls=w.score<55?' poor':'';
-          const scoreCls=w.score>=70?'':w.score>=55?'mid':'low';
-          h+=`<div class="elect-window ${rankCls}${poorCls}">`;
-          h+=`<div class="ew-head">`;
-          h+=`<div class="ew-when">${pSVG(w.ruler,14,'var(--bright)')} ${fmtElectionalWhen(w.date)} · ${w.durMin}min</div>`;
-          h+=`<div class="ew-score ${scoreCls}">${w.score}</div>`;
-          h+=`</div>`;
-          if(w.reasons.length)h+=`<div class="ew-reasons">${w.reasons.join('. ')}.</div>`;
-          h+=`<div class="ew-factors">`;
-          for(const f of w.factors){
-            h+=`<span class="ew-chip ${f.type}">${f.label}</span>`;
-          }
-          h+=`</div>`;
+  }
+
+  // ── Consult (always-visible preview, expandable) ──
+  if(isToday){
+    const consult=synthesizeConsult(transits,vibe,vocResult,moonSign,prof,pHours,isToday);
+    if(consult){
+      // Compact preview — always shown
+      h+=`<div class="consult-preview${consultOpen?' open':''}" onclick="${consultOpen?'closeConsult()':'openConsult()'}">`;
+      h+=`<div class="cp-pre-icon">${pSVG(consult.hourRuler,18,'var(--gold)')}</div>`;
+      h+=`<div class="cp-pre-body">`;
+      h+=`<div class="cp-pre-title">${consult.hourRuler} hour &middot; right now</div>`;
+      h+=`<div class="cp-pre-line">${hourBrief(consult.hourRuler)}${vocResult.voc?' Moon is void — pause new starts.':''}</div>`;
+      h+=`</div>`;
+      h+=`<div class="cp-pre-mins"><div class="cp-pre-mins-num">${consult.minsLeft}</div><div class="cp-pre-mins-label">min left</div></div>`;
+      h+=`<div class="cp-pre-chevron"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6,9 12,15 18,9"/></svg></div>`;
+      h+=`</div>`;
+      // Expanded panel — toggled
+      if(consultOpen){
+        h+=`<div class="consult-panel">`;
+        h+=`<div class="cp-body">${consult.text}</div>`;
+        h+=`<div class="cp-factors">`;
+        h+=`<span class="cp-factor">${pSVG(consult.hourRuler,12,'var(--text2)')} ${consult.hourRuler} hour</span>`;
+        h+=`<span class="cp-factor">${pSVG('Moon',12,'var(--text2)')} Moon ${consult.factors.moon}</span>`;
+        h+=`<span class="cp-factor">${pSVG(prof.yearLord,12,'var(--text2)')} Year: ${prof.yearLord}</span>`;
+        h+=`<span class="cp-factor">Vibe: ${consult.factors.vibe}/10</span>`;
+        h+=`</div>`;
+        const hp=consult.hourPurpose;
+        if(hp.good){
+          h+=`<div class="cp-hour">`;
+          h+=`<div class="cp-hour-title">${consult.hourRuler} Hour — ${consult.minsLeft}min left</div>`;
+          h+=`<div class="cp-hour-body"><strong style="color:var(--emerald)">Good for:</strong> ${hp.good}</div>`;
+          h+=`<div class="cp-hour-body" style="margin-top:4px"><strong style="color:var(--crimson)">Avoid:</strong> ${hp.avoid}</div>`;
           h+=`</div>`;
         }
         h+=`</div>`;
       }
     }
-    h+=`</div>`;
-  }
-
-  // 7-Day Forecast Strip
-  const forecast=cachedForecast(jd);
-  h+=`<div class="forecast">`;
-  for(const fd of forecast){
-    const sel=fd.offset===0?'sel':'';
-    const barH=Math.max(8,fd.score*4);
-    const color=fd.score>=7?'var(--azure)':fd.score<=3?'var(--crimson)':'var(--gold)';
-    h+=`<div class="forecast-day ${sel}" onclick="dayOffset+=${fd.offset};renderApp()">`;
-    h+=`<div class="fd-name">${days[fd.date.getDay()]}</div>`;
-    h+=`<div class="fd-num">${fd.date.getDate()}</div>`;
-    h+=`<div class="fd-bar" style="height:${barH}px;background:${color};width:6px;border-radius:3px"></div>`;
-    h+=`<div class="fd-score" style="color:${color}">${fd.score}</div>`;
-    h+=`</div>`;
-  }
-  h+=`</div>`;
-
-  // Alerts — reframed as recommendations
-  if(retros.length||stats.length||vocResult.voc||ingresses.length){
-    h+=`<div class="alerts">`;
-    if(vocResult.voc){
-      const vocHrs=vocResult.endsIn?Math.round(vocResult.endsIn*24):'';
-      const vocStr=vocHrs?`Pause new starts${vocHrs<12?` (${vocHrs}h)`:''}`:'Pause new starts';
-      h+=`<div class="pill void" onclick="showTip('VOC_REC')">${vocStr}<span class="help">?</span></div>`;
-    }
-    for(const p of stats){
-      const sp=SPHERE[p]||{};
-      h+=`<div class="pill station" onclick="showTip('STATION_REC')">${pSVG(p,14,'var(--amber)')} ${p}: high intensity<span class="help">?</span></div>`;
-    }
-    for(const p of retros){
-      const retroPillV={Mercury:['Review, don\'t launch','Rethink before acting','Revisit, don\'t initiate'],Venus:['Reflect on values','Reassess desires','Old flames, old questions'],Mars:['Conserve energy','Don\'t force outcomes','Redirect, don\'t charge']};
-      const recPool=retroPillV[p];
-      const recTxt=recPool?pick(recPool,todaySeed()):`${p}: revision season`;
-      h+=`<div class="pill retro" onclick="showTip('RETRO_REC_${p}')">${pSVG(p,14,'var(--crimson)')} ${recTxt}<span class="help">?</span></div>`;
-    }
-    for(const ig of ingresses)h+=`<div class="pill ingress">${pSVG(ig.planet,14,'var(--emerald)')} ${sSVG(ig.sign,13,'var(--emerald)')} shift in ${ig.days}d</div>`;
-    h+=`</div>`;
   }
 
   // ── Planetary Hours Strip ──
@@ -5485,6 +5459,87 @@ function renderApp(){
     h+=`</div></div>`;
   }
 
+  // ── Electional Micro-Tool ("Choose a time") ──
+  if(isToday&&!electionalOpen){
+    h+=`<div class="elect-btn" onclick="openElectional()">`;
+    h+=`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>`;
+    h+=`Choose a time for something</div>`;
+  }
+  if(electionalOpen&&isToday){
+    h+=`<div class="elect-panel">`;
+    h+=`<button class="ep-close" onclick="closeElectional()">&times;</button>`;
+    h+=`<div class="ep-title">${pSVG('Jupiter',14,'var(--violet)')} Elect a Time</div>`;
+    h+=`<div class="ep-hint">What do you want to do? I'll find the three best windows in the next week.</div>`;
+    h+=`<div class="elect-tasks">`;
+    for(const [key,t] of Object.entries(ELECTIONAL_TASKS)){
+      const sel=electionalTask===key?' selected':'';
+      h+=`<div class="elect-task${sel}" onclick="pickElectionalTask('${key}')">${t.label}</div>`;
+    }
+    h+=`</div>`;
+    if(electionalTask&&electionalResults){
+      const t=ELECTIONAL_TASKS[electionalTask];
+      h+=`<div style="font-size:11px;color:var(--text3);margin-bottom:6px;line-height:1.5"><em>${t.notes}</em></div>`;
+      if(electionalResults.length===0){
+        h+=`<div style="font-size:12px;color:var(--text2);padding:10px">No clearly favorable windows found in the next week. Consider waiting, or proceed with the best available hour.</div>`;
+      } else {
+        h+=`<div class="elect-windows">`;
+        for(let i=0;i<electionalResults.length;i++){
+          const w=electionalResults[i];
+          const rankCls=i===0?'':i===1?'rank2':'rank3';
+          const poorCls=w.score<55?' poor':'';
+          const scoreCls=w.score>=70?'':w.score>=55?'mid':'low';
+          h+=`<div class="elect-window ${rankCls}${poorCls}">`;
+          h+=`<div class="ew-head">`;
+          h+=`<div class="ew-when">${pSVG(w.ruler,14,'var(--bright)')} ${fmtElectionalWhen(w.date)} · ${w.durMin}min</div>`;
+          h+=`<div class="ew-score ${scoreCls}">${w.score}</div>`;
+          h+=`</div>`;
+          if(w.reasons.length)h+=`<div class="ew-reasons">${w.reasons.join('. ')}.</div>`;
+          h+=`<div class="ew-factors">`;
+          for(const f of w.factors){
+            h+=`<span class="ew-chip ${f.type}">${f.label}</span>`;
+          }
+          h+=`</div>`;
+          h+=`</div>`;
+        }
+        h+=`</div>`;
+      }
+    }
+    h+=`</div>`;
+  }
+
+  // Alerts — reframed as recommendations
+  if(retros.length||stats.length||ingresses.length){
+    h+=`<div class="alerts">`;
+    for(const p of stats){
+      const sp=SPHERE[p]||{};
+      h+=`<div class="pill station" onclick="showTip('STATION_REC')">${pSVG(p,14,'var(--amber)')} ${p}: high intensity<span class="help">?</span></div>`;
+    }
+    for(const p of retros){
+      const retroPillV={Mercury:['Review, don\'t launch','Rethink before acting','Revisit, don\'t initiate'],Venus:['Reflect on values','Reassess desires','Old flames, old questions'],Mars:['Conserve energy','Don\'t force outcomes','Redirect, don\'t charge']};
+      const recPool=retroPillV[p];
+      const recTxt=recPool?pick(recPool,todaySeed()):`${p}: revision season`;
+      h+=`<div class="pill retro" onclick="showTip('RETRO_REC_${p}')">${pSVG(p,14,'var(--crimson)')} ${recTxt}<span class="help">?</span></div>`;
+    }
+    for(const ig of ingresses)h+=`<div class="pill ingress">${pSVG(ig.planet,14,'var(--emerald)')} ${sSVG(ig.sign,13,'var(--emerald)')} shift in ${ig.days}d</div>`;
+    h+=`</div>`;
+  }
+
+  // 7-Day Forecast Strip
+  const forecast=cachedForecast(jd);
+  h+=`<div class="forecast">`;
+  for(const fd of forecast){
+    const sel=fd.offset===0?'sel':'';
+    const barH=Math.max(8,fd.score*4);
+    const color=fd.score>=7?'var(--azure)':fd.score<=3?'var(--crimson)':'var(--gold)';
+    h+=`<div class="forecast-day ${sel}" onclick="dayOffset+=${fd.offset};renderApp()">`;
+    h+=`<div class="fd-name">${days[fd.date.getDay()]}</div>`;
+    h+=`<div class="fd-num">${fd.date.getDate()}</div>`;
+    h+=`<div class="fd-bar" style="height:${barH}px;background:${color};width:6px;border-radius:3px"></div>`;
+    h+=`<div class="fd-score" style="color:${color}">${fd.score}</div>`;
+    h+=`</div>`;
+  }
+  h+=`</div>`;
+
   h+=`</div>`;/* /t-now */
   h+=`<div class="t-zone t-day">`;
 
@@ -5515,9 +5570,27 @@ function renderApp(){
     h+=`</div>`;
   }
 
+  // ── Annual Theme by profected sign ──
+  const ANNUAL_THEME={
+    Aries:'A year of initiative — new starts, self-assertion, and confronting what you have been avoiding.',
+    Taurus:'A year of consolidation — money, comfort, what you own, and what you value enough to hold.',
+    Gemini:'A year of information — learning, communicating, short trips, siblings, curiosity as engine.',
+    Cancer:'A year of roots — home, family, emotional foundations, what makes you feel secure.',
+    Leo:'A year of expression — creativity, romance, children, pleasure, and the courage to be seen.',
+    Virgo:'A year of refinement — health, routines, service, skill-building, and fixing what is broken.',
+    Libra:'A year of relationship — partnerships, contracts, negotiation, the mirror of other people.',
+    Scorpio:'A year of depth — shared resources, debts, transformation, sex, death, and what is hidden.',
+    Sagittarius:'A year of expansion — travel, higher education, publishing, belief systems, reaching further.',
+    Capricorn:'A year of structure — career, reputation, authority, ambition, and long-term commitments.',
+    Aquarius:'A year of community — friends, networks, collective causes, and your vision for the future.',
+    Pisces:'A year of dissolution — endings, rest, spirituality, surrender, and preparation for rebirth.'
+  };
+
   // ── Profection Row (tap chip for detail panel; tap ? for glossary) ──
   h+=`<div class="profection-row">`;
-  h+=`<div class="prof-chip ${profExpanded==='year'?'open':''}" onclick="toggleProf('year')"><div><div class="prof-label">Year <span class="help" onclick="event.stopPropagation();showTip('Profection')">?</span></div><div class="prof-val">${pSVG(prof.yearLord,14,'var(--gold)')} ${prof.yearSign}</div></div></div>`;
+  const yearLordActive=transits.some(t=>(t.tp===prof.yearLord||t.np===prof.yearLord)&&t.importance>10);
+  const ylaHtml=yearLordActive?`<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--emerald);margin-left:4px;vertical-align:middle;box-shadow:0 0 4px var(--emerald)"></span>`:'';
+  h+=`<div class="prof-chip ${profExpanded==='year'?'open':''}" onclick="toggleProf('year')"><div><div class="prof-label">Year${ylaHtml} <span class="help" onclick="event.stopPropagation();showTip('Profection')">?</span></div><div class="prof-val">${pSVG(prof.yearLord,14,'var(--gold)')} ${prof.yearSign}</div></div></div>`;
   h+=`<div class="prof-chip ${profExpanded==='month'?'open':''}" onclick="toggleProf('month')"><div><div class="prof-label">Month <span class="help" onclick="event.stopPropagation();showTip('Profection')">?</span></div><div class="prof-val">${pSVG(prof.monthLord,14,'var(--violet)')} ${prof.monthSign}</div></div></div>`;
   h+=`<div class="prof-chip ${profExpanded==='sect'?'open':''}" onclick="toggleProf('sect')"><div><div class="prof-label">Sect Light <span class="help" onclick="event.stopPropagation();showTip('Sect Light')">?</span></div><div class="prof-val">${pSVG(SECT.sectLight,14,'var(--azure)')} ${SECT.sectLight}</div></div></div>`;
   h+=`</div>`;
@@ -5525,6 +5598,8 @@ function renderApp(){
     h+=`<div class="prof-detail">`;
     if(profExpanded==='year'){
       h+=`<div class="prof-detail-head">Year ${ageYears} · Profected to ${prof.yearSign}, ruled by ${prof.yearLord}</div>`;
+      const annTheme=ANNUAL_THEME[prof.yearSign]||'';
+      if(annTheme)h+=`<div style="font-size:13px;line-height:1.6;color:var(--bright);padding:8px 12px;margin-bottom:8px;border-radius:var(--r-sm);background:rgba(212,168,67,.08);border-left:2px solid var(--gold);font-style:italic">${annTheme}</div>`;
       h+=`<div class="prof-detail-body">The ${prof.yearLord} becomes your Time Lord for this year — its themes and the house it sits in (natally) are foregrounded. Watch where ${prof.yearLord} is currently transiting, and any aspects it forms, for the year's main thread.</div>`;
     } else if(profExpanded==='month'){
       h+=`<div class="prof-detail-head">This month · Profected to ${prof.monthSign}, ruled by ${prof.monthLord}</div>`;
@@ -5578,6 +5653,31 @@ function renderApp(){
       }
       h+=`</div>`;
     }
+    // Actionable tone guidance
+    const TONE_GUIDANCE_HIGH=[
+      'The energy supports bold action. Schedule important conversations, pitches, or creative work today.',
+      'This is a strong day to initiate. Move forward on things that matter — the currents are cooperative.',
+      'Favorable conditions for making things happen. Don\'t waste this on maintenance — aim for what matters.',
+      'A day with real momentum behind it. Ask for what you want, start what you\'ve been planning.',
+      'The sky is working with you today. Push on stalled projects, reach out to people, take ground.'
+    ];
+    const TONE_GUIDANCE_MID=[
+      'A mixed day — some support, some friction. Lead with your strengths and avoid overextending.',
+      'Pick your battles today. Some efforts will flow, others will meet resistance. Read the room.',
+      'Moderate energy. Focus on steady progress rather than breakthroughs. Finish more than you start.',
+      'The day has friction but also opportunity. Handle conflict carefully and lean into what feels easy.',
+      'Not the day for big gambles. Advance what\'s already in motion and save launches for stronger timing.'
+    ];
+    const TONE_GUIDANCE_LOW=[
+      'A heavy day. Reduce commitments, protect your energy, and handle only what truly cannot wait.',
+      'The pressure is real today. Keep expectations low, be gentle with yourself, and don\'t force results.',
+      'Difficult energy. This is a day for damage control and self-care, not ambition. Ride it out.',
+      'Low-energy conditions. Cancel what you can, rest when possible, and trust that better days are close.',
+      'Demanding transits are active. Move slowly, avoid confrontation, and give yourself more margin than usual.'
+    ];
+    const tGuidPool=vibe.score>=7?TONE_GUIDANCE_HIGH:vibe.score>=4?TONE_GUIDANCE_MID:TONE_GUIDANCE_LOW;
+    const tGuid=pick(tGuidPool,todaySeed());
+    h+=`<div style="font-size:12px;line-height:1.6;color:var(--text);padding:6px 16px 10px;margin-top:-4px;opacity:.85"><em>${tGuid}</em></div>`;
   }
 
   // Moon Phase (expandable)
@@ -6084,11 +6184,32 @@ function renderApp(){
       if(t.exactDate)h+=`<div class="t-tag">Exact ${fmtExactDate(t.exactDate)}</div>`;
       h+=`</div>`;
 
+      // Timing arc: applying → exact → separating
+      {
+        const arcMax=8;
+        const orbClamped=Math.min(t.aspect.orbActual,arcMax);
+        let arcPct;
+        if(t.aspect.motion==='applying')arcPct=Math.max(5,50-orbClamped/arcMax*50);
+        else if(t.aspect.motion==='exact')arcPct=50;
+        else arcPct=Math.min(95,50+orbClamped/arcMax*50);
+        const arcColor=t.aspect.type==='hard'?'var(--crimson)':t.aspect.type==='easy'?'var(--emerald)':'var(--gold)';
+        h+=`<div class="timing-arc">`;
+        h+=`<div class="timing-arc-bar"><div class="timing-arc-fill" style="width:${arcPct}%;background:${arcColor};opacity:.35"></div><div class="timing-arc-dot" style="left:${arcPct}%;color:${arcColor};background:${arcColor}"></div></div>`;
+        h+=`</div>`;
+        h+=`<div class="timing-arc-labels"><span class="${t.aspect.motion==='applying'?'active':''}">Applying</span><span class="${t.aspect.motion==='exact'?'active':''}">Exact</span><span class="${t.aspect.motion==='separating'?'active':''}">Separating</span></div>`;
+      }
+
+      // Hard transit remedy — always visible
+      const htExists=HARD_BRINGS[t.tp]||HARD_BRINGS_V[t.tp];
+      if(t.aspect.type==='hard'&&htExists){
+        const remedyText=hardBrings(t.tp,'remedy');
+        if(remedyText)h+=`<div style="font-size:12px;line-height:1.5;padding:8px 10px;margin-top:6px;border-radius:var(--r-sm);background:rgba(61,217,160,.06);border-left:2px solid var(--emerald);color:var(--text)"><span style="font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--emerald)">Remedy</span><br>${remedyText}</div>`;
+      }
+
       // Expandable deep detail
       h+=`<div class="t-expand ${isOpen?'open':''}"><div class="t-expand-inner">`;
 
-      // Hard transits get three-part frame
-      const htExists=HARD_BRINGS[t.tp]||HARD_BRINGS_V[t.tp];
+      // Hard transits get three-part frame (full detail)
       if(t.aspect.type==='hard'&&htExists){
         h+=`<div class="ht-frame">`;
         h+=`<div class="ht-section brings"><div class="ht-label">What it tends to bring</div><div class="ht-text">${hardBrings(t.tp,'brings')}</div></div>`;
@@ -6442,8 +6563,8 @@ function renderApp(){
   tabBarHtml+=`<button class="${activeTab==='home'?'active':''}" onclick="switchTab('home')">${svgHome}<span>Home</span></button>`;
   tabBarHtml+=`<button class="${activeTab==='today'?'active':''}" onclick="switchTab('today')">${svgToday}<span>Today</span></button>`;
   tabBarHtml+=`<button class="${activeTab==='chart'?'active':''}" onclick="switchTab('chart')">${svgChart}<span>Chart</span></button>`;
-  tabBarHtml+=`<button class="${activeTab==='natal'?'active':''}" onclick="switchTab('natal')">${svgNatal}<span>Natal</span></button>`;
   tabBarHtml+=`<button class="${activeTab==='lore'?'active':''}" onclick="switchTab('lore')">${svgLore}<span>Lore</span></button>`;
+  tabBarHtml+=`<button class="${activeTab==='natal'?'active':''}" onclick="switchTab('natal')">${svgNatal}<span>Natal</span></button>`;
 
   document.getElementById('app').innerHTML=h;
   document.getElementById('tab-bar-host').innerHTML=tabBarHtml;

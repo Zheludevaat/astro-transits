@@ -1407,36 +1407,38 @@ function timeGreeting(date){
 function moonPhaseSvg(phaseAngle,size){
   // phaseAngle: 0 = new, 180 = full, 0-180 waxing, 180-360 waning
   const r=size/2-2;const cx=size/2,cy=size/2;
-  const illum=(1-Math.cos(phaseAngle*DEG))/2; // 0..1
-  const waxing=phaseAngle<180;
-  // Terminator ellipse radius (x)
-  const termR=Math.abs(r*Math.cos(phaseAngle*DEG));
-  // Build path: full disk, then subtract/add shadow
-  let path='';
-  if(phaseAngle<.5||phaseAngle>359.5){
-    // New moon
-    return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" class="home-moon-svg"><circle cx="${cx}" cy="${cy}" r="${r}" fill="#1a1a1a" stroke="#555" stroke-width="1"/></svg>`;
+  const a=((phaseAngle%360)+360)%360;
+  const illum=(1-Math.cos(a*DEG))/2;
+  const waxing=a<180;
+  const gid='mg'+Math.round(a*10);
+  const grad=`<defs><radialGradient id="${gid}"><stop offset="0%" stop-color="#fff8e0"/><stop offset="100%" stop-color="#c8b48c"/></radialGradient></defs>`;
+  // Special cases
+  if(illum<.005){
+    // New — show dim outline + faint earthshine hint so user can see "it's there"
+    return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" class="home-moon-svg">`+
+      `<circle cx="${cx}" cy="${cy}" r="${r}" fill="#1a1a1a" stroke="rgba(255,200,120,.4)" stroke-width="1" stroke-dasharray="2 3"/></svg>`;
   }
-  if(Math.abs(phaseAngle-180)<.5){
-    // Full
-    return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" class="home-moon-svg"><defs><radialGradient id="mg"><stop offset="0%" stop-color="#fff8e0"/><stop offset="100%" stop-color="#c8b48c"/></radialGradient></defs><circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#mg)"/></svg>`;
+  if(illum>.995){
+    return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" class="home-moon-svg">${grad}<circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#${gid})"/></svg>`;
   }
-  // Mask: lit vs dark
-  // Use two semicircle arcs to form the lit shape
-  // Always: left edge at cx-r, right edge at cx+r
-  // The terminator is an ellipse of x-radius termR, y-radius r
-  let darkPath,litPath;
-  const lgFlag=phaseAngle<180?1:0; // waxing: lit on right
-  if(illum<.5){
-    // Crescent — small lit portion
+  // For visibility at small sizes, clamp the *drawn* illumination so crescents/gibbous always show.
+  // Geometry stays directionally correct; only very thin slivers get a floor of ~12% width.
+  const minVis=.06,maxVis=.94;
+  let drawIllum=illum;
+  if(drawIllum<minVis)drawIllum=minVis;
+  if(drawIllum>maxVis)drawIllum=maxVis;
+  // Recompute the equivalent phase angle for drawing: illum = (1-cos θ')/2  →  θ' = acos(1-2·illum)
+  const theta=Math.acos(1-2*drawIllum)*RAD; // 0..180
+  const drawPhase=waxing?theta:(360-theta);
+  const termR=Math.abs(r*Math.cos(drawPhase*DEG));
+  let litPath;
+  if(drawIllum<.5){
     if(waxing){
-      // Lit is right crescent, formed by arc(r) right + arc(termR) left-curving-right
       litPath=`M ${cx} ${cy-r} A ${r} ${r} 0 0 1 ${cx} ${cy+r} A ${termR} ${r} 0 0 0 ${cx} ${cy-r} Z`;
     } else {
       litPath=`M ${cx} ${cy-r} A ${r} ${r} 0 0 0 ${cx} ${cy+r} A ${termR} ${r} 0 0 1 ${cx} ${cy-r} Z`;
     }
   } else {
-    // Gibbous — large lit portion
     if(waxing){
       litPath=`M ${cx} ${cy-r} A ${r} ${r} 0 0 1 ${cx} ${cy+r} A ${termR} ${r} 0 0 1 ${cx} ${cy-r} Z`;
     } else {
@@ -1444,9 +1446,9 @@ function moonPhaseSvg(phaseAngle,size){
     }
   }
   return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" class="home-moon-svg">`+
-    `<defs><radialGradient id="mg${Math.round(phaseAngle)}"><stop offset="0%" stop-color="#fff8e0"/><stop offset="100%" stop-color="#c8b48c"/></radialGradient></defs>`+
-    `<circle cx="${cx}" cy="${cy}" r="${r}" fill="#222" stroke="#444" stroke-width="1"/>`+
-    `<path d="${litPath}" fill="url(#mg${Math.round(phaseAngle)})"/>`+
+    grad+
+    `<circle cx="${cx}" cy="${cy}" r="${r}" fill="#1a1a1a" stroke="#3a3a3a" stroke-width="0.5"/>`+
+    `<path d="${litPath}" fill="url(#${gid})"/>`+
     `</svg>`;
 }
 function buildVerdict(topTransits,mPhase,vocResult,curHour,pHours,moonSign){

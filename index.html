@@ -5305,8 +5305,8 @@ function renderApp(){
   // Card 4: Today's Decan Card (tarot)
   const sunDec=computeDecan(cur.Sun);
   if(sunDec&&sunDec.card){
-    h+=`<div class="home-card" onclick="switchTab('today');setTodayZone('day')">`;
-    h+=`<div class="home-card-label">Sun's Decan</div>`;
+    h+=`<div class="home-card">`;
+    h+=`<div class="home-card-label">Sun's Decan (${sunDec.decanNum} of ${sunDec.signName})</div>`;
     h+=`<div class="home-card-value">${sunDec.card}</div>`;
     h+=`<div class="home-card-sub">${sunDec.title||''}</div>`;
     const sunDecMeaning=sunDec.meaning?sunDec.meaning.replace(/^[A-Za-z]+ in [A-Za-z]+ decan \d+\.\s*/,''):'';
@@ -5706,13 +5706,13 @@ function renderApp(){
   // Strip leading "[Ruler] in [Sign] decan N." from meaning — already shown in card header
   const moonDecMeaning=moonDecan.meaning?moonDecan.meaning.replace(/^[A-Za-z]+ in [A-Za-z]+ decan \d+\.\s*/,''):'';
   h+=`<div class="decan-card" onclick="toggleDecan()">`;
-  h+=`<div class="dc-head"><div class="dc-title">${sSVG(moonDecan.signName,14,'var(--gold)')} Decan ${moonDecan.decanNum} of ${moonDecan.signName}${moonDecan.keyword?`<span class="dc-keyword">${moonDecan.keyword}</span>`:''}<span class="help" onclick="event.stopPropagation();showTip('Decan')" style="margin-left:6px">?</span></div>`;
+  h+=`<div class="dc-head"><div class="dc-title">${pSVG('Moon',14,'var(--violet)')} Moon in Decan ${moonDecan.decanNum} of ${moonDecan.signName}${moonDecan.keyword?`<span class="dc-keyword">${moonDecan.keyword}</span>`:''}<span class="help" onclick="event.stopPropagation();showTip('Decan')" style="margin-left:6px">?</span></div>`;
   h+=`<div class="dc-num">${moonDecan.degIntoDecan.toFixed(1)}° / 10°</div></div>`;
-  h+=`<div class="dc-ruler-row">${pSVG(moonDecan.ruler,14,'var(--gold)')} Ruler: ${moonDecan.ruler}</div>`;
+  h+=`<div class="dc-ruler-row">${pSVG(moonDecan.ruler,14,'var(--gold)')} Decan ruler: ${moonDecan.ruler}</div>`;
   if(decanExpanded){
-    if(moonDecan.card)h+=`<div class="dc-image"><strong>${moonDecan.card}</strong> — ${moonDecan.title}</div>`;
+    if(moonDecan.card)h+=`<div class="dc-image"><strong>Decan ${moonDecan.decanNum} · ${moonDecan.card}</strong> — ${moonDecan.title}</div>`;
     if(moonDecMeaning)h+=`<div class="dc-indication">${moonDecMeaning}</div>`;
-    h+=`<div class="dc-collapsed" style="margin-top:6px">The Moon is currently in this decan, so its tarot signature colours the day's emotional weather. Read the card as a vehicle for the planet-in-sign quality of this 10° slice — Golden Dawn / Crowley attribution.</div>`;
+    h+=`<div class="dc-collapsed" style="margin-top:6px">The Moon is currently in this decan. In the Golden Dawn system, each decan maps to a numbered pip card (decan 1 = pip 2, decan 2 = pip 3, decan 3 = pip 4). The tarot signature colours the day's emotional weather.</div>`;
   } else {
     h+=`<div class="dc-collapsed">Tap for the tarot card of this decan</div>`;
   }

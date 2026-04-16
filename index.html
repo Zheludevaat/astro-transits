@@ -5745,17 +5745,19 @@ function deleteChart(id) {
 }
 
 function getChartNatal(chart) {
-  const jd = julianDate(chart.year, chart.month, chart.day, chart.hour - (chart.tz || 0) / 24);
+  const hourUTC = chart.hour - (chart.tz || 0);
+  const jd = julianDate(chart.year, chart.month, chart.day, hourUTC);
   const natal = computeAll(jd);
-  natal.asc = computeAsc(jd, chart.lat, chart.lon);
-  natal.mc = computeMC(jd, chart.lon);
+  natal.Ascendant = computeAsc(jd, chart.lat, chart.lon);
+  natal.MC = computeMC(jd, chart.lon);
   return { natal, jd };
 }
 
 function computeWholeSignHouses(ascLon) {
   const houses = [];
+  const signStart = Math.floor(ascLon / 30) * 30; // start of sign containing ASC
   for (let i = 0; i < 12; i++) {
-    houses[i] = (ascLon + i * 30) % 360;
+    houses[i] = norm(signStart + i * 30);
   }
   return houses;
 }
@@ -5767,8 +5769,8 @@ function computeWholeSignHouses(ascLon) {
 function computeSynastryAspects(natalA, natalB) {
   const aspects = [];
   const planets = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto', 'Chiron', 'NorthNode'];
-  const angleLons = { asc: natalA.asc, mc: natalA.mc };
-  const angleLonsB = { asc: natalB.asc, mc: natalB.mc };
+  const angleLons = { asc: natalA.Ascendant, mc: natalA.MC };
+  const angleLonsB = { asc: natalB.Ascendant, mc: natalB.MC };
 
   const allPlanetsA = { ...natalA, ...angleLons };
   const allPlanetsB = { ...natalB, ...angleLonsB };
@@ -5974,7 +5976,7 @@ function renderSynastryWheel(natalA, housesA, natalB, housesB, synAspects, size 
   }
 
   // A's ASC/MC (outer ring)
-  let ang = natalA.asc * DEG;
+  let ang = natalA.Ascendant * DEG;
   let x = cx + r2 * Math.cos(ang);
   let y = cy + r2 * Math.sin(ang);
   svg += `<g transform="translate(${x},${y})">`;
@@ -5982,7 +5984,7 @@ function renderSynastryWheel(natalA, housesA, natalB, housesB, synAspects, size 
   svg += `<text x="0" y="3" font-size="8" fill="var(--gold)" text-anchor="middle" font-weight="600">AC</text>`;
   svg += `</g>`;
 
-  ang = natalA.mc * DEG;
+  ang = natalA.MC * DEG;
   x = cx + r2 * Math.cos(ang);
   y = cy + r2 * Math.sin(ang);
   svg += `<g transform="translate(${x},${y})">`;
@@ -6003,7 +6005,7 @@ function renderSynastryWheel(natalA, housesA, natalB, housesB, synAspects, size 
   }
 
   // B's ASC/MC (inner ring)
-  ang = natalB.asc * DEG;
+  ang = natalB.Ascendant * DEG;
   x = cx + r3 * Math.cos(ang);
   y = cy + r3 * Math.sin(ang);
   svg += `<g transform="translate(${x},${y})">`;
@@ -6011,7 +6013,7 @@ function renderSynastryWheel(natalA, housesA, natalB, housesB, synAspects, size 
   svg += `<text x="0" y="2.5" font-size="7" fill="var(--azure)" text-anchor="middle" font-weight="600">AC</text>`;
   svg += `</g>`;
 
-  ang = natalB.mc * DEG;
+  ang = natalB.MC * DEG;
   x = cx + r3 * Math.cos(ang);
   y = cy + r3 * Math.sin(ang);
   svg += `<g transform="translate(${x},${y})">`;
@@ -6022,8 +6024,10 @@ function renderSynastryWheel(natalA, housesA, natalB, housesB, synAspects, size 
   // Aspect lines (inter-chart only)
   const rAsp = (r2 + r3) / 2;
   for (let asp of synAspects.slice(0, 20)) { // Limit to avoid clutter
-    const lonA = natalA[asp.pA] || natalA[asp.pA === 'asc' ? 'asc' : 'mc'];
-    const lonB = natalB[asp.pB] || natalB[asp.pB === 'asc' ? 'asc' : 'mc'];
+    const keyMapA = { asc: 'Ascendant', mc: 'MC' };
+    const keyMapB = { asc: 'Ascendant', mc: 'MC' };
+    const lonA = natalA[asp.pA] !== undefined ? natalA[asp.pA] : natalA[keyMapA[asp.pA]];
+    const lonB = natalB[asp.pB] !== undefined ? natalB[asp.pB] : natalB[keyMapB[asp.pB]];
 
     if (lonA === undefined || lonB === undefined) continue;
 
@@ -6930,8 +6934,8 @@ function renderSynastryTab() {
       const { natal: natalA, jd: jdA } = getChartNatal(chartA);
       const { natal: natalB, jd: jdB } = getChartNatal(chartB);
 
-      const housesA = computeWholeSignHouses(natalA.asc);
-      const housesB = computeWholeSignHouses(natalB.asc);
+      const housesA = computeWholeSignHouses(natalA.Ascendant);
+      const housesB = computeWholeSignHouses(natalB.Ascendant);
 
       synAspects = computeSynastryAspects(natalA, natalB);
       const traditional = computeSynastryTraditional(natalA, housesA, natalB, housesB, jdA, jdB);
@@ -7006,9 +7010,9 @@ function renderAstroCartoTab() {
   if (selectedChart) {
     const { natal: natalPos, jd } = getChartNatal(selectedChart);
 
-    if (!acArtrocartoLines || acArtrocartoLines.chart !== acSelectedChartId) {
-      acArtrocartoLines = computeAstroCartoLines(jd, natalPos);
-      acArtrocartoLines.chart = acSelectedChartId;
+    if (!acAstrocartoLines || acAstrocartoLines.chart !== acSelectedChartId) {
+      acAstrocartoLines = computeAstroCartoLines(jd, natalPos);
+      acAstrocartoLines.chart = acSelectedChartId;
     }
 
     // Planet toggles
@@ -7024,8 +7028,8 @@ function renderAstroCartoTab() {
 
     // Map
     const mapWidth = Math.min(window.innerWidth - 20, 450);
-    h += `<div class="map-container" onclick="handleMapClick(event, this, acArtrocartoLines)">`;
-    h += renderAstroCartoMap(acArtrocartoLines, acPlanetToggles, acTapInfo, mapWidth, mapWidth / 2);
+    h += `<div class="map-container" onclick="handleMapClick(event, this, acAstrocartoLines)">`;
+    h += renderAstroCartoMap(acAstrocartoLines, acPlanetToggles, acTapInfo, mapWidth, mapWidth / 2);
     h += `</div>`;
 
     // Info card

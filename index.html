@@ -5309,7 +5309,8 @@ function renderApp(){
     h+=`<div class="home-card-label">Sun's Decan</div>`;
     h+=`<div class="home-card-value">${sunDec.card}</div>`;
     h+=`<div class="home-card-sub">${sunDec.title||''}</div>`;
-    if(sunDec.meaning)h+=`<div class="home-card-sub" style="opacity:.7;margin-top:4px">${sunDec.meaning}</div>`;
+    const sunDecMeaning=sunDec.meaning?sunDec.meaning.replace(/^[A-Za-z]+ in [A-Za-z]+ decan \d+\.\s*/,''):'';
+    if(sunDecMeaning)h+=`<div class="home-card-sub" style="opacity:.7;margin-top:4px">${sunDecMeaning}</div>`;
     h+=`</div>`;
   }
   h+=`</div>`;
@@ -5702,13 +5703,15 @@ function renderApp(){
 
   // ── Moon Decan Card (Picatrix face) ──
   const moonDecan=computeDecan(cur.Moon);
+  // Strip leading "[Ruler] in [Sign] decan N." from meaning — already shown in card header
+  const moonDecMeaning=moonDecan.meaning?moonDecan.meaning.replace(/^[A-Za-z]+ in [A-Za-z]+ decan \d+\.\s*/,''):'';
   h+=`<div class="decan-card" onclick="toggleDecan()">`;
   h+=`<div class="dc-head"><div class="dc-title">${sSVG(moonDecan.signName,14,'var(--gold)')} Decan ${moonDecan.decanNum} of ${moonDecan.signName}${moonDecan.keyword?`<span class="dc-keyword">${moonDecan.keyword}</span>`:''}<span class="help" onclick="event.stopPropagation();showTip('Decan')" style="margin-left:6px">?</span></div>`;
   h+=`<div class="dc-num">${moonDecan.degIntoDecan.toFixed(1)}° / 10°</div></div>`;
   h+=`<div class="dc-ruler-row">${pSVG(moonDecan.ruler,14,'var(--gold)')} Ruler: ${moonDecan.ruler}</div>`;
   if(decanExpanded){
     if(moonDecan.card)h+=`<div class="dc-image"><strong>${moonDecan.card}</strong> — ${moonDecan.title}</div>`;
-    if(moonDecan.meaning)h+=`<div class="dc-indication">${moonDecan.meaning}</div>`;
+    if(moonDecMeaning)h+=`<div class="dc-indication">${moonDecMeaning}</div>`;
     h+=`<div class="dc-collapsed" style="margin-top:6px">The Moon is currently in this decan, so its tarot signature colours the day's emotional weather. Read the card as a vehicle for the planet-in-sign quality of this 10° slice — Golden Dawn / Crowley attribution.</div>`;
   } else {
     h+=`<div class="dc-collapsed">Tap for the tarot card of this decan</div>`;

@@ -1750,7 +1750,7 @@ function synthesizeConsult(transits,vibe,vocResult,moonSign,prof,pHours,isToday)
   const sentences=[];
 
   // Current hour guidance
-  sentences.push(`You are in a ${curHour.ruler} hour (${minsLeft} minutes remaining). ${hp.brief||''}`);
+  sentences.push(`You are in a ${curHour.ruler} hour (${minsLeft} minutes remaining). ${hourBrief(curHour.ruler)}`);
 
   // VOC warning
   if(vocResult&&vocResult.voc){
@@ -1765,12 +1765,12 @@ function synthesizeConsult(transits,vibe,vocResult,moonSign,prof,pHours,isToday)
     const t=hardActive[0];
     const sp=SPHERE[t.tp]||{};
     const hv=HOUSE_VOICE[t.house]||{};
-    sentences.push(`Be aware that ${sp.name||t.tp} is pressing on your ${(hv.name||'').toLowerCase()} — ${sp.when_stressed||'move carefully in this area'}. This is not the hour for impulsive action in that domain.`);
+    sentences.push(`Be aware that ${sp.name||t.tp} is pressing on your ${(hv.name||'').toLowerCase()} — ${sphereStressed(t.tp)||'move carefully in this area'}. This is not the hour for impulsive action in that domain.`);
   } else if(easyActive.length>0){
     const t=easyActive[0];
     const sp=SPHERE[t.tp]||{};
     const hv=HOUSE_VOICE[t.house]||{};
-    sentences.push(`${sp.name||t.tp} supports your ${(hv.name||'').toLowerCase()} right now — ${sp.when_active||'take what is offered'}.`);
+    sentences.push(`${sp.name||t.tp} supports your ${(hv.name||'').toLowerCase()} right now — ${sphereActive(t.tp)||'take what is offered'}.`);
   }
 
   // Profected lord relevance
@@ -1780,7 +1780,7 @@ function synthesizeConsult(transits,vibe,vocResult,moonSign,prof,pHours,isToday)
   }
 
   // Next hour preview
-  sentences.push(`Next hour: ${nextHour.ruler} (${fmtHourTime(nextHour.start)}). ${nhp.brief||''}`);
+  sentences.push(`Next hour: ${nextHour.ruler} (${fmtHourTime(nextHour.start)}). ${hourBrief(nextHour.ruler)}`);
 
   return{
     text:sentences.join(' '),
@@ -2349,13 +2349,13 @@ function findCurrentFirdaria(majors,ageYears){
 }
 
 const FIRDARIA_VOICE={
-  Sun:{theme:'Visibility, authority, identity',brief:'A chapter for being seen and taking the leading role. Work that requires you to be known benefits; anonymity chafes.'},
-  Venus:{theme:'Love, art, pleasure, partnership',brief:'Relationships and aesthetic pursuits carry extra weight. The heart leads. Good for reconciliation, creative output, attraction.'},
-  Mercury:{theme:'Thought, communication, commerce, learning',brief:'A chapter for writing, studying, trading, teaching. The mind is the operative instrument.'},
-  Moon:{theme:'Emotion, family, the body, home',brief:'Inner life, roots, the body\'s needs. The mother-function of life takes center stage — nourishment, belonging, cycles.'},
-  Saturn:{theme:'Discipline, structure, limit, maturity',brief:'A chapter of consolidation and earned mastery. Hard but formative. What gets built now lasts.'},
-  Jupiter:{theme:'Expansion, meaning, teaching, opportunity',brief:'A chapter of broadening — travel, philosophy, generosity, mentors appearing. The horizon widens.'},
-  Mars:{theme:'Contest, courage, separation, action',brief:'A chapter requiring boldness. Conflicts surface. The gift is decisiveness; the risk is unchosen battles.'},
+  Sun:{theme:'Visibility, authority, identity',brief:['A chapter for being seen and taking the leading role. Work that requires you to be known benefits; anonymity chafes.','The Sun rules this period — your identity IS the instrument. What you do in public matters more than what you do in private.','A Solar chapter: the light is on you. Lean into visibility, leadership, and the courage to be recognized.']},
+  Venus:{theme:'Love, art, pleasure, partnership',brief:['Relationships and aesthetic pursuits carry extra weight. The heart leads.','A Venusian chapter: what you desire shapes what you become. Follow beauty, not obligation.','Venus rules this period — love, money, and taste aren\'t distractions. They\'re the curriculum.']},
+  Mercury:{theme:'Thought, communication, commerce, learning',brief:['A chapter for writing, studying, trading, teaching. The mind is the operative instrument.','Mercury rules this period — your words, your ideas, and your network are the primary tools.','A Mercurial chapter: information is power, and the right conversation changes everything.']},
+  Moon:{theme:'Emotion, family, the body, home',brief:['Inner life, roots, the body\'s needs. The mother-function takes center stage.','The Moon rules this period — feeling leads, logic follows. Home and belonging set the tempo.','A Lunar chapter: honor the tides. What nurtures you is what matters most now.']},
+  Saturn:{theme:'Discipline, structure, limit, maturity',brief:['A chapter of consolidation and earned mastery. Hard but formative. What gets built now lasts.','Saturn rules this period — no shortcuts, no inflation, no pretending. The work IS the reward.','A Saturnian chapter: the weight is real, but so is the durability of what you build under it.']},
+  Jupiter:{theme:'Expansion, meaning, teaching, opportunity',brief:['A chapter of broadening — travel, philosophy, generosity, mentors appearing. The horizon widens.','Jupiter rules this period — say yes to what excites you. Growth is the mandate.','A Jovian chapter: faith returns, doors open, and what was small discovers it can be big.']},
+  Mars:{theme:'Contest, courage, separation, action',brief:['A chapter requiring boldness. Conflicts surface. The gift is decisiveness; the risk is unchosen battles.','Mars rules this period — what you fight for reveals what you care about.','A Martial chapter: energy is high, patience is low, and courage is the operating currency.']},
 };
 
 // ══════════════════════════════════════════════════════════════
@@ -3440,7 +3440,7 @@ function getDeepInterp(tp,np,aspectName,house){
     if(nDesc)full+='\n\nIn your chart, this targets '+nDesc.charAt(0).toLowerCase()+nDesc.slice(1);
   }
   advice=av.advice||'';
-  if(hv.desc)houseContext='Playing out in your '+hv.name+' sector: '+hv.desc;
+  if(hv.desc)houseContext='Playing out in your '+hv.name+' sector: '+houseVoiceDesc(house);
 
   return{summary,full,advice,houseContext,aspectLabel:av.label||aspectName,aspectFeel:av.feel||''};
 }
@@ -3761,6 +3761,243 @@ function dignityContext(planet,lon){
   return ' — '+pick(pool,seed);
 }
 
+// ── SPHERE variant pools (when_active / when_stressed rotate daily) ──
+const SPHERE_ACTIVE_V={
+Sun:['what you truly want becomes visible','your sense of purpose sharpens to a fine point','identity clarifies — you know who you are today','the conscious self burns bright and demands recognition'],
+Moon:['feelings run close to the surface and instincts sharpen','your body tells you things your mind hasn\'t processed yet','emotional intelligence peaks — trust the gut','the inner tide rises and everything feels personal'],
+Mercury:['your mind is quick and conversations carry weight','information arrives that changes your understanding','thought becomes action — say the thing','the network hums — messages, ideas, connections multiply'],
+Venus:['what you love and what loves you move closer together','beauty registers more deeply and desire clarifies','the heart opens and relationships sweeten','pleasure isn\'t indulgence today — it\'s fuel'],
+Mars:['you have the fuel to push through obstacles','initiative peaks — the body knows where to go','courage is available if you reach for it','the engine runs hot — point it at something worthy'],
+Jupiter:['doors open and perspective broadens','faith feels justified and generosity flows','the horizon pulls you forward — something wants to expand','what was stuck loosens and what was small grows'],
+Saturn:['what is solid proves itself and what is not falls away','the load-bearing structures of your life are tested and hold','discipline earns its reward today','time becomes an ally — what you build now lasts'],
+Uranus:['sudden clarity arrives about what must change','the unexpected breaks a pattern you didn\'t know you were stuck in','authenticity becomes non-negotiable','lightning illuminates a path you couldn\'t see before'],
+Neptune:['intuition sharpens and the imagination opens','the boundary between inner and outer life thins','something beautiful and hard to name passes through you','the dream speaks — listen without analyzing'],
+Pluto:['something hidden comes to light and demands to be faced','power shifts — who has it, who wants it, who deserves it','what\'s dying is composting into what comes next','the truth arrives whether you invited it or not'],
+Chiron:['vulnerability becomes a source of wisdom','the wound opens not to hurt you but to teach you','helping others heals the helper','old pain releases its grip a degree'],
+NorthNode:['encounters feel fated and direction clarifies','the universe gives a nudge — pay attention','synchronicity replaces coincidence','your trajectory bends toward where it was always going']
+};
+const SPHERE_STRESSED_V={
+Sun:['your sense of purpose is tested','you feel invisible or unrecognized','identity wavers — who are you when the mirrors break?','the spotlight feels too hot or too absent'],
+Moon:['emotional security feels uncertain','the body is anxious before the mind catches up','old emotional patterns replay uninvited','you absorb what isn\'t yours to carry'],
+Mercury:['misunderstandings multiply and plans tangle','the mind races without arriving anywhere','words fail or wound unintentionally','information overload meets decision paralysis'],
+Venus:['relationships reveal their fault lines','what you want and what\'s good for you diverge','the heart aches for what it can\'t have','beauty feels hollow — the surface isn\'t enough'],
+Mars:['friction rises and patience thins','anger leaks into the wrong conversations','energy spikes without productive direction','the impulse to fight outpaces the reason to fight'],
+Jupiter:['excess and overreach become temptations','optimism blinds you to real problems','more is not better today','faith inflates past what evidence supports'],
+Saturn:['the weight of obligation presses harder than usual','you feel old, tired, and underpaid by life','walls go up where bridges should be','fear of failure becomes self-fulfilling'],
+Uranus:['instability shakes what you thought was settled','restlessness makes every commitment feel like a cage','the disruption is real but the solution isn\'t clear yet','rebellion without direction just makes a mess'],
+Neptune:['boundaries blur and illusion creeps in','you can\'t tell what\'s real from what you want to be real','escapism beckons — watch the exits','confusion masquerades as depth'],
+Pluto:['power dynamics surface and control becomes the question','something underground demands attention you don\'t want to give','the compulsion to fix, control, or destroy intensifies','what you\'re gripping is gripping you back'],
+Chiron:['old pain resurfaces looking for resolution','you feel exposed in the place that never fully healed','inadequacy whispers louder than competence','the wound teaches, but today the lesson stings'],
+NorthNode:['the pull toward growth feels uncomfortable','you resist the direction life is pointing you','what\'s familiar feels safer than what\'s right','fate knocks, and you pretend not to hear']
+};
+
+// ── LORD_FRAME variants ──
+const LORD_FRAME_V={
+Sun:['This is a year governed by the Sun — your identity, vitality, and sense of purpose set the terms for everything else.','A Solar year: who you are IS the question. Every event reflects back to the core self.','The Sun lords this year — visibility, authority, and the courage to be seen define what unfolds.'],
+Moon:['This is a year governed by the Moon — your emotional life, instincts, and need for security define the shape of events.','A Lunar year: feelings lead, logic follows. Home, body, and belonging set the tempo.','The Moon lords this year — everything is personal, tidal, and closer to the bone.'],
+Mercury:['This is a year governed by Mercury — communication, learning, and the movement of ideas drive what unfolds.','A Mercurial year: the message matters. Conversations, contracts, and connections shape your trajectory.','Mercury lords this year — your mind, your words, and your network are the primary instruments.'],
+Venus:['This is a year governed by Venus — relationships, pleasure, and what you value most are the axis everything turns on.','A Venusian year: love, money, and beauty aren\'t distractions — they\'re the curriculum.','Venus lords this year — who you desire and what you cherish define the chapter.'],
+Mars:['This is a year governed by Mars — action, conflict, and the courage to assert yourself determine the year\'s shape.','A Martial year: initiative, anger, and the willingness to compete write the headlines.','Mars lords this year — what you fight for reveals what you care about.'],
+Jupiter:['This is a year governed by Jupiter — growth, opportunity, and the expansion of your world set the pace.','A Jovian year: faith returns, horizons widen, and what was small becomes big.','Jupiter lords this year — say yes to the things that scare you in a good way.'],
+Saturn:['This is a year governed by Saturn — responsibility, structure, and the patient building of something lasting define this chapter.','A Saturnian year: the work is the work. No shortcuts, no inflation, no pretending.','Saturn lords this year — what you build under pressure is what survives.']
+};
+
+// ── DOMINANT_FLAVOR variants ──
+const DOMINANT_FLAVOR_V={
+Saturn:['Saturn is driving today\'s energy, bringing themes of discipline, responsibility, and necessary limitation. Lean into it.','Saturn dominates the sky — today rewards seriousness, punishes shortcuts, and teaches through weight.','The Saturnian theme is loud today. What feels heavy is also what\'s real. Do the hard thing first.'],
+Pluto:['Pluto dominates today\'s cosmic weather, pulling you toward deep transformation and confrontation with what\'s hidden.','Pluto runs the show — intensity, power dynamics, and the refusal to stay on the surface define the day.','A Plutonian day: something wants to die so something else can live. Let it.'],
+Neptune:['Neptune colors today\'s energy with dreaminess, inspiration, and blurred boundaries. Trust art, doubt facts.','Neptune sets the tone — the veil is thin, the imagination is on, and reality is negotiable.','A Neptunian day: beautiful for vision, dangerous for contracts. Float where you can, anchor where you must.'],
+Uranus:['Uranus electrifies today\'s energy with unpredictability and flashes of insight.','Uranus runs the current — expect the unexpected and don\'t cling to the plan.','A Uranian day: something breaks, something liberates. Often they\'re the same thing.'],
+Jupiter:['Jupiter expands today\'s energy with optimism, opportunity, and the desire for growth.','Jupiter is generous today — doors open, perspectives widen, and faith feels earned.','A Jovian day: abundance is available. The risk is wanting too much of a good thing.'],
+Mars:['Mars fuels today\'s energy with drive, assertion, and potentially friction.','Mars is hot today — energy is high, patience is low, and the body wants to move.','A Martial day: channel the fire into something physical or something brave. Don\'t let it idle.'],
+Venus:['Venus softens today\'s energy with themes of love, beauty, pleasure, and connection.','Venus sweetens the day — relationships ease, creativity flows, and the senses sharpen.','A Venusian day: what feels good is also what\'s right. For once, pleasure and purpose align.'],
+Mercury:['Mercury sharpens today\'s energy with mental activity, conversations, and information exchange.','Mercury buzzes today — the mind is quick, the inbox is full, and words carry weight.','A Mercurial day: think, talk, write, connect. The network is the resource.'],
+Sun:['The Sun illuminates today\'s energy with clarity about identity and purpose.','The Sun dominates — who you are comes into focus, and what you want is obvious.','A Solar day: confidence is natural, visibility is high, and the spotlight rewards authenticity.'],
+Moon:['The Moon colors today\'s energy with emotional shifts, instinctive reactions, and a need for comfort.','The Moon sets the tone — everything is felt before it\'s thought. Honor that.','A Lunar day: mood leads, body speaks, and the inner tides run the schedule.'],
+Chiron:['Chiron colors today\'s energy with healing themes. Old wounds surface because you\'re ready.','Chiron is active — tenderness is not weakness today. What hurts is teaching.','A Chironic day: the wound opens toward healing, not toward harm. Let it breathe.'],
+NorthNode:['The North Node gives today a fated quality. Pay attention to synchronicities.','The nodal axis is loud — encounters feel meaningful and direction sharpens.','A nodal day: the universe is steering. Let it.']
+};
+
+// ── RETRO_VOICE variants ──
+const RETRO_VOICE_V={
+Mercury:['Mercury retrograde turns communication inside out. Reread, revise, reconnect — but don\'t launch.','Mercury Rx: the message goes sideways. Old contacts return. Back up your data and reread the fine print.','Mercury is retrograde — the slowdown IS the point. Review everything you rushed.'],
+Venus:['Venus retrograde pulls you inward to reassess relationships and values. Old lovers may reappear.','Venus Rx: what you loved looks different in this light. Don\'t commit — re-evaluate.','Venus is retrograde — desire recalibrates. Let the old relationships surface before starting new ones.'],
+Mars:['Mars retrograde frustrates your drive. Energy drops, anger simmers. Don\'t start new ventures — redirect.','Mars Rx: the engine idles. Conserve fuel, revisit abandoned projects, and let simmering frustrations cool.','Mars is retrograde — action turns inward. Review your strategy before you charge ahead.'],
+Jupiter:['Jupiter retrograde turns growth inward. External expansion slows while inner wisdom deepens.','Jupiter Rx: the horizon contracts so you can digest what you\'ve already been given.','Jupiter is retrograde — faith is being refined, not destroyed. Trust the inner expansion.'],
+Saturn:['Saturn retrograde reviews your commitments and structures. Old duties resurface and demand attention.','Saturn Rx: the foundation is being inspected from the inside. Fix what\'s cracking before it shows.','Saturn is retrograde — karmic debts come due. The maintenance work is the real work.'],
+Uranus:['Uranus retrograde internalizes the revolution. Old conditioning breaks down quietly.','Uranus Rx: the disruption moves inward. You\'re shedding beliefs you didn\'t know you had.','Uranus is retrograde — inner freedom precedes outer. The breakthrough is happening where no one can see.'],
+Neptune:['Neptune retrograde lifts the fog slightly, offering clearer vision about self-deception.','Neptune Rx: illusions become harder to maintain. Use the clarity for spiritual refinement.','Neptune is retrograde — the dream is being edited. Let go of what was never real.'],
+Pluto:['Pluto retrograde turns its transformative intensity inward. The inner alchemy intensifies.','Pluto Rx: the transformation goes underground. Process what was initiated when Pluto was direct.','Pluto is retrograde — the power shift is internal. Don\'t rush back to external action.'],
+Chiron:['Chiron retrograde deepens your healing work. Wounds resurface for another layer of processing.','Chiron Rx: what you thought was healed has one more layer. This is refinement, not regression.','Chiron is retrograde — the healing turns inward. Compassion for yourself comes first.']
+};
+
+// ── HARD_BRINGS variants ──
+const HARD_BRINGS_V={
+Saturn:{
+  brings:['Delays, obligations, authority pressure, the weight of consequences.','Fatigue, restriction, the sense that nothing moves fast enough.','Cold reality: what isn\'t working becomes impossible to ignore.'],
+  remedy:['Structure your day tightly. Do the hardest task first. Saturn respects discipline.','Accept the limitation rather than fighting it. The restriction is the instruction.','Rest early, commit to less, and build what\'s load-bearing. Skip the decorative.']
+},
+Mars:{
+  brings:['Irritation, arguments, accidents, impulsive decisions.','High energy with no clean outlet. Anger looking for a target.','Confrontation — someone pushes, you push back, or vice versa.'],
+  remedy:['Channel the energy into physical exertion. Avoid the angry email.','Count to ten. Then count again. The first impulse is usually too sharp.','Move your body before you move your mouth. The fire needs somewhere to go.']
+},
+Pluto:{
+  brings:['Power struggles, compulsive behavior, confrontation with what you\'ve been avoiding.','The sense that something must die for something new to live.','Control issues surface — yours or someone else\'s.'],
+  remedy:['Name what you\'re feeling rather than acting it out. Pluto respects honesty.','Let go of what you\'re gripping too tightly. Control is the illusion.','Seek depth, not control. The transformation can\'t be managed — only met.']
+},
+Uranus:{
+  brings:['Sudden disruptions, restlessness, the urge to break free at any cost.','Unexpected news, technology failures, plans changing without warning.','The unbearable feeling that nothing can stay the way it is.'],
+  remedy:['Don\'t make permanent decisions based on today\'s restlessness. Wait 48 hours.','The disruption points toward something authentic — but the first impulse is usually too radical.','Let the shock land before you react. Clarity follows chaos, not during it.']
+},
+Neptune:{
+  brings:['Confusion, boundary dissolution, escapist urges, difficulty seeing what\'s real.','Susceptibility to deception — from others or from yourself.','The veil drops over everything. Facts become opinions become feelings.'],
+  remedy:['Verify everything twice. Don\'t sign contracts. Avoid what blurs your edges further.','Channel the sensitivity into art or meditation rather than escapism.','Stay grounded in physical reality: eat, walk, touch something solid.']
+},
+Chiron:{
+  brings:['Resurfacing of old wounds, feelings of inadequacy or exposure.','Sensitivity in the area of life this transit touches.','The original hurt echoes through a present-day trigger.'],
+  remedy:['The wound surfaces because you\'re ready to face it. Don\'t armor up.','Talk to someone you trust. The pain is purposeful.','Chiron heals by being witnessed, not by being fixed. Let it be seen.']
+}
+};
+
+// ── Universal variant picker for dictionaries ──
+function pickV(variants,seed){
+  if(!variants)return '';
+  if(typeof variants==='string')return variants;
+  if(Array.isArray(variants))return pick(variants,seed);
+  return variants;
+}
+function sphereActive(planet){const pool=SPHERE_ACTIVE_V[planet];return pool?pick(pool,todaySeed()):(SPHERE[planet]||{}).when_active||'';}
+function sphereStressed(planet){const pool=SPHERE_STRESSED_V[planet];return pool?pick(pool,todaySeed()):(SPHERE[planet]||{}).when_stressed||'';}
+function lordFrame(planet){const pool=LORD_FRAME_V[planet];return pool?pick(pool,todaySeed()):LORD_FRAME[planet]||'';}
+function domFlavor(planet){const pool=DOMINANT_FLAVOR_V[planet];return pool?pick(pool,todaySeed()):DOMINANT_FLAVOR[planet]||'';}
+function retroVoice(planet){const pool=RETRO_VOICE_V[planet];return pool?pick(pool,todaySeed()):RETRO_VOICE[planet]||'';}
+function hardBrings(planet,field){const pool=HARD_BRINGS_V[planet];if(!pool)return (HARD_BRINGS[planet]||{})[field]||'';const arr=pool[field];return arr?pick(arr,todaySeed()):'';}
+
+// ── Multi-variant NATAL_ASPECT_DEPTH ──
+const NATAL_ASPECT_DEPTH_V={
+'Sun-Moon|conjunction':['Inner life and outer identity fused — wholeness, but less inner dialogue. Born near a new moon.','Your will and your feeling are one current. Powerful unity, but you may not see your own blind spots.','The Sun-Moon conjunction means you don\'t need to negotiate between who you are and what you feel — they\'re the same thing.'],
+'Sun-Moon|opposition':['Will and feeling pull against each other. Born near a full moon — a lifetime of negotiating between want and need.','Your conscious self and your emotional self live across the chart from each other. Partners mirror what you can\'t integrate alone.','The full moon birth: everything is illuminated, nothing is simple. You oscillate between head and heart until you stop choosing.'],
+'Sun-Moon|square':['Tension between conscious direction and emotional nature. Family-of-origin patterns replay until integrated.','The square between your lights means inner friction is your baseline. It\'s also your engine.','Your will and your feelings are at cross purposes — which makes you more interesting than comfortable.'],
+'Sun-Saturn|conjunction':['Authority and self fused — heavy responsibility from early on, maturity accelerated, father-theme intense.','Saturn sitting on the Sun ages you early and rewards you late. The gravity is real but so is the gravitas.','You were born old. The compensation is that you get younger as everyone else gets older.'],
+'Sun-Saturn|square':['Self-worth is tested. Achievement through discipline, but prone to self-doubt.','Saturn squares the Sun and installs a critic in your head. The critic is wrong about your worth but right about the need for effort.','Every achievement feels like it\'s not enough — until you realize the standard was never yours to begin with.'],
+'Sun-Pluto|conjunction':['Intense will, survivor\'s edge. Power dynamics are a core theme.','Pluto on the Sun: you were born in the fire. You know what power costs.','The Sun-Pluto conjunction means you don\'t do anything lightly. Intensity is your nature, not your choice.'],
+'Moon-Saturn|conjunction':['Emotional gravity. Mother-theme strict or absent. Feelings kept under discipline.','Saturn on the Moon: you learned early that emotions are expensive. Unlearning that is the work.','The emotional thermostat was set low in childhood. You\'re still adjusting it upward.'],
+'Moon-Saturn|square':['Emotional loneliness until self-parented. Slow to trust, but steady once bonded.','The Moon-Saturn square builds walls around the heart. The work is learning which walls are protection and which are prison.','You don\'t trust easily — and when you do, you test the bond before you relax into it.'],
+'Venus-Mars|conjunction':['Desire and attraction fused — passionate, magnetic, sometimes volatile in love.','Venus and Mars together: what you want and what you attract are the same burning thing.','The erotic and the aesthetic merge completely. Relationships are intense by design.'],
+'Venus-Saturn|square':['Feeling unworthy of love, or attracted to distant partners. Earned affection.','Saturn squares Venus and says love must be deserved. The lie is in the \'must.\' The truth is in the patience.','You love carefully, slowly, and with a fear of rejection that diminishes only through evidence.'],
+'Mars-Saturn|conjunction':['Disciplined drive — blacksmith energy. Hard-won competence, frustration if blocked.','Mars and Saturn together: the forge. Everything you build costs more effort and lasts longer.','You know how to work through resistance because you were born in it.'],
+'Jupiter-Saturn|conjunction':['The great chronocrator — structure meets expansion. Ambition built carefully.','Jupiter and Saturn together: the architect of empires and the auditor of dreams, collaborating.','This conjunction defines a generation — and in your chart, it means your ambition has both vision and scaffolding.']
+};
+// ── TRANSIT_VOICE variant descriptions ──
+const TRANSIT_VOICE_V={
+Sun:{desc:['The Sun illuminates whatever it touches, bringing conscious awareness and a desire for authentic expression. What do you truly want here?','The Sun arrives as spotlight — what it illuminates becomes impossible to ignore. Identity questions surface with clarity.','Solar transits are brief but clarifying. Vitality spikes, the ego activates, and you see yourself more honestly than usual.']},
+Moon:{desc:['The Moon stirs your emotional depths and instinctive reactions, revealing what you need to feel safe. Fast-moving mood shifts expose deeper feelings.','Lunar transits move quickly but cut deep. Your gut knows something your mind hasn\'t caught up to yet.','The Moon passes through and rearranges your emotional furniture. Pay attention to what surfaces — it\'s been waiting.']},
+Mercury:{desc:['Mercury activates your thinking, conversations, and decisions. Information arrives, plans form, and your mental process gets stimulated.','Mercury sharpens the signal. Messages, meetings, and mental connections accelerate. What you learn now matters.','Mercury\'s transit brings the right conversation at the right time — or the wrong word at the worst moment. Stay alert.']},
+Venus:{desc:['Venus brings pleasure, attraction, and questions about what you truly value. Relationships soften. Your sense of beauty heightens.','Venus transits open the heart a degree or two. What you\'re drawn toward right now tells you something about what you need.','Venus arrives and the world looks better. Use this energy for connection, creation, and anything that nourishes.']},
+Mars:{desc:['Mars pushes you to act, assert, and confront. Energy spikes but so can irritation. This is fuel — direct it consciously.','Mars transits light a fire under whatever they touch. The question is whether you use the heat or get burned by it.','Mars brings courage and impatience in equal measure. Physical outlets help. Rash decisions don\'t.']},
+Jupiter:{desc:['Jupiter expands whatever it touches — doors open, optimism rises, perspectives broaden. The risk is overextension.','Jupiter transits feel like permission. More is available. But more isn\'t always better — discernment separates gift from excess.','Jupiter offers opportunity that requires participation. The door is open — walk through it or it closes.']},
+Saturn:{desc:['Saturn arrives as the teacher demanding accountability. It restricts and restructures. Accept the discipline — it builds what lasts.','Saturn\'s transit removes the decorative and exposes the structural. What\'s load-bearing survives; what isn\'t doesn\'t.','Saturn asks one question: is this real? Where the answer is no, expect contraction. Where yes, expect solidification.']},
+Uranus:{desc:['Uranus shatters what has become stale. Expect the unexpected — sudden changes and the urge to break free from outgrown patterns.','Uranus doesn\'t negotiate. The change arrives before you\'re ready — and you discover you were readier than you thought.','Uranian transits liberate through disruption. What feels chaotic now is freedom in retrospect.']},
+Neptune:{desc:['Neptune dissolves boundaries between real and imagined. Inspiration heightens but so can confusion. Trust intuition, verify facts.','Neptune softens the edges of reality. Beautiful for creativity, dangerous for decisions. Not the time to sign contracts.','Neptune transits make the world shimmer. Some of what you see is revelation; some is mirage. Time tells which is which.']},
+Pluto:{desc:['Pluto works at the deepest level, forcing confrontation with power and what lies hidden. Nothing superficial survives.','Pluto doesn\'t ask. It takes what\'s dead and compostes it. The process is not comfortable but the soil is richer.','Pluto transits are once-in-a-lifetime events. What changes now stays changed. Resist the urge to preserve what needs to die.']},
+Chiron:{desc:['Chiron reopens old wounds — not to punish but to heal. Your deepest pain, fully faced, becomes your greatest wisdom.','Chiron\'s transit touches the nerve that never quite healed. This is refinement, not regression — deeper healing, not reinjury.','Chiron brings vulnerability that serves a purpose. The exposure is the medicine, uncomfortable as it feels.']},
+NorthNode:{desc:['The North Node creates fated-feeling encounters and nudges you toward your evolutionary path. Pay attention — life is pointing somewhere.','Nodal transits carry the scent of destiny. Coincidences cluster. People appear who feel significant before you know why.','The North Node activates your growth direction. Events now aren\'t random — they\'re course corrections toward what you\'re becoming.']}
+};
+// ── HOUSE_VOICE variant descriptions ──
+const HOUSE_VOICE_V={
+1:{desc:['This plays out through your physical body, appearance, and how you present yourself. Others notice a change in you.','Your identity and self-image are the arena. How you carry yourself shifts, and the world responds differently.','The first house is the most personal: this lands on you directly — your body, your look, your instinctive self-presentation.']},
+2:{desc:['This affects your finances, possessions, and deep sense of self-worth. Material security comes into question.','Money and values intertwine here. What you own and what you\'re worth feel newly negotiable.','The second house makes it material: income shifts, spending patterns change, and worth gets recalculated — financially and personally.']},
+3:{desc:['This activates conversations, short trips, siblings, writing, and how you process information. Your thinking shifts.','The third house is mental weather: new information arrives, communication patterns change, learning accelerates.','Daily interactions and the flow of information are where this transit makes itself felt. Pay attention to what you hear and say.']},
+4:{desc:['This touches your home, family, emotional foundation, and private inner world. The roots are stirred.','The fourth house goes deep: family dynamics, ancestral patterns, and the place you call home are all in play.','Home and emotional security are the stage. Moves, renovations, or family conversations are likely channels.']},
+5:{desc:['This lights up romance, creative expression, and what makes your heart sing. Self-expression becomes urgent.','The fifth house is where joy lives: creativity, romance, play, and the courage to be seen doing what you love.','Creative and romantic energy activates. Risk-taking feels more natural. The heart wants what it wants.']},
+6:{desc:['This affects your daily routines, health, and work habits. The body and the schedule both ask for adjustment.','Sixth house transits are practical: health, daily rhythm, work conditions, and service to others are the channels.','The sixth house is where life meets logistics. Routines change, health demands attention, and small adjustments compound.']},
+7:{desc:['This activates partnerships — romantic, business, and close friendships. You see yourself through the mirror of others.','Seventh house transits bring other people into sharp focus. Relationships deepen, dissolve, or demand renegotiation.','The house of the other: what someone else does or says reveals something about you. The mirror is active.']},
+8:{desc:['This goes deep — shared resources, intimacy, power dynamics, and confrontation with what you normally avoid.','The eighth house doesn\'t do surface. Intimacy, debt, control, and psychological honesty are all activated.','Eighth house transits strip the varnish off. What\'s been hidden — yours or someone else\'s — becomes visible.']},
+9:{desc:['This broadens your horizons — travel, education, philosophy, and your search for life\'s bigger meaning.','Ninth house energy wants expansion: foreign places, new belief systems, or a teacher who changes your perspective.','Your worldview is the target. What you believe, study, or pursue as meaning gets stretched or challenged.']},
+10:{desc:['This affects your career, public reputation, and the legacy you\'re building. Professional turning points are possible.','The tenth house is public: career, status, authority figures, and how the world measures your contribution.','Tenth house transits are career weather. What you\'ve built is tested, recognized, or restructured.']},
+11:{desc:['This activates your social network, friendships, and your vision for the future. Finding your tribe is the theme.','Eleventh house transits reshape your social world: who you associate with and what future you\'re building together.','Community and aspiration are the arena. Friendships shift, group affiliations change, and your vision gets clearer or muddier.']},
+12:{desc:['This works below the surface — solitude, dreams, hidden patterns, and what you can\'t see is shifting.','The twelfth house is the backstage of consciousness: what\'s ending, dissolving, or preparing to emerge works in silence.','Twelfth house transits are felt more than seen. Dreams intensify, solitude calls, and the unconscious does its work.']}
+};
+// ── HOUR_PURPOSE variant briefs ──
+const HOUR_PURPOSE_V={
+Sun:{brief:['Visibility and authority. Good for bold moves, presentations, approaching leaders.','Solar hour: step into the spotlight. Self-promotion, leadership asks, and creative confidence peak.','The Sun\'s hour favors what wants to be seen. Make your case, show your work, claim your space.'],
+  good:['Authority, leadership, asking favors of powerful people, health matters, creative expression.','Making yourself visible, approaching authority, creative presentations, health vitality.','Leadership moves, bold self-expression, approaching VIPs, physical health attention.'],
+  avoid:['Hiding, passivity, or anything requiring subtlety.','Situations that need you to be invisible or deferential. The Sun wants to shine.','Sneakiness, excessive caution, or projects that depend on staying unnoticed.']},
+Moon:{brief:['Flow and feeling. Good for messages, travel plans, domestic tasks, intuitive decisions.','Lunar hour: emotions guide well. Household tasks, short trips, and nurturing conversations thrive.','The Moon\'s hour favors instinct over analysis. Travel, home matters, and emotional honesty.'],
+  good:['Travel, messages, public dealings, nurturing, cooking, gardening, household matters.','Domestic tasks, caregiving, messages, starting journeys, emotional conversations.','Short trips, public-facing tasks, intuitive decisions, anything involving home or family.'],
+  avoid:['Anything requiring long-term permanence — the Moon changes too quickly.','Binding commitments that need stability. The Moon shifts faster than contracts should.','Major life decisions, permanent investments — lunar hour is for flow, not fixtures.']},
+Mars:{brief:['Force and contention. Good for hard conversations, physical exertion, cutting through obstacles.','Martial hour: channel aggression constructively. Exercise, confrontation, mechanical work.','Mars hour: move your body, cut what needs cutting, have the conversation you\'ve been avoiding.'],
+  good:['Physical contests, surgery, confrontation, cutting, separating, mechanical work, courage.','Hard conversations, competition, exercise, separating from what\'s finished, technical repairs.','Anything requiring force, speed, or courage. Surgery, athletics, clearing obstacles.'],
+  avoid:['Beginning partnerships, delicate negotiations, anything requiring harmony.','Gentle conversations, romantic overtures, or tasks requiring patience and diplomacy.','Peace talks, first dates, delicate negotiations — Mars doesn\'t do nuance.']},
+Mercury:{brief:['Thought and exchange. Good for emails, writing, studying, negotiations, commerce.','Mercury\'s hour: the mind is sharp. Write, negotiate, learn, trade, make the call.','The most versatile hour. Communication, commerce, contracts, and intellectual work all thrive.'],
+  good:['Writing, studying, trade, contracts, communication, learning, short journeys, messages.','Negotiations, emails, accounting, research, teaching, any exchange of information.','Intellectual tasks, signing papers, sending important messages, learning something new.'],
+  avoid:['Nothing Mercury can\'t handle — the most versatile hour.','Very little — Mercury adapts. But avoid purely physical or emotional tasks that need no thought.','Mercury is flexible. Only avoid tasks that require you to stop thinking and just feel.']},
+Jupiter:{brief:['Expansion and goodwill. Good for important meetings, legal matters, big-picture planning.','Jupiter\'s hour: generosity flows both ways. Ask for what you need, offer what you can.','The hour of the Greater Benefic. Doors open. Vision expands. Fortune favors the bold request.'],
+  good:['Legal matters, generosity, loan requests, teaching, beginning ventures with others.','Philosophical conversations, charitable acts, approaching mentors, expanding your network.','Big asks, educational pursuits, legal proceedings, anything requiring faith and good will.'],
+  avoid:['Little — Jupiter is the Greater Benefic. Avoid petty or small-minded actions.','Cheapness, cynicism, or narrowing when you should be broadening.','Miserliness, small thinking, or anything that requires you to contract rather than expand.']},
+Venus:{brief:['Harmony and pleasure. Good for dates, creative work, reconciliation, social events.','Venus hour: beauty, connection, and pleasure are favored. Create, love, reconcile, enjoy.','The sweetest hour. Art, romance, social grace, and anything that brings beauty or peace.'],
+  good:['Love, pleasure, art, beauty, social gatherings, reconciliation, courtship.','Creative expression, romantic connections, buying beautiful things, peace-making.','Aesthetic projects, social invitations, apologies that need to land softly, gift-giving.'],
+  avoid:['Confrontation, separation, surgery.','Hard conversations, aggressive competition, or anything that requires toughness over grace.','Bluntness, cutting ties, or tasks that need Mars energy. Venus doesn\'t do sharp edges.']},
+Saturn:{brief:['Discipline and limits. Good for long-term planning, boundary-setting, solitary focused work.','Saturn\'s hour: the serious hour. Plan ahead, set boundaries, build what needs to last.','The hour that rewards patience. Structure, discipline, and quiet persistent effort pay off.'],
+  good:['Long-term planning, building lasting structures, discipline, boundary-setting, solitude.','Focused solo work, legal formalities, organizational tasks, anything requiring endurance.','Strategic planning, financial restructuring, setting firm limits, working with limitations.'],
+  avoid:['New ventures, celebrations, asking favors, anything requiring speed or spontaneity.','Parties, impulsive starts, asking for help, or anything depending on enthusiasm.','Spontaneity, festivity, or tasks requiring lightness and speed. Saturn works slow.']}
+};
+// ── LOT_MEANING variant long descriptions ──
+const LOT_MEANING_V={
+Fortune:{long:['Where the body thrives — livelihood and health. What comes to you rather than what you pursue.','Fortune marks the place of embodied luck: physical vitality, material provision, and what fate deposits at your feet.','The Lot of Fortune is passive reception — where life gives without your having to ask. Health, circumstance, and what arrives unbidden.']},
+Spirit:{long:['Where the soul applies its will — vocation and purpose. The active counterpart to Fortune\'s passive reception.','Spirit marks where you choose to direct your energy. Your vocation, your cause, your deliberate contribution.','The Lot of Spirit is Fortune\'s active twin: not what you receive but what you build with what you\'ve been given.']},
+Eros:{long:['What the heart pulls toward — the object of longing, the magnetic direction of desire beyond mere pleasure.','Eros marks the direction of your deepest attraction. Not just romance — the thing you can\'t stop wanting.','The Lot of Eros points where desire runs hottest. Follow it and you find what the heart has already decided.']},
+Necessity:{long:['Where fate tightens — the compulsions you must accept or break yourself against.','Necessity marks the non-negotiable. The part of life where free will meets its boundary wall.','The Lot of Necessity shows where you cannot bargain. Acceptance here isn\'t weakness — it\'s wisdom.']},
+Courage:{long:['Where boldness must be summoned — the domain requiring audacity, the place where hesitation costs you.','Courage marks the arena where timidity fails and only daring succeeds. Your field of required bravery.','The Lot of Courage identifies where you need martial nerve. The house it falls in is where cowardice has the highest price.']},
+Victory:{long:['Where trust is rewarded — the arena of successful striving, the belief that sustains you through struggle.','Victory marks the place where effort meets recognition. The arena where faith in your own capacity is vindicated.','The Lot of Victory shows where perseverance pays. Struggle in this house leads somewhere — unlike most struggles.']},
+Nemesis:{long:['Where the reckoning lands — the hidden adversary, the place where hubris meets its limit.','Nemesis marks the domain of earned consequences. What you\'ve avoided confronting gathers here.','The Lot of Nemesis is Fortune\'s shadow. Where Fortune gives, Nemesis audits. This house demands humility.']}
+};
+// ── Variant accessor functions for new pools ──
+function transitVoiceDesc(planet){const pool=(TRANSIT_VOICE_V[planet]||{}).desc;return pool?pick(pool,todaySeed()):(TRANSIT_VOICE[planet]||{}).desc||'';}
+function houseVoiceDesc(house){const pool=(HOUSE_VOICE_V[house]||{}).desc;return pool?pick(pool,todaySeed()):(HOUSE_VOICE[house]||{}).desc||'';}
+function hourBrief(ruler){const pool=(HOUR_PURPOSE_V[ruler]||{}).brief;return pool?pick(pool,todaySeed()):(HOUR_PURPOSE[ruler]||{}).brief||'';}
+function hourGood(ruler){const pool=(HOUR_PURPOSE_V[ruler]||{}).good;return pool?pick(pool,todaySeed()):(HOUR_PURPOSE[ruler]||{}).good||'';}
+function hourAvoid(ruler){const pool=(HOUR_PURPOSE_V[ruler]||{}).avoid;return pool?pick(pool,todaySeed()):(HOUR_PURPOSE[ruler]||{}).avoid||'';}
+function lotLong(name){const pool=(LOT_MEANING_V[name]||{}).long;return pool?pick(pool,todaySeed()):(LOT_MEANING[name]||{}).long||'';}
+
+function natalAspectDepth(p1,p2,aspectName){
+  const key=natalAspectKey(p1,p2,aspectName);
+  const pool=NATAL_ASPECT_DEPTH_V[key];
+  if(pool)return pick(pool,todaySeed());
+  return NATAL_ASPECT_DEPTH[key]||'';
+}
+
+// ── Upgraded getDeepInterp with composed fallback ──
+function getDeepInterpV2(tp,np,aspectName,house){
+  const key=tp+'_'+aspectName+'_'+np;
+  const deep=DEEP[key];
+  const tv=TRANSIT_VOICE[tp]||{};
+  const nv=NATAL_VOICE[np]||{};
+  const av=ASPECT_VOICE[aspectName]||{};
+  const hv=HOUSE_VOICE[house]||{};
+
+  let summary='',full='',advice='',houseContext='';
+
+  if(deep){
+    summary=deep.split('. ').slice(0,2).join('. ')+'.';
+    full=deep;
+  }else{
+    // Compose from fragments instead of static template
+    summary=composeTransitText(tp,np,aspectName,av.type||'conjunction',house);
+    const sph=SPHERE[tp]||{};
+    full=`${sph.name||tp} ${sph.office||'acts'}, ${sphereActive(tp)}. `;
+    full+=`${av.desc||''}\n\n`;
+    if(nv.desc)full+=`In your chart, this targets ${nv.desc.charAt(0).toLowerCase()+nv.desc.slice(1)}`;
+  }
+  advice=composeTransitText(tp,np,aspectName,av.type||'conjunction',house).split('. ').pop();
+  if(hv.desc){
+    const gerunds=HOUSE_GERUND[house]||HOUSE_GERUND[1];
+    houseContext=`Playing out ${pick(gerunds,todaySeed())}: ${houseVoiceDesc(house)}`;
+  }
+
+  return{summary,full,advice,houseContext,aspectLabel:av.label||aspectName,aspectFeel:av.feel||''};
+}
+
 // Synthesize the Shape of the Day paragraph (Layer 1)
 function synthesizeShapeOfDay(transits,vibe,mPhase,retros,stats,vocResult,moonSign,prof,pHours,isToday){
   const sentences=[];
@@ -3770,7 +4007,7 @@ function synthesizeShapeOfDay(transits,vibe,mPhase,retros,stats,vocResult,moonSi
   const lordIsActive=top3.some(t=>t.tp===prof.yearLord||t.np===prof.yearLord);
   const sph=SPHERE[prof.yearLord]||{};
   if(lordIsActive){
-    sentences.push(`Your lord of the year, ${sph.name||prof.yearLord}, is directly active today — ${sph.when_active||'pay close attention'}. What happens now speaks to the year\'s central themes.`);
+    sentences.push(`Your lord of the year, ${sph.name||prof.yearLord}, is directly active today — ${sphereActive(prof.yearLord)||'pay close attention'}. What happens now speaks to the year\'s central themes.`);
   }
 
   // 2. Dominant transit energy
@@ -3816,13 +4053,21 @@ function synthesizeShapeOfDay(transits,vibe,mPhase,retros,stats,vocResult,moonSi
   if(retros.length>=3){
     sentences.push(`${retros.length} planets are retrograde — ${retros.slice(0,3).join(', ')} among them. The cosmos is in a reflective season. Forward motion meets internal revision; let both proceed.`);
   } else if(retros.length>0&&retros.some(r=>['Saturn','Jupiter','Pluto'].includes(r))){
-    sentences.push(`${retros.join(' and ')} ${retros.length>1?'are':'is'} retrograde, turning ${retros.map(r=>(SPHERE[r]||{}).domain||'its domain').join(' and ')} inward for revision.`);
+    const retroDomains=retros.map(r=>(SPHERE[r]||{}).domain||'its domain');
+    const seed=todaySeed();
+    const retroFrames=['turning $D inward for revision','sending $D underground for review','folding $D back on itself — internal work first'];
+    sentences.push(`${retros.join(' and ')} ${retros.length>1?'are':'is'} retrograde, ${pick(retroFrames,seed).replace('$D',retroDomains.join(' and '))}.`);
   }
 
   // 5. Stations (high-impact)
   if(stats.length>0){
     const stn=stats[0];const sp=SPHERE[stn]||{};
-    sentences.push(`${sp.name||stn} is stationary — the moment a planet appears to stop in the sky concentrates its power to an almost unbearable point. Whatever ${sp.name||stn} signifies is amplified today.`);
+    const stationFrames=[
+      `${sp.name||stn} is stationary — the moment a planet appears to stop concentrates its power to an almost unbearable point. Whatever ${sp.name||stn} signifies is amplified today.`,
+      `${sp.name||stn} stands still in the sky, and its signal becomes deafening. ${sphereStressed(stn)||'The pressure is real.'} Everything in its domain is magnified.`,
+      `A station of ${sp.name||stn}: the planet pauses, and its themes — ${sp.domain||'its nature'} — burn at maximum intensity. Handle with care.`
+    ];
+    sentences.push(pick(stationFrames,todaySeed()));
   }
 
   return sentences.join(' ');
@@ -3846,12 +4091,12 @@ function generateDailyGuidance(transits,vibe,mPhase,retros,stats,vocResult,moonS
   h+=`<div id="layer2" style="display:${layersExpanded.l2?'block':'none'}">`;
 
   // Profected lord context
-  const lordFrame=LORD_FRAME[prof.yearLord]||'';
-  if(lordFrame){
+  const lordFrameText=lordFrame(prof.yearLord);
+  if(lordFrameText){
     h+=`<div class="g-transit" style="border-left-color:var(--gold)">`;
     h+=`<div class="g-transit-head"><span class="g-planets">${pSVG(prof.yearLord,16,'var(--gold)')}</span>`;
     h+=`<span class="g-transit-label">Lord of the Year: ${prof.yearLord} (${prof.yearSign})</span></div>`;
-    h+=`<div class="g-transit-body">${lordFrame}</div>`;
+    h+=`<div class="g-transit-body">${lordFrameText}</div>`;
     h+=`<div class="g-transit-house">Monthly lord: ${prof.monthLord} (${prof.monthSign})</div></div>`;
   }
 
@@ -4625,8 +4870,8 @@ function openPlanetModal(planet,cur,jd){
   else h+=`<div style="font-size:11px;color:var(--text2)">Direct</div>`;
   if(tDig)h+=`<div style="font-size:10px;font-weight:700;color:${tDig.color}">${tDig.label}</div>`;
   h+=`</div></div>`;
-  h+=`<div style="font-size:13px;line-height:1.6;color:var(--text)">${tv.desc||''}</div>`;
-  if(ms.retrograde&&RETRO_VOICE[planet])h+=`<div style="margin-top:8px;font-size:12px;line-height:1.6;color:var(--violet);padding:10px;background:var(--violet-soft);border-radius:var(--r-sm)">${RETRO_VOICE[planet]}</div>`;
+  h+=`<div style="font-size:13px;line-height:1.6;color:var(--text)">${transitVoiceDesc(planet)}</div>`;
+  if(ms.retrograde&&RETRO_VOICE_V[planet])h+=`<div style="margin-top:8px;font-size:12px;line-height:1.6;color:var(--violet);padding:10px;background:var(--violet-soft);border-radius:var(--r-sm)">${retroVoice(planet)}</div>`;
   const tDec=computeDecan(tLon);
   if(tDec&&tDec.card){
     h+=`<div class="pm-decan">`;
@@ -4644,6 +4889,7 @@ function openPlanetModal(planet,cur,jd){
   h+=`<div style="font-size:12px;color:var(--text2);margin-bottom:8px">House ${nHouse} — ${(HOUSE_VOICE[nHouse]||{}).name||''}</div>`;
   if(nDig)h+=`<div style="font-size:11px;font-weight:700;color:${nDig.color};margin-bottom:6px">${nDig.label}: ${nDig.desc}</div>`;
   h+=`<div style="font-size:13px;line-height:1.6;color:var(--text)">${nv.desc||''}</div>`;
+  h+=`<div style="font-size:12px;line-height:1.5;color:var(--text2);margin-top:6px;font-style:italic">${houseVoiceDesc(nHouse)}</div>`;
   const nDec=computeDecan(nLon);
   if(nDec&&nDec.card){
     h+=`<div class="pm-decan">`;
@@ -4702,7 +4948,7 @@ function renderApp(){
     if(asp){const exactInfo=(tp!=='Moon')?cachedExactDate(tp,np,asp.angle,jd):null;
       transits.push({tp,np,tLon:cur[tp],nLon:NATAL[np],aspect:asp,
         importance:transitImportance(tp,np,asp),
-        interp:getDeepInterp(tp,np,asp.name,houseOf(cur[tp])),
+        interp:getDeepInterpV2(tp,np,asp.name,houseOf(cur[tp])),
         duration:DUR[tp],house:houseOf(cur[tp]),exactDate:exactInfo});}
   }}
   transits.sort((a,b)=>b.importance-a.importance);
@@ -4778,8 +5024,8 @@ function renderApp(){
     h+=`<div class="home-card-icon">${pSVG(curHourHome.ruler,22,'var(--gold)')}</div>`;
     h+=`<div class="home-card-value">Hour of ${curHourHome.ruler}</div>`;
     h+=`<div class="home-card-sub">${curHourHome.minsLeft} min remaining</div>`;
-    const hp=HOUR_PURPOSE&&HOUR_PURPOSE[curHourHome.ruler];
-    if(hp&&hp.brief)h+=`<div class="home-card-sub" style="opacity:.7;margin-top:4px">${hp.brief}</div>`;
+    const hpBrief=hourBrief(curHourHome.ruler);
+    if(hpBrief)h+=`<div class="home-card-sub" style="opacity:.7;margin-top:4px">${hpBrief}</div>`;
     h+=`</div>`;
   } else {
     h+=`<div class="home-card"><div class="home-card-label">Planetary Hour</div><div class="home-card-value">—</div></div>`;
@@ -4955,7 +5201,9 @@ function renderApp(){
       h+=`<div class="pill station" onclick="showTip('STATION_REC')">${pSVG(p,14,'var(--amber)')} ${p}: high intensity<span class="help">?</span></div>`;
     }
     for(const p of retros){
-      const recTxt=p==='Mercury'?'Review, don\'t launch':p==='Venus'?'Reflect on values':p==='Mars'?'Conserve energy':`${p}: revision season`;
+      const retroPillV={Mercury:['Review, don\'t launch','Rethink before acting','Revisit, don\'t initiate'],Venus:['Reflect on values','Reassess desires','Old flames, old questions'],Mars:['Conserve energy','Don\'t force outcomes','Redirect, don\'t charge']};
+      const recPool=retroPillV[p];
+      const recTxt=recPool?pick(recPool,todaySeed()):`${p}: revision season`;
       h+=`<div class="pill retro" onclick="showTip('RETRO_REC_${p}')">${pSVG(p,14,'var(--crimson)')} ${recTxt}<span class="help">?</span></div>`;
     }
     for(const ig of ingresses)h+=`<div class="pill ingress">${pSVG(ig.planet,14,'var(--emerald)')} ${sSVG(ig.sign,13,'var(--emerald)')} shift in ${ig.days}d</div>`;
@@ -4971,8 +5219,9 @@ function renderApp(){
     if(isToday && curIdx>=0 && curIdx<24){
       const curHr=pHours.hours[curIdx];
       const nextHr=pHours.hours[(curIdx+1)%24];
-      const hpNow=HOUR_PURPOSE[curHr.ruler]||{};
-      const hpNext=HOUR_PURPOSE[nextHr.ruler]||{};
+      const hpNowBrief=hourBrief(curHr.ruler);
+      const hpNowGood=hourGood(curHr.ruler);
+      const hpNowAvoid=hourAvoid(curHr.ruler);
       // Minutes left in current hour
       const utNow2=now.getUTCHours()+now.getUTCMinutes()/60;
       let minsLeft=Math.round((nextHr.start-utNow2)*60);
@@ -4981,9 +5230,9 @@ function renderApp(){
       h+=`<div class="hours-now-glyph">${pSVG(curHr.ruler,22,'var(--gold)')}</div>`;
       h+=`<div class="hours-now-body">`;
       h+=`<div class="hours-now-label">Right Now · Hour of ${curHr.ruler} <span class="hours-now-chev">${hourNowExpanded?'&#9660;':'&#9654;'}</span></div>`;
-      h+=`<div class="hours-now-title">${hpNow.brief?hpNow.brief.split('.')[0]+'.':curHr.ruler+' hour'}</div>`;
-      if(hpNow.brief){
-        const rest=hpNow.brief.split('.').slice(1).join('.').trim();
+      h+=`<div class="hours-now-title">${hpNowBrief?hpNowBrief.split('.')[0]+'.':curHr.ruler+' hour'}</div>`;
+      if(hpNowBrief){
+        const rest=hpNowBrief.split('.').slice(1).join('.').trim();
         if(rest)h+=`<div class="hours-now-intent">${rest}</div>`;
       }
       h+=`</div>`;
@@ -4991,9 +5240,9 @@ function renderApp(){
       h+=`</div>`;
       if(hourNowExpanded){
         h+=`<div class="hours-now-detail">`;
-        if(hpNow.good)h+=`<div class="hnd-row"><span class="hnd-k good">Good for</span><span class="hnd-v">${hpNow.good}</span></div>`;
-        if(hpNow.avoid)h+=`<div class="hnd-row"><span class="hnd-k bad">Avoid</span><span class="hnd-v">${hpNow.avoid}</span></div>`;
-        h+=`<div class="hnd-row"><span class="hnd-k">Next</span><span class="hnd-v">${pSVG(nextHr.ruler,12,'var(--text2)')} ${nextHr.ruler} hour at ${fmtHourTime(nextHr.start)} — ${hpNext.brief||''}</span></div>`;
+        if(hpNowGood)h+=`<div class="hnd-row"><span class="hnd-k good">Good for</span><span class="hnd-v">${hpNowGood}</span></div>`;
+        if(hpNowAvoid)h+=`<div class="hnd-row"><span class="hnd-k bad">Avoid</span><span class="hnd-v">${hpNowAvoid}</span></div>`;
+        h+=`<div class="hnd-row"><span class="hnd-k">Next</span><span class="hnd-v">${pSVG(nextHr.ruler,12,'var(--text2)')} ${nextHr.ruler} hour at ${fmtHourTime(nextHr.start)} — ${hourBrief(nextHr.ruler)}</span></div>`;
         h+=`</div>`;
       }
     }
@@ -5097,7 +5346,7 @@ function renderApp(){
         h+=`</div>`;
       }
       if(vibe.dominant){
-        const domFlav=DOMINANT_FLAVOR&&DOMINANT_FLAVOR[vibe.dominant];
+        const domFlav=domFlavor(vibe.dominant);
         if(domFlav)h+=`<div class="tone-narrative">${domFlav}</div>`;
       }
       if(!vibe.positives?.length&&!vibe.negatives?.length){
@@ -5112,7 +5361,7 @@ function renderApp(){
     const illum=Math.round((1-Math.cos(phaseAngle*Math.PI/180))/2*100);
     const moonHouse=houseOf(cur.Moon);
     const mhv=HOUSE_VOICE[moonHouse]||{};
-    const msf=MOON_SIGN_FLAVOR[moonSign.name]||'';
+    const msf=moonSignPhaseText(moonSign.name,mPhase.name);
     h+=`<div class="moon-card" onclick="toggleMoon()" style="cursor:pointer">`;
     h+=`<div class="moon-visual">${renderMoonSVG(phaseAngle,48)}</div>`;
     h+=`<div class="moon-info"><div class="moon-phase-name" style="font-size:15px">${mPhase.name} <span class="help" onclick="event.stopPropagation();showTip('Moon Phase')">?</span></div>`;
@@ -5122,7 +5371,7 @@ function renderApp(){
     if(moonExpanded){
       h+=`<div class="moon-detail-panel">`;
       if(msf)h+=`<div class="moon-flavor">${msf}</div>`;
-      if(mhv.name)h+=`<div class="moon-house-ctx"><strong>House ${moonHouse} · ${mhv.name}</strong>${mhv.desc?' — '+mhv.desc:''}</div>`;
+      if(mhv.name)h+=`<div class="moon-house-ctx"><strong>House ${moonHouse} · ${mhv.name}</strong>${mhv.desc?' — '+houseVoiceDesc(moonHouse):''}</div>`;
       h+=`</div>`;
     }
   }
@@ -5184,7 +5433,7 @@ function renderApp(){
     const s=signOf(lDeg);
     const lHouse=houseOf(lDeg);
     const hv=HOUSE_VOICE[lHouse]||{};
-    h+=`<div class="lot-detail"><strong>${lm.name} in ${s.name}, House ${lHouse}${hv.name?' ('+hv.name+')':''}:</strong> ${lm.long}</div>`;
+    h+=`<div class="lot-detail"><strong>${lm.name} in ${s.name}, House ${lHouse}${hv.name?' ('+hv.name+')':''}:</strong> ${lotLong(expandedLot)}</div>`;
   }
   h+=`</div></div>`;
 
@@ -5416,7 +5665,8 @@ function renderApp(){
       h+=`<div class="fir-lord-dates">${fmtZRDate(sub.startDate)} – ${fmtZRDate(sub.endDate)}</div>`;
       h+=`</div>`;
       h+=`</div>`;
-      h+=`<div class="fir-brief"><strong>${maj.lord}/${sub.lord}:</strong> ${majVoice.brief||''} ${sub.lord!==maj.lord?'<strong>Within this, the '+sub.lord+' sub-period emphasizes '+(subVoice.theme||'').toLowerCase()+'.':''}</div>`;
+      const majBrief=Array.isArray(majVoice.brief)?pick(majVoice.brief,todaySeed()):majVoice.brief||'';
+      h+=`<div class="fir-brief"><strong>${maj.lord}/${sub.lord}:</strong> ${majBrief} ${sub.lord!==maj.lord?'<strong>Within this, the '+sub.lord+' sub-period emphasizes '+(subVoice.theme||'').toLowerCase()+'.':''}</div>`;
     }
 
     if(firExpanded){
@@ -5606,11 +5856,11 @@ function renderApp(){
       h+=`<div class="t-expand ${isOpen?'open':''}"><div class="t-expand-inner">`;
 
       // Hard transits get three-part frame
-      const htData=HARD_BRINGS[t.tp];
-      if(t.aspect.type==='hard'&&htData){
+      const htExists=HARD_BRINGS[t.tp]||HARD_BRINGS_V[t.tp];
+      if(t.aspect.type==='hard'&&htExists){
         h+=`<div class="ht-frame">`;
-        h+=`<div class="ht-section brings"><div class="ht-label">What it tends to bring</div><div class="ht-text">${htData.brings}</div></div>`;
-        h+=`<div class="ht-section remedy"><div class="ht-label">What works against it</div><div class="ht-text">${htData.remedy}</div></div>`;
+        h+=`<div class="ht-section brings"><div class="ht-label">What it tends to bring</div><div class="ht-text">${hardBrings(t.tp,'brings')}</div></div>`;
+        h+=`<div class="ht-section remedy"><div class="ht-label">What works against it</div><div class="ht-text">${hardBrings(t.tp,'remedy')}</div></div>`;
         const liftsDate=t.exactDate?fmtExactDate(t.exactDate):'';
         const sepInfo=t.aspect.motion==='separating'?'Already fading.':t.aspect.motion==='exact'?`Exact now — peak intensity.${liftsDate?' Begins easing after '+liftsDate+'.':''}`:liftsDate?`Building toward exact ${liftsDate}. Eases within ${t.duration} after peak.`:`Active for approximately ${t.duration}.`;
         h+=`<div class="ht-section lifts"><div class="ht-label">When it lifts</div><div class="ht-text">${sepInfo}</div></div>`;
@@ -5622,7 +5872,7 @@ function renderApp(){
       const tDig=getDignity(t.tp,t.tLon);
       if(tDig)h+=`<div class="t-expand-section"><strong>${t.tp} in ${tDig.label}:</strong> ${tDig.desc}</div>`;
       const ms=motionStatus(t.tp,jd);
-      if(ms.retrograde&&RETRO_VOICE[t.tp])h+=`<div class="t-expand-section" style="color:var(--violet)"><strong>${t.tp} Retrograde:</strong> ${RETRO_VOICE[t.tp]}</div>`;
+      if(ms.retrograde){const rv=retroVoice(t.tp);if(rv)h+=`<div class="t-expand-section" style="color:var(--violet)"><strong>${t.tp} Retrograde:</strong> ${rv}</div>`;}
       h+=`</div></div></div>`;
     }
   }
@@ -5825,7 +6075,7 @@ function renderApp(){
       for(const a of natalAspList){
         const nat=ASPECT_NATURE[a.aspect]||{};
         const key=natalAspectKey(a.p1,a.p2,a.aspect);
-        const depth=NATAL_ASPECT_DEPTH[key];
+        const depth=natalAspectDepth(a.p1,a.p2,a.aspect);
         const id='na-'+a.p1+'-'+a.p2+'-'+a.aspect;
         const isOpen=expandedCards[id];
         const lbl1=a.p1==='NorthNode'?'N.Node':a.p1;const lbl2=a.p2==='NorthNode'?'N.Node':a.p2;
@@ -5880,7 +6130,7 @@ function renderApp(){
     // Expandable detail
     h+=`<div class="natal-expand ${isOpen?'open':''}"><div style="padding:12px 0 0;border-top:1px solid var(--surface);margin-top:10px">`;
     if(dig)h+=`<div style="font-size:12px;line-height:1.6;color:var(--text);margin-bottom:8px"><strong style="color:${dig.color}">${dig.label}:</strong> ${dig.desc}</div>`;
-    h+=`<div style="font-size:12px;line-height:1.6;color:var(--text);margin-bottom:8px"><strong>House ${house} (${hv.name||''}):</strong> ${hv.desc||''}</div>`;
+    h+=`<div style="font-size:12px;line-height:1.6;color:var(--text);margin-bottom:8px"><strong>House ${house} (${hv.name||''}):</strong> ${houseVoiceDesc(house)}</div>`;
     // House ruler connection
     const ruler=RULERS[sign.name];
     if(ruler&&NATAL[ruler]!==undefined){

@@ -67,10 +67,77 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 /* ── Shared motion primitives ── */
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 @keyframes pulseGlow{0%,100%{box-shadow:0 0 0 0 rgba(212,168,67,.0)}50%{box-shadow:0 0 0 4px rgba(212,168,67,.18)}}
+@keyframes expandIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.92) translateY(4px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes slideSheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes ringFill{from{stroke-dashoffset:var(--ring-full)}to{stroke-dashoffset:var(--ring-target)}}
+@keyframes breatheGlow{0%,100%{box-shadow:0 0 6px rgba(212,168,67,.15)}50%{box-shadow:0 0 14px rgba(212,168,67,.35)}}
+@keyframes chevSpin{from{transform:rotate(0deg)}to{transform:rotate(180deg)}}
+@keyframes zoneIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes tabFadeIn{from{opacity:0}to{opacity:1}}
+@keyframes wheelDraw{from{opacity:0;transform:scale(.85) rotate(-8deg)}to{opacity:1;transform:scale(1) rotate(0deg)}}
 @media (prefers-reduced-motion:reduce){
   @keyframes fadeUp{from{opacity:1}to{opacity:1}}
   @keyframes pulseGlow{0%,100%{box-shadow:none}}
+  @keyframes expandIn{from{opacity:1}to{opacity:1}}
+  @keyframes scaleIn{from{opacity:1}to{opacity:1}}
+  @keyframes slideSheetUp{from{transform:none}to{transform:none}}
+  @keyframes ringFill{from{}to{}}
+  @keyframes breatheGlow{0%,100%{box-shadow:none}}
+  @keyframes zoneIn{from{opacity:1}to{opacity:1}}
+  @keyframes tabFadeIn{from{opacity:1}to{opacity:1}}
+  @keyframes wheelDraw{from{opacity:1}to{opacity:1}}
 }
+
+/* ── Universal expand/reveal animations ── */
+.moon-detail-panel{animation:expandIn .4s ease-out both}
+.moon-flavor,.moon-house-ctx{animation:fadeUp .35s ease-out both}
+.moon-house-ctx{animation-delay:.1s}
+.dc-image,.dc-meaning,.dc-ind{animation:fadeUp .3s ease-out both}
+.dc-meaning{animation-delay:.05s}.dc-ind{animation-delay:.1s}
+.mansion-body{animation:expandIn .35s ease-out both}
+.consult-panel{animation:scaleIn .4s ease-out both}
+.elect-panel{animation:scaleIn .4s ease-out both}
+.elect-window{animation:fadeUp .35s ease-out both}
+.elect-window:nth-child(2){animation-delay:.08s}
+.elect-window:nth-child(3){animation-delay:.16s}
+.j-hist-block{animation:fadeUp .3s ease-out both}
+.j-echo{animation:fadeUp .3s ease-out both}
+.zr-body{animation:expandIn .4s ease-out both}
+.zr-gantt-row{animation:fadeUp .3s ease-out both}
+.fir-now,.fir-brief,.fir-timeline{animation:fadeUp .35s ease-out both}
+.fir-brief{animation-delay:.05s}.fir-timeline{animation-delay:.1s}
+.ret-row,.ret-detail{animation:fadeUp .35s ease-out both}
+.ret-detail{animation-delay:.05s}
+.lit-body{animation:expandIn .35s ease-out both}
+.fs-hit{animation:fadeUp .25s ease-out both}
+.ref-meta{animation:fadeUp .25s ease-out both}
+.chart-wrap{animation:wheelDraw .7s ease-out both}
+
+/* ── Modal slide-up sheet ── */
+.modal-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(5,8,26,0);
+  align-items:flex-end;justify-content:center;transition:background .35s ease}
+.modal-overlay.open{display:flex;background:rgba(5,8,26,.85)}
+.modal-overlay.open .modal-sheet{animation:slideSheetUp .4s cubic-bezier(.16,1,.3,1) both}
+
+/* ── Tooltip scale-in ── */
+.tooltip-popup{display:none;position:fixed;z-index:300;background:var(--card);border:1px solid var(--hairline);
+  transform-origin:center top;opacity:0;transform:scale(.9) translateY(-4px);transition:opacity .2s ease,transform .2s ease}
+.tooltip-popup.open{display:block;opacity:1;transform:scale(1) translateY(0)}
+
+/* ── Energy ring fill animation ── */
+.energy-ring-arc{transition:stroke-dashoffset .8s ease-out}
+
+/* ── Planetary hours current-hour breathing glow ── */
+.hour-cell.current{animation:breatheGlow 3s ease-in-out infinite}
+
+/* ── Chevron rotation on all expand headers ── */
+.section-chev{display:inline-block;transition:transform .3s ease;font-size:10px}
+.section-chev.open{transform:rotate(90deg)}
+
+/* ── Forecast bar tap feedback ── */
+.forecast-day{transition:transform .15s ease,opacity .15s ease}
+.forecast-day:active{transform:scaleY(1.08);opacity:.8}
 
 /* ── Header ── */
 .header{text-align:center;padding:14px 16px 10px;position:sticky;top:0;z-index:50;
@@ -287,13 +354,13 @@ html.light .header{background:rgba(244,240,230,.82)}
 .prof-chip{cursor:pointer;transition:border-color .15s,background .15s}
 .prof-chip:active{transform:scale(.97)}
 .prof-chip.open{border-color:var(--gold-line);background:var(--gold-soft)}
-.prof-detail{margin:2px 0 12px;padding:10px 12px;background:var(--card);
+.prof-detail{margin:2px 0 12px;padding:10px 12px;background:var(--card);animation:expandIn .35s ease-out both;
   border:1px solid var(--gold-line);border-radius:var(--r-md);font-size:12px;color:var(--text2);line-height:1.5}
 .prof-detail-head{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--gold);margin-bottom:4px}
 .prof-detail-body{color:var(--text2)}
 
 /* ── Tone + Moon expandables ── */
-.tone-detail{margin-top:10px;padding-top:10px;border-top:1px dashed var(--hairline)}
+.tone-detail{margin-top:10px;padding-top:10px;border-top:1px dashed var(--hairline);animation:fadeUp .35s ease-out both}
 .tone-row{margin-bottom:8px}
 .tone-row-label{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text3);margin-bottom:4px}
 .tone-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text2);padding:3px 0}
@@ -331,7 +398,7 @@ html.light .header{background:rgba(244,240,230,.82)}
 .tab-bar button svg{width:20px;height:20px}
 
 .tab-content{display:none}
-.tab-content.active{display:block}
+.tab-content.active{display:block;animation:tabFadeIn .35s ease-out both}
 
 /* ── Today sub-tab bar ── */
 .subtab-bar{position:sticky;top:0;z-index:50;display:flex;gap:4px;padding:8px 0 10px;
@@ -348,6 +415,7 @@ html.light .header{background:rgba(244,240,230,.82)}
 body[data-zone="now"] .t-zone:not(.t-now){display:none}
 body[data-zone="day"] .t-zone:not(.t-day){display:none}
 body[data-zone="depth"] .t-zone:not(.t-depth){display:none}
+.t-zone{animation:zoneIn .4s ease-out both}
 
 /* Back-to-top FAB */
 .fab-top{position:fixed;right:16px;bottom:calc(var(--safe-bottom) + 70px);width:44px;height:44px;
@@ -358,7 +426,7 @@ body[data-zone="depth"] .t-zone:not(.t-depth){display:none}
 .fab-top:active{transform:scale(.9)}
 
 /* ── Day transition animation ── */
-#app{transition:opacity .15s ease,transform .15s ease}
+#app{transition:opacity .25s ease-in-out,transform .25s ease-in-out}
 #app.slide-left{opacity:0;transform:translateX(-20px)}
 #app.slide-right{opacity:0;transform:translateX(20px)}
 #app.slide-in{opacity:1;transform:translateX(0)}
@@ -471,7 +539,7 @@ body[data-zone="depth"] .t-zone:not(.t-depth){display:none}
 .lot-name{font-size:11px;font-weight:600;color:var(--gold);letter-spacing:.3px;margin-bottom:2px}
 .lot-pos{font-size:10.5px;color:var(--text);display:flex;align-items:center;gap:4px}
 .lot-house{font-size:10px;color:var(--text3);margin-top:2px}
-.lot-detail{grid-column:1/-1;padding:10px 12px;background:rgba(212,168,67,.04);
+.lot-detail{grid-column:1/-1;padding:10px 12px;background:rgba(212,168,67,.04);animation:expandIn .35s ease-out both;
   border-radius:var(--r-md);font-size:11.5px;line-height:1.6;color:var(--text2);margin-top:4px}
 .lot-detail strong{color:var(--text)}
 
@@ -828,12 +896,10 @@ body[data-zone="depth"] .t-zone:not(.t-depth){display:none}
 .natal-expand.open{max-height:500px;opacity:1}
 
 /* ── Planet Modal ── */
-.modal-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(5,8,26,.85);
-  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);align-items:flex-end;justify-content:center}
-.modal-overlay.open{display:flex}
 .modal-sheet{background:var(--bg2);border-radius:var(--r-lg) var(--r-lg) 0 0;width:100%;max-width:480px;
   max-height:85vh;overflow-y:auto;padding:20px 16px calc(var(--safe-bottom) + 16px);
-  animation:slideUp .25s ease;border:1px solid rgba(255,255,255,.04);border-bottom:none}
+  border:1px solid rgba(255,255,255,.04);border-bottom:none;
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
 .modal-handle{width:40px;height:4px;background:var(--text3);border-radius:2px;margin:0 auto 16px}
 .modal-close{position:absolute;top:12px;right:16px;background:var(--surface);border:none;color:var(--text2);
   width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center}
@@ -842,10 +908,8 @@ body[data-zone="depth"] .t-zone:not(.t-depth){display:none}
 .info-btn{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;
   border-radius:50%;background:var(--surface);color:var(--text3);font-size:10px;font-weight:700;
   cursor:help;border:none;vertical-align:middle;margin-left:4px;flex-shrink:0}
-.tooltip-popup{display:none;position:fixed;z-index:300;background:var(--card);border:1px solid var(--hairline);
-  border-radius:var(--r-md);padding:14px;max-width:280px;font-size:12px;line-height:1.6;color:var(--text);
+.tooltip-popup{border-radius:var(--r-md);padding:14px;max-width:280px;font-size:12px;line-height:1.6;color:var(--text);
   box-shadow:0 8px 24px rgba(0,0,0,.6);pointer-events:auto}
-.tooltip-popup.open{display:block}
 .tooltip-popup strong{color:var(--bright);display:block;margin-bottom:4px}
 .tooltip-popup .tip-close-hint{font-size:9px;color:var(--text3);margin-top:8px;letter-spacing:.6px;text-transform:uppercase;text-align:right;opacity:.7}
 html.light .tooltip-popup{background:#ffffff;border-color:rgba(0,0,0,.12);box-shadow:0 8px 24px rgba(0,0,0,.15)}
@@ -5249,7 +5313,7 @@ function renderApp(){
       h+=`<div class="hours-now ${hourNowExpanded?'open':''}" onclick="toggleHourNow()">`;
       h+=`<div class="hours-now-glyph">${pSVG(curHr.ruler,22,'var(--gold)')}</div>`;
       h+=`<div class="hours-now-body">`;
-      h+=`<div class="hours-now-label">Right Now · Hour of ${curHr.ruler} <span class="hours-now-chev">${hourNowExpanded?'&#9660;':'&#9654;'}</span></div>`;
+      h+=`<div class="hours-now-label">Right Now · Hour of ${curHr.ruler} <span class="section-chev ${hourNowExpanded?'open':''}">&#9654;</span></div>`;
       h+=`<div class="hours-now-title">${hpNowBrief?hpNowBrief.split('.')[0]+'.':curHr.ruler+' hour'}</div>`;
       if(hpNowBrief){
         const rest=hpNowBrief.split('.').slice(1).join('.').trim();
@@ -5289,11 +5353,11 @@ function renderApp(){
     const lit=PLANETARY_LITURGY[pHours.dayRuler];
     h+=`<div class="liturgy-card" onclick="toggleLiturgy()">`;
     h+=`<div class="lit-head"><span class="lit-title">${pSVG(pHours.dayRuler,14,'var(--violet)')} ${lit.weekday} Liturgy</span>`;
-    h+=`<span>${liturgyExpanded?'&#9660;':'&#9654;'}</span></div>`;
+    h+=`<span class="section-chev ${liturgyExpanded?'open':''}">&#9654;</span></div>`;
     h+=`<div class="lit-day">Day of ${pHours.dayRuler}</div>`;
     h+=`<div class="lit-ruler">${lit.intent}</div>`;
     if(liturgyExpanded){
-      h+=`<div class="lit-focus">${lit.focus}</div>`;
+      h+=`<div class="lit-body"><div class="lit-focus">${lit.focus}</div>`;
       h+=`<div class="lit-avoid"><strong>Avoid:</strong> ${lit.avoid}</div>`;
       h+=`<div class="lit-correspondences">`;
       h+=`<div class="lit-corr-row"><span class="lit-corr-k">Color</span><span class="lit-corr-v">${lit.color}</span></div>`;
@@ -5304,7 +5368,7 @@ function renderApp(){
       h+=`<div class="lit-corr-row"><span class="lit-corr-k">Direction</span><span class="lit-corr-v">${lit.direction}</span></div>`;
       h+=`<div class="lit-corr-row"><span class="lit-corr-k">Number</span><span class="lit-corr-v">${lit.number}</span></div>`;
       h+=`</div>`;
-      h+=`<div class="lit-medit">"${lit.meditation}"</div>`;
+      h+=`<div class="lit-medit">"${lit.meditation}"</div></div>`;
     } else {
       h+=`<div class="lit-collapsed">Tap for correspondences, focus, and the day\'s meditation.</div>`;
     }
@@ -5342,7 +5406,7 @@ function renderApp(){
     h+=`<div class="energy-ring">`;
     h+=`<svg viewBox="0 0 44 44">`;
     h+=`<circle cx="22" cy="22" r="18" stroke="var(--surface)" stroke-width="3" fill="none"/>`;
-    h+=`<circle cx="22" cy="22" r="18" stroke="${eColor}" stroke-width="3" fill="none" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-frac)}"/>`;
+    h+=`<circle class="energy-ring-arc" cx="22" cy="22" r="18" stroke="${eColor}" stroke-width="3" fill="none" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-frac)}" style="--ring-full:${C};--ring-target:${C*(1-frac)}"/>`;
     h+=`</svg>`;
     h+=`<div class="energy-ring-num" style="color:${eColor}">${vibe.score}</div>`;
     h+=`</div>`;
@@ -5418,9 +5482,11 @@ function renderApp(){
   h+=`<div class="mc-num">${mansion.within.toFixed(1)}° / ${MANSION_ARC.toFixed(1)}°</div></div>`;
   h+=`<div class="mc-eng">${mansion.eng}</div>`;
   if(mansionExpanded){
+    h+=`<div class="mansion-body">`;
     if(mansion.good)h+=`<div class="mc-body"><strong>Good for:</strong> ${mansion.good}</div>`;
     if(mansion.avoid)h+=`<div class="mc-body" style="margin-top:4px"><strong>Avoid:</strong> ${mansion.avoid}</div>`;
     h+=`<div class="mc-body" style="margin-top:6px;font-size:10.5px;color:var(--text3);font-style:italic">The 28 Manazil al-Qamar — traditional magical indications from Picatrix. Most potent when the Moon is in this mansion.</div>`;
+    h+=`</div>`;
   } else {
     h+=`<div class="mc-body" style="color:var(--text3);font-size:11px">Tap for Picatrix indications</div>`;
   }
@@ -5563,7 +5629,7 @@ function renderApp(){
     h+=`<div class="zr-card">`;
     h+=`<div class="zr-head" onclick="toggleZR()">`;
     h+=`<span>Zodiacal Releasing — Life Chapters <span class="help" onclick="event.stopPropagation();showTip('Zodiacal Releasing')">?</span></span>`;
-    h+=`<span>${zrExpanded?'&#9660;':'&#9654;'}</span>`;
+    h+=`<span class="section-chev ${zrExpanded?'open':''}">&#9654;</span>`;
     h+=`</div>`;
 
     // Always show "now" summary (even when collapsed)
@@ -5664,7 +5730,7 @@ function renderApp(){
     h+=`<div class="fir-card">`;
     h+=`<div class="fir-head" onclick="toggleFirdaria()">`;
     h+=`<span>Firdaria — Time-Lord Periods (${SECT.isNocturnal?'Nocturnal':'Diurnal'}) <span class="help" onclick="event.stopPropagation();showTip('Firdaria')">?</span></span>`;
-    h+=`<span>${firExpanded?'&#9660;':'&#9654;'}</span>`;
+    h+=`<span class="section-chev ${firExpanded?'open':''}">&#9654;</span>`;
     h+=`</div>`;
 
     if(curFir){
@@ -5690,6 +5756,7 @@ function renderApp(){
     }
 
     if(firExpanded){
+      h+=`<div class="fir-timeline">`;
       // Major Gantt
       const totalYears=firdaria.reduce((a,m)=>a+m.lengthYears,0);
       h+=`<div class="zr-gantt">`;
@@ -5732,6 +5799,7 @@ function renderApp(){
       }
 
       h+=`<div class="zr-note">Firdaria is a Persian time-lord technique complementing Zodiacal Releasing. The ${SECT.isNocturnal?'nocturnal':'diurnal'} sequence begins with the ${SECT.isNocturnal?'Moon':'Sun'}. Each major period is divided into 7 equal sub-periods that cycle through the same planetary order. Where ZR describes thematic chapters by sign, firdaria describes the ruling planetary influence directly.</div>`;
+      h+=`</div>`; // close .fir-timeline
     }
     h+=`</div>`;
 
@@ -5761,7 +5829,7 @@ function renderApp(){
     h+=`<div class="ret-card">`;
     h+=`<div class="ret-head" onclick="toggleReturns()">`;
     h+=`<span>Solar &amp; Lunar Returns</span>`;
-    h+=`<span>${returnsExpanded?'&#9660;':'&#9654;'}</span>`;
+    h+=`<span class="section-chev ${returnsExpanded?'open':''}">&#9654;</span>`;
     h+=`</div>`;
     h+=`<div class="ret-row">`;
     h+=`<div class="ret-block">`;
@@ -5789,7 +5857,7 @@ function renderApp(){
     h+=`<div class="fs-card">`;
     h+=`<div class="fs-head" onclick="toggleFSTransit()">`;
     h+=`<span>Fixed Star Contacts · Today <span class="help" onclick="event.stopPropagation();showTip('Fixed Stars')">?</span></span>`;
-    h+=`<span>${fsTransitExpanded?'&#9660;':'&#9654;'}</span></div>`;
+    h+=`<span class="section-chev ${fsTransitExpanded?'open':''}">&#9654;</span></div>`;
     h+=`<div class="fs-sub">Transiting planets within 0.5° of a named fixed star are conjunct — ancient astrology treated these contacts as powerful imprints on the day.</div>`;
     if(fsTrans.length===0){
       h+=`<div class="fs-empty">No transiting planet is in contact with a named fixed star today.</div>`;
@@ -5930,7 +5998,7 @@ function renderApp(){
     h+=`<div class="synth-card">`;
     h+=`<div class="synth-head" onclick="synthToggleExpanded()" style="cursor:pointer">`;
     h+=`<span class="synth-title">Claude Synthesis</span>`;
-    h+=`<span style="color:var(--text3);font-size:var(--fs-ui)">${synthExpanded?'&#9660;':'&#9654;'}</span>`;
+    h+=`<span class="section-chev ${synthExpanded?'open':''}" style="color:var(--text3)">&#9654;</span>`;
     h+=`</div>`;
     if(!synthExpanded){
       const sub=synthKey
@@ -6006,7 +6074,7 @@ function renderApp(){
     h+=`<div class="notif-card">`;
     h+=`<div class="notif-head" onclick="toggleNotif()">`;
     h+=`<span>Notifications</span>`;
-    h+=`<span>${notifExpanded?'&#9660;':'&#9654;'}</span></div>`;
+    h+=`<span class="section-chev ${notifExpanded?'open':''}">&#9654;</span></div>`;
     if(permState==='unsupported'){
       h+=`<div class="notif-status">Notifications are not supported in this browser.</div>`;
     } else if(permState==='denied'){
@@ -6065,7 +6133,7 @@ function renderApp(){
   h+=`<div class="fs-card">`;
   h+=`<div class="fs-head" onclick="toggleFSNatal()">`;
   h+=`<span>Fixed Stars in Your Chart</span>`;
-  h+=`<span>${fsNatalExpanded?'&#9660;':'&#9654;'}</span></div>`;
+  h+=`<span class="section-chev ${fsNatalExpanded?'open':''}">&#9654;</span></div>`;
   h+=`<div class="fs-sub">Natal planets and angles within 1° of a named fixed star. These contacts were read by traditional astrologers as fate-threads — the star\'s nature woven into whatever point it touched.</div>`;
   if(fsNatal.length===0){
     h+=`<div class="fs-empty">No natal point sits within 1° of the principal named stars.</div>`;
@@ -6086,7 +6154,7 @@ function renderApp(){
   h+=`<div class="fs-card">`;
   h+=`<div class="fs-head" onclick="toggleNatalAspects()">`;
   h+=`<span>Aspects in Your Chart</span>`;
-  h+=`<span>${natalAspectsExpanded?'&#9660;':'&#9654;'}</span></div>`;
+  h+=`<span class="section-chev ${natalAspectsExpanded?'open':''}">&#9654;</span></div>`;
   h+=`<div class="fs-sub">Geometric relationships between natal points. Tight aspects (small orb) and those involving Sun, Moon, or angles carry the strongest weight. Tap any aspect for a deeper reading.</div>`;
   if(natalAspectsExpanded){
     if(natalAspList.length===0){
@@ -6245,6 +6313,15 @@ function renderApp(){
     const si=document.querySelector('.ref-search');
     if(si){si.focus();const len=si.value.length;try{si.setSelectionRange(len,len);}catch(e){}}
   }
+
+  // Energy ring fill animation: start from full offset, animate to target
+  const ringArc=document.querySelector('.energy-ring-arc');
+  if(ringArc){
+    const full=ringArc.style.getPropertyValue('--ring-full');
+    const target=ringArc.getAttribute('stroke-dashoffset');
+    ringArc.style.strokeDashoffset=full;
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{ringArc.style.strokeDashoffset=target;}));
+  }
 }
 
 // ── Event handlers ──
@@ -6256,8 +6333,8 @@ function navDay(offset){
     dayOffset+=offset;renderApp();
     app.classList.remove(dir);
     app.classList.add('slide-in');
-    setTimeout(()=>app.classList.remove('slide-in'),150);
-  },120);
+    setTimeout(()=>app.classList.remove('slide-in'),280);
+  },260);
 }
 function navToday(){
   if(dayOffset===0)return;
@@ -6267,8 +6344,8 @@ function navToday(){
     dayOffset=0;renderApp();
     app.classList.remove('slide-left','slide-right');
     app.classList.add('slide-in');
-    setTimeout(()=>app.classList.remove('slide-in'),150);
-  },120);
+    setTimeout(()=>app.classList.remove('slide-in'),280);
+  },260);
 }
 let splashDismissed=false;
 function dismissSplash(){

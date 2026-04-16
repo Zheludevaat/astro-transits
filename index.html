@@ -1466,11 +1466,10 @@ function buildVerdict(topTransits,mPhase,vocResult,curHour,pHours,moonSign){
     else lead=`${tp} is ${name} your ${np} (${tT.aspect.orbActual}°, separating) — `;
     // Nuance by aspect type + sect-aware
     const isHard=tT.aspect.type==='hard';const isEasy=tT.aspect.type==='easy';
-    const outSect={Saturn:true,Mars:false}; // nocturnal chart: Saturn out of sect
-    if(isHard&&outSect[tT.tp])parts.push(lead+'treat this as the weight of the day.');
-    else if(isHard)parts.push(lead+'expect friction, and use it to push through something stuck.');
-    else if(isEasy)parts.push(lead+'doors are open in that direction; walk through them.');
-    else if(name==='conjunction')parts.push(lead+'the two themes fuse — watch for what emerges.');
+    const seed=todaySeed();
+    if(isHard)parts.push(lead+pick(VERDICT_HARD_LEAD,seed)+'.');
+    else if(isEasy)parts.push(lead+pick(VERDICT_EASY_LEAD,seed)+'.');
+    else if(name==='conjunction')parts.push(lead+pick(VERDICT_CONJ_LEAD,seed)+'.');
     else parts.push(lead+'keep an eye on the theme.');
   }
   // Moon layer
@@ -1481,23 +1480,16 @@ function buildVerdict(topTransits,mPhase,vocResult,curHour,pHours,moonSign){
     else if(typeof endsIn==='number')endStr=`in ~${(endsIn/60).toFixed(1)}h (Moon enters ${vocResult.nextSign||'next sign'})`;
     parts.push(`Moon is void of course until ${endStr} — don\'t start new things, let the day coast.`);
   } else if(mPhase){
-    const lean={
-      'New Moon':'set intentions, plant seeds — the dark soil is receptive',
-      'Waxing Crescent':'build, recruit, gather momentum',
-      'First Quarter':'act on decisions; push past resistance',
-      'Waxing Gibbous':'refine and perfect; nearly there',
-      'Full Moon':'culmination — deliver, celebrate, or release',
-      'Waning Gibbous':'share what you\'ve made; teach what you know',
-      'Last Quarter':'prune, break, course-correct',
-      'Waning Crescent':'rest, review, compost the old cycle'
-    };
-    parts.push(`Moon in ${moonSign.name} — ${lean[mPhase.name]||'follow its cue'}.`);
+    const mspText=moonSignPhaseText(moonSign.name,mPhase.name);
+    // Use the sign+phase specific text but keep it concise for the verdict
+    const short=mspText.split('.')[0]+'.';
+    parts.push(`Moon in ${moonSign.name} — ${short.charAt(0).toLowerCase()+short.slice(1)}`);
   }
   if(curHour){
     parts.push(`This hour belongs to ${curHour.ruler}.`);
   }
   if(parts.length===0){
-    return 'A quiet day. No loud transits in orb — use the space.';
+    return pick(VERDICT_QUIET,todaySeed());
   }
   return parts.join(' ');
 }
@@ -3516,6 +3508,259 @@ Jupiter:'This is a year governed by Jupiter — growth, opportunity, and the exp
 Saturn:'This is a year governed by Saturn — responsibility, structure, and the patient building of something lasting define this chapter.',
 };
 
+// ══════════════════════════════════════════════════════════════
+// TIER 2: COMPOSABLE TEXT ENGINE — seeded fragments for inexhaustible prose
+// ══════════════════════════════════════════════════════════════
+
+// Deterministic seed: same inputs → same text for the day, different tomorrow
+function textSeed(dateStr,...keys){
+  let h=0;const s=dateStr+keys.join('');
+  for(let i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h|=0;}
+  return Math.abs(h);
+}
+function pick(arr,seed){return arr[seed%arr.length];}
+function pickN(arr,seed,n){
+  const out=[];const used=new Set();let s=seed;
+  while(out.length<n&&out.length<arr.length){const i=s%arr.length;if(!used.has(i)){used.add(i);out.push(arr[i]);}s=s*31+7;}
+  return out;
+}
+function todaySeed(){const d=new Date();return d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate();}
+
+// ── Opening frames by aspect type ──
+const OPENING_FRAMES={
+conjunction:['This merger','This fusion','This convergence','This intensification','This total overlay','This blending of forces','This concentration'],
+opposition:['This tension','This face-to-face encounter','This polarization','This mirror','This standoff','This dual awareness','This tug-of-war'],
+square:['This pressure','This friction','This challenge','This structural collision','This productive crisis','This forced reckoning','This grinding contact'],
+trine:['This flow','This ease','This natural cooperation','This mutual resonance','This effortless current','This inherited grace','This open channel'],
+sextile:['This opportunity','This gentle cooperation','This available bridge','This complementary angle','This invitation to connect','This opening','This quiet alignment'],
+quincunx:['This misalignment','This awkward adjustment','This persistent itch','This off-kilter tension','This thing that never quite fits','This subtle discomfort','This recalibration'],
+'semi-sextile':['This quiet friction','This adjacent restlessness','This background hum','This subtle transition','This low-grade tension','This whispered demand']
+};
+
+// ── What the transit planet DOES (verb/action pools) ──
+const TRANSIT_VERB={
+Sun:{
+  hard:['burns away pretense around','forces visibility on','exposes the gap between who you think you are and','demands authentic expression from','lights up the tension in'],
+  easy:['clarifies','illuminates with warmth','gives confidence to','brings recognition to','reveals the best path through'],
+  conjunction:['fuses with and magnifies','makes inseparable from your identity','floods with conscious awareness','concentrates the full light on','completely merges with']
+},
+Moon:{
+  hard:['unsettles the feelings around','agitates instinctive reactions to','triggers old patterns in','disturbs the emotional ground of','stirs up what you\'ve been avoiding about'],
+  easy:['soothes and supports','nourishes the emotional roots of','makes comfortable','aligns feeling with','brings intuitive clarity to'],
+  conjunction:['makes personal and immediate','floods with feeling','brings right to the surface of your body','emotionalizes everything about','puts instinct in charge of']
+},
+Mercury:{
+  hard:['tangles communication around','overcomplicates your thinking about','generates misunderstanding in','forces you to rethink','creates mental friction around'],
+  easy:['clarifies thinking about','opens productive conversations around','connects the dots in','brings useful information to','sharpens your analysis of'],
+  conjunction:['fills your mind with','makes the dominant topic of thought','brings news about','makes you articulate about','puts language on']
+},
+Venus:{
+  hard:['reveals dissatisfaction with','tests your values around','creates tension in relationships touching','makes you question what you want from','shows the price of pleasure in'],
+  easy:['softens and sweetens','harmonizes the energy around','attracts good things to','adds grace and beauty to','eases the way through'],
+  conjunction:['makes you want','magnetizes you toward','infuses desire into','makes irresistible','brings love or money to']
+},
+Mars:{
+  hard:['generates heat and conflict around','pushes aggressively against','creates urgency and impatience in','forces confrontation about','inflames the tension in'],
+  easy:['energizes and motivates','gives you the fuel to act on','adds courage to','drives productive action in','gives you the edge to push through'],
+  conjunction:['ignites','activates with full force','brings raw energy to','demands action on','makes you fight for']
+},
+Jupiter:{
+  hard:['inflates expectations around','overextends your reach in','creates excess in','exaggerates the stakes of','promises more than it delivers in'],
+  easy:['expands and blesses','opens doors in','brings opportunity to','protects and supports','broadens your understanding of'],
+  conjunction:['amplifies everything about','maximizes your fortune in','grants abundance in','makes enormous','bestows faith and confidence on']
+},
+Saturn:{
+  hard:['constricts and tests','adds weight and obligation to','delays gratification in','reveals structural weakness in','strips away illusion about','demands accountability for'],
+  easy:['stabilizes and grounds','adds durability to','rewards discipline in','proves what is solid about','brings mature clarity to'],
+  conjunction:['crystallizes','compresses into essence','makes inescapably real','removes all shortcuts from','defines the limits of']
+},
+Uranus:{
+  hard:['disrupts and destabilizes','shatters assumptions about','electrifies with sudden change in','makes unpredictable','breaks the pattern of'],
+  easy:['liberates and innovates','brings fresh perspective to','frees you from stale patterns in','opens an unexpected door in','adds originality to'],
+  conjunction:['revolutionizes','awakens you sharply to','completely reinvents','makes unrecognizable','sends a bolt through']
+},
+Neptune:{
+  hard:['confuses and dissolves','erodes certainty about','generates illusion around','weakens your grip on','makes it impossible to see clearly in'],
+  easy:['inspires and softens','adds imagination to','connects you spiritually to','brings compassion to','dissolves rigid thinking about'],
+  conjunction:['merges with the dream of','dissolves the boundary around','makes transcendent','floods with vision','spiritualizes']
+},
+Pluto:{
+  hard:['forces transformation in','brings power struggles to','exposes what\'s buried under','compels you to face the truth about','destroys and rebuilds'],
+  easy:['empowers quietly','adds depth and intensity to','gives you leverage in','transforms without crisis','regenerates from within'],
+  conjunction:['completely transforms','annihilates the old form of','resurrects from the ashes of','brings death and rebirth to','makes the unconscious conscious in']
+},
+Chiron:{
+  hard:['reopens old wounds around','makes you confront pain in','brings healing crisis to','shows where you\'re still broken regarding','asks you to teach what hurt you about'],
+  easy:['brings gentle healing to','offers wisdom through vulnerability in','integrates past pain about','makes your wound a gift in','opens a compassionate channel to'],
+  conjunction:['lays bare the core wound in','makes your deepest vulnerability your teacher about','focuses all healing energy on','confronts you with the original hurt of']
+},
+NorthNode:{
+  hard:['creates karmic tension around','forces evolutionary growth in','pulls you uncomfortably toward','makes you face your resistance to','demands that you grow through'],
+  easy:['aligns your path with','confirms the rightness of','brings fated encounters to','smooths the way toward destiny in','supports your evolution through'],
+  conjunction:['points directly at your fate in','makes undeniable the destiny of','draws you magnetically toward','marks a turning point in','activates the soul\'s purpose regarding']
+}
+};
+
+// ── House gerunds (WHERE in life) ──
+const HOUSE_GERUND={
+1:['in how you present yourself','in your body and bearing','in the face you show the world','through your physical presence and identity'],
+2:['in what you own and value','through your material resources','in how you earn and spend','in the things that make you feel secure'],
+3:['in your daily conversations','through siblings, neighbors, and local movement','in how you think and communicate','in the short journeys and messages of your day'],
+4:['in your roots and foundation','through home and family','in the most private part of your life','at the bottom of everything — where you come from'],
+5:['in your creative self-expression','through romance, children, or pleasure','in what you make for the joy of making it','in the parts of life where you play'],
+6:['in your daily rituals and health','through work, service, and maintenance','in the small adjustments that keep life running','in the body\'s routines and the day\'s obligations'],
+7:['in your one-on-one relationships','through partnerships and committed bonds','in the mirror that other people hold up to you','in the space between you and another person'],
+8:['in your deepest transformations','through shared resources, sex, or death','in the things you don\'t show anyone','in the place where you let go of control'],
+9:['in your search for meaning','through travel, education, or belief','in the part of your mind that needs the big picture','in what you believe and why you believe it'],
+10:['in your career and public role','through your reputation and authority','in what the world sees when it looks at your life','in your most visible achievements and responsibilities'],
+11:['in your vision and community','through friendships and collective goals','in the circles you move in and the future you imagine','in what you hope for beyond yourself'],
+12:['in the hidden parts of your life','through solitude, meditation, or self-undoing','in what you process alone and in silence','in the blind spots and the spiritual work done behind closed doors']
+};
+
+// ── Advice closers (what to DO) ──
+const ADVICE_CLOSE={
+hard:{
+  Sun:['Stand your ground. This is testing whether your identity is real.','The discomfort is diagnostic — it shows you where you\'re not aligned.','Don\'t flinch. What burns away was already dead.'],
+  Moon:['Feel it, but don\'t let the feeling make the decision.','Tend to yourself before you tend to the crisis.','The emotional wave will pass. Don\'t build permanent structures on it.'],
+  Mercury:['Think twice before you speak. Then think again.','The miscommunication is the message — something wasn\'t clear.','Write it down before you say it out loud.'],
+  Venus:['What you want and what\'s good for you may not be the same thing today.','Relationship friction reveals where you\'ve been compromising too much — or not enough.','Beauty doesn\'t make it true. Examine what attracts you.'],
+  Mars:['Channel the anger into something physical. Don\'t let it leak sideways.','Pick your battles. Not every provocation deserves a response.','The impulse to fight is real, but so is the impulse to destroy what you need.'],
+  Jupiter:['Rein it in. Enthusiasm without structure creates mess.','Say no to at least one thing that sounds amazing.','Growth that outruns your foundations is just inflation.'],
+  Saturn:['Do the hard thing first. The rest of the day gets easier.','This is a load-bearing day — what you build now has to hold weight.','The restriction is the instruction. Work within it.'],
+  Uranus:['Let the disruption land before you react.','Don\'t confuse shock with insight — wait a day.','What feels like chaos may be liberation you haven\'t recognized yet.'],
+  Neptune:['Verify before you trust.','The intuition is real; the interpretation may not be.','Art, prayer, water — find a way to process this that isn\'t verbal.'],
+  Pluto:['Let the dead thing die. Stop resuscitating it.','The power struggle is internal, even if it looks external.','What\'s being destroyed has already served its purpose.'],
+  Chiron:['The pain is old. Don\'t blame today\'s circumstances for yesterday\'s wound.','Your vulnerability is not a defect — it\'s the place your wisdom comes from.','Help someone else with the exact thing that hurts you.'],
+  NorthNode:['Growth is uncomfortable by design. Lean in.','What feels wrong may just feel unfamiliar.','The resistance is the sign that this is the right direction.']
+},
+easy:{
+  Sun:['Step into the spotlight. This is your moment.','Express yourself without apology.','The path is clear — walk it with confidence.'],
+  Moon:['Trust your instincts today.','The emotional ground is stable. Plant something.','Nurture what matters and let it nurture you back.'],
+  Mercury:['Say the thing you\'ve been thinking.','Conversations today carry more than usual weight.','Your mind is sharp — use it to solve, not just to analyze.'],
+  Venus:['Enjoy this. Not everything has to be hard.','Reach out to someone you love.','Beauty and pleasure are not distractions — they\'re fuel.'],
+  Mars:['Act on what you\'ve been planning.','Your energy is clean and directed — spend it on what matters.','Move your body. The answer comes through action.'],
+  Jupiter:['Say yes. The opportunity is real.','Expand toward the thing that excites you.','Generosity given today comes back multiplied.'],
+  Saturn:['The structure you\'ve built is being rewarded.','Discipline pays off today. Keep going.','What you\'ve earned is yours. Own it.'],
+  Uranus:['Follow the flash of insight.','Break from routine in a way that thrills you.','Freedom and stability don\'t have to be opposites today.'],
+  Neptune:['Trust the vision. The dream is closer than it looks.','Let your imagination lead for once.','The boundary between you and something beautiful is thin today.'],
+  Pluto:['You have quiet power today. Use it wisely.','Transformation doesn\'t have to be violent. Today it\'s organic.','What\'s changing is changing in your favor.'],
+  Chiron:['Healing is happening without you having to force it.','The wound is integrating into wisdom.','Share what you\'ve learned from your pain — it helps someone.'],
+  NorthNode:['You\'re on the right path. The confirmation is subtle but real.','Fate is friendly today. Notice the synchronicities.','What\'s unfolding is exactly what needs to unfold.']
+},
+conjunction:{
+  Sun:['Whatever emerges from this fusion — claim it fully.','You can\'t separate yourself from this. Lean in.','This IS you right now. Work with it.'],
+  Moon:['The feeling and the fact are the same thing today.','Your body knows what your mind hasn\'t processed yet.','Everything is personal. Accept it.'],
+  Mercury:['Name it. Give language to what\'s forming.','The word and the thing are merging — be precise.','Think out loud. The clarity comes mid-sentence.'],
+  Venus:['What you love and what you are overlap completely.','Desire is identity today. Follow it honestly.','Merge with what attracts you — resistance is artificial.'],
+  Mars:['Pure fuel. Point it somewhere productive.','Your will and your energy are one thing right now.','Act. The alignment between want and capacity won\'t last.'],
+  Jupiter:['You and opportunity are the same address.','The expansion is personal. Say yes to yourself.','Faith IS the action today.'],
+  Saturn:['The weight is your teacher. Listen to it.','You\'re being forged. It\'s not comfortable and it\'s not optional.','Responsibility and identity are the same today.'],
+  Uranus:['You are the disruption. Own it.','Something permanent changes about who you are.','The old version of you just became obsolete.'],
+  Neptune:['You dissolve into something larger.','The boundary between you and the numinous thins to nothing.','Not everything can be grasped. Let this one wash over you.'],
+  Pluto:['Total metamorphosis. The old self is compost.','Power courses through you. Be careful what you point it at.','What dies today was already haunting you.'],
+  Chiron:['The wound IS the gift. You can\'t have one without the other.','This is the heart of your healing story.','Sit with the pain — it has something to teach you that only you can learn.'],
+  NorthNode:['This is the evolutionary moment. Everything converges.','Fate and will are indistinguishable today.','What happens now was always going to happen.']
+}
+};
+
+// ── Dignity reframes ──
+const DIGNITY_REFRAME={
+domicile:['at full power in its own sign','operating from home turf','at its most natural and effective','with the full authority of rulership'],
+exaltation:['magnified and honored','elevated beyond its usual range','riding high in its sign of exaltation','amplified and celebrated'],
+detriment:['uncomfortable and working against the grain','in unfamiliar territory','operating at a disadvantage','forced to express through an alien medium'],
+fall:['weakened and undermined','at its lowest dignity','struggling to function effectively','working with diminished resources']
+};
+
+// ── Moon sign x phase matrix (96 combos: 12 signs x 8 phases) ──
+const MOON_SIGN_PHASE={
+Aries:{'New Moon':'Raw impulse seeds in darkness. Set intentions around courage and independence.','Waxing Crescent':'The spark catches. Momentum builds toward something brave.','First Quarter':'Push through the resistance — action, not hesitation.','Waxing Gibbous':'Refine the charge. Courage needs direction now.','Full Moon':'The fire peaks. Anger or triumph illuminates what you\'ve built.','Waning Gibbous':'Share the battle story. Teach others to be brave.','Last Quarter':'Let go of the fight you no longer need.','Waning Crescent':'Rest the warrior. Stillness before the next charge.'},
+Taurus:{'New Moon':'Slow seeds in rich soil. Plant what you want to last.','Waxing Crescent':'Growth is slow and physical. Trust the body\'s pace.','First Quarter':'Choose comfort or growth — you can\'t have both today.','Waxing Gibbous':'Polish what you\'re building. Quality over speed.','Full Moon':'The harvest is tangible. What you\'ve grown is real and solid.','Waning Gibbous':'Give generously from your abundance.','Last Quarter':'Release an attachment to something you no longer need.','Waning Crescent':'Savor the quiet. Let the senses rest.'},
+Gemini:{'New Moon':'Ideas seed in the dark. Don\'t chase them yet — just notice.','Waxing Crescent':'Conversations spark. Follow the thread that excites you.','First Quarter':'Choose a direction. Too many options paralyze.','Waxing Gibbous':'Edit the message. Clarity beats cleverness.','Full Moon':'Information peaks. What you learn today changes your thinking.','Waning Gibbous':'Teach what you know. Share the connections.','Last Quarter':'Drop the topic that\'s become circular.','Waning Crescent':'Let the mind go quiet. Not everything needs words.'},
+Cancer:{'New Moon':'Emotional seeds planted in the deepest privacy. Tend your inner garden.','Waxing Crescent':'Vulnerability builds into something protective. Nurture carefully.','First Quarter':'The shell must crack to grow. Face the emotional friction.','Waxing Gibbous':'Fine-tune the nest. Small acts of care refine the foundation.','Full Moon':'Feelings crest. What you\'ve been holding surfaces with full force.','Waning Gibbous':'Feed others from your emotional abundance.','Last Quarter':'Release the old family pattern. It\'s done serving you.','Waning Crescent':'Retreat to the womb of solitude. Rest is medicine.'},
+Leo:{'New Moon':'Creative impulse sparks in the dark. The stage is empty and waiting.','Waxing Crescent':'Self-expression gathers momentum. Build toward being seen.','First Quarter':'The ego is tested. Pride must serve something larger.','Waxing Gibbous':'Refine the performance. Polish the gift before you present it.','Full Moon':'The spotlight is fully on. Applause or reckoning.','Waning Gibbous':'Shine your light on others. Generosity is the highest expression.','Last Quarter':'Let go of the need for approval.','Waning Crescent':'The performer rests. Be ordinary for a moment.'},
+Virgo:{'New Moon':'Quiet seeds of order. Notice what needs fixing without fixing it yet.','Waxing Crescent':'Systems build themselves when you attend to the details.','First Quarter':'Perfectionism meets reality. Good enough IS enough today.','Waxing Gibbous':'Refine the routine. Small calibrations create large results.','Full Moon':'The analysis is complete. See the pattern whole.','Waning Gibbous':'Serve someone who needs what you know.','Last Quarter':'Release the standard that was never achievable.','Waning Crescent':'Let the body rest. Not everything is a problem to solve.'},
+Libra:{'New Moon':'Relational seeds in the dark. Set intentions around balance and fairness.','Waxing Crescent':'Harmony builds through small gestures. Reach out.','First Quarter':'Choose peace or truth — sometimes they\'re not the same.','Waxing Gibbous':'Refine the relationship. Address the thing you\'ve been avoiding.','Full Moon':'The partnership peaks. What you see in the mirror is yourself.','Waning Gibbous':'Share beauty. Create harmony in your environment.','Last Quarter':'End the false compromise.','Waning Crescent':'Solitude after togetherness. Balance needs both poles.'},
+Scorpio:{'New Moon':'Deep seeds in absolute darkness. The most powerful intentions form here.','Waxing Crescent':'Intensity builds below the surface. Trust the undertow.','First Quarter':'Confront the shadow. What you resist controls you.','Waxing Gibbous':'Deepen the investigation. You\'re close to the truth.','Full Moon':'Everything hidden surfaces. Raw, exposed, undeniable.','Waning Gibbous':'Share the depth. Vulnerability transforms others too.','Last Quarter':'Release the obsession. Open your grip.','Waning Crescent':'Dissolve into the dark. Ego death before rebirth.'},
+Sagittarius:{'New Moon':'Seeds of faith. What do you believe is possible?','Waxing Crescent':'The horizon calls. Begin moving toward meaning.','First Quarter':'Belief meets reality. Does your philosophy hold under pressure?','Waxing Gibbous':'Refine the vision. Big picture, yes — but where are the details?','Full Moon':'Truth arrives. Your perspective expands dramatically.','Waning Gibbous':'Teach what you\'ve found. Share the wider view.','Last Quarter':'Release the belief that no longer serves your growth.','Waning Crescent':'Silence the philosopher. Let mystery stay mysterious.'},
+Capricorn:{'New Moon':'Structural seeds. Build intentions around legacy and discipline.','Waxing Crescent':'The climb begins. Small, steady, deliberate steps.','First Quarter':'Ambition meets limitation. Choose the harder path — it lasts.','Waxing Gibbous':'Refine the structure. What is load-bearing? What is decoration?','Full Moon':'The achievement crystallizes. What you built stands in plain view.','Waning Gibbous':'Mentor someone. Your experience is more valuable than you think.','Last Quarter':'Release the ambition that was never yours.','Waning Crescent':'The mountain rests. Even stone needs stillness.'},
+Aquarius:{'New Moon':'Revolutionary seeds. What would you change if you had no fear?','Waxing Crescent':'The collective stirs. Your weird idea might be exactly right.','First Quarter':'Freedom clashes with belonging. Choose, then live with it.','Waxing Gibbous':'Refine the innovation. Original doesn\'t mean unfinished.','Full Moon':'The vision peaks. Your individual truth meets the group mind.','Waning Gibbous':'Distribute the insight. What helps you helps everyone.','Last Quarter':'Release the ideology that became a cage.','Waning Crescent':'Detach from the cause. Your nervous system needs a break.'},
+Pisces:{'New Moon':'The most fertile dark. Seeds dissolve into pure potential.','Waxing Crescent':'Imagination builds toward form. Don\'t rush — let it emerge.','First Quarter':'Reality presses on the dream. What survives is sacred.','Waxing Gibbous':'Refine the vision without destroying its mystery.','Full Moon':'The veil lifts. Spiritual and emotional flood — transcendent or overwhelming.','Waning Gibbous':'Pour compassion outward. Your empathy is a gift.','Last Quarter':'Release the martyr role. Saving yourself is not selfish.','Waning Crescent':'Total dissolution. Surrender to sleep, to water, to the divine nothing.'}
+};
+
+// ── Expanded verdict variants (buildVerdict draws from these) ──
+const VERDICT_HARD_LEAD=[
+  'expect friction, and use it to push through something stuck',
+  'the pressure is productive if you don\'t fight it',
+  'resistance is the teacher today — don\'t avoid the discomfort',
+  'something is being tested. Let it be tested',
+  'the obstacle IS the path today',
+  'lean into the difficulty — it\'s shaping something necessary'
+];
+const VERDICT_EASY_LEAD=[
+  'doors are open in that direction — walk through them',
+  'support is available; the question is whether you\'ll use it',
+  'the current is with you — paddle',
+  'what wants to happen is allowed to happen today',
+  'the wind is at your back. Go where it takes you',
+  'cooperation flows easily — take advantage'
+];
+const VERDICT_CONJ_LEAD=[
+  'the two themes fuse — watch for what emerges',
+  'this convergence changes everything it touches',
+  'nothing can be separated today — work with the whole',
+  'the overlap is total. What appears is something new',
+  'this synthesis won\'t happen again for a while — pay attention'
+];
+const VERDICT_QUIET=[
+  'A quiet day. No loud transits in orb — use the space.',
+  'The sky is calm. Your own agenda runs the day.',
+  'No major planetary pressure today. Breathe.',
+  'The cosmos gives you room. What do you actually want to do?',
+  'Relatively still overhead. A day for your own rhythm.'
+];
+
+// ── Compose a full aspect interpretation from fragments ──
+function composeTransitText(tPlanet,nPoint,aspectName,aspectType,house,date){
+  const seed=textSeed(date||new Date().toDateString(),tPlanet,nPoint,aspectName);
+  const frames=OPENING_FRAMES[aspectName]||OPENING_FRAMES.conjunction;
+  const verbKey=aspectType==='hard'?'hard':aspectType==='easy'?'easy':'conjunction';
+  const verbs=(TRANSIT_VERB[tPlanet]||TRANSIT_VERB.Sun)[verbKey]||(TRANSIT_VERB[tPlanet]||TRANSIT_VERB.Sun).conjunction;
+  const gerunds=HOUSE_GERUND[house]||HOUSE_GERUND[1];
+  const advPool=(ADVICE_CLOSE[verbKey]||ADVICE_CLOSE.conjunction)[tPlanet]||(ADVICE_CLOSE[verbKey]||ADVICE_CLOSE.conjunction).Sun;
+  const nLabel=nPoint==='NorthNode'?'your North Node':nPoint==='Ascendant'?'your Ascendant':nPoint==='MC'?'your Midheaven':'your natal '+nPoint;
+  return `${pick(frames,seed)} ${pick(verbs,seed+1)} ${nLabel} ${pick(gerunds,seed+2)}. ${pick(advPool,seed+3)}`;
+}
+
+// ── Compose a Shape of Day sentence from fragments ──
+function composeShapeSentence(tPlanet,nPoint,aspectName,aspectType,house,importance){
+  const seed=textSeed(new Date().toDateString(),tPlanet,nPoint,'shape');
+  const sph=SPHERE[tPlanet]||{};const hv=HOUSE_VOICE[house]||{};
+  const verbKey=aspectType==='hard'?'hard':aspectType==='easy'?'easy':'conjunction';
+  const verbs=(TRANSIT_VERB[tPlanet]||TRANSIT_VERB.Sun)[verbKey]||[];
+  const gerunds=HOUSE_GERUND[house]||HOUSE_GERUND[1];
+  const advPool=(ADVICE_CLOSE[verbKey]||ADVICE_CLOSE.conjunction)[tPlanet]||[];
+  const nLabel=nPoint==='NorthNode'?'your North Node':nPoint==='Ascendant'?'your self-presentation':nPoint==='MC'?'your public standing':'your natal '+nPoint;
+  return `${sph.name||tPlanet} ${pick(verbs,seed)||sph.office||'acts on'} ${nLabel} ${pick(gerunds,seed+1)}. ${pick(advPool,seed+2)||'Work with it.'}`;
+}
+
+// ── Moon sign+phase text lookup with fallback ──
+function moonSignPhaseText(signName,phaseName){
+  const sp=MOON_SIGN_PHASE[signName];
+  if(sp&&sp[phaseName])return sp[phaseName];
+  return MOON_SIGN_FLAVOR[signName]||'';
+}
+
+// ── Dignity context string ──
+function dignityContext(planet,lon){
+  const dig=getDignity(planet,lon);
+  if(!dig)return '';
+  const key=dig.label.toLowerCase().split(' ')[0]; // domicile, exaltation, detriment, fall
+  const pool=DIGNITY_REFRAME[key];
+  if(!pool)return '';
+  const seed=textSeed(new Date().toDateString(),planet,'dig');
+  return ' — '+pick(pool,seed);
+}
+
 // Synthesize the Shape of the Day paragraph (Layer 1)
 function synthesizeShapeOfDay(transits,vibe,mPhase,retros,stats,vocResult,moonSign,prof,pHours,isToday){
   const sentences=[];
@@ -3533,23 +3778,29 @@ function synthesizeShapeOfDay(transits,vibe,mPhase,retros,stats,vocResult,moonSi
   const easyTop=transits.filter(t=>(t.aspect.type==='easy'||t.aspect.name==='conjunction')&&t.importance>15);
 
   if(hardTop.length>=2){
-    const p1=SPHERE[hardTop[0].tp]||{},p2=SPHERE[hardTop[1].tp]||{};
-    const h1=HOUSE_VOICE[hardTop[0].house]||{},h2=HOUSE_VOICE[hardTop[1].house]||{};
-    sentences.push(`Two spheres press hard today: ${p1.name||hardTop[0].tp}, whose office is to ${p1.office||'act'}, bears on your ${(h1.name||'').toLowerCase()}${h2.name&&h2.name!==h1.name?`, while ${p2.name||hardTop[1].tp} tests your ${(h2.name||'').toLowerCase()}`:''}. The friction is not punishment — it is the quality of this particular time, and it carries information about what needs to change.`);
+    const t1=hardTop[0],t2=hardTop[1];
+    sentences.push(composeShapeSentence(t1.tp,t1.np,t1.aspect.name,t1.aspect.type,t1.house,t1.importance));
+    const p2=SPHERE[t2.tp]||{};const h2=HOUSE_VOICE[t2.house]||{};
+    sentences.push(`Meanwhile, ${p2.name||t2.tp} tests your ${(h2.name||'life').toLowerCase()}${dignityContext(t2.tp,t2.tLon)}. The friction is not punishment — it carries information about what needs to change.`);
   } else if(hardTop.length===1){
-    const p1=SPHERE[hardTop[0].tp]||{};const h1=HOUSE_VOICE[hardTop[0].house]||{};
-    const np1=hardTop[0].np==='Ascendant'?'your self-presentation':hardTop[0].np==='MC'?'your public standing':`your natal ${hardTop[0].np}`;
-    sentences.push(`${p1.name||hardTop[0].tp} ${p1.office||'acts'} today, pressing on ${np1} in the area of ${(h1.name||'your life').toLowerCase()}. ${p1.when_stressed||'This asks something of you'}. Work with it rather than against it.`);
+    const t1=hardTop[0];
+    sentences.push(composeShapeSentence(t1.tp,t1.np,t1.aspect.name,t1.aspect.type,t1.house,t1.importance)+dignityContext(t1.tp,t1.tLon));
   } else if(easyTop.length>=2){
-    const p1=SPHERE[easyTop[0].tp]||{};
-    sentences.push(`The spheres are cooperative today — ${p1.name||easyTop[0].tp} ${p1.office||'supports you'}, and ${easyTop[1].tp} adds its own harmonious note. This is time with a generous texture. The question is not whether you have support but whether you will use it.`);
+    const t1=easyTop[0];
+    sentences.push(composeShapeSentence(t1.tp,t1.np,t1.aspect.name,t1.aspect.type,t1.house,t1.importance));
+    const p2=SPHERE[easyTop[1].tp]||{};
+    sentences.push(`${p2.name||easyTop[1].tp} adds its own harmonious note${dignityContext(easyTop[1].tp,easyTop[1].tLon)}. The question is not whether you have support but whether you will use it.`);
   } else if(easyTop.length===1){
-    const p1=SPHERE[easyTop[0].tp]||{};const h1=HOUSE_VOICE[easyTop[0].house]||{};
-    sentences.push(`${p1.name||easyTop[0].tp} offers support in the area of ${(h1.name||'your life').toLowerCase()} — ${p1.when_active||'take what is offered'}. This is not dramatic energy, but it is real, and it rewards initiative.`);
+    const t1=easyTop[0];
+    sentences.push(composeShapeSentence(t1.tp,t1.np,t1.aspect.name,t1.aspect.type,t1.house,t1.importance)+dignityContext(t1.tp,t1.tLon));
   } else if(vibe.score>=5){
-    sentences.push('The planetary spheres are relatively quiet today — no single intelligence dominates. This is neutral time, good for steady work and your own agenda.');
+    const seed=todaySeed();
+    const quietLines=['The planetary spheres are relatively quiet today — no single intelligence dominates. This is neutral time, good for steady work and your own agenda.','The sky offers a pause. No planet demands your attention. Use the space for what only you can decide.','A rare lull overhead. The cosmos releases its grip — your own priorities run the show.'];
+    sentences.push(pick(quietLines,seed));
   } else {
-    sentences.push('Today\'s cosmic weather is complex, with multiple subtle pressures rather than one clear signal. Move deliberately and stay attentive to small shifts.');
+    const seed=todaySeed();
+    const complexLines=['Today\'s cosmic weather is complex, with multiple subtle pressures rather than one clear signal. Move deliberately and stay attentive to small shifts.','Several quiet currents run at once today. No single planet dominates, but the cumulative weight is real. Stay alert to undercurrents.','The sky hums with low-level activity — no headline transit, but a web of minor aspects that color everything.'];
+    sentences.push(pick(complexLines,seed));
   }
 
   // 3. Moon condition
@@ -3557,9 +3808,8 @@ function synthesizeShapeOfDay(transits,vibe,mPhase,retros,stats,vocResult,moonSi
   if(vocResult&&vocResult.voc){
     sentences.push(`The Moon is void of course in ${moonSign.name} — she makes no further aspects before leaving the sign. This is a pause in the day\'s emotional rhythm. Don\'t launch anything new; finish what\'s in motion, organize, rest.`);
   } else {
-    const moonQualities={Aries:'urgent and direct',Taurus:'steady and sensual',Gemini:'restless and curious',Cancer:'tender and protective',Leo:'warm and expressive',Virgo:'precise and serviceable',Libra:'harmonious and relational',Scorpio:'deep and penetrating',Sagittarius:'expansive and restless',Capricorn:'sober and determined',Aquarius:'detached and visionary',Pisces:'sensitive and permeable'};
-    const mq=moonQualities[moonSign.name]||'shifting';
-    sentences.push(`The Moon in ${moonSign.name} makes the emotional ground ${mq}. ${mPhase.name==='Full Moon'?'At full illumination, feelings peak and truths surface.':mPhase.name==='New Moon'?'At the dark of the Moon, energy is low but potential is seeding.':''}`);
+    const mspText=moonSignPhaseText(moonSign.name,mPhase.name);
+    sentences.push(`Moon in ${moonSign.name}, ${mPhase.name}: ${mspText}`);
   }
 
   // 4. Retrogrades as undercurrent
@@ -3612,7 +3862,7 @@ function generateDailyGuidance(transits,vibe,mPhase,retros,stats,vocResult,moonS
     h+=`<span class="g-transit-label">${mPhase.name} in ${moonSign.name}</span>`;
     if(vocResult&&vocResult.voc)h+=`<span class="g-tag" style="background:var(--violet-soft);color:var(--violet)">VOC</span>`;
     h+=`</div>`;
-    const msf=MOON_SIGN_FLAVOR[moonSign.name]||'';
+    const msf=moonSignPhaseText(moonSign.name,mPhase.name);
     h+=`<div class="g-transit-body">${msf}</div></div>`;
   }
 
@@ -3631,7 +3881,8 @@ function generateDailyGuidance(transits,vibe,mPhase,retros,stats,vocResult,moonS
       h+=`<span class="g-transit-label">${tpName} ${av.label||t.aspect.name} ${npName}</span>`;
       h+=motionTag;
       h+=`</div>`;
-      h+=`<div class="g-transit-body">${av.feel?av.feel+'. ':''}${(SPHERE[t.tp]||{}).when_active||av.advice||''}</div>`;
+      const composedBody=composeTransitText(t.tp,t.np,t.aspect.name,t.aspect.type,t.house);
+      h+=`<div class="g-transit-body">${composedBody}${dignityContext(t.tp,t.tLon)}</div>`;
       if(hv.name)h+=`<div class="g-transit-house">House ${t.house}: ${hv.name}</div>`;
       h+=`</div>`;
     }

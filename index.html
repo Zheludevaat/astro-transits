@@ -936,9 +936,73 @@ html.light .guidance-preview:not(.expanded)::after{background:linear-gradient(tr
 
 /* ── Swipe hint ── */
 .swipe-zone{touch-action:pan-y}
+
+/* ── HOME / DASHBOARD TAB ── */
+@keyframes homeFadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes homePulse{0%,100%{opacity:.55;transform:scale(1)}50%{opacity:1;transform:scale(1.04)}}
+@keyframes homeOrbit{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes homeCounterOrbit{from{transform:rotate(360deg)}to{transform:rotate(0deg)}}
+@keyframes starTwinkle{0%,100%{opacity:.2}50%{opacity:1}}
+@keyframes moonGlow{0%,100%{filter:drop-shadow(0 0 6px rgba(255,200,120,.3))}50%{filter:drop-shadow(0 0 14px rgba(255,200,120,.55))}}
+@keyframes verdictReveal{0%{opacity:0;letter-spacing:3px}60%{letter-spacing:1px}100%{opacity:1;letter-spacing:normal}}
+.home-greeting{animation:homeFadeUp .6s ease-out both;font-size:13px;color:var(--text2);letter-spacing:.05em;text-transform:uppercase;margin:10px 0 4px}
+.home-greeting .home-greet-name{color:var(--gold);font-weight:600}
+.home-day-ruler{animation:homeFadeUp .6s ease-out .1s both;font-size:12px;color:var(--text2);opacity:.8;margin-bottom:14px;display:flex;align-items:center;gap:6px}
+.home-verdict{animation:verdictReveal .9s ease-out .2s both;background:linear-gradient(135deg,rgba(255,200,120,.08),rgba(180,140,255,.06));border:1px solid var(--surface);border-radius:14px;padding:16px 18px;margin-bottom:18px;position:relative;overflow:hidden}
+.home-verdict::before{content:'';position:absolute;top:0;left:-50%;width:200%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,200,120,.06),transparent);animation:homeShimmer 4s ease-in-out infinite}
+@keyframes homeShimmer{0%{transform:translateX(-50%)}50%{transform:translateX(50%)}100%{transform:translateX(-50%)}}
+.home-verdict-label{font-size:10px;color:var(--gold);letter-spacing:.18em;text-transform:uppercase;margin-bottom:6px;opacity:.8}
+.home-verdict-text{font-size:15px;line-height:1.55;color:var(--bright);font-weight:500}
+.home-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.home-card{animation:homeFadeUp .5s ease-out both;background:var(--bg2);border:1px solid var(--surface);border-radius:12px;padding:12px;position:relative;overflow:hidden;cursor:pointer;transition:transform .18s ease,border-color .18s ease}
+.home-card:active{transform:scale(.98)}
+.home-card:hover{border-color:var(--gold)}
+.home-card:nth-child(1){animation-delay:.3s}
+.home-card:nth-child(2){animation-delay:.38s}
+.home-card:nth-child(3){animation-delay:.46s}
+.home-card:nth-child(4){animation-delay:.54s}
+.home-card-label{font-size:9px;color:var(--text2);letter-spacing:.15em;text-transform:uppercase;margin-bottom:6px;opacity:.7}
+.home-card-value{font-size:15px;color:var(--bright);font-weight:600;line-height:1.3}
+.home-card-sub{font-size:11px;color:var(--text2);margin-top:4px;line-height:1.4}
+.home-card-icon{position:absolute;top:10px;right:10px;opacity:.35}
+.home-moon-wrap{display:flex;align-items:center;gap:10px}
+.home-moon-svg{animation:moonGlow 4s ease-in-out infinite;flex-shrink:0}
+.home-week{animation:homeFadeUp .6s ease-out .7s both;background:var(--bg2);border:1px solid var(--surface);border-radius:12px;padding:14px;margin-bottom:14px}
+.home-week-title{font-size:10px;color:var(--text2);letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px}
+.home-week-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--surface);font-size:12px}
+.home-week-row:last-child{border-bottom:none}
+.home-week-date{color:var(--gold);font-weight:600;min-width:48px;font-size:11px}
+.home-week-desc{color:var(--text);flex:1;line-height:1.4}
+.home-jump{animation:homeFadeUp .6s ease-out .85s both;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px}
+.home-jump button{background:var(--bg2);border:1px solid var(--surface);color:var(--text);border-radius:10px;padding:12px 8px;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .18s ease;font-family:inherit}
+.home-jump button:hover{border-color:var(--gold);color:var(--gold)}
+.home-jump button:active{transform:scale(.96)}
+/* App Loader */
+.app-loader{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);z-index:9999;transition:opacity .5s ease}
+.app-loader.hide{opacity:0;pointer-events:none}
+.app-loader-orbit{position:relative;width:120px;height:120px}
+.app-loader-orbit .center-sun{position:absolute;top:50%;left:50%;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;background:radial-gradient(circle,#ffc870,#ff8c42);box-shadow:0 0 20px rgba(255,200,120,.6);animation:homePulse 2s ease-in-out infinite}
+.app-loader-orbit .ring{position:absolute;inset:0;border:1px solid rgba(255,200,120,.15);border-radius:50%}
+.app-loader-orbit .ring-1{inset:20px;animation:homeOrbit 4s linear infinite}
+.app-loader-orbit .ring-2{inset:10px;border-color:rgba(180,140,255,.18);animation:homeCounterOrbit 6s linear infinite}
+.app-loader-orbit .ring-3{inset:0;border-color:rgba(120,220,180,.12);animation:homeOrbit 9s linear infinite}
+.app-loader-orbit .planet{position:absolute;width:8px;height:8px;border-radius:50%;top:-4px;left:50%;margin-left:-4px}
+.app-loader-orbit .ring-1 .planet{background:#ffc870;box-shadow:0 0 8px rgba(255,200,120,.8)}
+.app-loader-orbit .ring-2 .planet{background:#b48cff;box-shadow:0 0 8px rgba(180,140,255,.8)}
+.app-loader-orbit .ring-3 .planet{background:#78dcb4;box-shadow:0 0 8px rgba(120,220,180,.8)}
+.app-loader-title{margin-top:26px;font-size:11px;color:var(--text2);letter-spacing:.25em;text-transform:uppercase;animation:starTwinkle 2.5s ease-in-out infinite}
 </style>
 </head>
 <body>
+<div id="app-loader" class="app-loader">
+  <div class="app-loader-orbit">
+    <div class="ring ring-3"><div class="planet"></div></div>
+    <div class="ring ring-2"><div class="planet"></div></div>
+    <div class="ring ring-1"><div class="planet"></div></div>
+    <div class="center-sun"></div>
+  </div>
+  <div class="app-loader-title">Aligning the heavens…</div>
+</div>
 <div id="app" class="container"></div>
 <nav id="tab-bar-host" class="tab-bar"></nav>
 <button id="fab-top" class="fab-top" aria-label="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
@@ -1324,6 +1388,128 @@ const NATAL_ASPECT_DEPTH={
   'Saturn-MC|conjunction':'Career-defining authority, slow-climbing ambition.'
 };
 function natalAspectKey(p1,p2,name){const arr=[p1,p2].sort();return arr[0]+'-'+arr[1]+'|'+name;}
+
+// ─── Home dashboard helpers ───
+const DAY_RULERS=['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn']; // Sun..Sat
+const DAY_RULER_TONE={
+  Sun:'a day for visibility, leadership, and vitality — put your name on the work',
+  Moon:'a day of moods, memory, and the tidal instinct — trust how you feel',
+  Mars:'a day for decisive action, courage, and cutting through — push hard',
+  Mercury:'a day of messages, trades, and thinking out loud — move information',
+  Jupiter:'a day for expansion, teaching, and asking for more — aim wider',
+  Venus:'a day for love, art, and repairing what\'s beautiful — soften',
+  Saturn:'a day for structure, responsibility, and hard truths — do the grown-up thing'
+};
+function timeGreeting(date){
+  const h=new Date(date.toLocaleString('en-US',{timeZone:OBSERVER.tzName})).getHours();
+  if(h<5)return'Late night';if(h<12)return'Good morning';if(h<17)return'Good afternoon';if(h<21)return'Good evening';return'Late evening';
+}
+function moonPhaseSvg(phaseAngle,size){
+  // phaseAngle: 0 = new, 180 = full, 0-180 waxing, 180-360 waning
+  const r=size/2-2;const cx=size/2,cy=size/2;
+  const illum=(1-Math.cos(phaseAngle*DEG))/2; // 0..1
+  const waxing=phaseAngle<180;
+  // Terminator ellipse radius (x)
+  const termR=Math.abs(r*Math.cos(phaseAngle*DEG));
+  // Build path: full disk, then subtract/add shadow
+  let path='';
+  if(phaseAngle<.5||phaseAngle>359.5){
+    // New moon
+    return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" class="home-moon-svg"><circle cx="${cx}" cy="${cy}" r="${r}" fill="#1a1a1a" stroke="#555" stroke-width="1"/></svg>`;
+  }
+  if(Math.abs(phaseAngle-180)<.5){
+    // Full
+    return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" class="home-moon-svg"><defs><radialGradient id="mg"><stop offset="0%" stop-color="#fff8e0"/><stop offset="100%" stop-color="#c8b48c"/></radialGradient></defs><circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#mg)"/></svg>`;
+  }
+  // Mask: lit vs dark
+  // Use two semicircle arcs to form the lit shape
+  // Always: left edge at cx-r, right edge at cx+r
+  // The terminator is an ellipse of x-radius termR, y-radius r
+  let darkPath,litPath;
+  const lgFlag=phaseAngle<180?1:0; // waxing: lit on right
+  if(illum<.5){
+    // Crescent — small lit portion
+    if(waxing){
+      // Lit is right crescent, formed by arc(r) right + arc(termR) left-curving-right
+      litPath=`M ${cx} ${cy-r} A ${r} ${r} 0 0 1 ${cx} ${cy+r} A ${termR} ${r} 0 0 0 ${cx} ${cy-r} Z`;
+    } else {
+      litPath=`M ${cx} ${cy-r} A ${r} ${r} 0 0 0 ${cx} ${cy+r} A ${termR} ${r} 0 0 1 ${cx} ${cy-r} Z`;
+    }
+  } else {
+    // Gibbous — large lit portion
+    if(waxing){
+      litPath=`M ${cx} ${cy-r} A ${r} ${r} 0 0 1 ${cx} ${cy+r} A ${termR} ${r} 0 0 1 ${cx} ${cy-r} Z`;
+    } else {
+      litPath=`M ${cx} ${cy-r} A ${r} ${r} 0 0 0 ${cx} ${cy+r} A ${termR} ${r} 0 0 0 ${cx} ${cy-r} Z`;
+    }
+  }
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" class="home-moon-svg">`+
+    `<defs><radialGradient id="mg${Math.round(phaseAngle)}"><stop offset="0%" stop-color="#fff8e0"/><stop offset="100%" stop-color="#c8b48c"/></radialGradient></defs>`+
+    `<circle cx="${cx}" cy="${cy}" r="${r}" fill="#222" stroke="#444" stroke-width="1"/>`+
+    `<path d="${litPath}" fill="url(#mg${Math.round(phaseAngle)})"/>`+
+    `</svg>`;
+}
+function buildVerdict(topTransits,mPhase,vocResult,curHour,pHours,moonSign){
+  const parts=[];
+  const tT=topTransits&&topTransits.length?topTransits[0]:null;
+  if(tT){
+    const np=tT.np==='NorthNode'?'North Node':tT.np;
+    const tp=tT.tp==='NorthNode'?'North Node':tT.tp;
+    const motion=tT.aspect.motion;
+    const name=tT.aspect.name;
+    let lead;
+    if(motion==='exact')lead=`${tp} is exact ${name} your ${np} right now — `;
+    else if(motion==='applying')lead=`${tp} is applying ${name} to your ${np} (${tT.aspect.orbActual}°) — `;
+    else if(motion==='stationary')lead=`${tp} stations near your ${np} — `;
+    else lead=`${tp} is ${name} your ${np} (${tT.aspect.orbActual}°, separating) — `;
+    // Nuance by aspect type + sect-aware
+    const isHard=tT.aspect.type==='hard';const isEasy=tT.aspect.type==='easy';
+    const outSect={Saturn:true,Mars:false}; // nocturnal chart: Saturn out of sect
+    if(isHard&&outSect[tT.tp])parts.push(lead+'treat this as the weight of the day.');
+    else if(isHard)parts.push(lead+'expect friction, and use it to push through something stuck.');
+    else if(isEasy)parts.push(lead+'doors are open in that direction; walk through them.');
+    else if(name==='conjunction')parts.push(lead+'the two themes fuse — watch for what emerges.');
+    else parts.push(lead+'keep an eye on the theme.');
+  }
+  // Moon layer
+  if(vocResult&&vocResult.voc){
+    const endsIn=vocResult.endsIn;
+    let endStr='later today';
+    if(typeof endsIn==='number'&&endsIn<60)endStr=`in ${Math.round(endsIn)} min`;
+    else if(typeof endsIn==='number')endStr=`in ~${(endsIn/60).toFixed(1)}h (Moon enters ${vocResult.nextSign||'next sign'})`;
+    parts.push(`Moon is void of course until ${endStr} — don\'t start new things, let the day coast.`);
+  } else if(mPhase){
+    const lean={
+      'New Moon':'set intentions, plant seeds — the dark soil is receptive',
+      'Waxing Crescent':'build, recruit, gather momentum',
+      'First Quarter':'act on decisions; push past resistance',
+      'Waxing Gibbous':'refine and perfect; nearly there',
+      'Full Moon':'culmination — deliver, celebrate, or release',
+      'Waning Gibbous':'share what you\'ve made; teach what you know',
+      'Last Quarter':'prune, break, course-correct',
+      'Waning Crescent':'rest, review, compost the old cycle'
+    };
+    parts.push(`Moon in ${moonSign.name} — ${lean[mPhase.name]||'follow its cue'}.`);
+  }
+  if(curHour){
+    parts.push(`This hour belongs to ${curHour.ruler}.`);
+  }
+  if(parts.length===0){
+    return 'A quiet day. No loud transits in orb — use the space.';
+  }
+  return parts.join(' ');
+}
+function nextExactDatesThisWeek(transits){
+  const out=[];const now=new Date();const wkEnd=new Date(now);wkEnd.setDate(wkEnd.getDate()+7);
+  for(const t of transits){
+    if(!t.exactDate)continue;
+    if(t.exactDate>=now&&t.exactDate<=wkEnd){
+      out.push({date:t.exactDate,tp:t.tp,np:t.np,aspect:t.aspect.name});
+    }
+  }
+  out.sort((a,b)=>a.date-b.date);
+  return out.slice(0,4);
+}
 function findNatalAspects(){
   const out=[];
   const pts=['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto','Chiron','NorthNode','Ascendant','MC'];
@@ -3845,7 +4031,7 @@ function pChG(name,x,y,sz,col,op){
 // INTERACTIVE UI + MAIN RENDER
 // ══════════════════════════════════════════════════════════════
 
-let expandedCards={},dayOffset=0,activeTab='today',activeFilter='all';
+let expandedCards={},dayOffset=0,activeTab='home',activeFilter='all';
 let todayZone=(function(){try{return localStorage.getItem('today_zone_v1')||'all';}catch(e){return 'all';}})();
 function setTodayZone(z){todayZone=z;try{localStorage.setItem('today_zone_v1',z);}catch(e){}renderApp();window.scrollTo({top:0,behavior:'smooth'});}
 
@@ -4278,6 +4464,95 @@ function renderApp(){
   h+=`<button class="today-btn ${!isToday?'show':''}" onclick="navToday()">Today</button>`;
   h+=`<button onclick="navDay(1)">&#8250;</button></div></div>`;
 
+  // Planetary hours — hoisted so Home tab can use it too
+  const pHoursHome=computePlanetaryHours(jd,OBSERVER.lat,OBSERVER.lon);
+  let curHourHome=null;
+  if(pHoursHome&&isToday){
+    const utNow=jd;
+    const idxH=currentHourIndex(pHoursHome.hours,utNow);
+    curHourHome=pHoursHome.hours[idxH];
+    curHourHome.minsLeft=Math.max(0,Math.round((curHourHome.end-utNow)*24*60));
+  }
+
+  // ══════════ HOME / DASHBOARD TAB ══════════
+  h+=`<div class="tab-content ${activeTab==='home'?'active':''}">`;
+  const dayOfWeek=now.getDay();
+  const dayRulerName=DAY_RULERS[dayOfWeek];
+  const dayNames=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const greet=timeGreeting(now);
+  h+=`<div class="home-greeting">${greet}, <span class="home-greet-name">Alexander</span></div>`;
+  h+=`<div class="home-day-ruler">${pSVG(dayRulerName,14,'var(--gold)')} ${dayNames[dayOfWeek]} — ${DAY_RULER_TONE[dayRulerName]||''}.</div>`;
+  // Verdict
+  const verdictText=buildVerdict(transits,mPhase,vocResult,curHourHome,pHoursHome,moonSign);
+  h+=`<div class="home-verdict"><div class="home-verdict-label">Today's Verdict</div><div class="home-verdict-text">${verdictText}</div></div>`;
+  // 4-card grid
+  h+=`<div class="home-grid">`;
+  // Card 1: Sky Now (Sun + Moon phase SVG)
+  const sunSign=signOf(cur.Sun);
+  h+=`<div class="home-card" onclick="switchTab('chart')">`;
+  h+=`<div class="home-card-label">Sky Now</div>`;
+  h+=`<div class="home-moon-wrap">${moonPhaseSvg(phaseAngle,44)}<div>`;
+  h+=`<div class="home-card-value">${mPhase.name}</div>`;
+  h+=`<div class="home-card-sub">Moon ${moonSign.name} ${moonSign.degree}°</div>`;
+  h+=`<div class="home-card-sub" style="opacity:.7">Sun ${sunSign.name} ${sunSign.degree}°</div>`;
+  h+=`</div></div></div>`;
+  // Card 2: Active Hour
+  if(curHourHome){
+    h+=`<div class="home-card" onclick="switchTab('today');setTodayZone('now')">`;
+    h+=`<div class="home-card-label">Planetary Hour</div>`;
+    h+=`<div class="home-card-icon">${pSVG(curHourHome.ruler,22,'var(--gold)')}</div>`;
+    h+=`<div class="home-card-value">Hour of ${curHourHome.ruler}</div>`;
+    h+=`<div class="home-card-sub">${curHourHome.minsLeft} min remaining</div>`;
+    const hp=HOUR_PURPOSE&&HOUR_PURPOSE[curHourHome.ruler];
+    if(hp&&hp.brief)h+=`<div class="home-card-sub" style="opacity:.7;margin-top:4px">${hp.brief}</div>`;
+    h+=`</div>`;
+  } else {
+    h+=`<div class="home-card"><div class="home-card-label">Planetary Hour</div><div class="home-card-value">—</div></div>`;
+  }
+  // Card 3: Loudest Transit
+  if(transits.length){
+    const t0=transits[0];
+    const npL=t0.np==='NorthNode'?'N.Node':t0.np;
+    const tpL=t0.tp==='NorthNode'?'N.Node':t0.tp;
+    h+=`<div class="home-card" onclick="switchTab('today');setTodayZone('day')">`;
+    h+=`<div class="home-card-label">Loudest Transit</div>`;
+    h+=`<div class="home-card-value">${tpL} ${t0.aspect.name==='conjunction'?'☌':t0.aspect.name==='opposition'?'☍':t0.aspect.name==='square'?'□':t0.aspect.name==='trine'?'△':t0.aspect.name==='sextile'?'⚹':'·'} ${npL}</div>`;
+    h+=`<div class="home-card-sub">${t0.aspect.orbActual}° · ${t0.aspect.motion}</div>`;
+    h+=`</div>`;
+  } else {
+    h+=`<div class="home-card"><div class="home-card-label">Loudest Transit</div><div class="home-card-value">Quiet sky</div></div>`;
+  }
+  // Card 4: Today's Decan Card (tarot)
+  const sunDec=computeDecan(cur.Sun);
+  if(sunDec&&sunDec.card){
+    h+=`<div class="home-card" onclick="switchTab('today');setTodayZone('day')">`;
+    h+=`<div class="home-card-label">Sun's Decan</div>`;
+    h+=`<div class="home-card-value">${sunDec.card}</div>`;
+    h+=`<div class="home-card-sub">${sunDec.title||''}</div>`;
+    if(sunDec.meaning)h+=`<div class="home-card-sub" style="opacity:.7;margin-top:4px">${sunDec.meaning}</div>`;
+    h+=`</div>`;
+  }
+  h+=`</div>`;
+  // Week ahead
+  const wkAhead=nextExactDatesThisWeek(transits);
+  if(wkAhead.length){
+    h+=`<div class="home-week"><div class="home-week-title">Coming this week</div>`;
+    for(const w of wkAhead){
+      const dStr=fmtExactDate(w.date);
+      const npL=w.np==='NorthNode'?'N.Node':w.np;
+      const tpL=w.tp==='NorthNode'?'N.Node':w.tp;
+      h+=`<div class="home-week-row"><span class="home-week-date">${dStr}</span><span class="home-week-desc">${tpL} ${w.aspect} ${npL}</span></div>`;
+    }
+    h+=`</div>`;
+  }
+  // Quick jump buttons
+  h+=`<div class="home-jump">`;
+  h+=`<button onclick="switchTab('today')">Today</button>`;
+  h+=`<button onclick="switchTab('chart')">Chart</button>`;
+  h+=`<button onclick="switchTab('natal')">Natal</button>`;
+  h+=`</div>`;
+  h+=`</div>`;
+
   // ══════════ TODAY TAB ══════════
   h+=`<div class="tab-content ${activeTab==='today'?'active':''}">`;
 
@@ -4292,7 +4567,7 @@ function renderApp(){
   if(todayZone!=='all')h+=`<div class="subtab-hint">${zHint[todayZone]}</div>`;
 
   // Hoisted: used by consult, hours strip, liturgy, guidance, journal context
-  const pHours=computePlanetaryHours(jd,OBSERVER.lat,OBSERVER.lon);
+  const pHours=pHoursHome;
 
   h+=`<div class="t-zone t-now">`;
 
@@ -5400,7 +5675,9 @@ function renderApp(){
   const svgNatal=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12,2 20,8 18,18 6,18 4,8" fill="none"/><circle cx="12" cy="11" r="3"/></svg>`;
 
   const svgLore=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h12a2 2 0 012 2v14l-8-4-8 4V6a2 2 0 012-2z"/><line x1="8" y1="9" x2="14" y2="9"/><line x1="8" y1="13" x2="12" y2="13"/></svg>`;
+  const svgHome=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>`;
   let tabBarHtml='';
+  tabBarHtml+=`<button class="${activeTab==='home'?'active':''}" onclick="switchTab('home')">${svgHome}<span>Home</span></button>`;
   tabBarHtml+=`<button class="${activeTab==='today'?'active':''}" onclick="switchTab('today')">${svgToday}<span>Today</span></button>`;
   tabBarHtml+=`<button class="${activeTab==='chart'?'active':''}" onclick="switchTab('chart')">${svgChart}<span>Chart</span></button>`;
   tabBarHtml+=`<button class="${activeTab==='natal'?'active':''}" onclick="switchTab('natal')">${svgNatal}<span>Natal</span></button>`;
@@ -5408,6 +5685,8 @@ function renderApp(){
 
   document.getElementById('app').innerHTML=h;
   document.getElementById('tab-bar-host').innerHTML=tabBarHtml;
+  const loader=document.getElementById('app-loader');
+  if(loader&&!loader.classList.contains('hide')){setTimeout(()=>{loader.classList.add('hide');setTimeout(()=>loader.remove(),600);},400);}
 
   // Sync body data-zone for CSS filtering (only meaningful on Today tab)
   document.body.setAttribute('data-zone', activeTab==='today'?todayZone:'all');

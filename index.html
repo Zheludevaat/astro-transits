@@ -1177,10 +1177,12 @@ html.light .guidance-preview:not(.expanded)::after{background:linear-gradient(tr
   right: 0;
   bottom: 0;
   background-color: rgba(10,15,30,0.95);
-  z-index: 1000;
+  z-index: 10000;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
 }
 
 .chart-form-modal.hidden {
@@ -1189,12 +1191,34 @@ html.light .guidance-preview:not(.expanded)::after{background:linear-gradient(tr
 
 .chart-form-panel {
   background-color: var(--card);
+  border: 1px solid var(--gold-line);
   border-top: 2px solid var(--gold);
   padding: 1.5rem;
-  max-height: 90vh;
+  max-height: 85vh;
+  width: 100%;
+  max-width: 420px;
   overflow-y: auto;
-  border-radius: var(--r-md) var(--r-md) 0 0;
+  border-radius: var(--r-md);
 }
+
+.city-search-wrap { position: relative; }
+.city-search-wrap input { padding-right: 3rem; }
+.city-search-btn {
+  position: absolute; right: 4px; top: 50%; transform: translateY(-50%);
+  background: var(--gold); color: var(--bg); border: none; border-radius: var(--r-sm);
+  padding: 4px 10px; font-size: 0.8rem; font-weight: 600; cursor: pointer;
+}
+.city-results {
+  position: absolute; left: 0; right: 0; top: 100%; z-index: 10;
+  background: var(--card); border: 1px solid var(--gold-line); border-radius: var(--r-sm);
+  max-height: 150px; overflow-y: auto; margin-top: 2px;
+}
+.city-results div {
+  padding: 8px 10px; font-size: 0.85rem; color: var(--text); cursor: pointer;
+  border-bottom: 1px solid var(--hairline);
+}
+.city-results div:hover, .city-results div:active { background: var(--surface); }
+.city-resolved { font-size: 0.8rem; color: var(--emerald); margin-top: 4px; }
 
 .chart-form-panel h2 {
   color: var(--gold);
@@ -1589,6 +1613,7 @@ function dismissSplash(){
 }
 </script>
 <div id="app" class="container"></div>
+<div id="modal-form-host"></div>
 <nav id="tab-bar-host" class="tab-bar"></nav>
 <button id="fab-top" class="fab-top" aria-label="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
@@ -6985,11 +7010,6 @@ function renderSynastryTab() {
 
   h += `</div>`;
 
-  // Form modal
-  if (showChartForm) {
-    h += renderChartFormModal();
-  }
-
   return h;
 }
 
@@ -7134,30 +7154,76 @@ function handleMapClick(evt, svgEl, lines) {
 // SECTION 12: CHART INPUT FORM MODAL
 // ============================================================================
 
-function renderChartFormModal() {
-  let h = '';
+let citySearchResults = [];
+let cityResolved = null; // {name, lat, lon, tz}
 
+function searchCity() {
+  const q = document.getElementById('chart-city').value.trim();
+  if (q.length < 2) return;
+  document.querySelector('.city-search-btn').textContent = '...';
+  fetch('https://nominatim.openstreetmap.org/search?format=json&limit=5&q=' + encodeURIComponent(q), {
+    headers: { 'Accept-Language': 'en' }
+  })
+  .then(r => r.json())
+  .then(results => {
+    citySearchResults = results.map(r => ({
+      name: r.display_name.split(',').slice(0, 3).join(','),
+      lat: parseFloat(r.lat),
+      lon: parseFloat(r.lon)
+    }));
+    renderCityResults();
+    document.querySelector('.city-search-btn').textContent = 'Search';
+  })
+  .catch(() => {
+    document.querySelector('.city-search-btn').textContent = 'Search';
+  });
+}
+
+function pickCity(idx) {
+  const c = citySearchResults[idx];
+  if (!c) return;
+  // Estimate timezone from longitude (rough: lon/15 rounded to nearest 0.5)
+  const tzEst = Math.round(c.lon / 15 * 2) / 2;
+  cityResolved = { name: c.name, lat: c.lat, lon: c.lon, tz: tzEst };
+  citySearchResults = [];
+  document.getElementById('chart-city').value = c.name;
+  renderCityResults();
+}
+
+function renderCityResults() {
+  const wrap = document.getElementById('city-results-box');
+  if (!wrap) return;
+  if (citySearchResults.length === 0) {
+    wrap.innerHTML = '';
+    return;
+  }
+  let h = '';
+  citySearchResults.forEach((c, i) => {
+    h += `<div onclick="pickCity(${i})">${c.name}</div>`;
+  });
+  wrap.innerHTML = h;
+  // Show resolved info
+  const info = document.getElementById('city-resolved-info');
+  if (info && cityResolved) {
+    info.textContent = cityResolved.name + ' (' + cityResolved.lat.toFixed(2) + ', ' + cityResolved.lon.toFixed(2) + ', UTC' + (cityResolved.tz >= 0 ? '+' : '') + cityResolved.tz + ')';
+  }
+}
+
+function renderChartFormModal() {
   let formData = {};
   if (editingChartId && editingChartId !== 'alexander') {
     const chart = savedCharts.find(c => c.id === editingChartId);
-    if (chart) {
-      formData = { ...chart };
-    }
+    if (chart) formData = { ...chart };
   } else {
-    formData = {
-      name: '',
-      year: new Date().getFullYear(),
-      month: 1,
-      day: 1,
-      hour: 12,
-      minute: 0,
-      lat: 0,
-      lon: 0,
-      tz: 0
-    };
+    formData = { name: '', year: new Date().getFullYear(), month: 1, day: 1, hour: 12, minute: 0, lat: 0, lon: 0, tz: 0 };
   }
 
-  h += `<div class="chart-form-modal">
+  const cityVal = cityResolved ? cityResolved.name : (formData.cityName || '');
+  const resolvedText = cityResolved
+    ? cityResolved.name + ' (' + cityResolved.lat.toFixed(2) + ', ' + cityResolved.lon.toFixed(2) + ', UTC' + (cityResolved.tz >= 0 ? '+' : '') + cityResolved.tz + ')'
+    : (formData.lat && formData.lon ? (formData.cityName || '') + ' (' + formData.lat.toFixed(2) + ', ' + formData.lon.toFixed(2) + ', UTC' + (formData.tz >= 0 ? '+' : '') + formData.tz + ')' : '');
+
+  return `<div class="chart-form-modal" onclick="if(event.target===this){showChartForm=false;editingChartId=null;citySearchResults=[];cityResolved=null;renderApp();}">
     <div class="chart-form-panel">
       <h2>${editingChartId ? 'Edit Chart' : 'Add Person'}</h2>
 
@@ -7169,43 +7235,36 @@ function renderChartFormModal() {
       <div class="form-group">
         <label>Birth Date *</label>
         <div class="form-row three">
-          <input type="number" id="chart-month" min="1" max="12" value="${formData.month || 1}" placeholder="Month">
-          <input type="number" id="chart-day" min="1" max="31" value="${formData.day || 1}" placeholder="Day">
-          <input type="number" id="chart-year" value="${formData.year || 2000}" placeholder="Year">
+          <input type="number" id="chart-month" min="1" max="12" value="${formData.month || 1}" placeholder="MM">
+          <input type="number" id="chart-day" min="1" max="31" value="${formData.day || 1}" placeholder="DD">
+          <input type="number" id="chart-year" value="${formData.year || 2000}" placeholder="YYYY">
         </div>
       </div>
 
       <div class="form-group">
         <label>Birth Time *</label>
         <div class="form-row">
-          <input type="number" id="chart-hour" min="0" max="23" value="${Math.floor(formData.hour || 12)}" placeholder="Hour">
-          <input type="number" id="chart-minute" min="0" max="59" value="${Math.round(((formData.hour || 12) % 1) * 60)}" placeholder="Minute">
+          <input type="number" id="chart-hour" min="0" max="23" value="${Math.floor(formData.hour || 12)}" placeholder="HH (0-23)">
+          <input type="number" id="chart-minute" min="0" max="59" value="${Math.round(((formData.hour || 12) % 1) * 60)}" placeholder="MM">
         </div>
       </div>
 
       <div class="form-group">
-        <label>Timezone (UTC offset in hours)</label>
-        <input type="number" id="chart-tz" step="0.5" min="-12" max="14" value="${formData.tz || 0}" placeholder="Timezone">
-      </div>
-
-      <div class="form-group">
-        <label>Latitude (decimal degrees)</label>
-        <input type="number" id="chart-lat" step="0.0001" min="-90" max="90" value="${formData.lat || 0}" placeholder="Latitude">
-      </div>
-
-      <div class="form-group">
-        <label>Longitude (decimal degrees)</label>
-        <input type="number" id="chart-lon" step="0.0001" min="-180" max="180" value="${formData.lon || 0}" placeholder="Longitude">
+        <label>Birth City *</label>
+        <div class="city-search-wrap">
+          <input type="text" id="chart-city" value="${cityVal}" placeholder="Search city..." onkeydown="if(event.key==='Enter'){event.preventDefault();searchCity();}">
+          <button class="city-search-btn" type="button" onclick="searchCity()">Search</button>
+          <div class="city-results" id="city-results-box"></div>
+        </div>
+        <div class="city-resolved" id="city-resolved-info">${resolvedText}</div>
       </div>
 
       <div class="form-buttons">
         <button class="save-btn" onclick="saveChartFromForm();">Save</button>
-        <button class="cancel-btn" onclick="showChartForm=false; editingChartId=null; renderApp();">Cancel</button>
+        <button class="cancel-btn" onclick="showChartForm=false;editingChartId=null;citySearchResults=[];cityResolved=null;renderApp();">Cancel</button>
       </div>
     </div>
   </div>`;
-
-  return h;
 }
 
 function saveChartFromForm() {
@@ -7215,14 +7274,23 @@ function saveChartFromForm() {
   const year = parseInt(document.getElementById('chart-year').value);
   const hour = parseInt(document.getElementById('chart-hour').value);
   const minute = parseInt(document.getElementById('chart-minute').value);
-  const tz = parseFloat(document.getElementById('chart-tz').value);
-  const lat = parseFloat(document.getElementById('chart-lat').value);
-  const lon = parseFloat(document.getElementById('chart-lon').value);
 
-  if (!name || isNaN(month) || isNaN(day) || isNaN(year) || isNaN(lat) || isNaN(lon)) {
-    alert('Please fill in all required fields');
+  let lat, lon, tz;
+  if (cityResolved) {
+    lat = cityResolved.lat;
+    lon = cityResolved.lon;
+    tz = cityResolved.tz;
+  } else if (editingChartId) {
+    const existing = savedCharts.find(c => c.id === editingChartId);
+    if (existing) { lat = existing.lat; lon = existing.lon; tz = existing.tz; }
+  }
+
+  if (!name || isNaN(month) || isNaN(day) || isNaN(year) || lat === undefined || lon === undefined) {
+    alert('Please fill in all required fields and search for a birth city');
     return;
   }
+
+  const cityName = cityResolved ? cityResolved.name : (document.getElementById('chart-city').value.trim() || '');
 
   const chartData = {
     name,
@@ -7232,7 +7300,8 @@ function saveChartFromForm() {
     hour: hour + minute / 60,
     lat,
     lon,
-    tz
+    tz: tz || 0,
+    cityName
   };
 
   if (editingChartId && editingChartId !== 'alexander') {
@@ -7247,6 +7316,8 @@ function saveChartFromForm() {
   saveCharts();
   showChartForm = false;
   editingChartId = null;
+  citySearchResults = [];
+  cityResolved = null;
   renderApp();
 }
 
@@ -8928,11 +8999,6 @@ function renderApp(){
   try{h+=renderAstroCartoTab();}catch(e){h+=`<div style="padding:20px;color:var(--text2);">Map loading error</div>`;console.error('AstroCartoTab:',e);}
   h+=`</div>`;
 
-  // ══════════ CHART FORM MODAL ══════════
-  if(showChartForm){
-    try{h+=renderChartFormModal();}catch(e){console.error('ChartForm:',e);}
-  }
-
   // ══════════ TAB BAR ══════════
   const svgToday=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><line x1="12" y1="3" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="21"/><line x1="3" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="21" y2="12"/></svg>`;
   const svgChart=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><line x1="12" y1="3" x2="12" y2="21"/><line x1="3" y1="12" x2="21" y2="12"/></svg>`;
@@ -8953,7 +9019,16 @@ function renderApp(){
 
   document.getElementById('app').innerHTML=h;
   document.getElementById('tab-bar-host').innerHTML=tabBarHtml;
-  // Splash is dismissed by tap — see dismissSplash()
+
+  // Render chart form modal into its own host (above tab bar stacking context)
+  const modalHost=document.getElementById('modal-form-host');
+  if(modalHost){
+    if(showChartForm){
+      try{modalHost.innerHTML=renderChartFormModal();}catch(e){modalHost.innerHTML='';console.error('ChartForm:',e);}
+    } else {
+      modalHost.innerHTML='';
+    }
+  }
 
   // Sync body data-zone for CSS filtering (only meaningful on Today tab)
   document.body.setAttribute('data-zone', activeTab==='today'?todayZone:'all');

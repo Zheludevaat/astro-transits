@@ -1447,28 +1447,29 @@ html.light .guidance-preview:not(.expanded)::after{background:linear-gradient(tr
 }
 
 .planet-toggles {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 0.35rem;
-  padding: 0.6rem;
-  background-color: var(--surface);
-  border-bottom: 1px solid var(--hairline);
+  display: flex;
+  overflow-x: auto;
+  gap: 6px;
+  padding: 8px 10px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
+.planet-toggles::-webkit-scrollbar { display: none; }
 
 .planet-toggle {
-  padding: 0.3rem 0.2rem;
+  flex: 0 0 auto;
+  padding: 5px 10px;
   background-color: var(--card);
   border: 1px solid var(--gold-line);
-  border-radius: var(--r-sm);
-  color: var(--text);
-  font-size: 0.6rem;
+  border-radius: 20px;
+  color: var(--text2);
+  font-size: 0.7rem;
   cursor: pointer;
   transition: all 0.2s;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 0.15rem;
+  gap: 4px;
+  white-space: nowrap;
 }
 
 .planet-toggle.active {
@@ -1478,8 +1479,8 @@ html.light .guidance-preview:not(.expanded)::after{background:linear-gradient(tr
 }
 
 .planet-toggle svg {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
 }
 
 .map-container {
@@ -6909,11 +6910,16 @@ function renderSynastryTab() {
 
   let h = '';
 
+  // Header + explainer (always shown)
+  h += `<div style="padding:14px 16px 8px">`;
+  h += `<div style="font-size:1.1rem;font-weight:600;color:var(--gold);margin-bottom:6px">Synastry</div>`;
+  h += `<div style="font-size:0.8rem;line-height:1.5;color:var(--text2);margin-bottom:10px">Compare your birth chart with another person to see how your planets interact. Synastry reveals the natural chemistry, tensions, and themes between two people -- useful for understanding romantic relationships, friendships, or any significant bond.</div>`;
+  h += `</div>`;
+
   if (savedCharts.length <= 1) {
     h += `<div class="synastry-container">
       <div class="empty-state">
-        <div class="empty-state-icon">+</div>
-        <p>Add someone to compare your charts</p>
+        <p style="color:var(--text2);font-size:0.85rem;margin-bottom:12px">To get started, add someone you want to compare charts with. You will need their birth date, time, and city.</p>
         <button class="add-chart-btn" onclick="showChartForm=true; editingChartId=null; renderApp();">Add Person</button>
       </div>
     </div>`;
@@ -6924,9 +6930,9 @@ function renderSynastryTab() {
 
   // Chart selector
   h += `<div class="chart-selector">
-    <label style="color: var(--text2); font-size: 0.85rem; margin-bottom: 0.4rem; display: block;">Compare with:</label>
+    <label style="color: var(--text3); font-size: 0.75rem; margin-bottom: 4px; display: block;">Compare your chart with:</label>
     <select onchange="selectedChartId=this.value; synAspects=[]; synExpanded=null; renderApp();">
-      <option value="">-- Select a chart --</option>`;
+      <option value="">-- Select a person --</option>`;
 
   for (let chart of savedCharts) {
     if (chart.id === 'alexander') continue;
@@ -7001,20 +7007,23 @@ function renderAstroCartoTab() {
   loadCharts();
 
   let h = '';
-
   h += `<div class="astrocarto-container">`;
+
+  // Header + explainer
+  h += `<div style="padding:14px 16px 8px">`;
+  h += `<div style="font-size:1.1rem;font-weight:600;color:var(--gold);margin-bottom:6px">Astrocartography</div>`;
+  h += `<div style="font-size:0.8rem;line-height:1.5;color:var(--text2);margin-bottom:10px">Your birth chart mapped onto the world. Each line shows where a planet was rising, setting, culminating, or at its lowest point when you were born. Living near or visiting these lines activates that planet's energy in your life. Tap any line on the map to learn what it means for you.</div>`;
+  h += `</div>`;
 
   // Chart selector
   if (savedCharts.length > 1) {
-    h += `<div class="astrocarto-chart-selector">
-      <select onchange="acSelectedChartId=this.value; acTapInfo=null; renderApp();">`;
-
+    h += `<div style="padding:0 16px 10px">`;
+    h += `<label style="font-size:0.75rem;color:var(--text3);display:block;margin-bottom:4px">Showing lines for:</label>`;
+    h += `<select style="width:100%;padding:8px;background:var(--card);color:var(--text);border:1px solid var(--gold-line);border-radius:var(--r-sm);font-size:0.9rem" onchange="acSelectedChartId=this.value;acTapInfo=null;acAstrocartoLines=null;renderApp();">`;
     for (let chart of savedCharts) {
-      h += `<option value="${chart.id}" ${acSelectedChartId === chart.id ? 'selected' : ''}>${chart.name}</option>`;
+      h += `<option value="${chart.id}" ${acSelectedChartId===chart.id?'selected':''}>${chart.name}</option>`;
     }
-
-    h += `</select>
-    </div>`;
+    h += `</select></div>`;
   }
 
   const selectedChart = savedCharts.find(c => c.id === acSelectedChartId);
@@ -7027,37 +7036,52 @@ function renderAstroCartoTab() {
       acAstrocartoLines.chart = acSelectedChartId;
     }
 
-    // Planet toggles
+    // Planet toggles — horizontal scrolling pill bar
+    h += `<div style="padding:0 10px 6px"><span style="font-size:0.7rem;color:var(--text3)">Toggle planets (scroll for more):</span></div>`;
     h += `<div class="planet-toggles">`;
-    for (let planet of ['Sun', 'Moon', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Mercury', 'Uranus', 'Neptune', 'Pluto', 'Chiron', 'NorthNode']) {
+    const pNames = {Sun:'Sun',Moon:'Moon',Venus:'Venus',Mars:'Mars',Jupiter:'Jupiter',Saturn:'Saturn',Mercury:'Mercury',Uranus:'Uranus',Neptune:'Neptune',Pluto:'Pluto',Chiron:'Chiron',NorthNode:'Node'};
+    for (let planet of Object.keys(pNames)) {
       const active = acPlanetToggles[planet];
-      h += `<button class="planet-toggle ${active ? 'active' : ''}" onclick="acPlanetToggles['${planet}']=!acPlanetToggles['${planet}']; renderApp();">`;
-      h += pSVG(planet, 16, active ? 'var(--bg)' : 'var(--text)');
-      h += `<span style="font-size:0.6rem;">${planet.substring(0,3)}</span>`;
+      h += `<button class="planet-toggle ${active?'active':''}" onclick="acPlanetToggles['${planet}']=!acPlanetToggles['${planet}'];renderApp();">`;
+      h += pSVG(planet, 14, active ? 'var(--bg)' : 'var(--text2)');
+      h += `<span>${pNames[planet]}</span>`;
       h += `</button>`;
     }
     h += `</div>`;
 
-    // Map
-    const mapWidth = Math.min(window.innerWidth - 20, 450);
-    h += `<div class="map-container" onclick="handleMapClick(event, this, acAstrocartoLines)">`;
-    h += renderAstroCartoMap(acAstrocartoLines, acPlanetToggles, acTapInfo, mapWidth, mapWidth / 2);
+    // Legend
+    h += `<div style="display:flex;gap:12px;padding:6px 12px;font-size:0.65rem;color:var(--text3);flex-wrap:wrap">`;
+    h += `<span><span style="display:inline-block;width:16px;border-top:2px solid var(--text2);vertical-align:middle;margin-right:3px"></span>MC (career)</span>`;
+    h += `<span><span style="display:inline-block;width:16px;border-top:2px dashed var(--text2);vertical-align:middle;margin-right:3px"></span>IC (home)</span>`;
+    h += `<span><span style="display:inline-block;width:16px;border-top:2px solid var(--text2);vertical-align:middle;margin-right:3px;opacity:0.5"></span>ASC (self)</span>`;
+    h += `<span><span style="display:inline-block;width:16px;border-top:2px dashed var(--text2);vertical-align:middle;margin-right:3px;opacity:0.4"></span>DSC (others)</span>`;
     h += `</div>`;
 
-    // Info card
+    // Map
+    const mapWidth = Math.min(window.innerWidth - 20, 500);
+    h += `<div class="map-container" onclick="handleMapClick(event, this, acAstrocartoLines)">`;
+    h += renderAstroCartoMap(acAstrocartoLines, acPlanetToggles, acTapInfo, mapWidth, Math.round(mapWidth * 0.55));
+    h += `</div>`;
+    h += `<div style="text-align:center;font-size:0.65rem;color:var(--text3);padding:4px 0 8px">Tap anywhere on the map to identify the nearest line</div>`;
+
+    // Info card on tap
     if (acTapInfo) {
-      h += `<div class="acarto-info-card">`;
-      h += `<div class="acarto-info-title">${acTapInfo.nearestLine.planet} ${acTapInfo.nearestLine.angleType}</div>`;
-      h += `<div class="acarto-info-location">Lat: ${acTapInfo.lat.toFixed(1)}, Lon: ${acTapInfo.lon.toFixed(1)}</div>`;
-
       const voice = ASTROCARTO_VOICE[acTapInfo.nearestLine.planet];
-      const angleData = voice[acTapInfo.nearestLine.angleType.toLowerCase()];
+      const angleData = voice ? voice[acTapInfo.nearestLine.angleType.toLowerCase()] : null;
+      const angleLabels = {mc:'Midheaven (MC)',ic:'Imum Coeli (IC)',asc:'Ascendant (ASC)',dsc:'Descendant (DSC)'};
+      const angleLabel = angleLabels[acTapInfo.nearestLine.angleType] || acTapInfo.nearestLine.angleType.toUpperCase();
 
+      h += `<div class="acarto-info-card">`;
+      h += `<div style="display:flex;justify-content:space-between;align-items:start">`;
+      h += `<div>`;
+      h += `<div style="font-size:1rem;font-weight:600;color:var(--gold)">${acTapInfo.nearestLine.planet} ${angleLabel}</div>`;
+      if (angleData) h += `<div style="font-size:0.8rem;color:var(--text2);margin-top:2px">${angleData.short}</div>`;
+      h += `</div>`;
+      h += `<button onclick="acTapInfo=null;renderApp();" style="background:none;border:none;color:var(--text3);font-size:1.2rem;cursor:pointer;padding:0 0 0 12px;line-height:1">&times;</button>`;
+      h += `</div>`;
       if (angleData) {
-        h += `<div class="acarto-info-detail">${angleData.detail}</div>`;
+        h += `<div style="font-size:0.8rem;line-height:1.6;color:var(--text);margin-top:10px">${angleData.detail}</div>`;
       }
-
-      h += `<button class="acarto-close-btn" onclick="acTapInfo=null; renderApp();">Close</button>`;
       h += `</div>`;
     }
   }

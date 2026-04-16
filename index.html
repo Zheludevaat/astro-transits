@@ -7250,13 +7250,6 @@ function saveChartFromForm() {
   renderApp();
 }
 
-// ============================================================================
-// EXPORT: CSS for injection
-// ============================================================================
-
-window.SYNASTRY_ASTROCARTO_CSS = SYNASTRY_ASTROCARTO_CSS;
-
-
 function renderApp(){
   const now=getTargetDate();const isToday=dayOffset===0;
   const jd=julianDate(now.getUTCFullYear(),now.getUTCMonth()+1,now.getUTCDate(),

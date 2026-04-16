@@ -1422,8 +1422,8 @@ function moonPhaseSvg(phaseAngle,size){
     return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" class="home-moon-svg">${grad}<circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#${gid})"/></svg>`;
   }
   // For visibility at small sizes, clamp the *drawn* illumination so crescents/gibbous always show.
-  // Geometry stays directionally correct; only very thin slivers get a floor of ~12% width.
-  const minVis=.06,maxVis=.94;
+  // At 44px, 15% floor gives ~6px wide crescent — clearly visible.
+  const minVis=.15,maxVis=.85;
   let drawIllum=illum;
   if(drawIllum<minVis)drawIllum=minVis;
   if(drawIllum>maxVis)drawIllum=maxVis;
@@ -1448,7 +1448,7 @@ function moonPhaseSvg(phaseAngle,size){
   return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" class="home-moon-svg">`+
     grad+
     `<circle cx="${cx}" cy="${cy}" r="${r}" fill="#1a1a1a" stroke="#3a3a3a" stroke-width="0.5"/>`+
-    `<path d="${litPath}" fill="url(#${gid})"/>`+
+    `<path d="${litPath}" fill="url(#${gid})" stroke="rgba(255,248,224,.5)" stroke-width="0.5"/>`+
     `</svg>`;
 }
 function buildVerdict(topTransits,mPhase,vocResult,curHour,pHours,moonSign){

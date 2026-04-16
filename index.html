@@ -1579,6 +1579,14 @@ html.light .guidance-preview:not(.expanded)::after{background:linear-gradient(tr
   document.getElementById('splash-name').textContent='Alexander';
   document.getElementById('splash-date').textContent=days[now.getDay()]+', '+months[now.getMonth()]+' '+now.getDate();
 })();
+var splashDismissed=false;
+function dismissSplash(){
+  if(splashDismissed)return;splashDismissed=true;
+  var loader=document.getElementById('app-loader');
+  if(!loader)return;
+  loader.classList.add('hide');
+  setTimeout(function(){loader.remove();},900);
+}
 </script>
 <div id="app" class="container"></div>
 <nav id="tab-bar-host" class="tab-bar"></nav>
@@ -9001,14 +9009,7 @@ function navToday(){
     setTimeout(()=>app.classList.remove('slide-in'),280);
   },260);
 }
-let splashDismissed=false;
-function dismissSplash(){
-  if(splashDismissed)return;splashDismissed=true;
-  const loader=document.getElementById('app-loader');
-  if(!loader)return;
-  loader.classList.add('hide');
-  setTimeout(()=>{loader.remove();},900);
-}
+// dismissSplash defined in early <script> block above
 function switchTab(tab){activeTab=tab;renderApp();window.scrollTo(0,0);}
 function toggleCard(id){
   expandedCards[id]=!expandedCards[id];

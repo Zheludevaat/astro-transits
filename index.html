@@ -804,7 +804,7 @@ body[data-zone="depth"] .t-zone:not(.t-depth){display:none}
 .pm-decan-ind{color:var(--text)}
 
 /* ── Chart ── */
-.chart-wrap{position:relative;width:100%;max-width:380px;margin:0 auto;aspect-ratio:1;padding:8px 0;overflow:hidden}
+.chart-wrap{position:relative;width:100%;max-width:380px;margin:0 auto;padding:8px 0;overflow:visible}
 .chart-wrap.full{max-width:420px}
 .chart-svg{width:100%;height:100%;filter:drop-shadow(0 0 12px rgba(155,109,255,.1))}
 .chart-toggles{display:flex;gap:8px;justify-content:center;margin:12px 0;flex-wrap:wrap}
@@ -3787,18 +3787,40 @@ function buildTimeline(transits,jd){
 
 function renderMoonSVG(phaseAngle,size){
   const cx=size/2,cy=size/2,r=size/2-4;
-  const illuminated=.5*(1-cos(phaseAngle));
-  const kx=r*Math.abs(2*illuminated-1);
+  const a=((phaseAngle%360)+360)%360;
+  const illuminated=.5*(1-Math.cos(a*DEG));
+  const waxing=a<180;
+  const gid='rmg'+Math.round(a*10);
+  // Special cases
+  if(illuminated<.005){
+    return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="display:block;filter:drop-shadow(0 0 10px rgba(155,109,255,.2))">
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="#12153a" stroke="rgba(155,109,255,.25)" stroke-width="1" stroke-dasharray="2 3"/></svg>`;
+  }
+  if(illuminated>.995){
+    return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="display:block;filter:drop-shadow(0 0 10px rgba(155,109,255,.2))">
+      <defs><radialGradient id="${gid}"><stop offset="0%" stop-color="#f0e8d0"/><stop offset="100%" stop-color="#c8b890"/></radialGradient></defs>
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#${gid})"/></svg>`;
+  }
+  // Clamp for visibility at small sizes
+  const minVis=.15,maxVis=.85;
+  let drawIllum=illuminated;
+  if(drawIllum<minVis)drawIllum=minVis;
+  if(drawIllum>maxVis)drawIllum=maxVis;
+  const theta=Math.acos(1-2*drawIllum)*RAD;
+  const drawPhase=waxing?theta:(360-theta);
+  const termR=Math.abs(r*Math.cos(drawPhase*DEG));
   let litPath;
-  if(phaseAngle<=180){
-    litPath=`M ${cx} ${cy-r} A ${r} ${r} 0 0 1 ${cx} ${cy+r} A ${kx} ${r} 0 0 ${illuminated>.5?0:1} ${cx} ${cy-r}`;
-  }else{
-    litPath=`M ${cx} ${cy-r} A ${r} ${r} 0 0 0 ${cx} ${cy+r} A ${kx} ${r} 0 0 ${illuminated>.5?1:0} ${cx} ${cy-r}`;
+  if(drawIllum<.5){
+    if(waxing){litPath=`M ${cx} ${cy-r} A ${r} ${r} 0 0 1 ${cx} ${cy+r} A ${termR} ${r} 0 0 0 ${cx} ${cy-r} Z`;}
+    else{litPath=`M ${cx} ${cy-r} A ${r} ${r} 0 0 0 ${cx} ${cy+r} A ${termR} ${r} 0 0 1 ${cx} ${cy-r} Z`;}
+  } else {
+    if(waxing){litPath=`M ${cx} ${cy-r} A ${r} ${r} 0 0 1 ${cx} ${cy+r} A ${termR} ${r} 0 0 1 ${cx} ${cy-r} Z`;}
+    else{litPath=`M ${cx} ${cy-r} A ${r} ${r} 0 0 0 ${cx} ${cy+r} A ${termR} ${r} 0 0 0 ${cx} ${cy-r} Z`;}
   }
   return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="display:block;filter:drop-shadow(0 0 10px rgba(155,109,255,.2))">
-    <defs><radialGradient id="mg"><stop offset="0%" stop-color="#f0e8d0"/><stop offset="100%" stop-color="#c8b890"/></radialGradient></defs>
+    <defs><radialGradient id="${gid}"><stop offset="0%" stop-color="#f0e8d0"/><stop offset="100%" stop-color="#c8b890"/></radialGradient></defs>
     <circle cx="${cx}" cy="${cy}" r="${r}" fill="#12153a" stroke="rgba(155,109,255,.15)" stroke-width="1"/>
-    <path d="${litPath}" fill="url(#mg)"/></svg>`;
+    <path d="${litPath}" fill="url(#${gid})" stroke="rgba(240,232,208,.4)" stroke-width="0.5"/></svg>`;
 }
 
 let showAspectLines=true,showTransitRing=true;

@@ -1649,6 +1649,48 @@ html.light .guidance-preview:not(.expanded)::after{background:linear-gradient(tr
   font-size: 0.9rem;
 }
 
+/* ══ Phase 1: Time-scale strip ══ */
+.ts-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin:10px 0 4px;border-radius:var(--r-md);overflow:hidden;background:var(--card);border:1px solid var(--hairline)}
+.ts-cell{padding:8px 4px;text-align:center;cursor:pointer;transition:background .2s;position:relative}
+.ts-cell:not(:last-child){border-right:1px solid var(--hairline)}
+.ts-cell:active,.ts-cell.open{background:var(--gold-soft)}
+.ts-cell-label{font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:var(--text2);margin-bottom:2px}
+.ts-cell-val{font-size:12px;font-weight:600;color:var(--bright);display:flex;align-items:center;justify-content:center;gap:3px}
+.ts-cell-sub{font-size:9px;color:var(--text2);opacity:.7;margin-top:1px}
+.ts-panel{display:none;padding:12px 14px;font-size:12.5px;line-height:1.65;color:var(--text);background:var(--card);border:1px solid var(--hairline);border-top:none;border-radius:0 0 var(--r-md) var(--r-md);margin:-1px 0 8px}
+.ts-panel.open{display:block}
+
+/* ══ Phase 1: Citation pills ══ */
+.cite-pill{display:inline;padding:1px 6px;margin:0 1px;border-radius:10px;background:var(--gold-soft);color:var(--gold);font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--gold-line);white-space:nowrap;transition:background .15s}
+.cite-pill:active{background:var(--gold-line)}
+.cite-flash{animation:citeFlash .6s ease 2}
+@keyframes citeFlash{0%,100%{box-shadow:none}50%{box-shadow:0 0 12px var(--gold)}}
+
+/* ══ Phase 1: Layer 1 day shape ══ */
+.day-shape{padding:16px 0 12px}
+.day-shape-text{font-size:14.5px;line-height:1.75;color:var(--text);letter-spacing:.01em}
+.day-shape-meta{font-size:10px;color:var(--text2);opacity:.6;margin-top:6px;display:flex;align-items:center;gap:8px}
+.day-shape-regen{cursor:pointer;color:var(--gold);opacity:.7}
+.day-shape-regen:active{opacity:1}
+
+/* ══ Phase 1: Layer 2 factors ══ */
+.factors-block{margin:0 0 12px;border-radius:var(--r-md);overflow:hidden}
+.factor-line{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;background:var(--card);border-bottom:1px solid var(--hairline);cursor:pointer;transition:background .15s}
+.factor-line:last-child{border-bottom:none}
+.factor-line:active{background:var(--gold-soft)}
+.factor-icon{flex-shrink:0;width:20px;display:flex;align-items:center;justify-content:center;padding-top:1px}
+.factor-text{font-size:12.5px;line-height:1.6;color:var(--text);flex:1}
+.factor-tag{font-size:9px;padding:2px 6px;border-radius:8px;font-weight:600;white-space:nowrap;flex-shrink:0}
+
+/* ══ Phase 1: Layer 3 mechanics ══ */
+.mech-toggle{display:flex;align-items:center;justify-content:center;padding:10px;margin:8px 0;cursor:pointer;font-size:12px;font-weight:600;color:var(--text2);letter-spacing:.5px;text-transform:uppercase;border:1px solid var(--hairline);border-radius:var(--r-md);background:var(--card);transition:all .2s}
+.mech-toggle:active{background:var(--gold-soft);color:var(--gold)}
+.mech-section{margin-bottom:2px}
+.mech-section summary{padding:10px 12px;font-size:12px;font-weight:600;color:var(--bright);cursor:pointer;background:var(--card);border:1px solid var(--hairline);border-radius:var(--r-md);list-style:none;display:flex;align-items:center;gap:6px}
+.mech-section summary::before{content:'';display:inline-block;width:0;height:0;border-left:5px solid var(--text2);border-top:4px solid transparent;border-bottom:4px solid transparent;transition:transform .2s}
+.mech-section[open] summary::before{transform:rotate(90deg)}
+.mech-section .mech-body{padding:8px 12px 12px}
+
 </style>
 </head>
 <body>
@@ -1731,6 +1773,8 @@ function dismissSplash(){
 <script src="src/synthesis/claude-client.js"></script>
 <script src="src/synthesis/context-builder.js"></script>
 <script src="src/synthesis/deterministic.js"></script>
+<script src="src/synthesis/synthesizer.js"></script>
+<script src="src/synthesis/citations.js"></script>
 
 <!-- UI components -->
 <script src="src/ui/glyphs.js"></script>

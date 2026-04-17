@@ -6917,37 +6917,32 @@ function renderSynastryTab() {
   h += `</div>`;
 
   if (savedCharts.length <= 1) {
-    h += `<div class="synastry-container">
-      <div class="empty-state">
-        <p style="color:var(--text2);font-size:0.85rem;margin-bottom:12px">To get started, add someone you want to compare charts with. You will need their birth date, time, and city.</p>
-        <button class="add-chart-btn" onclick="showChartForm=true; editingChartId=null; renderApp();">Add Person</button>
-      </div>
+    h += `<div style="padding:0 16px 20px">
+      <p style="color:var(--text2);font-size:0.85rem;line-height:1.5;margin-bottom:16px">To get started, add someone you want to compare charts with. You will need their birth date, approximate birth time, and birth city.</p>
+      <button class="add-chart-btn" onclick="showChartForm=true; editingChartId=null; renderApp();">Add Person</button>
     </div>`;
     return h;
   }
 
   h += `<div class="synastry-container">`;
 
-  // Chart selector
-  h += `<div class="chart-selector">
-    <label style="color: var(--text3); font-size: 0.75rem; margin-bottom: 4px; display: block;">Compare your chart with:</label>
-    <select onchange="selectedChartId=this.value; synAspects=[]; synExpanded=null; renderApp();">
-      <option value="">-- Select a person --</option>`;
-
+  // Chart selector row
+  h += `<div style="margin-bottom:16px">`;
+  h += `<label style="color:var(--text3);font-size:0.75rem;display:block;margin-bottom:4px">Compare your chart with:</label>`;
+  h += `<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">`;
+  h += `<select style="flex:1;min-width:140px;padding:8px;background:var(--card);color:var(--text);border:1px solid var(--gold-line);border-radius:var(--r-sm);font-size:0.9rem" onchange="selectedChartId=this.value;synAspects=[];synExpanded=null;renderApp();">`;
+  h += `<option value="">-- Select --</option>`;
   for (let chart of savedCharts) {
     if (chart.id === 'alexander') continue;
-    h += `<option value="${chart.id}" ${selectedChartId === chart.id ? 'selected' : ''}>${chart.name}</option>`;
+    h += `<option value="${chart.id}" ${selectedChartId===chart.id?'selected':''}>${chart.name}</option>`;
   }
-
-  h += `</select>
-    <button class="add-chart-btn" onclick="showChartForm=true; editingChartId=null; renderApp();">Add Person</button>`;
-
+  h += `</select>`;
+  h += `<button class="add-chart-btn" style="margin:0;font-size:0.8rem;padding:8px 12px" onclick="showChartForm=true;editingChartId=null;renderApp();">+ Add</button>`;
   if (selectedChartId) {
-    h += `<button class="edit-chart-btn" onclick="editingChartId='${selectedChartId}'; showChartForm=true; renderApp();">Edit</button>
-    <button class="delete-chart-btn" onclick="deleteChart('${selectedChartId}'); selectedChartId=null; renderApp();">Delete</button>`;
+    h += `<button class="edit-chart-btn" style="margin:0;font-size:0.75rem;padding:6px 10px;background:var(--surface);color:var(--text2);border:1px solid var(--gold-line)" onclick="editingChartId='${selectedChartId}';showChartForm=true;renderApp();">Edit</button>`;
+    h += `<button class="delete-chart-btn" style="margin:0;font-size:0.75rem;padding:6px 10px" onclick="if(confirm('Remove this person?')){deleteChart('${selectedChartId}');selectedChartId=null;renderApp();}">Remove</button>`;
   }
-
-  h += `</div>`;
+  h += `</div></div>`;
 
   if (selectedChartId) {
     const chartA = savedCharts.find(c => c.id === 'alexander');
@@ -6963,38 +6958,72 @@ function renderSynastryTab() {
       synAspects = computeSynastryAspects(natalA, natalB);
       const traditional = computeSynastryTraditional(natalA, housesA, natalB, housesB, jdA, jdB);
 
-      // Biwheel
-      h += `<div class="biwheel-container">`;
-      h += renderSynastryWheel(natalA, housesA, natalB, housesB, synAspects, 350);
+      // Biwheel with color legend
+      h += `<div style="display:flex;justify-content:center;gap:16px;font-size:0.75rem;color:var(--text2);margin-bottom:6px">`;
+      h += `<span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--gold);margin-right:4px;vertical-align:middle"></span>${chartA.name} (outer)</span>`;
+      h += `<span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--azure);margin-right:4px;vertical-align:middle"></span>${chartB.name} (inner)</span>`;
       h += `</div>`;
+      h += `<div class="biwheel-container">`;
+      h += renderSynastryWheel(natalA, housesA, natalB, housesB, synAspects, 340);
+      h += `</div>`;
+      h += `<div style="text-align:center;font-size:0.65rem;color:var(--text3);margin-bottom:12px">Lines between planets show aspects. Green = harmony, red = tension.</div>`;
 
       // Narrative
       const narrative = generateSynastryNarrative(synAspects, traditional);
       h += `<div class="synastry-narrative">${narrative}</div>`;
 
-      // Traditional indicators
-      h += `<div class="traditional-indicators">
-        <h3>Traditional Indicators</h3>`;
+      // Traditional indicators with explanations
+      h += `<div class="traditional-indicators">`;
+      h += `<h3 style="margin-bottom:4px">Traditional Compatibility Markers</h3>`;
+      h += `<div style="font-size:0.75rem;color:var(--text3);margin-bottom:10px">Classical astrology uses these three tests to gauge the depth and nature of a bond.</div>`;
 
-      h += `<div class="indicator-item">
-        <span class="indicator-label">Lunar Contact</span>
-        ${traditional.lunarContact ? `Strong Sun-Moon contact (${traditional.lunarContactType})` : 'No strong lunar contact'}
-      </div>`;
+      h += `<div class="indicator-item">`;
+      h += `<span class="indicator-label">Lunar Contact</span>`;
+      h += `<div style="font-size:0.8rem;color:var(--text);line-height:1.5">`;
+      if (traditional.lunarContact) {
+        h += `<span style="color:var(--emerald);font-weight:600">Present</span> -- ${traditional.lunarContactType}. `;
+        h += `When one person's Sun connects with the other's Moon, there is a natural emotional understanding. You instinctively "get" each other.`;
+      } else {
+        h += `<span style="color:var(--text3)">Absent</span> -- No strong Sun-Moon link. `;
+        h += `Emotional understanding may require more conscious effort, but other aspects can compensate.`;
+      }
+      h += `</div></div>`;
 
-      h += `<div class="indicator-item">
-        <span class="indicator-label">Venus-Mars Connection</span>
-        ${traditional.venusMarsMutual ? 'Strong mutual attraction and passion' : 'No strong Venus-Mars contact'}
-      </div>`;
+      h += `<div class="indicator-item">`;
+      h += `<span class="indicator-label">Venus-Mars Connection</span>`;
+      h += `<div style="font-size:0.8rem;color:var(--text);line-height:1.5">`;
+      if (traditional.venusMarsMutual) {
+        h += `<span style="color:var(--emerald);font-weight:600">Present</span> -- `;
+        h += `Venus (desire and beauty) connects with Mars (pursuit and passion). This is the classic indicator of physical and romantic chemistry.`;
+      } else {
+        h += `<span style="color:var(--text3)">Absent</span> -- `;
+        h += `No direct Venus-Mars link. Attraction may express through other channels, or the bond may be more intellectual or spiritual.`;
+      }
+      h += `</div></div>`;
 
-      h += `<div class="indicator-item">
-        <span class="indicator-label">Saturn Contacts</span>
-        ${traditional.saturnContacts} challenging Saturn aspects (karmic lessons and commitment depth)
-      </div>`;
+      h += `<div class="indicator-item">`;
+      h += `<span class="indicator-label">Saturn Contacts</span>`;
+      h += `<div style="font-size:0.8rem;color:var(--text);line-height:1.5">`;
+      if (traditional.saturnContacts > 2) {
+        h += `<span style="color:var(--gold);font-weight:600">${traditional.saturnContacts} contacts</span> -- `;
+        h += `Heavy Saturn presence. This bond feels fated and serious. Saturn creates commitment and longevity, but also tests, responsibilities, and hard lessons.`;
+      } else if (traditional.saturnContacts > 0) {
+        h += `<span style="color:var(--text2);font-weight:600">${traditional.saturnContacts} contact${traditional.saturnContacts>1?'s':''}</span> -- `;
+        h += `Some Saturn grounding. Enough structure to give the relationship staying power without feeling burdensome.`;
+      } else {
+        h += `<span style="color:var(--text3)">None</span> -- `;
+        h += `No Saturn contacts. The connection may feel light and easy, but lasting commitment might require conscious building.`;
+      }
+      h += `</div></div>`;
 
       h += `</div>`;
 
-      // Aspect grid
+      // Aspect grid with section header
+      h += `<div style="margin-top:16px">`;
+      h += `<div style="font-size:0.95rem;font-weight:600;color:var(--gold);margin-bottom:4px">Aspect Grid</div>`;
+      h += `<div style="font-size:0.75rem;color:var(--text3);margin-bottom:8px">Each cell shows the aspect between ${chartA.name}'s planets (columns) and ${chartB.name}'s planets (rows). Tap a cell to read its meaning.</div>`;
       h += renderSynastryGrid(natalA, natalB, synAspects);
+      h += `</div>`;
     }
   }
 
@@ -7234,9 +7263,9 @@ function renderChartFormModal() {
       <div class="form-group">
         <label>Birth Date *</label>
         <div class="form-row three">
-          <input type="number" id="chart-month" min="1" max="12" value="${formData.month || 1}" placeholder="MM">
-          <input type="number" id="chart-day" min="1" max="31" value="${formData.day || 1}" placeholder="DD">
-          <input type="number" id="chart-year" value="${formData.year || 2000}" placeholder="YYYY">
+          <input type="number" id="chart-day" min="1" max="31" value="${formData.day || 1}" placeholder="Day">
+          <input type="number" id="chart-month" min="1" max="12" value="${formData.month || 1}" placeholder="Month">
+          <input type="number" id="chart-year" value="${formData.year || 2000}" placeholder="Year">
         </div>
       </div>
 

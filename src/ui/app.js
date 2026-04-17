@@ -1518,7 +1518,7 @@ let showNatalAspectLines=true;
 // ══════════════════════════════════════════════════════════════
 
 let expandedCards={},dayOffset=0,activeTab='home',activeFilter='all';
-// chartMode removed in v52 (Chart tab split into Natal tab)
+let showAllTransits=false; // toggle to show all transit cards instead of top 5
 let toolsSubTab='synastry'; // 'synastry'|'map'|'elect'|'lore'|'ledger'
 let guideMode='cards'; // 'cards'|'glossary'|'walkthrough'
 let guideSearch='';
@@ -4764,7 +4764,7 @@ function renderApp(){
   if(transits.length>0){
     h+=`<div style="margin:8px 0 12px">`;
     h+=`<div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text2);margin-bottom:8px">Active Transits (${transits.length})</div>`;
-    const topT=transits.slice(0,5);
+    const topT=showAllTransits?transits:transits.slice(0,5);
     for(const t of topT){
       const tpName=t.tp==='NorthNode'?'N.Node':t.tp;
       const npName=t.np==='NorthNode'?'N.Node':t.np==='Ascendant'?'Ascendant':t.np==='MC'?'Midheaven':t.np;
@@ -4801,7 +4801,11 @@ function renderApp(){
       h+=`</div>`;
     }
     if(transits.length>5){
-      h+=`<div style="text-align:center;padding:8px;font-size:12px;color:var(--gold);cursor:pointer" onclick="switchTab('natal')">See all ${transits.length} transits &rarr;</div>`;
+      if(showAllTransits){
+        h+=`<div style="text-align:center;padding:8px;font-size:12px;color:var(--gold);cursor:pointer" onclick="showAllTransits=false;renderApp()">Show fewer &larr;</div>`;
+      } else {
+        h+=`<div style="text-align:center;padding:8px;font-size:12px;color:var(--gold);cursor:pointer" onclick="showAllTransits=true;renderApp()">See all ${transits.length} transits &rarr;</div>`;
+      }
     }
     h+=`</div>`;
   }
@@ -5217,8 +5221,12 @@ function renderApp(){
     h+=`</div>`;
   }
 
-  // Mini chart
+  // Transit biwheel with toggles
   h+=`<div class="chart-wrap">${renderChartWheel(cur,transits,jd,340)}</div>`;
+  h+=`<div style="display:flex;justify-content:center;gap:8px;margin:-8px 0 12px">`;
+  h+=`<div class="chart-toggle ${showTransitRing?'on':''}" onclick="toggleChart('transit')">Transits</div>`;
+  h+=`<div class="chart-toggle ${showAspectLines?'on':''}" onclick="toggleChart('aspects')">Aspects</div>`;
+  h+=`</div>`;
 
   // Daily Guidance (collapsible)
   const guidance=generateDailyGuidance(transits,vibe,mPhase,retros,stats,vocResult,moonSign,cur,phaseAngle,prof,pHours,isToday);

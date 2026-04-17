@@ -1466,7 +1466,9 @@ let showNatalAspectLines=true;
 // INTERACTIVE UI + MAIN RENDER
 // ══════════════════════════════════════════════════════════════
 
-let expandedCards={},dayOffset=0,activeTab='home',activeFilter='all';
+let expandedCards={},dayOffset=0,activeTab='today',activeFilter='all';
+let chartMode='live'; // 'live' (transits) or 'native' (natal)
+let toolsSubTab='synastry'; // 'synastry'|'map'|'elect'|'lore'|'ledger'
 let synAspects=[];
 let synExpanded=null;
 let synListOpen=false;
@@ -1766,7 +1768,18 @@ function getTargetDate(){const d=new Date();d.setDate(d.getDate()+dayOffset);ret
 function showTooltip(term,el){
   const g=GLOSSARY[term];if(!g)return;
   const tip=document.getElementById('tooltip-el');
-  tip.innerHTML=`<strong>${term}</strong>${g}<div class="tip-close-hint">tap to dismiss</div>`;
+  // Check if there's a lore entry for this term
+  let loreLink='';
+  if(typeof REFERENCES!=='undefined'&&typeof openLoreForToken==='function'){
+    // Map glossary terms to lore token types
+    const termToToken={'Profection':'profection-year','Sect Light':'sect-light','Zodiacal Releasing':'zr-spirit','Firdaria':'firdaria-major','Lots':'lot','Lunar Mansions':'mansion','Planetary Hours':'hour','Decans':'decan-sun','Fixed Stars':'fixed-star','Solar Return':'return-solar','Lunar Return':'return-lunar'};
+    const tokenType=termToToken[term];
+    const loreTerm=tokenType&&typeof CITATION_LORE!=='undefined'?CITATION_LORE[tokenType]:null;
+    if(loreTerm&&REFERENCES.some(r=>r.term===loreTerm)){
+      loreLink=`<div style="margin-top:6px"><span onclick="event.stopPropagation();openLoreForToken('${tokenType}')" style="color:var(--violet);cursor:pointer;font-size:11px;text-decoration:underline">What is this? Read in Lore</span></div>`;
+    }
+  }
+  tip.innerHTML=`<strong>${term}</strong>${g}${loreLink}<div class="tip-close-hint">tap to dismiss</div>`;
   const rect=el.getBoundingClientRect();
   tip.style.left=Math.min(rect.left,window.innerWidth-290)+'px';
   tip.style.top=(rect.top-tip.offsetHeight-8)+'px';
@@ -3739,115 +3752,6 @@ function renderApp(){
   h+=`<button class="today-btn ${!isToday?'show':''}" onclick="navToday()">Today</button>`;
   h+=`<button onclick="navDay(1)">&#8250;</button></div></div>`;
 
-  // ══════════ HOME / DASHBOARD TAB ══════════
-  h+=`<div class="tab-content ${activeTab==='home'?'active':''}">`;
-  const dayOfWeek=now.getDay();
-  const dayRulerName=DAY_RULERS[dayOfWeek];
-  const dayNames=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  const greet=timeGreeting(now);
-  h+=`<div class="home-greeting">${greet}, <span class="home-greet-name">Alexander</span></div>`;
-  h+=`<div class="home-day-ruler">${pSVG(dayRulerName,14,'var(--gold)')} ${dayNames[dayOfWeek]} — ${DAY_RULER_TONE[dayRulerName]||''}.</div>`;
-  // Verdict
-  const verdictText=buildVerdict(transits,mPhase,vocResult,curHourHome,pHoursHome,moonSign);
-  h+=`<div class="home-verdict"><div class="home-verdict-label">Today's Verdict</div><div class="home-verdict-text">${verdictText}</div></div>`;
-  // Claude Reading card
-  {
-    const diamondSvg=`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="14" y="2" width="12" height="12" rx="2" transform="rotate(45 14 2)" stroke="var(--violet)" stroke-width="1.5" opacity=".7"/><rect x="14" y="5" width="8" height="8" rx="1.5" transform="rotate(45 14 5)" fill="var(--violet-soft)" stroke="var(--violet)" stroke-width="1" opacity=".5"/></svg>`;
-    if(synthKey&&synthResult&&synthResult.text){
-      const preview=synthResult.text.split(/\n\s*\n/)[0]||'';
-      const trimmed=preview.length>120?preview.slice(0,120)+'...':preview;
-      const when=synthResult.ts?new Date(synthResult.ts).toLocaleString(undefined,{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-      h+=`<div class="card" style="border-left:3px solid var(--violet);cursor:pointer;margin-bottom:10px" onclick="switchTab('today');setTodayZone('depth')">`;
-      h+=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">${diamondSvg}<div>`;
-      h+=`<div style="font-size:var(--fs-body);font-weight:600;color:var(--violet)">Claude Reading</div>`;
-      h+=`<div style="font-size:var(--fs-label);color:var(--text3)">${when}</div>`;
-      h+=`</div></div>`;
-      h+=`<div style="font-size:var(--fs-meta);color:var(--text2);line-height:1.55">${trimmed.replace(/</g,'&lt;')}</div>`;
-      h+=`</div>`;
-    } else if(!synthKey){
-      h+=`<div class="card" style="border-left:3px solid var(--violet);cursor:pointer;margin-bottom:10px" onclick="switchTab('today');setTodayZone('depth')">`;
-      h+=`<div style="display:flex;align-items:center;gap:10px">${diamondSvg}<div>`;
-      h+=`<div style="font-size:var(--fs-body);font-weight:600;color:var(--violet)">Claude Reading</div>`;
-      h+=`<div style="font-size:var(--fs-meta);color:var(--text3);line-height:1.5">Add an API key to enable a traditional-voice daily reading.</div>`;
-      h+=`</div></div></div>`;
-    } else {
-      h+=`<div class="card" style="border-left:3px solid var(--violet);cursor:pointer;margin-bottom:10px" onclick="switchTab('today');setTodayZone('depth')">`;
-      h+=`<div style="display:flex;align-items:center;gap:10px">${diamondSvg}<div>`;
-      h+=`<div style="font-size:var(--fs-body);font-weight:600;color:var(--violet)">Claude Reading</div>`;
-      h+=`<div style="font-size:var(--fs-meta);color:var(--text3)">Ready. Tap to consult Claude on today's sky.</div>`;
-      h+=`</div></div></div>`;
-    }
-  }
-  // 4-card grid
-  h+=`<div class="home-grid">`;
-  // Card 1: Sky Now (Sun + Moon phase SVG)
-  const sunSign=signOf(cur.Sun);
-  h+=`<div class="home-card" onclick="switchTab('chart')">`;
-  h+=`<div class="home-card-label">Sky Now</div>`;
-  h+=`<div class="home-moon-wrap">${moonPhaseSvg(phaseAngle,44)}<div>`;
-  h+=`<div class="home-card-value">${mPhase.name}</div>`;
-  h+=`<div class="home-card-sub">Moon ${moonSign.name} ${moonSign.degree}°</div>`;
-  h+=`<div class="home-card-sub" style="opacity:.7">Sun ${sunSign.name} ${sunSign.degree}°</div>`;
-  h+=`</div></div></div>`;
-  // Card 2: Active Hour
-  if(curHourHome){
-    h+=`<div class="home-card" onclick="switchTab('today');setTodayZone('now')">`;
-    h+=`<div class="home-card-label">Planetary Hour</div>`;
-    h+=`<div class="home-card-icon">${pSVG(curHourHome.ruler,22,'var(--gold)')}</div>`;
-    h+=`<div class="home-card-value">Hour of ${curHourHome.ruler}</div>`;
-    h+=`<div class="home-card-sub">${curHourHome.minsLeft} min remaining</div>`;
-    const hpBrief=hourBrief(curHourHome.ruler);
-    if(hpBrief)h+=`<div class="home-card-sub" style="opacity:.7;margin-top:4px">${hpBrief}</div>`;
-    h+=`</div>`;
-  } else {
-    h+=`<div class="home-card"><div class="home-card-label">Planetary Hour</div><div class="home-card-value">—</div></div>`;
-  }
-  // Card 3: Loudest Transit
-  if(transits.length){
-    const t0=transits[0];
-    const npL=t0.np==='NorthNode'?'N.Node':t0.np;
-    const tpL=t0.tp==='NorthNode'?'N.Node':t0.tp;
-    const t0hv=HOUSE_VOICE[t0.house]||{};
-    h+=`<div class="home-card" onclick="switchTab('today');setTodayZone('day')">`;
-    h+=`<div class="home-card-label">Loudest Transit</div>`;
-    h+=`<div class="home-card-value">${tpL} ${t0.aspect.name==='conjunction'?'☌':t0.aspect.name==='opposition'?'☍':t0.aspect.name==='square'?'□':t0.aspect.name==='trine'?'△':t0.aspect.name==='sextile'?'⚹':'·'} ${npL}</div>`;
-    h+=`<div class="home-card-sub">${t0.aspect.orbActual}° · ${t0.aspect.motion}${t0hv.name?' · H'+t0.house+': '+t0hv.name:''}</div>`;
-    h+=`</div>`;
-  } else {
-    h+=`<div class="home-card"><div class="home-card-label">Loudest Transit</div><div class="home-card-value">Quiet sky</div></div>`;
-  }
-  // Card 4: Today's Decan Card (tarot)
-  const sunDec=computeDecan(cur.Sun);
-  if(sunDec&&sunDec.card){
-    h+=`<div class="home-card">`;
-    h+=`<div class="home-card-label">Sun's Decan (${sunDec.decanNum} of ${sunDec.signName})</div>`;
-    h+=`<div class="home-card-value">${sunDec.card}</div>`;
-    h+=`<div class="home-card-sub">${sunDec.title||''}</div>`;
-    const sunDecMeaning=sunDec.meaning?sunDec.meaning.replace(/^[A-Za-z]+ in [A-Za-z]+ decan \d+\.\s*/,''):'';
-    if(sunDecMeaning)h+=`<div class="home-card-sub" style="opacity:.7;margin-top:4px">${sunDecMeaning}</div>`;
-    h+=`</div>`;
-  }
-  h+=`</div>`;
-  // Week ahead
-  const wkAhead=nextExactDatesThisWeek(transits);
-  if(wkAhead.length){
-    h+=`<div class="home-week"><div class="home-week-title">Coming this week</div>`;
-    for(const w of wkAhead){
-      const dStr=fmtExactDate(w.date);
-      const npL=w.np==='NorthNode'?'N.Node':w.np;
-      const tpL=w.tp==='NorthNode'?'N.Node':w.tp;
-      h+=`<div class="home-week-row"><span class="home-week-date">${dStr}</span><span class="home-week-desc">${tpL} ${w.aspect} ${npL}</span></div>`;
-    }
-    h+=`</div>`;
-  }
-  // Quick jump buttons
-  h+=`<div class="home-jump">`;
-  h+=`<button onclick="switchTab('today')">Today</button>`;
-  h+=`<button onclick="switchTab('chart')">Chart</button>`;
-  h+=`<button onclick="switchTab('natal')">Natal</button>`;
-  h+=`</div>`;
-  h+=`</div>`;
-
   // ══════════ TODAY TAB ══════════
   h+=`<div class="tab-content ${activeTab==='today'?'active':''}">`;
 
@@ -5200,223 +5104,273 @@ function renderApp(){
   h+=`</div>`; // end Layer 3 mechanics container
   h+=`</div>`; // end today tab
 
-  // ══════════ CHART TAB ══════════
+  // ══════════ CHART TAB (merged Chart + Natal with mode toggle) ══════════
   h+=`<div class="tab-content ${activeTab==='chart'?'active':''}">`;
-  h+=`<div class="chart-wrap full">${renderChartWheel(cur,transits,jd,420)}</div>`;
-  h+=`<div class="chart-toggles">`;
-  h+=`<div class="chart-toggle ${showTransitRing?'on':''}" onclick="toggleChart('transit')">Transits</div>`;
-  h+=`<div class="chart-toggle ${showAspectLines?'on':''}" onclick="toggleChart('aspects')">Aspects</div></div>`;
-
-  h+=`<div class="section-title">Current Positions</div>`;
-  h+=`<div class="pos-grid">`;
-  for(const p of TPS){
-    const isR=retros.includes(p),isS=stats.includes(p);
-    const dig=getDignity(p,cur[p]);const label=p==='NorthNode'?'N.Node':p;
-    h+=`<div class="pos-item" onclick="openPlanetModal('${p}',${JSON.stringify(cur).replace(/"/g,'&quot;')},${jd})">`;
-    h+=`${pSVG(p,18,'var(--gold)')}`;
-    h+=`<div style="flex:1;min-width:0"><div style="font-size:10px;color:var(--text2)">${label}`;
-    if(isR)h+=`<span style="color:var(--crimson);margin-left:4px" onclick="event.stopPropagation();showTip('Retrograde')">Rx</span>`;
-    if(isS)h+=`<span style="color:var(--amber);margin-left:4px">STA</span>`;
-    if(dig)h+=`<span style="color:${dig.color};margin-left:4px;font-size:9px;font-weight:700">${dig.label}</span>`;
-    h+=`</div><div style="font-size:12px;font-weight:500;color:var(--bright)">${fmtShort(cur[p])}</div></div>`;
-    h+=`<span style="font-size:10px;color:var(--emerald);opacity:.5">H${houseOf(cur[p])}</span></div>`;
-  }
-  h+=`</div></div>`;
-
-  // ══════════ NATAL TAB ══════════
-  h+=`<div class="tab-content ${activeTab==='natal'?'active':''}">`;
-  const natalAspList=findNatalAspects();
-  h+=`<div class="chart-wrap full" style="margin-bottom:16px">${renderChartWheel(cur,[],jd,400,natalAspList)}</div>`;
-  h+=`<div style="display:flex;justify-content:center;gap:8px;margin:-8px 0 12px">`;
-  h+=`<div class="chart-toggle ${showNatalAspectLines?'on':''}" onclick="showNatalAspectLines=!showNatalAspectLines;renderApp()">Aspects</div>`;
+  // Mode toggle: Live (transits) / Native (natal)
+  h+=`<div class="chart-mode-bar" style="display:flex;justify-content:center;gap:0;margin:0 0 12px;border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--hairline)">`;
+  h+=`<div class="chart-mode-btn ${chartMode==='live'?'on':''}" onclick="switchChartMode('live')" style="flex:1;text-align:center;padding:8px 0;font-size:12px;font-weight:600;cursor:pointer;${chartMode==='live'?'background:var(--surface);color:var(--bright)':'color:var(--text3)'}">Live</div>`;
+  h+=`<div class="chart-mode-btn ${chartMode==='native'?'on':''}" onclick="switchChartMode('native')" style="flex:1;text-align:center;padding:8px 0;font-size:12px;font-weight:600;cursor:pointer;${chartMode==='native'?'background:var(--surface);color:var(--bright)':'color:var(--text3)'}">Native</div>`;
   h+=`</div>`;
 
-  // Fixed Star natal contacts
-  const fsNatal=scanNatalFixedStars(1.0);
-  h+=`<div class="fs-card">`;
-  h+=`<div class="fs-head" onclick="toggleFSNatal()">`;
-  h+=`<span>Fixed Stars in Your Chart</span>`;
-  h+=`<span class="section-chev ${fsNatalExpanded?'open':''}">&#9654;</span></div>`;
-  h+=`<div class="fs-sub">Natal planets and angles within 1° of a named fixed star. These contacts were read by traditional astrologers as fate-threads — the star\'s nature woven into whatever point it touched.</div>`;
-  if(fsNatal.length===0){
-    h+=`<div class="fs-empty">No natal point sits within 1° of the principal named stars.</div>`;
-  } else {
-    for(const h1 of fsNatal){
-      h+=`<div class="fs-hit">`;
-      h+=`<div class="fs-hit-head"><div class="fs-hit-title">${pSVG(h1.point,12,'var(--gold)')} ${h1.point}<span class="fs-dot">☌</span>${h1.star.name}</div>`;
-      h+=`<div class="fs-hit-orb">${h1.orb.toFixed(2)}° orb</div></div>`;
-      h+=`<div class="fs-hit-nature">${h1.star.nature} · mag ${h1.star.mag}</div>`;
-      if(fsNatalExpanded)h+=`<div class="fs-hit-meaning">${h1.star.meaning}</div>`;
-      h+=`</div>`;
+  if(chartMode==='live'){
+    // ── Live mode: biwheel with transits + current positions ──
+    h+=`<div class="chart-wrap full">${renderChartWheel(cur,transits,jd,420)}</div>`;
+    h+=`<div class="chart-toggles">`;
+    h+=`<div class="chart-toggle ${showTransitRing?'on':''}" onclick="toggleChart('transit')">Transits</div>`;
+    h+=`<div class="chart-toggle ${showAspectLines?'on':''}" onclick="toggleChart('aspects')">Aspects</div></div>`;
+    h+=`<div class="section-title">Current Positions</div>`;
+    h+=`<div class="pos-grid">`;
+    for(const p of TPS){
+      const isR=retros.includes(p),isS=stats.includes(p);
+      const dig=getDignity(p,cur[p]);const label=p==='NorthNode'?'N.Node':p;
+      h+=`<div class="pos-item" onclick="openPlanetModal('${p}',${JSON.stringify(cur).replace(/"/g,'&quot;')},${jd})">`;
+      h+=`${pSVG(p,18,'var(--gold)')}`;
+      h+=`<div style="flex:1;min-width:0"><div style="font-size:10px;color:var(--text2)">${label}`;
+      if(isR)h+=`<span style="color:var(--crimson);margin-left:4px" onclick="event.stopPropagation();showTip('Retrograde')">Rx</span>`;
+      if(isS)h+=`<span style="color:var(--amber);margin-left:4px">STA</span>`;
+      if(dig)h+=`<span style="color:${dig.color};margin-left:4px;font-size:9px;font-weight:700">${dig.label}</span>`;
+      h+=`</div><div style="font-size:12px;font-weight:500;color:var(--bright)">${fmtShort(cur[p])}</div></div>`;
+      h+=`<span style="font-size:10px;color:var(--emerald);opacity:.5">H${houseOf(cur[p])}</span></div>`;
     }
-  }
-  h+=`</div>`;
+    h+=`</div>`;
+  } else {
+    // ── Native mode: natal chart + natal aspects + fixed stars + planet cards ──
+    const natalAspList=findNatalAspects();
+    h+=`<div class="chart-wrap full" style="margin-bottom:16px">${renderChartWheel(cur,[],jd,400,natalAspList)}</div>`;
+    h+=`<div style="display:flex;justify-content:center;gap:8px;margin:-8px 0 12px">`;
+    h+=`<div class="chart-toggle ${showNatalAspectLines?'on':''}" onclick="showNatalAspectLines=!showNatalAspectLines;renderApp()">Aspects</div>`;
+    h+=`</div>`;
 
-  // ─── Natal Aspects ───
-  h+=`<div class="fs-card">`;
-  h+=`<div class="fs-head" onclick="toggleNatalAspects()">`;
-  h+=`<span>Aspects in Your Chart</span>`;
-  h+=`<span class="section-chev ${natalAspectsExpanded?'open':''}">&#9654;</span></div>`;
-  h+=`<div class="fs-sub">Geometric relationships between natal points. Tight aspects (small orb) and those involving Sun, Moon, or angles carry the strongest weight. Tap any aspect for a deeper reading.</div>`;
-  if(natalAspectsExpanded){
-    if(natalAspList.length===0){
-      h+=`<div class="fs-empty">No aspects within orb — rare, and worth noting.</div>`;
+    // Fixed Star natal contacts
+    const fsNatal=scanNatalFixedStars(1.0);
+    h+=`<div class="fs-card">`;
+    h+=`<div class="fs-head" onclick="toggleFSNatal()">`;
+    h+=`<span>Fixed Stars in Your Chart</span>`;
+    h+=`<span class="section-chev ${fsNatalExpanded?'open':''}">&#9654;</span></div>`;
+    h+=`<div class="fs-sub">Natal planets and angles within 1° of a named fixed star. These contacts were read by traditional astrologers as fate-threads — the star\'s nature woven into whatever point it touched.</div>`;
+    if(fsNatal.length===0){
+      h+=`<div class="fs-empty">No natal point sits within 1° of the principal named stars.</div>`;
     } else {
-      for(const a of natalAspList){
-        const nat=ASPECT_NATURE[a.aspect]||{};
-        const key=natalAspectKey(a.p1,a.p2,a.aspect);
-        const depth=natalAspectDepth(a.p1,a.p2,a.aspect);
-        const id='na-'+a.p1+'-'+a.p2+'-'+a.aspect;
-        const isOpen=expandedCards[id];
-        const lbl1=a.p1==='NorthNode'?'N.Node':a.p1;const lbl2=a.p2==='NorthNode'?'N.Node':a.p2;
-        const tight=a.orb<=1?' tight':'';
-        h+=`<div class="natal" data-card-id="${id}" onclick="toggleCard('${id}')" style="margin-top:8px">`;
-        h+=`<div class="fs-hit-head"><div class="fs-hit-title">`;
-        h+=`${pSVG(a.p1,14,'var(--gold)')} ${lbl1} <span class="fs-dot" style="color:${nat.color||'var(--text2)'};font-size:14px">${nat.glyph||''}</span> ${pSVG(a.p2,14,'var(--gold)')} ${lbl2}`;
-        h+=`</div><div class="fs-hit-orb${tight}">${a.orb.toFixed(2)}°</div></div>`;
-        h+=`<div class="fs-hit-nature" style="color:${nat.color||'var(--text2)'}">${a.aspect} · ${a.type}</div>`;
-        h+=`<div class="natal-expand ${isOpen?'open':''}"><div style="padding:10px 0 0;border-top:1px solid var(--surface);margin-top:8px">`;
-        h+=`<div style="font-size:12px;line-height:1.6;color:var(--text);margin-bottom:8px"><strong style="color:${nat.color||'var(--gold)'}">${a.aspect}:</strong> ${nat.nature||''}</div>`;
-        if(depth){
-          h+=`<div style="font-size:12px;line-height:1.6;color:var(--violet)"><strong>${lbl1} ${nat.glyph||''} ${lbl2}:</strong> ${depth}</div>`;
-        } else {
-          h+=`<div style="font-size:12px;line-height:1.6;color:var(--text2);font-style:italic">Apply the general ${a.aspect} nature above to the blend of ${lbl1}'s themes (${NATAL_VOICE[a.p1]?.title||a.p1}) with ${lbl2}'s themes (${NATAL_VOICE[a.p2]?.title||a.p2}).</div>`;
-        }
-        h+=`</div></div></div>`;
+      for(const h1 of fsNatal){
+        h+=`<div class="fs-hit">`;
+        h+=`<div class="fs-hit-head"><div class="fs-hit-title">${pSVG(h1.point,12,'var(--gold)')} ${h1.point}<span class="fs-dot">☌</span>${h1.star.name}</div>`;
+        h+=`<div class="fs-hit-orb">${h1.orb.toFixed(2)}° orb</div></div>`;
+        h+=`<div class="fs-hit-nature">${h1.star.nature} · mag ${h1.star.mag}</div>`;
+        if(fsNatalExpanded)h+=`<div class="fs-hit-meaning">${h1.star.meaning}</div>`;
+        h+=`</div>`;
       }
     }
-  } else {
-    // Compact preview: top 6
-    h+=`<div style="padding:8px 0 4px;display:flex;flex-wrap:wrap;gap:6px">`;
-    for(const a of natalAspList.slice(0,6)){
-      const nat=ASPECT_NATURE[a.aspect]||{};
-      const lbl1=a.p1==='NorthNode'?'NN':a.p1.slice(0,3);const lbl2=a.p2==='NorthNode'?'NN':a.p2.slice(0,3);
-      h+=`<span class="natal-tag" style="color:${nat.color||'var(--text2)'}">${lbl1} ${nat.glyph||''} ${lbl2}</span>`;
-    }
-    if(natalAspList.length>6)h+=`<span class="natal-tag" style="opacity:.6">+${natalAspList.length-6} more</span>`;
-    h+=`</div>`;
-  }
-  h+=`</div>`;
-
-  const natalPlanets=['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto','Chiron','NorthNode'];
-  for(const p of natalPlanets){
-    const lon=NATAL[p];const sign=signOf(lon);const house=houseOf(lon);
-    const dig=getDignity(p,lon);const nv=NATAL_VOICE[p]||{};const hv=HOUSE_VOICE[house]||{};
-    const label=p==='NorthNode'?'North Node':p;
-    const id='n-'+p;const isOpen=expandedCards[id];
-
-    h+=`<div class="natal" data-card-id="${id}" onclick="toggleCard('${id}')">`;
-    h+=`<div class="natal-head">${pSVG(p,28,'var(--gold)')}<div>`;
-    h+=`<div class="natal-name">${label}</div>`;
-    h+=`<div class="natal-pos">${sign.name} ${sign.degree}° · House ${house}</div></div></div>`;
-    if(nv.title)h+=`<div class="natal-title">${nv.title}</div>`;
-    if(nv.desc)h+=`<div class="natal-desc">${nv.desc}</div>`;
-    h+=`<div class="natal-tags">`;
-    h+=`<span class="natal-tag">${sSVG(sign.name,13,'var(--text2)')} ${sign.name}</span>`;
-    h+=`<span class="natal-tag" onclick="event.stopPropagation();showTip('House')">H${house}: ${hv.name||''}</span>`;
-    if(dig)h+=`<span class="natal-tag" style="color:${dig.color}" onclick="event.stopPropagation()">${dig.label}</span>`;
     h+=`</div>`;
 
-    // Expandable detail
-    h+=`<div class="natal-expand ${isOpen?'open':''}"><div style="padding:12px 0 0;border-top:1px solid var(--surface);margin-top:10px">`;
-    if(dig)h+=`<div style="font-size:12px;line-height:1.6;color:var(--text);margin-bottom:8px"><strong style="color:${dig.color}">${dig.label}:</strong> ${dig.desc}</div>`;
-    const nPIH=planetInHouse(p,house);
-    h+=`<div style="font-size:12px;line-height:1.6;color:var(--text);margin-bottom:8px"><strong>House ${house} (${hv.name||''}):</strong> ${nPIH||houseVoiceDesc(house)}</div>`;
-    // House ruler connection
-    const ruler=RULERS[sign.name];
-    if(ruler&&NATAL[ruler]!==undefined){
-      const rulerSign=signOf(NATAL[ruler]);const rulerHouse=houseOf(NATAL[ruler]);
-      h+=`<div style="font-size:12px;line-height:1.6;color:var(--violet)"><strong>Sign Ruler:</strong> ${sign.name} is ruled by ${ruler} (in ${rulerSign.name}, House ${rulerHouse}). The condition of ${ruler} in your chart colors how this ${label} expresses itself.</div>`;
+    // ─── Natal Aspects ───
+    h+=`<div class="fs-card">`;
+    h+=`<div class="fs-head" onclick="toggleNatalAspects()">`;
+    h+=`<span>Aspects in Your Chart</span>`;
+    h+=`<span class="section-chev ${natalAspectsExpanded?'open':''}">&#9654;</span></div>`;
+    h+=`<div class="fs-sub">Geometric relationships between natal points. Tight aspects (small orb) and those involving Sun, Moon, or angles carry the strongest weight. Tap any aspect for a deeper reading.</div>`;
+    if(natalAspectsExpanded){
+      if(natalAspList.length===0){
+        h+=`<div class="fs-empty">No aspects within orb — rare, and worth noting.</div>`;
+      } else {
+        for(const a of natalAspList){
+          const nat=ASPECT_NATURE[a.aspect]||{};
+          const key=natalAspectKey(a.p1,a.p2,a.aspect);
+          const depth=natalAspectDepth(a.p1,a.p2,a.aspect);
+          const id='na-'+a.p1+'-'+a.p2+'-'+a.aspect;
+          const isOpen=expandedCards[id];
+          const lbl1=a.p1==='NorthNode'?'N.Node':a.p1;const lbl2=a.p2==='NorthNode'?'N.Node':a.p2;
+          const tight=a.orb<=1?' tight':'';
+          h+=`<div class="natal" data-card-id="${id}" onclick="toggleCard('${id}')" style="margin-top:8px">`;
+          h+=`<div class="fs-hit-head"><div class="fs-hit-title">`;
+          h+=`${pSVG(a.p1,14,'var(--gold)')} ${lbl1} <span class="fs-dot" style="color:${nat.color||'var(--text2)'};font-size:14px">${nat.glyph||''}</span> ${pSVG(a.p2,14,'var(--gold)')} ${lbl2}`;
+          h+=`</div><div class="fs-hit-orb${tight}">${a.orb.toFixed(2)}°</div></div>`;
+          h+=`<div class="fs-hit-nature" style="color:${nat.color||'var(--text2)'}">${a.aspect} · ${a.type}</div>`;
+          h+=`<div class="natal-expand ${isOpen?'open':''}"><div style="padding:10px 0 0;border-top:1px solid var(--surface);margin-top:8px">`;
+          h+=`<div style="font-size:12px;line-height:1.6;color:var(--text);margin-bottom:8px"><strong style="color:${nat.color||'var(--gold)'}">${a.aspect}:</strong> ${nat.nature||''}</div>`;
+          if(depth){
+            h+=`<div style="font-size:12px;line-height:1.6;color:var(--violet)"><strong>${lbl1} ${nat.glyph||''} ${lbl2}:</strong> ${depth}</div>`;
+          } else {
+            h+=`<div style="font-size:12px;line-height:1.6;color:var(--text2);font-style:italic">Apply the general ${a.aspect} nature above to the blend of ${lbl1}'s themes (${NATAL_VOICE[a.p1]?.title||a.p1}) with ${lbl2}'s themes (${NATAL_VOICE[a.p2]?.title||a.p2}).</div>`;
+          }
+          h+=`</div></div></div>`;
+        }
+      }
+    } else {
+      // Compact preview: top 6
+      h+=`<div style="padding:8px 0 4px;display:flex;flex-wrap:wrap;gap:6px">`;
+      for(const a of natalAspList.slice(0,6)){
+        const nat=ASPECT_NATURE[a.aspect]||{};
+        const lbl1=a.p1==='NorthNode'?'NN':a.p1.slice(0,3);const lbl2=a.p2==='NorthNode'?'NN':a.p2.slice(0,3);
+        h+=`<span class="natal-tag" style="color:${nat.color||'var(--text2)'}">${lbl1} ${nat.glyph||''} ${lbl2}</span>`;
+      }
+      if(natalAspList.length>6)h+=`<span class="natal-tag" style="opacity:.6">+${natalAspList.length-6} more</span>`;
+      h+=`</div>`;
     }
-    h+=`</div></div></div>`;
+    h+=`</div>`;
+
+    const natalPlanets=['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto','Chiron','NorthNode'];
+    for(const p of natalPlanets){
+      const lon=NATAL[p];const sign=signOf(lon);const house=houseOf(lon);
+      const dig=getDignity(p,lon);const nv=NATAL_VOICE[p]||{};const hv=HOUSE_VOICE[house]||{};
+      const label=p==='NorthNode'?'North Node':p;
+      const id='n-'+p;const isOpen=expandedCards[id];
+
+      h+=`<div class="natal" data-card-id="${id}" onclick="toggleCard('${id}')">`;
+      h+=`<div class="natal-head">${pSVG(p,28,'var(--gold)')}<div>`;
+      h+=`<div class="natal-name">${label}</div>`;
+      h+=`<div class="natal-pos">${sign.name} ${sign.degree}° · House ${house}</div></div></div>`;
+      if(nv.title)h+=`<div class="natal-title">${nv.title}</div>`;
+      if(nv.desc)h+=`<div class="natal-desc">${nv.desc}</div>`;
+      h+=`<div class="natal-tags">`;
+      h+=`<span class="natal-tag">${sSVG(sign.name,13,'var(--text2)')} ${sign.name}</span>`;
+      h+=`<span class="natal-tag" onclick="event.stopPropagation();showTip('House')">H${house}: ${hv.name||''}</span>`;
+      if(dig)h+=`<span class="natal-tag" style="color:${dig.color}" onclick="event.stopPropagation()">${dig.label}</span>`;
+      h+=`</div>`;
+
+      // Expandable detail
+      h+=`<div class="natal-expand ${isOpen?'open':''}"><div style="padding:12px 0 0;border-top:1px solid var(--surface);margin-top:10px">`;
+      if(dig)h+=`<div style="font-size:12px;line-height:1.6;color:var(--text);margin-bottom:8px"><strong style="color:${dig.color}">${dig.label}:</strong> ${dig.desc}</div>`;
+      const nPIH=planetInHouse(p,house);
+      h+=`<div style="font-size:12px;line-height:1.6;color:var(--text);margin-bottom:8px"><strong>House ${house} (${hv.name||''}):</strong> ${nPIH||houseVoiceDesc(house)}</div>`;
+      // House ruler connection
+      const ruler=RULERS[sign.name];
+      if(ruler&&NATAL[ruler]!==undefined){
+        const rulerSign=signOf(NATAL[ruler]);const rulerHouse=houseOf(NATAL[ruler]);
+        h+=`<div style="font-size:12px;line-height:1.6;color:var(--violet)"><strong>Sign Ruler:</strong> ${sign.name} is ruled by ${ruler} (in ${rulerSign.name}, House ${rulerHouse}). The condition of ${ruler} in your chart colors how this ${label} expresses itself.</div>`;
+      }
+      h+=`</div></div></div>`;
+    }
   }
   h+=`</div>`;
 
-  // ══════════ LORE / REFERENCE TAB ══════════
-  h+=`<div class="tab-content ${activeTab==='lore'?'active':''}">`;
-  if(!refIntroDismissed){
-    h+=`<div class="ref-intro" style="position:relative;padding-right:32px">A grounded index of the techniques, texts, and figures this app draws on — Hellenistic, Perso-Arabic, Latin, and Hermetic. Tap any term to open source and lineage.<span onclick="event.stopPropagation();dismissRefIntro()" style="position:absolute;top:8px;right:10px;cursor:pointer;color:var(--text3);font-size:16px;line-height:1;padding:4px">&times;</span></div>`;
-  }
-  const q=(refQuery||'').toLowerCase().trim();
-  h+=`<div class="ref-search-wrap">`;
-  h+=`<input class="ref-search" type="text" placeholder="Search terms, sources, figures..." value="${refQuery.replace(/"/g,'&quot;')}" oninput="setRefQuery(this.value)" onclick="event.stopPropagation()">`;
-  const cats=['All','Technique','Object','Concept','Tradition','Figure'];
-  h+=`<div class="ref-cats">`;
-  for(const c of cats){
-    h+=`<div class="ref-cat ${refCategory===c?'on':''}" onclick="setRefCat('${c}')">${c}</div>`;
+  // ══════════ TOOLS TAB (Synastry + Map + Elect + Lore + Ledger) ══════════
+  h+=`<div class="tab-content ${activeTab==='tools'?'active':''}">`;
+  // Sub-tab bar
+  h+=`<div class="tools-sub-bar" style="display:flex;gap:0;margin:0 0 12px;border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--hairline);font-size:11px;font-weight:600">`;
+  const toolsTabs=[['synastry','Synastry'],['map','Map'],['elect','Elect'],['lore','Lore'],['ledger','Ledger']];
+  for(const [k,label] of toolsTabs){
+    h+=`<div onclick="switchToolsTab('${k}')" style="flex:1;text-align:center;padding:8px 0;cursor:pointer;${toolsSubTab===k?'background:var(--surface);color:var(--bright)':'color:var(--text3)'}">${label}</div>`;
   }
   h+=`</div>`;
-  h+=`</div>`;
-  // Filter
-  const refFiltered=REFERENCES.filter(r=>{
-    if(refCategory!=='All'&&r.cat!==refCategory)return false;
-    if(!q)return true;
-    return(r.term+' '+r.summary+' '+r.source+' '+r.lineage).toLowerCase().includes(q);
-  });
-  if(q||refCategory!=='All'){
-    h+=`<div style="font-size:var(--fs-label);color:var(--text3);letter-spacing:.5px;padding:0 2px 6px;text-transform:uppercase;font-weight:600">Showing ${refFiltered.length} of ${REFERENCES.length}</div>`;
-  }
-  if(refFiltered.length===0){
-    h+=`<div class="ref-empty">No references match your filter.</div>`;
-  } else {
-    const groups={};
-    for(const r of refFiltered){if(!groups[r.cat])groups[r.cat]=[];groups[r.cat].push(r);}
-    const catOrder=['Technique','Object','Concept','Tradition','Figure'];
-    for(const c of catOrder){
-      if(!groups[c])continue;
-      h+=`<div class="ref-group">`;
-      h+=`<div class="ref-group-head">${c}${c.endsWith('s')?'':'s'} · ${groups[c].length}</div>`;
-      for(let ri=0;ri<groups[c].length;ri++){
-        const r=groups[c][ri];
-        const open=!!refExpanded[r.term];
-        h+=`<div class="ref-card ${open?'open':''}" style="animation-delay:${Math.min(ri,6)*30}ms" onclick="toggleRef('${r.term.replace(/'/g,"\\'")}')">`;
-        h+=`<div class="ref-term">${r.term}<span class="ref-term-chev">&#9654;</span></div>`;
-        h+=`<div class="ref-summary">${r.summary}</div>`;
-        if(open){
-          const u=REF_USEFUL[r.term]||{};
-          h+=`<div class="ref-meta">`;
-          if(u.whenItMatters)h+=`<div class="ref-meta-row"><span class="ref-meta-k">When it matters</span><span class="ref-meta-v">${u.whenItMatters}</span></div>`;
-          if(u.howToRead)h+=`<div class="ref-meta-row"><span class="ref-meta-k">How to read it</span><span class="ref-meta-v">${u.howToRead}</span></div>`;
-          if(u.watchFor)h+=`<div class="ref-meta-row"><span class="ref-meta-k">Watch for</span><span class="ref-meta-v">${u.watchFor}</span></div>`;
-          if(!u.whenItMatters&&!u.howToRead&&!u.watchFor){
-            h+=`<div class="ref-meta-row"><span class="ref-meta-k">Note</span><span class="ref-meta-v">Practical guidance for this term has not been written yet — see the summary above.</span></div>`;
+
+  if(toolsSubTab==='synastry'){
+    try{h+=renderSynastryTab();}catch(e){h+=`<div style="padding:20px;color:var(--text2);">Synastry loading error</div>`;console.error('SynastryTab:',e);}
+  } else if(toolsSubTab==='map'){
+    try{h+=renderAstroCartoTab();}catch(e){h+=`<div style="padding:20px;color:var(--text2);">Map loading error</div>`;console.error('AstroCartoTab:',e);}
+  } else if(toolsSubTab==='elect'){
+    // Electional tool — reuse existing electional panel logic
+    h+=`<div style="padding:8px 0">`;
+    h+=`<div style="font-size:14px;font-weight:600;color:var(--bright);margin-bottom:8px">${pSVG('Jupiter',16,'var(--violet)')} Elect a Time</div>`;
+    h+=`<div style="font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:12px">Choose what you want to do. The best windows in the next week will be scored and ranked.</div>`;
+    h+=`<div class="elect-tasks">`;
+    if(typeof ELECTIONAL_TASKS!=='undefined'){
+      for(const [key,t] of Object.entries(ELECTIONAL_TASKS)){
+        const sel=electionalTask===key?' selected':'';
+        h+=`<div class="elect-task${sel}" onclick="pickElectionalTask('${key}')">${t.label}</div>`;
+      }
+    }
+    h+=`</div>`;
+    if(electionalTask&&electionalResults){
+      const t=ELECTIONAL_TASKS[electionalTask];
+      if(t&&t.notes)h+=`<div style="font-size:11px;color:var(--text3);margin-bottom:6px;line-height:1.5"><em>${t.notes}</em></div>`;
+      if(electionalResults.length===0){
+        h+=`<div style="font-size:12px;color:var(--text2);padding:10px">No clearly favorable windows found in the next week. Consider waiting, or proceed with the best available hour.</div>`;
+      } else {
+        h+=`<div class="elect-windows">`;
+        for(let i=0;i<electionalResults.length;i++){
+          const w=electionalResults[i];
+          const rankCls=i===0?'':i===1?'rank2':'rank3';
+          const poorCls=w.score<55?' poor':'';
+          const scoreCls=w.score>=70?'':w.score>=55?'mid':'low';
+          h+=`<div class="elect-window ${rankCls}${poorCls}">`;
+          h+=`<div class="ew-head">`;
+          h+=`<div class="ew-when">${pSVG(w.ruler,14,'var(--bright)')} ${fmtElectionalWhen(w.date)} · ${w.durMin}min</div>`;
+          h+=`<div class="ew-score ${scoreCls}">${w.score}</div>`;
+          h+=`</div>`;
+          if(w.reasons.length)h+=`<div class="ew-reasons">${w.reasons.join('. ')}.</div>`;
+          h+=`<div class="ew-factors">`;
+          for(const f of w.factors){
+            h+=`<span class="ew-chip ${f.type}">${f.label}</span>`;
+          }
+          h+=`</div>`;
+          h+=`</div>`;
+        }
+        h+=`</div>`;
+      }
+    }
+    h+=`</div>`;
+  } else if(toolsSubTab==='lore'){
+    // Lore / Reference content
+    if(!refIntroDismissed){
+      h+=`<div class="ref-intro" style="position:relative;padding-right:32px">A grounded index of the techniques, texts, and figures this app draws on — Hellenistic, Perso-Arabic, Latin, and Hermetic. Tap any term to open source and lineage.<span onclick="event.stopPropagation();dismissRefIntro()" style="position:absolute;top:8px;right:10px;cursor:pointer;color:var(--text3);font-size:16px;line-height:1;padding:4px">&times;</span></div>`;
+    }
+    const q=(refQuery||'').toLowerCase().trim();
+    h+=`<div class="ref-search-wrap">`;
+    h+=`<input class="ref-search" type="text" placeholder="Search terms, sources, figures..." value="${refQuery.replace(/"/g,'&quot;')}" oninput="setRefQuery(this.value)" onclick="event.stopPropagation()">`;
+    const cats=['All','Technique','Object','Concept','Tradition','Figure'];
+    h+=`<div class="ref-cats">`;
+    for(const c of cats){
+      h+=`<div class="ref-cat ${refCategory===c?'on':''}" onclick="setRefCat('${c}')">${c}</div>`;
+    }
+    h+=`</div>`;
+    h+=`</div>`;
+    const refFiltered=REFERENCES.filter(r=>{
+      if(refCategory!=='All'&&r.cat!==refCategory)return false;
+      if(!q)return true;
+      return(r.term+' '+r.summary+' '+r.source+' '+r.lineage).toLowerCase().includes(q);
+    });
+    if(q||refCategory!=='All'){
+      h+=`<div style="font-size:var(--fs-label);color:var(--text3);letter-spacing:.5px;padding:0 2px 6px;text-transform:uppercase;font-weight:600">Showing ${refFiltered.length} of ${REFERENCES.length}</div>`;
+    }
+    if(refFiltered.length===0){
+      h+=`<div class="ref-empty">No references match your filter.</div>`;
+    } else {
+      const groups={};
+      for(const r of refFiltered){if(!groups[r.cat])groups[r.cat]=[];groups[r.cat].push(r);}
+      const catOrder=['Technique','Object','Concept','Tradition','Figure'];
+      for(const c of catOrder){
+        if(!groups[c])continue;
+        h+=`<div class="ref-group">`;
+        h+=`<div class="ref-group-head">${c}${c.endsWith('s')?'':'s'} · ${groups[c].length}</div>`;
+        for(let ri=0;ri<groups[c].length;ri++){
+          const r=groups[c][ri];
+          const open=!!refExpanded[r.term];
+          h+=`<div class="ref-card ${open?'open':''}" style="animation-delay:${Math.min(ri,6)*30}ms" onclick="toggleRef('${r.term.replace(/'/g,"\\'")}')">`;
+          h+=`<div class="ref-term">${r.term}<span class="ref-term-chev">&#9654;</span></div>`;
+          h+=`<div class="ref-summary">${r.summary}</div>`;
+          if(open){
+            const u=REF_USEFUL[r.term]||{};
+            h+=`<div class="ref-meta">`;
+            if(u.whenItMatters)h+=`<div class="ref-meta-row"><span class="ref-meta-k">When it matters</span><span class="ref-meta-v">${u.whenItMatters}</span></div>`;
+            if(u.howToRead)h+=`<div class="ref-meta-row"><span class="ref-meta-k">How to read it</span><span class="ref-meta-v">${u.howToRead}</span></div>`;
+            if(u.watchFor)h+=`<div class="ref-meta-row"><span class="ref-meta-k">Watch for</span><span class="ref-meta-v">${u.watchFor}</span></div>`;
+            if(!u.whenItMatters&&!u.howToRead&&!u.watchFor){
+              h+=`<div class="ref-meta-row"><span class="ref-meta-k">Note</span><span class="ref-meta-v">Practical guidance for this term has not been written yet — see the summary above.</span></div>`;
+            }
+            h+=`</div>`;
           }
           h+=`</div>`;
         }
         h+=`</div>`;
       }
-      h+=`</div>`;
     }
+  } else if(toolsSubTab==='ledger'){
+    // Ledger placeholder (Phase 3)
+    h+=`<div style="padding:20px 0;text-align:center">`;
+    h+=`<div style="font-size:14px;font-weight:600;color:var(--bright);margin-bottom:8px">Ledger</div>`;
+    h+=`<div style="font-size:12px;color:var(--text2);line-height:1.5">Journal entries and synthesis accuracy tracking. Coming soon — use the journal in Today's Layer 3 to start logging.</div>`;
+    h+=`</div>`;
   }
   h+=`</div>`;
 
-  // ══════════ SYNASTRY TAB ══════════
-  h+=`<div class="tab-content ${activeTab==='synastry'?'active':''}">`;
-  try{h+=renderSynastryTab();}catch(e){h+=`<div style="padding:20px;color:var(--text2);">Synastry loading error</div>`;console.error('SynastryTab:',e);}
-  h+=`</div>`;
-
-  // ══════════ MAP TAB ══════════
-  h+=`<div class="tab-content ${activeTab==='map'?'active':''}">`;
-  try{h+=renderAstroCartoTab();}catch(e){h+=`<div style="padding:20px;color:var(--text2);">Map loading error</div>`;console.error('AstroCartoTab:',e);}
-  h+=`</div>`;
-
-  // ══════════ TAB BAR ══════════
+  // ══════════ TAB BAR (3 modes: Today / Chart / Tools) ══════════
   const svgToday=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><line x1="12" y1="3" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="21"/><line x1="3" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="21" y2="12"/></svg>`;
   const svgChart=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><line x1="12" y1="3" x2="12" y2="21"/><line x1="3" y1="12" x2="21" y2="12"/></svg>`;
-  const svgNatal=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12,2 20,8 18,18 6,18 4,8" fill="none"/><circle cx="12" cy="11" r="3"/></svg>`;
-
-  const svgLore=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h12a2 2 0 012 2v14l-8-4-8 4V6a2 2 0 012-2z"/><line x1="8" y1="9" x2="14" y2="9"/><line x1="8" y1="13" x2="12" y2="13"/></svg>`;
-  const svgHome=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>`;
+  const svgTools=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>`;
   let tabBarHtml='';
-  tabBarHtml+=`<button class="${activeTab==='home'?'active':''}" onclick="switchTab('home')">${svgHome}<span>Home</span></button>`;
   tabBarHtml+=`<button class="${activeTab==='today'?'active':''}" onclick="switchTab('today')">${svgToday}<span>Today</span></button>`;
   tabBarHtml+=`<button class="${activeTab==='chart'?'active':''}" onclick="switchTab('chart')">${svgChart}<span>Chart</span></button>`;
-  tabBarHtml+=`<button class="${activeTab==='lore'?'active':''}" onclick="switchTab('lore')">${svgLore}<span>Lore</span></button>`;
-  tabBarHtml+=`<button class="${activeTab==='natal'?'active':''}" onclick="switchTab('natal')">${svgNatal}<span>Natal</span></button>`;
-  const svgSynastry=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="12" r="7"/><circle cx="15" cy="12" r="7"/></svg>`;
-  const svgMap=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/></svg>`;
-  tabBarHtml+=`<button class="${activeTab==='synastry'?'active':''}" onclick="switchTab('synastry')">${svgSynastry}<span>Relate</span></button>`;
-  tabBarHtml+=`<button class="${activeTab==='map'?'active':''}" onclick="switchTab('map')">${svgMap}<span>Map</span></button>`;
+  tabBarHtml+=`<button class="${activeTab==='tools'?'active':''}" onclick="switchTab('tools')">${svgTools}<span>Tools</span></button>`;
 
   document.getElementById('app').innerHTML=h;
   document.getElementById('tab-bar-host').innerHTML=tabBarHtml;
@@ -5440,7 +5394,7 @@ function renderApp(){
   if(curCell&&hRow){curCell.scrollIntoView({inline:'center',block:'nearest',behavior:'instant'});}
 
   // Restore focus to reference search input if it's the active field
-  if(activeTab==='lore'&&refQuery){
+  if(activeTab==='tools'&&toolsSubTab==='lore'&&refQuery){
     const si=document.querySelector('.ref-search');
     if(si){si.focus();const len=si.value.length;try{si.setSelectionRange(len,len);}catch(e){}}
   }
@@ -5479,7 +5433,17 @@ function navToday(){
   },260);
 }
 // dismissSplash defined in early <script> block above
-function switchTab(tab){activeTab=tab;renderApp();window.scrollTo(0,0);}
+function switchTab(tab){
+  // backward compat: old tab names route to new 3-mode IA
+  if(tab==='home')tab='today';
+  if(tab==='natal'){tab='chart';chartMode='native';}
+  if(tab==='synastry'){tab='tools';toolsSubTab='synastry';}
+  if(tab==='map'){tab='tools';toolsSubTab='map';}
+  if(tab==='lore'){tab='tools';toolsSubTab='lore';}
+  activeTab=tab;renderApp();window.scrollTo(0,0);
+}
+function switchToolsTab(sub){toolsSubTab=sub;renderApp();window.scrollTo(0,0);}
+function switchChartMode(mode){chartMode=mode;renderApp();}
 function toggleCard(id){
   expandedCards[id]=!expandedCards[id];
   // Direct DOM toggle instead of full re-render

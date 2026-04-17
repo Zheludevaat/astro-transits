@@ -1427,111 +1427,75 @@ html.light .guidance-preview:not(.expanded)::after{background:linear-gradient(tr
 }
 
 /* ASTROCARTOGRAPHY SECTION */
-.astrocarto-container {
-  padding: 1rem 0;
-}
+.astrocarto-container { padding: 0; }
 
-.astrocarto-chart-selector {
-  padding: 1rem;
-  border-bottom: 1px solid var(--hairline);
-}
-
-.astrocarto-chart-selector select {
-  width: 100%;
-  padding: 0.6rem;
-  background-color: var(--card);
-  color: var(--text);
-  border: 1px solid var(--gold-line);
-  border-radius: var(--r-sm);
-  font-size: 0.95rem;
-}
+.ac-header { padding: 14px 16px 8px; }
+.ac-header .section-title { margin-top: 0; }
+.ac-header p { font-size: var(--fs-body); line-height: 1.55; color: var(--text2); margin-top: 6px; }
 
 .planet-toggles {
-  display: flex;
-  overflow-x: auto;
-  gap: 6px;
-  padding: 8px 10px;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
+  display: flex; overflow-x: auto; gap: 5px; padding: 6px 12px;
+  -webkit-overflow-scrolling: touch; scrollbar-width: none;
 }
 .planet-toggles::-webkit-scrollbar { display: none; }
-
 .planet-toggle {
-  flex: 0 0 auto;
-  padding: 5px 10px;
-  background-color: var(--card);
-  border: 1px solid var(--gold-line);
-  border-radius: 20px;
-  color: var(--text2);
-  font-size: 0.7rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  white-space: nowrap;
+  flex: 0 0 auto; padding: 5px 10px; background: var(--card); border: 1px solid var(--hairline);
+  border-radius: 20px; color: var(--text2); font-size: var(--fs-label); cursor: pointer;
+  transition: all 0.15s; display: flex; align-items: center; gap: 4px; white-space: nowrap;
+}
+.planet-toggle.active { background: var(--gold); border-color: var(--gold); color: var(--bg); }
+.planet-toggle svg { width: 13px; height: 13px; }
+
+.ac-map-wrap {
+  margin: 6px 10px; border-radius: var(--r-md); overflow: hidden;
+  border: 1px solid var(--gold-line); position: relative;
+  box-shadow: 0 2px 12px rgba(0,0,0,.35);
+}
+.ac-map-wrap svg { display: block; width: 100%; height: auto; }
+.ac-map-hint {
+  position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%);
+  font-size: var(--fs-label); color: var(--text3); background: rgba(5,8,26,.7);
+  padding: 2px 8px; border-radius: 10px; pointer-events: none;
 }
 
-.planet-toggle.active {
-  background-color: var(--gold);
-  border-color: var(--gold);
-  color: var(--bg);
+.ac-legend {
+  display: flex; gap: 8px; padding: 8px 12px; font-size: var(--fs-label); color: var(--text3);
+  flex-wrap: wrap; justify-content: center;
 }
+.ac-legend span { display: flex; align-items: center; gap: 3px; }
+.ac-leg-line { display: inline-block; width: 18px; height: 0; vertical-align: middle; }
 
-.planet-toggle svg {
-  width: 14px;
-  height: 14px;
-}
+.map-pin { fill: var(--crimson); stroke: var(--gold); stroke-width: 1.5; }
 
-.map-container {
-  position: relative;
-  width: 100%;
-  background-color: var(--bg);
-  border: 1px solid var(--hairline);
-}
-
-.map-container svg {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-.map-pin {
-  fill: var(--crimson);
-  stroke: var(--gold);
-  stroke-width: 1.5;
-}
-
-.acarto-info-card {
-  background-color: var(--card);
-  border: 1px solid var(--gold-line);
-  border-top: 2px solid var(--gold);
-  padding: 1rem;
-  margin: 0.6rem;
-  border-radius: var(--r-md);
+.ac-info-card {
+  background: var(--card); border: 1px solid var(--gold-line); border-left: 3px solid var(--gold);
+  padding: 14px; margin: 10px 12px; border-radius: var(--r-md);
   animation: fadeIn 0.3s ease-out;
 }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-.acarto-info-card.hidden {
-  display: none;
+.ac-info-card .ac-info-head { display: flex; justify-content: space-between; align-items: start; }
+.ac-info-card .ac-info-title { font-size: var(--fs-card); font-weight: 600; color: var(--gold); }
+.ac-info-card .ac-info-short { font-size: var(--fs-meta); color: var(--text2); margin-top: 3px; }
+.ac-info-card .ac-info-detail { font-size: var(--fs-body); line-height: 1.6; color: var(--text); margin-top: 10px; }
+.ac-info-card .ac-info-close {
+  background: none; border: none; color: var(--text3); font-size: 18px;
+  cursor: pointer; padding: 0 0 0 12px; line-height: 1;
 }
 
-@keyframes slideUp {
-  from {
-    transform: translateY(100%);
-  }
-  to {
-    transform: translateY(0);
-  }
+.ac-planet-cards { padding: 8px 12px; display: flex; flex-direction: column; gap: 8px; }
+.ac-planet-card {
+  background: var(--card); border: 1px solid var(--hairline); border-radius: var(--r-sm);
+  padding: 10px 12px; cursor: pointer; transition: border-color 0.15s;
 }
+.ac-planet-card:active { border-color: var(--gold-line); }
+.ac-planet-card .ac-pc-head {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 4px;
+}
+.ac-planet-card .ac-pc-name { font-size: var(--fs-body); font-weight: 600; color: var(--text); }
+.ac-planet-card .ac-pc-angles { font-size: var(--fs-label); color: var(--text3); }
+.ac-planet-card .ac-pc-brief { font-size: var(--fs-meta); color: var(--text2); line-height: 1.45; }
 
-.acarto-info-title {
-  color: var(--gold);
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin-bottom: 0.8rem;
-}
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
 .acarto-info-location {
   color: var(--text2);
@@ -6309,112 +6273,73 @@ M -55,60 L -45,60 L -40,65 L -22,70 L -18,76 L -20,82 L -35,83 L -50,80 L -55,75
 M 95,6 L 105,6 L 106,-6 L 110,-7 L 115,-8 L 120,-8 L 130,-3 L 140,-2 L 141,-9 L 127,-8 L 120,-10 L 115,-8 L 110,-7 L 106,-6 L 105,-6 L 100,0 Z
 `;
 
+const AC_COLORS = {
+  Sun:'#d4a843', Moon:'#e8e0d0', Mercury:'#9089ab', Venus:'#3dd9a0', Mars:'#e0425d',
+  Jupiter:'#9b6dff', Saturn:'#5a5478', Uranus:'#4a9eff', Neptune:'#9370db', Pluto:'#dc143c',
+  Chiron:'#d0cae0', NorthNode:'#d4a843'
+};
+
 function renderAstroCartoMap(lines, toggles, tapInfo, width = 400, height = 250) {
-  const aspect = width / height;
-  const svgWidth = width;
-  const svgHeight = height;
+  let svg = `<svg width="${width}" height="${height}" viewBox="0 0 360 180" xmlns="http://www.w3.org/2000/svg">`;
 
-  let svg = `<svg width="${svgWidth}" height="${svgHeight}" viewBox="0 0 360 180" style="background-color: var(--bg);" class="map-container">`;
-
-  // Defs
+  // Defs — glow filter and ocean gradient
   svg += `<defs>
     <filter id="ac-glow" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
-      <feMerge>
-        <feMergeNode in="coloredBlur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
+      <feGaussianBlur stdDeviation="1.5" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
-    <linearGradient id="ocean-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color: var(--bg); stop-opacity: 1"/>
-      <stop offset="100%" style="stop-color: var(--surface); stop-opacity: 1"/>
-    </linearGradient>
+    <radialGradient id="ocean-rg" cx="50%" cy="40%"><stop offset="0%" stop-color="#0d1240"/><stop offset="100%" stop-color="#05081a"/></radialGradient>
   </defs>`;
 
-  // Ocean background
-  svg += `<rect width="360" height="180" fill="url(#ocean-gradient)"/>`;
+  // Ocean
+  svg += `<rect width="360" height="180" fill="url(#ocean-rg)"/>`;
 
-  // Coastlines — path data is in geographic coords (lon -180..180, lat -90..90)
-  // Transform to SVG coords: x' = lon + 180, y' = 90 - lat
-  svg += `<g transform="translate(180, 90) scale(1, -1)"><path d="${WORLD_COASTLINE}" fill="var(--card)" stroke="var(--violet)" stroke-width="0.3" opacity="0.6"/></g>`;
+  // Graticule
+  for (let lon = 0; lon < 360; lon += 30) svg += `<line x1="${lon}" y1="0" x2="${lon}" y2="180" stroke="rgba(255,255,255,.04)" stroke-width="0.3"/>`;
+  for (let lat = -60; lat <= 60; lat += 30) svg += `<line x1="0" y1="${90-lat}" x2="360" y2="${90-lat}" stroke="rgba(255,255,255,.04)" stroke-width="0.3"/>`;
+  // Tropics and equator
+  svg += `<line x1="0" y1="${90-23.44}" x2="360" y2="${90-23.44}" stroke="rgba(212,168,67,.12)" stroke-width="0.3" stroke-dasharray="2,3"/>`;
+  svg += `<line x1="0" y1="${90+23.44}" x2="360" y2="${90+23.44}" stroke="rgba(212,168,67,.12)" stroke-width="0.3" stroke-dasharray="2,3"/>`;
+  svg += `<line x1="0" y1="90" x2="360" y2="90" stroke="rgba(212,168,67,.18)" stroke-width="0.4"/>`;
 
-  // Graticule (light grid)
-  for (let lon = 0; lon < 360; lon += 30) {
-    svg += `<line x1="${lon}" y1="0" x2="${lon}" y2="180" stroke="var(--hairline)" stroke-width="0.2" opacity="0.3"/>`;
-  }
-  for (let lat = -60; lat <= 60; lat += 30) {
-    const y = 90 - lat;
-    svg += `<line x1="0" y1="${y}" x2="360" y2="${y}" stroke="var(--hairline)" stroke-width="0.2" opacity="0.3"/>`;
-  }
-
-  // Equator emphasis
-  svg += `<line x1="0" y1="90" x2="360" y2="90" stroke="var(--gold-line)" stroke-width="0.5" opacity="0.3"/>`;
+  // Coastlines
+  svg += `<g transform="translate(180, 90) scale(1, -1)"><path d="${WORLD_COASTLINE}" fill="rgba(14,19,48,.7)" stroke="rgba(155,109,255,.25)" stroke-width="0.4"/></g>`;
 
   // Planet lines
   const activePlanets = Object.keys(toggles).filter(p => toggles[p]);
-  const planetColors = {
-    Sun: 'var(--gold)',
-    Moon: 'var(--pearl)',
-    Mercury: 'var(--text2)',
-    Venus: 'var(--emerald)',
-    Mars: 'var(--crimson)',
-    Jupiter: 'var(--violet)',
-    Saturn: 'var(--text3)',
-    Uranus: 'var(--azure)',
-    Neptune: 'rgba(147, 112, 219, 0.6)',
-    Pluto: 'rgba(220, 20, 60, 0.5)',
-    Chiron: 'var(--text)',
-    NorthNode: 'var(--gold)'
+
+  const drawSegments = (pts, color, w, op, dash) => {
+    if (!pts || pts.length < 2) return '';
+    let out = '', segs = [[pts[0]]];
+    for (let i = 1; i < pts.length; i++) {
+      if (Math.abs(pts[i].lon - pts[i-1].lon) > 180) segs.push([]);
+      segs[segs.length-1].push(pts[i]);
+    }
+    for (const seg of segs) {
+      if (seg.length < 2) continue;
+      let d = `M ${seg[0].lon.toFixed(1)} ${(90 - seg[0].lat).toFixed(1)}`;
+      for (let i = 1; i < seg.length; i++) d += ` L ${seg[i].lon.toFixed(1)} ${(90 - seg[i].lat).toFixed(1)}`;
+      out += `<path d="${d}" fill="none" stroke="${color}" stroke-width="${w}" opacity="${op}"${dash?' stroke-dasharray="'+dash+'"':''} filter="url(#ac-glow)"/>`;
+    }
+    return out;
   };
 
   if (lines) {
     for (let planet of activePlanets) {
       if (!(planet in lines)) continue;
+      const pl = lines[planet];
+      const c = AC_COLORS[planet] || '#9089ab';
 
-      const planetLine = lines[planet];
-      const color = planetColors[planet] || 'var(--text2)';
+      // MC line (solid vertical)
+      svg += `<line x1="${pl.mc}" y1="5" x2="${pl.mc}" y2="175" stroke="${c}" stroke-width="1.5" opacity="0.75" filter="url(#ac-glow)"/>`;
+      // IC line (dashed vertical)
+      svg += `<line x1="${pl.ic}" y1="5" x2="${pl.ic}" y2="175" stroke="${c}" stroke-width="1.2" opacity="0.45" stroke-dasharray="4,3"/>`;
+      // ASC curve
+      svg += drawSegments(pl.asc, c, 1.3, 0.65, '');
+      // DSC curve
+      svg += drawSegments(pl.dsc, c, 1.0, 0.4, '3,2');
 
-      // MC line (vertical)
-      const mcLon = planetLine.mc;
-      svg += `<line x1="${mcLon}" y1="0" x2="${mcLon}" y2="180" stroke="${color}" stroke-width="1.5" opacity="0.7" filter="url(#ac-glow)"/>`;
-
-      // IC line (vertical, opposite)
-      const icLon = planetLine.ic;
-      svg += `<line x1="${icLon}" y1="0" x2="${icLon}" y2="180" stroke="${color}" stroke-width="1.5" opacity="0.5" stroke-dasharray="3,2"/>`;
-
-      // ASC line -- split at wrap-around
-      if (planetLine.asc && planetLine.asc.length > 0) {
-        let segs = [[]];
-        segs[0].push(planetLine.asc[0]);
-        for (let i = 1; i < planetLine.asc.length; i++) {
-          const prev = planetLine.asc[i-1], cur = planetLine.asc[i];
-          if (Math.abs(cur.lon - prev.lon) > 180) { segs.push([]); }
-          segs[segs.length-1].push(cur);
-        }
-        for (const seg of segs) {
-          if (seg.length < 2) continue;
-          let pathData = `M ${seg[0].lon} ${90 - seg[0].lat}`;
-          for (let i = 1; i < seg.length; i++) pathData += ` L ${seg[i].lon} ${90 - seg[i].lat}`;
-          svg += `<path d="${pathData}" fill="none" stroke="${color}" stroke-width="1.2" opacity="0.6" filter="url(#ac-glow)"/>`;
-        }
-      }
-
-      // DSC line -- split at wrap-around
-      if (planetLine.dsc && planetLine.dsc.length > 0) {
-        let segs = [[]];
-        segs[0].push(planetLine.dsc[0]);
-        for (let i = 1; i < planetLine.dsc.length; i++) {
-          const prev = planetLine.dsc[i-1], cur = planetLine.dsc[i];
-          if (Math.abs(cur.lon - prev.lon) > 180) { segs.push([]); }
-          segs[segs.length-1].push(cur);
-        }
-        for (const seg of segs) {
-          if (seg.length < 2) continue;
-          let pathData = `M ${seg[0].lon} ${90 - seg[0].lat}`;
-          for (let i = 1; i < seg.length; i++) pathData += ` L ${seg[i].lon} ${90 - seg[i].lat}`;
-          svg += `<path d="${pathData}" fill="none" stroke="${color}" stroke-width="1" opacity="0.4" stroke-dasharray="2,1"/>`;
-        }
-      }
+      // Tiny planet icon at MC top
+      svg += `<g transform="translate(${pl.mc}, 4)" opacity="0.8">${pSVG(planet, 7, c)}</g>`;
     }
   }
 
@@ -6422,28 +6347,17 @@ function renderAstroCartoMap(lines, toggles, tapInfo, width = 400, height = 250)
   if (lines && lines._birthLoc) {
     const bx = ((lines._birthLoc.lon + 180) % 360);
     const by = 90 - lines._birthLoc.lat;
-    svg += `<circle cx="${bx}" cy="${by}" r="3" fill="var(--gold)" opacity="0.9"/>`;
-    svg += `<circle cx="${bx}" cy="${by}" r="6" fill="none" stroke="var(--gold)" stroke-width="0.5" opacity="0.5"/>`;
-    svg += `<text x="${bx + 5}" y="${by - 4}" font-size="5" fill="var(--gold)" opacity="0.7">Birth</text>`;
+    svg += `<circle cx="${bx}" cy="${by}" r="2" fill="#d4a843"/>`;
+    svg += `<circle cx="${bx}" cy="${by}" r="5" fill="none" stroke="#d4a843" stroke-width="0.6" opacity="0.5">`;
+    svg += `<animate attributeName="r" from="4" to="8" dur="2s" repeatCount="indefinite"/><animate attributeName="opacity" from="0.5" to="0" dur="2s" repeatCount="indefinite"/>`;
+    svg += `</circle>`;
   }
 
-  // MC/IC line labels
-  if (lines) {
-    for (let planet of activePlanets) {
-      if (!(planet in lines)) continue;
-      const pl = lines[planet];
-      const color = planetColors[planet] || 'var(--text2)';
-      svg += `<text x="${pl.mc + 1}" y="10" font-size="4" fill="${color}" opacity="0.6">MC</text>`;
-      svg += `<text x="${pl.ic + 1}" y="10" font-size="4" fill="${color}" opacity="0.5">IC</text>`;
-    }
-  }
-
-  // Tap info pin
+  // Tap pin
   if (tapInfo) {
-    const pinX = tapInfo.lon;
-    const pinY = 90 - tapInfo.lat;
-    svg += `<circle cx="${pinX}" cy="${pinY}" r="4" class="map-pin" filter="url(#ac-glow)"/>`;
-    svg += `<circle cx="${pinX}" cy="${pinY}" r="6" fill="none" stroke="var(--gold)" stroke-width="0.5" opacity="0.5"/>`;
+    const px = tapInfo.lon, py = 90 - tapInfo.lat;
+    svg += `<circle cx="${px}" cy="${py}" r="3.5" class="map-pin" filter="url(#ac-glow)"/>`;
+    svg += `<line x1="${px}" y1="${py-5}" x2="${px}" y2="${py-10}" stroke="#d4a843" stroke-width="0.8" opacity="0.6"/>`;
   }
 
   svg += `</svg>`;
@@ -7272,17 +7186,17 @@ function renderAstroCartoTab() {
   let h = '';
   h += `<div class="astrocarto-container">`;
 
-  // Header + explainer
-  h += `<div style="padding:14px 16px 8px">`;
+  // Header
+  h += `<div class="ac-header">`;
   h += `<div class="section-title" style="margin-top:0">Astrocartography</div>`;
-  h += `<div style="font-size:var(--fs-body);line-height:1.5;color:var(--text2);margin-bottom:10px">Your birth chart mapped onto the world. Each line shows where a planet was rising, setting, culminating, or at its lowest point when you were born. Living near or visiting these lines activates that planet's energy in your life. Tap the map to learn what each line means.</div>`;
+  h += `<p>Your birth chart projected onto the Earth. Each line marks where a planet was rising (ASC), setting (DSC), at its highest point (MC), or deepest point (IC) when you were born. These lines reveal the places on Earth where specific planetary energies are strongest for you — useful for choosing where to live, travel, or do business.</p>`;
   h += `</div>`;
 
   // Chart selector
   if (savedCharts.length > 1) {
     h += `<div style="padding:0 16px 10px">`;
-    h += `<label style="font-size:0.75rem;color:var(--text3);display:block;margin-bottom:4px">Showing lines for:</label>`;
-    h += `<select style="width:100%;padding:8px;background:var(--card);color:var(--text);border:1px solid var(--gold-line);border-radius:var(--r-sm);font-size:0.9rem" onchange="acSelectedChartId=this.value;acTapInfo=null;acAstrocartoLines=null;renderApp();">`;
+    h += `<label style="font-size:var(--fs-label);color:var(--text3);display:block;margin-bottom:4px">Showing lines for:</label>`;
+    h += `<select style="width:100%;padding:8px;background:var(--card);color:var(--text);border:1px solid var(--gold-line);border-radius:var(--r-sm);font-size:var(--fs-body)" onchange="acSelectedChartId=this.value;acTapInfo=null;acAstrocartoLines=null;renderApp();">`;
     for (let chart of savedCharts) {
       h += `<option value="${chart.id}" ${acSelectedChartId===chart.id?'selected':''}>${chart.name}</option>`;
     }
@@ -7300,74 +7214,127 @@ function renderAstroCartoTab() {
       acAstrocartoLines._birthLoc = { lat: selectedChart.lat, lon: selectedChart.lon };
     }
 
-    // Planet toggles — horizontal scrolling pill bar
-    h += `<div style="padding:0 10px 6px"><span style="font-size:0.7rem;color:var(--text3)">Toggle planets (scroll for more):</span></div>`;
+    // Planet toggles
     h += `<div class="planet-toggles">`;
-    const pNames = {Sun:'Sun',Moon:'Moon',Venus:'Venus',Mars:'Mars',Jupiter:'Jupiter',Saturn:'Saturn',Mercury:'Mercury',Uranus:'Uranus',Neptune:'Neptune',Pluto:'Pluto',Chiron:'Chiron',NorthNode:'Node'};
+    const pNames = {Sun:'Sun',Moon:'Moon',Mercury:'Merc',Venus:'Venus',Mars:'Mars',Jupiter:'Jup',Saturn:'Sat',Uranus:'Ura',Neptune:'Nep',Pluto:'Pluto',Chiron:'Chi',NorthNode:'Node'};
     for (let planet of Object.keys(pNames)) {
       const active = acPlanetToggles[planet];
       h += `<button class="planet-toggle ${active?'active':''}" onclick="acPlanetToggles['${planet}']=!acPlanetToggles['${planet}'];renderApp();">`;
-      h += pSVG(planet, 14, active ? 'var(--bg)' : 'var(--text2)');
+      h += pSVG(planet, 13, active ? 'var(--bg)' : 'var(--text2)');
       h += `<span>${pNames[planet]}</span>`;
       h += `</button>`;
     }
     h += `</div>`;
 
     // Legend
-    h += `<div style="display:flex;gap:10px;padding:8px 12px;font-size:var(--fs-ui);color:var(--text2);flex-wrap:wrap;background:var(--card);border-radius:var(--r-sm);margin:4px 10px">`;
-    h += `<span><span style="display:inline-block;width:20px;border-top:2.5px solid var(--gold);vertical-align:middle;margin-right:4px"></span>MC</span>`;
-    h += `<span><span style="display:inline-block;width:20px;border-top:2.5px dashed var(--gold);vertical-align:middle;margin-right:4px"></span>IC</span>`;
-    h += `<span><span style="display:inline-block;width:20px;border-top:2.5px solid var(--gold);vertical-align:middle;margin-right:4px;opacity:0.6"></span>ASC</span>`;
-    h += `<span><span style="display:inline-block;width:20px;border-top:2.5px dashed var(--gold);vertical-align:middle;margin-right:4px;opacity:0.4"></span>DSC</span>`;
+    h += `<div class="ac-legend">`;
+    h += `<span><span class="ac-leg-line" style="border-top:2px solid var(--gold)"></span> MC (career/public)</span>`;
+    h += `<span><span class="ac-leg-line" style="border-top:2px dashed var(--gold)"></span> IC (home/roots)</span>`;
+    h += `<span><span class="ac-leg-line" style="border-top:2px solid var(--gold);opacity:.6"></span> ASC (identity)</span>`;
+    h += `<span><span class="ac-leg-line" style="border-top:2px dashed var(--gold);opacity:.4"></span> DSC (relationships)</span>`;
     h += `</div>`;
 
     // Map
     const mapWidth = Math.min(window.innerWidth - 20, 500);
-    h += `<div class="map-container" onclick="handleMapClick(event, this, acAstrocartoLines)">`;
+    h += `<div class="ac-map-wrap" onclick="handleMapClick(event, this, acAstrocartoLines)">`;
     h += renderAstroCartoMap(acAstrocartoLines, acPlanetToggles, acTapInfo, mapWidth, Math.round(mapWidth * 0.55));
+    h += `<div class="ac-map-hint">Tap the map to read any line</div>`;
     h += `</div>`;
-    h += `<div style="text-align:center;font-size:0.65rem;color:var(--text3);padding:4px 0 8px">Tap anywhere on the map to identify the nearest line</div>`;
 
     // Info card on tap
     if (acTapInfo) {
       const voice = ASTROCARTO_VOICE[acTapInfo.nearestLine.planet];
       const angleData = voice ? voice[acTapInfo.nearestLine.angleType.toLowerCase()] : null;
       const angleLabels = {mc:'Midheaven (MC)',ic:'Imum Coeli (IC)',asc:'Ascendant (ASC)',dsc:'Descendant (DSC)'};
+      const angleFullNames = {mc:'Career, public life, and reputation',ic:'Home, roots, and inner foundation',asc:'Identity, first impressions, and vitality',dsc:'Partnerships, relationships, and others'};
       const angleLabel = angleLabels[acTapInfo.nearestLine.angleType] || acTapInfo.nearestLine.angleType.toUpperCase();
 
-      h += `<div class="acarto-info-card">`;
-      h += `<div style="display:flex;justify-content:space-between;align-items:start">`;
+      h += `<div class="ac-info-card">`;
+      h += `<div class="ac-info-head">`;
       h += `<div>`;
-      h += `<div style="font-size:1rem;font-weight:600;color:var(--gold)">${acTapInfo.nearestLine.planet} ${angleLabel}</div>`;
-      if (angleData) h += `<div style="font-size:0.8rem;color:var(--text2);margin-top:2px">${angleData.short}</div>`;
+      h += `<div style="display:flex;align-items:center;gap:8px">`;
+      h += pSVG(acTapInfo.nearestLine.planet, 22, AC_COLORS[acTapInfo.nearestLine.planet] || '#d0cae0');
+      h += `<div class="ac-info-title">${acTapInfo.nearestLine.planet} ${angleLabel}</div>`;
       h += `</div>`;
-      h += `<button onclick="acTapInfo=null;renderApp();" style="background:none;border:none;color:var(--text3);font-size:1.2rem;cursor:pointer;padding:0 0 0 12px;line-height:1">&times;</button>`;
+      const angleFull = angleFullNames[acTapInfo.nearestLine.angleType] || '';
+      if (angleFull) h += `<div style="font-size:var(--fs-label);color:var(--text3);margin-top:2px;margin-left:30px">${angleFull}</div>`;
+      if (angleData) h += `<div class="ac-info-short" style="margin-left:30px">${angleData.short}</div>`;
+      h += `</div>`;
+      h += `<button class="ac-info-close" onclick="acTapInfo=null;renderApp();">&times;</button>`;
       h += `</div>`;
       if (angleData) {
-        h += `<div style="font-size:0.8rem;line-height:1.6;color:var(--text);margin-top:10px">${angleData.detail}</div>`;
+        h += `<div class="ac-info-detail">${angleData.detail}</div>`;
+        // Practical advice
+        const adviceMap = {
+          mc: 'This is an excellent location for career moves, job interviews, public speaking, or building your professional reputation.',
+          ic: 'Consider this area for settling down, buying property, family reunions, or any activity centered around your private life.',
+          asc: 'You will feel most "yourself" here. Good for first dates, personal reinvention, health retreats, and making strong impressions.',
+          dsc: 'Ideal for meeting significant others, business partnerships, negotiations, and collaborative ventures.'
+        };
+        const advice = adviceMap[acTapInfo.nearestLine.angleType];
+        if (advice) {
+          h += `<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--hairline)">`;
+          h += `<div style="font-size:var(--fs-label);color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Practical Use</div>`;
+          h += `<div style="font-size:var(--fs-meta);color:var(--text2);line-height:1.5">${advice}</div>`;
+          h += `</div>`;
+        }
       }
       h += `</div>`;
     }
 
-    // Summary of strongest lines
-    const acPlanetColors = {Sun:'var(--gold)',Moon:'var(--pearl)',Mercury:'var(--text2)',Venus:'var(--emerald)',Mars:'var(--crimson)',Jupiter:'var(--violet)',Saturn:'var(--text3)',Uranus:'var(--azure)',Neptune:'rgba(147,112,219,0.8)',Pluto:'rgba(220,20,60,0.7)',Chiron:'var(--text)',NorthNode:'var(--gold)'};
-    const summaryPlanets = Object.keys(acPlanetToggles).filter(p => acPlanetToggles[p] && acAstrocartoLines[p]);
-    if (summaryPlanets.length > 0 && !acTapInfo) {
-      h += `<div style="padding:10px 12px">`;
-      h += `<div style="font-size:var(--fs-body);font-weight:600;color:var(--gold);margin-bottom:6px">Your active lines</div>`;
-      h += `<div style="font-size:var(--fs-meta);color:var(--text2);line-height:1.6">`;
-      for (const planet of summaryPlanets) {
+    // ── Planet Breakdown Cards ──
+    const activePlanets = Object.keys(acPlanetToggles).filter(p => acPlanetToggles[p] && acAstrocartoLines[p]);
+    if (activePlanets.length > 0) {
+      h += `<div style="padding:10px 12px 4px">`;
+      h += `<div class="section-title">Planet Lines</div>`;
+      h += `<div style="font-size:var(--fs-meta);color:var(--text3);margin-bottom:8px">Tap a planet card to highlight its lines and learn what each angle means in that location.</div>`;
+      h += `</div>`;
+      h += `<div class="ac-planet-cards">`;
+      for (const planet of activePlanets) {
         const voice = ASTROCARTO_VOICE[planet];
-        if (voice && voice.mc) {
-          h += `${pSVG(planet, 13, acPlanetColors[planet] || 'var(--text2)')} <strong style="color:var(--text)">${planet}</strong> — ${voice.mc.short.split('.')[0]}.<br>`;
-        }
+        if (!voice) continue;
+        const c = AC_COLORS[planet] || '#9089ab';
+        // One-liner combining all four angles
+        const mcShort = voice.mc ? voice.mc.short.split('.')[0] : '';
+        const ascShort = voice.asc ? voice.asc.short.split('.')[0] : '';
+
+        h += `<div class="ac-planet-card" onclick="acTapInfo={lat:0,lon:acAstrocartoLines['${planet}'].mc,nearestLine:{planet:'${planet}',angleType:'mc'}};renderApp();">`;
+        h += `<div class="ac-pc-head">`;
+        h += pSVG(planet, 18, c);
+        h += `<span class="ac-pc-name" style="color:${c}">${planet}</span>`;
+        h += `<span class="ac-pc-angles">MC ${Math.round(acAstrocartoLines[planet].mc)}° / IC ${Math.round(acAstrocartoLines[planet].ic)}°</span>`;
+        h += `</div>`;
+        h += `<div class="ac-pc-brief">`;
+        h += `<strong>MC:</strong> ${mcShort}. `;
+        h += `<strong>ASC:</strong> ${ascShort}.`;
+        h += `</div>`;
+        h += `</div>`;
       }
-      h += `</div></div>`;
+      h += `</div>`;
+    }
+
+    // ── Understanding the Four Angles ──
+    if (!acTapInfo) {
+      h += `<div style="padding:10px 12px">`;
+      h += `<div class="section-title">The Four Angles</div>`;
+      h += `<div style="font-size:var(--fs-meta);color:var(--text3);margin-bottom:10px">Each planet produces four lines on the map, one for each angle. Here is what each angle governs:</div>`;
+      const angleExplainers = [
+        { name: 'MC (Midheaven)', icon: 'Career', desc: 'Where the planet reaches its highest point in the sky. Governs career, public reputation, authority, and how the world sees you. The MC line is where you will be most visible and recognized.' },
+        { name: 'IC (Imum Coeli)', icon: 'Home', desc: 'The deepest, most private point. Governs home, family, emotional foundations, and ancestry. The IC line connects you to your roots and inner sense of belonging.' },
+        { name: 'ASC (Ascendant)', icon: 'Self', desc: 'Where the planet rises over the horizon. Governs your personal identity, physical vitality, first impressions, and how you present yourself. The ASC line is where you feel most like "you."' },
+        { name: 'DSC (Descendant)', icon: 'Others', desc: 'Where the planet sets below the horizon. Governs partnerships, marriage, collaboration, and significant others. The DSC line draws important relationships into your life.' }
+      ];
+      for (const a of angleExplainers) {
+        h += `<div class="card" style="margin-bottom:8px;padding:10px 12px">`;
+        h += `<div style="font-size:var(--fs-body);font-weight:600;color:var(--gold);margin-bottom:3px">${a.name}</div>`;
+        h += `<div style="font-size:var(--fs-meta);color:var(--text2);line-height:1.5">${a.desc}</div>`;
+        h += `</div>`;
+      }
+      h += `</div>`;
     }
   }
 
   h += `</div>`;
-
   return h;
 }
 

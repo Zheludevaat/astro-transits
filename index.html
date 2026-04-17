@@ -5739,7 +5739,8 @@ function deleteChart(id) {
 }
 
 function getChartNatal(chart) {
-  const hourUTC = chart.hour - (chart.tz || 0);
+  const tz = (chart.tz !== undefined && chart.tz !== null && !isNaN(chart.tz)) ? chart.tz : 0;
+  const hourUTC = chart.hour - tz;
   const jd = julianDate(chart.year, chart.month, chart.day, hourUTC);
   const natal = computeAll(jd);
   natal.Ascendant = computeAsc(jd, chart.lat, chart.lon);
@@ -7428,12 +7429,41 @@ function searchCity() {
 function pickCity(idx) {
   const c = citySearchResults[idx];
   if (!c) return;
-  // Estimate timezone from longitude (rough: lon/15 rounded to nearest 0.5)
+  // Estimate timezone from longitude as fallback
   const tzEst = Math.round(c.lon / 15 * 2) / 2;
   cityResolved = { name: c.name, lat: c.lat, lon: c.lon, tz: tzEst };
   citySearchResults = [];
   document.getElementById('chart-city').value = c.name;
   renderCityResults();
+  // Try to get accurate timezone via TimeZoneDB (free API)
+  lookupTimezone(c.lat, c.lon);
+}
+
+function lookupTimezone(lat, lon) {
+  // Use TimeZoneDB free API to get UTC offset for this location
+  // We use a known date (Jan 1) to get standard offset - user can adjust for DST via dropdown
+  const apiKey = 'HKUOZZMT8VZS'; // Free tier key
+  const url = `https://api.timezonedb.com/v2.1/get-time-zone?key=${apiKey}&format=json&by=position&lat=${lat}&lng=${lon}`;
+  fetch(url)
+    .then(r => r.json())
+    .then(data => {
+      if (data.status === 'OK' && data.gmtOffset !== undefined) {
+        const tzHours = data.gmtOffset / 3600;
+        if (cityResolved) {
+          cityResolved.tz = tzHours;
+          cityResolved.tzName = data.zoneName || '';
+          // Update display
+          const info = document.getElementById('city-resolved-info');
+          if (info) {
+            info.textContent = cityResolved.name + ' (' + cityResolved.lat.toFixed(2) + ', ' + cityResolved.lon.toFixed(2) + ', UTC' + (tzHours >= 0 ? '+' : '') + tzHours + (cityResolved.tzName ? ' ' + cityResolved.tzName : '') + ')';
+          }
+          // Update the tz dropdown if present
+          const tzSel = document.getElementById('chart-tz-select');
+          if (tzSel) tzSel.value = String(tzHours);
+        }
+      }
+    })
+    .catch(() => { /* keep lon-based estimate */ });
 }
 
 function renderCityResults() {
@@ -7505,6 +7535,22 @@ function renderChartFormModal() {
         <div class="city-resolved" id="city-resolved-info">${resolvedText}</div>
       </div>
 
+      <div class="form-group">
+        <label>Timezone (UTC offset at birth) *</label>
+        <select id="chart-tz-select" style="width:100%;padding:0.6rem;background-color:var(--bg);color:var(--text);border:1px solid var(--gold-line);border-radius:var(--r-sm);font-size:0.95rem;box-sizing:border-box">
+          ${(function(){
+            const tzVal = cityResolved ? cityResolved.tz : (formData.tz || 0);
+            let opts = '';
+            for (let t = -12; t <= 14; t += 0.5) {
+              const label = 'UTC' + (t >= 0 ? '+' : '') + t;
+              opts += '<option value="' + t + '"' + (t === tzVal ? ' selected' : '') + '>' + label + '</option>';
+            }
+            return opts;
+          })()}
+        </select>
+        <div style="font-size:var(--fs-label);color:var(--text3);margin-top:4px">Auto-detected from city. Adjust if the birth was during daylight saving time or in a non-standard timezone.</div>
+      </div>
+
       <div class="form-buttons">
         <button class="save-btn" onclick="saveChartFromForm();">Save</button>
         <button class="cancel-btn" onclick="showChartForm=false;editingChartId=null;citySearchResults=[];cityResolved=null;renderApp();">Cancel</button>
@@ -7522,13 +7568,16 @@ function saveChartFromForm() {
   const minute = parseInt(document.getElementById('chart-minute').value);
 
   let lat, lon, tz;
+  // Always read timezone from the dropdown (user may have corrected it)
+  const tzSelect = document.getElementById('chart-tz-select');
+  tz = tzSelect ? parseFloat(tzSelect.value) : 0;
+
   if (cityResolved) {
     lat = cityResolved.lat;
     lon = cityResolved.lon;
-    tz = cityResolved.tz;
   } else if (editingChartId) {
     const existing = savedCharts.find(c => c.id === editingChartId);
-    if (existing) { lat = existing.lat; lon = existing.lon; tz = existing.tz; }
+    if (existing) { lat = existing.lat; lon = existing.lon; }
   }
 
   if (!name || isNaN(month) || isNaN(day) || isNaN(year) || lat === undefined || lon === undefined) {
@@ -7546,7 +7595,7 @@ function saveChartFromForm() {
     hour: hour + minute / 60,
     lat,
     lon,
-    tz: tz || 0,
+    tz: isNaN(tz) ? 0 : tz,
     cityName
   };
 

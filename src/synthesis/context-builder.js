@@ -80,6 +80,11 @@ function buildChartContext(cur,jd,transits,vibe,mPhase,retros,stats,vocResult,mo
       nemesis:`${signOf(lots.Nemesis).name} ${signOf(lots.Nemesis).degree.toFixed(1)}°`
     }:null
   };
+  // Inject rolling ledger summary if enough tracked data exists
+  if(typeof buildLedgerSummary==='function'){
+    const ledger=buildLedgerSummary(90);
+    if(ledger)ctx.ledger=ledger;
+  }
   return ctx;
 }
 function buildSynastryContext(natalA,natalB,synAspects,traditional,chartAName,chartBName){

@@ -7542,15 +7542,28 @@ function pickCity(idx) {
   citySearchResults = [];
   document.getElementById('chart-city').value = c.name;
   renderCityResults();
-  // Try to get accurate timezone via TimeZoneDB (free API)
-  lookupTimezone(c.lat, c.lon);
+  // Look up the accurate timezone for this city at the birth date entered in the form
+  lookupTimezoneForBirthDate(c.lat, c.lon);
 }
 
-function lookupTimezone(lat, lon) {
-  // Use TimeZoneDB free API to get UTC offset for this location
-  // We use a known date (Jan 1) to get standard offset - user can adjust for DST via dropdown
-  const apiKey = 'HKUOZZMT8VZS'; // Free tier key
-  const url = `https://api.timezonedb.com/v2.1/get-time-zone?key=${apiKey}&format=json&by=position&lat=${lat}&lng=${lon}`;
+function lookupTimezoneForBirthDate(lat, lon) {
+  // Read birth date from form fields to get the historically accurate timezone (DST-aware)
+  const yearEl = document.getElementById('chart-year');
+  const monthEl = document.getElementById('chart-month');
+  const dayEl = document.getElementById('chart-day');
+  const hourEl = document.getElementById('chart-hour');
+  const minEl = document.getElementById('chart-minute');
+  const yr = yearEl ? parseInt(yearEl.value) || 2000 : 2000;
+  const mo = monthEl ? parseInt(monthEl.value) || 1 : 1;
+  const dy = dayEl ? parseInt(dayEl.value) || 1 : 1;
+  const hr = hourEl ? parseInt(hourEl.value) || 12 : 12;
+  const mn = minEl ? parseInt(minEl.value) || 0 : 0;
+  // Build a UNIX timestamp for the birth date (approximate — assumes UTC, but TimeZoneDB is forgiving)
+  const birthDate = new Date(Date.UTC(yr, mo - 1, dy, hr, mn, 0));
+  const unixTime = Math.floor(birthDate.getTime() / 1000);
+
+  const apiKey = 'HKUOZZMT8VZS';
+  const url = `https://api.timezonedb.com/v2.1/get-time-zone?key=${apiKey}&format=json&by=position&lat=${lat}&lng=${lon}&time=${unixTime}`;
   fetch(url)
     .then(r => r.json())
     .then(data => {
@@ -7564,7 +7577,7 @@ function lookupTimezone(lat, lon) {
           if (info) {
             info.textContent = cityResolved.name + ' (' + cityResolved.lat.toFixed(2) + ', ' + cityResolved.lon.toFixed(2) + ', UTC' + (tzHours >= 0 ? '+' : '') + tzHours + (cityResolved.tzName ? ' ' + cityResolved.tzName : '') + ')';
           }
-          // Update the tz dropdown if present
+          // Update the tz dropdown
           const tzSel = document.getElementById('chart-tz-select');
           if (tzSel) tzSel.value = String(tzHours);
         }
@@ -7618,16 +7631,16 @@ function renderChartFormModal() {
       <div class="form-group">
         <label>Birth Date *</label>
         <div class="form-row three">
-          <input type="number" id="chart-day" min="1" max="31" value="${formData.day || 1}" placeholder="Day">
-          <input type="number" id="chart-month" min="1" max="12" value="${formData.month || 1}" placeholder="Month">
-          <input type="number" id="chart-year" value="${formData.year || 2000}" placeholder="Year">
+          <input type="number" id="chart-day" min="1" max="31" value="${formData.day || 1}" placeholder="Day" onchange="if(cityResolved)lookupTimezoneForBirthDate(cityResolved.lat,cityResolved.lon)">
+          <input type="number" id="chart-month" min="1" max="12" value="${formData.month || 1}" placeholder="Month" onchange="if(cityResolved)lookupTimezoneForBirthDate(cityResolved.lat,cityResolved.lon)">
+          <input type="number" id="chart-year" value="${formData.year || 2000}" placeholder="Year" onchange="if(cityResolved)lookupTimezoneForBirthDate(cityResolved.lat,cityResolved.lon)">
         </div>
       </div>
 
       <div class="form-group">
         <label>Birth Time *</label>
         <div class="form-row">
-          <input type="number" id="chart-hour" min="0" max="23" value="${Math.floor(formData.hour || 12)}" placeholder="HH (0-23)">
+          <input type="number" id="chart-hour" min="0" max="23" value="${Math.floor(formData.hour || 12)}" placeholder="HH (0-23)" onchange="if(cityResolved)lookupTimezoneForBirthDate(cityResolved.lat,cityResolved.lon)">
           <input type="number" id="chart-minute" min="0" max="59" value="${Math.round(((formData.hour || 12) % 1) * 60)}" placeholder="MM">
         </div>
       </div>
@@ -7655,7 +7668,7 @@ function renderChartFormModal() {
             return opts;
           })()}
         </select>
-        <div style="font-size:var(--fs-label);color:var(--text3);margin-top:4px">Auto-detected from city. Adjust if the birth was during daylight saving time or in a non-standard timezone.</div>
+        <div style="font-size:var(--fs-label);color:var(--text3);margin-top:4px">Auto-detected from city and birth date (including daylight saving time). Override manually only if you know it's wrong.</div>
       </div>
 
       <div class="form-buttons">

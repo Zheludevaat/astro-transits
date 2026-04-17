@@ -1,5 +1,5 @@
 // Service Worker for Alexander's Transits PWA
-const CACHE_NAME = 'transits-v43';
+const CACHE_NAME = 'transits-v44';
 const URLS_TO_CACHE = [
   './', './index.html', './manifest.json', './icon.svg', './icon-192.png', './icon-512.png', './apple-touch-icon.png',
   './src/engine/ephemeris.js', './src/engine/motion.js', './src/engine/voc.js', './src/engine/aspects.js',
@@ -12,6 +12,7 @@ const URLS_TO_CACHE = [
   './src/voice/synastry-voice.js', './src/voice/astrocarto-voice.js', './src/voice/references.js',
   './src/synthesis/prompts.js', './src/synthesis/claude-client.js',
   './src/synthesis/context-builder.js', './src/synthesis/deterministic.js',
+  './src/synthesis/synthesizer.js', './src/synthesis/citations.js',
   './src/ui/glyphs.js', './src/ui/widgets/biwheel.js', './src/ui/widgets/synth-card.js',
   './src/data/chart-storage.js', './src/ui/app.js'
 ];

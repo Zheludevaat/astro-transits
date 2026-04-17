@@ -1624,6 +1624,9 @@ function toggleGuidance(){guidanceExpanded=!guidanceExpanded;
 
 // ── Layer toggles ──
 const layersExpanded={l2:true,l3:false};
+// ── Time-scale strip state ──
+let tsOpenCell=null; // 'now'|'month'|'year'|'chapter'|null
+function toggleTsCell(cell){tsOpenCell=tsOpenCell===cell?null:cell;renderApp();}
 let consultOpen=false;
 function openConsult(){consultOpen=true;renderApp();}
 function closeConsult(){consultOpen=false;renderApp();}
@@ -3641,18 +3644,10 @@ function renderApp(){
   h+=`<div class="header-sub">Your Transits</div>`;
   h+=`<div class="header-date">${months[now.getMonth()]} ${now.getDate()}</div>`;
   h+=`<div class="header-day">${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][now.getDay()]}${timeStr}</div>`;
-  // Lord of the Year badge
+  // Profections (hoisted for time-scale strip + Today tab)
   const prof=computeProfections(now);
-  h+=`<div class="lord-badge">${pSVG(prof.yearLord,16,'var(--gold)')}<div>`;
-  h+=`<div class="lord-badge-label">Year of</div>`;
-  h+=`<div class="lord-badge-val">${prof.yearLord}</div></div>`;
-  h+=`<span style="font-size:10px;color:var(--text2);opacity:.6">${prof.yearSign} · Age ${prof.ageYears}</span></div>`;
-  h+=`<div class="date-nav">`;
-  h+=`<button onclick="navDay(-1)">&#8249;</button>`;
-  h+=`<button class="today-btn ${!isToday?'show':''}" onclick="navToday()">Today</button>`;
-  h+=`<button onclick="navDay(1)">&#8250;</button></div></div>`;
 
-  // Planetary hours — hoisted so Home tab can use it too
+  // Planetary hours (hoisted for strip + Home + Today)
   const pHoursHome=computePlanetaryHours(jd,OBSERVER.lat,OBSERVER.lon);
   let curHourHome=null;
   if(pHoursHome&&isToday){
@@ -3661,6 +3656,88 @@ function renderApp(){
     curHourHome=pHoursHome.hours[idxH];
     curHourHome.minsLeft=Math.max(0,Math.round((curHourHome.end-utNow)*24*60));
   }
+
+  // ZR + Firdaria (hoisted for time-scale strip)
+  const birthDate=new Date(BIRTH.year,BIRTH.month-1,BIRTH.day);
+  const ageYears=prof.ageYears;
+  const spiritLotLon=typeof lotLong==='function'?lotLong('Spirit'):norm(NATAL.Ascendant+NATAL.Sun-NATAL.Moon);
+  const fortuneLotLon=typeof lotLong==='function'?lotLong('Fortune'):norm(NATAL.Ascendant+NATAL.Moon-NATAL.Sun);
+  const spiritSignIdx=Math.floor(norm(spiritLotLon)/30);
+  const fortuneSignIdx=Math.floor(norm(fortuneLotLon)/30);
+  const zrSpirit=computeZR(spiritSignIdx,birthDate,40);
+  const curSpirit=findCurrentZRPeriod(zrSpirit,ageYears);
+  const firdaria=computeFirdaria(birthDate);
+  const curFir=findCurrentFirdaria(firdaria,ageYears);
+
+  // ── TIME-SCALE STRIP (replaces Lord of Year badge) ──
+  h+=`<div class="ts-strip">`;
+  // Cell 1: Now (current hour)
+  h+=`<div class="ts-cell ${tsOpenCell==='now'?'open':''}" onclick="toggleTsCell('now')">`;
+  h+=`<div class="ts-cell-label">Now</div>`;
+  if(curHourHome){
+    h+=`<div class="ts-cell-val">${pSVG(curHourHome.ruler,14,'var(--gold)')}</div>`;
+    h+=`<div class="ts-cell-sub">${curHourHome.minsLeft}m left</div>`;
+  } else {
+    h+=`<div class="ts-cell-val">${pSVG(pHoursHome?pHoursHome.dayRuler:'Sun',14,'var(--text2)')}</div>`;
+    h+=`<div class="ts-cell-sub">${pHoursHome?pHoursHome.dayRuler+"'s day":'--'}</div>`;
+  }
+  h+=`</div>`;
+  // Cell 2: Month (profected month)
+  h+=`<div class="ts-cell ${tsOpenCell==='month'?'open':''}" onclick="toggleTsCell('month')">`;
+  h+=`<div class="ts-cell-label">Month</div>`;
+  h+=`<div class="ts-cell-val">${pSVG(prof.monthLord,14,'var(--violet)')}</div>`;
+  h+=`<div class="ts-cell-sub">${prof.monthSign?prof.monthSign.substring(0,3):''}</div>`;
+  h+=`</div>`;
+  // Cell 3: Year (lord of the year)
+  h+=`<div class="ts-cell ${tsOpenCell==='year'?'open':''}" onclick="toggleTsCell('year')">`;
+  h+=`<div class="ts-cell-label">Year</div>`;
+  h+=`<div class="ts-cell-val">${pSVG(prof.yearLord,14,'var(--gold)')}</div>`;
+  h+=`<div class="ts-cell-sub">${prof.yearSign?prof.yearSign.substring(0,3):''} · ${ageYears}</div>`;
+  h+=`</div>`;
+  // Cell 4: Chapter (ZR Spirit L1 + Firdaria major)
+  h+=`<div class="ts-cell ${tsOpenCell==='chapter'?'open':''}" onclick="toggleTsCell('chapter')">`;
+  h+=`<div class="ts-cell-label">Chapter</div>`;
+  if(curSpirit){
+    h+=`<div class="ts-cell-val">${sSVG(curSpirit.l1Sign||'Aries',14,'var(--azure)')}</div>`;
+    h+=`<div class="ts-cell-sub">${curFir?curFir.major.lord.substring(0,3):''}</div>`;
+  } else {
+    h+=`<div class="ts-cell-val">${curFir?pSVG(curFir.major.lord,14,'var(--azure)'):''}</div>`;
+    h+=`<div class="ts-cell-sub">--</div>`;
+  }
+  h+=`</div>`;
+  h+=`</div>`; // end ts-strip
+
+  // Time-scale detail panels
+  h+=`<div class="ts-panel ${tsOpenCell==='now'?'open':''}" id="ts-panel-now">`;
+  if(curHourHome){
+    const hb=typeof hourBrief==='function'?hourBrief(curHourHome.ruler):'';
+    h+=`This is the hour of ${curHourHome.ruler}. ${hb} ${curHourHome.minsLeft} minutes remain before the hour shifts.`;
+  } else if(pHoursHome){
+    h+=`Today is ${pHoursHome.dayRuler}'s day. ${typeof DAY_RULER_TONE!=='undefined'&&DAY_RULER_TONE[pHoursHome.dayRuler]?DAY_RULER_TONE[pHoursHome.dayRuler]:''}`;
+  }
+  h+=`</div>`;
+  h+=`<div class="ts-panel ${tsOpenCell==='month'?'open':''}" id="ts-panel-month">`;
+  h+=`Month lord: ${prof.monthLord} in ${prof.monthSign}. ${typeof MONTH_THEME!=='undefined'&&MONTH_THEME[prof.monthSign]?MONTH_THEME[prof.monthSign]:'The profected month colors the texture of daily events.'}`;
+  h+=`</div>`;
+  h+=`<div class="ts-panel ${tsOpenCell==='year'?'open':''}" id="ts-panel-year">`;
+  h+=`Year of ${prof.yearLord} (${prof.yearSign}, Age ${ageYears}). ${typeof ANNUAL_THEME!=='undefined'&&ANNUAL_THEME[prof.yearSign]?ANNUAL_THEME[prof.yearSign]:'The annual lord sets the year\'s central themes.'}`;
+  h+=`</div>`;
+  h+=`<div class="ts-panel ${tsOpenCell==='chapter'?'open':''}" id="ts-panel-chapter">`;
+  if(curSpirit){
+    h+=`ZR Spirit: ${curSpirit.l1Sign||'--'} period (L1). `;
+    if(curSpirit.peak)h+=`This is a peak period — cardinal energy activates. `;
+    if(curSpirit.lb)h+=`Loosing of the Bond: the theme shifts unexpectedly. `;
+  }
+  if(curFir){
+    const fv=typeof FIRDARIA_VOICE!=='undefined'?FIRDARIA_VOICE[curFir.major.lord]:null;
+    h+=`Firdaria: ${curFir.major.lord} major period. ${fv?fv.theme||fv.brief||'':''}`;
+  }
+  h+=`</div>`;
+
+  h+=`<div class="date-nav">`;
+  h+=`<button onclick="navDay(-1)">&#8249;</button>`;
+  h+=`<button class="today-btn ${!isToday?'show':''}" onclick="navToday()">Today</button>`;
+  h+=`<button onclick="navDay(1)">&#8250;</button></div></div>`;
 
   // ══════════ HOME / DASHBOARD TAB ══════════
   h+=`<div class="tab-content ${activeTab==='home'?'active':''}">`;
@@ -3774,22 +3851,10 @@ function renderApp(){
   // ══════════ TODAY TAB ══════════
   h+=`<div class="tab-content ${activeTab==='today'?'active':''}">`;
 
-  // ── Sub-tab bar (Now / Day / Depth) ──
-  h+=`<div class="subtab-bar">`;
-  h+=`<button class="${todayZone==='all'?'on':''}" onclick="setTodayZone('all')">All</button>`;
-  h+=`<button class="${todayZone==='now'?'on':''}" onclick="setTodayZone('now')">Now</button>`;
-  h+=`<button class="${todayZone==='day'?'on':''}" onclick="setTodayZone('day')">Day</button>`;
-  h+=`<button class="${todayZone==='depth'?'on':''}" onclick="setTodayZone('depth')">Depth</button>`;
-  h+=`</div>`;
-  const zHint={now:'Right now: the next few hours.',day:"Today's texture: tone, Moon, decan, mansion.",depth:'Longer arcs: Lots, ZR, Firdaria, returns, Claude.',all:''};
-  if(todayZone!=='all')h+=`<div class="subtab-hint">${zHint[todayZone]}</div>`;
-
   // Hoisted: used by consult, hours strip, liturgy, guidance, journal context
   const pHours=pHoursHome;
 
-  h+=`<div class="t-zone t-now">`;
-
-  // ── VOC Persistent Banner ──
+  // ── VOC Persistent Banner (above everything) ──
   if(vocResult.voc){
     const vocTotalMin=vocResult.endsIn?Math.round(vocResult.endsIn*24*60):0;
     const vocH=Math.floor(vocTotalMin/60);
@@ -3808,6 +3873,126 @@ function renderApp(){
     }
     h+=`</div>`;
   }
+
+  // ══════════ LAYER 1: THE SHAPE OF THE DAY ══════════
+  {
+    const mansion=typeof computeMansion==='function'?computeMansion(cur.Moon):null;
+    const topT=transits.filter(t=>t.importance>10).slice(0,5);
+    const dayShapeCtx={
+      dateStr:now.toLocaleDateString('en-CA'),
+      isToday,jd,cur,transits,mPhase,vocResult,moonSign,prof,pHours,
+      retros,vibe,phaseAngle,
+      dominant:vibe?vibe.dominant:null,
+      topTransits:topT,
+      mansion,
+      currentHour:curHourHome,
+      dayRuler:pHours?pHours.dayRuler:null
+    };
+    const dayShape=synthesizeDayShape(dayShapeCtx);
+    h+=`<div class="day-shape">`;
+    h+=`<div class="day-shape-text">${renderCitations(dayShape.text)}</div>`;
+    h+=`<div class="day-shape-meta">`;
+    if(dayShape.source==='claude'){
+      const ts=dayShape.timestamp?new Date(dayShape.timestamp).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',timeZone:OBSERVER.tzName}):'';
+      h+=`<span>Generated ${ts}</span>`;
+      h+=`<span class="day-shape-regen" onclick="event.stopPropagation();_dayShapeLLMDate=null;_dayShapeLLMPending=false;backgroundGenerateDayShape(window._lastDayShapeCtx||{},new Date().toLocaleDateString('en-CA'))">regenerate</span>`;
+    } else {
+      h+=`<span style="opacity:.5">deterministic reading</span>`;
+      if(typeof loadClaudeKey==='function'&&loadClaudeKey()){
+        h+=`<span class="day-shape-regen" onclick="event.stopPropagation();_dayShapeLLMDate=null;_dayShapeLLMPending=false;backgroundGenerateDayShape(window._lastDayShapeCtx||{},new Date().toLocaleDateString('en-CA'))">request synthesis</span>`;
+      }
+    }
+    h+=`</div></div>`;
+    window._lastDayShapeCtx=dayShapeCtx;
+
+    // ══════════ LAYER 2: CONTRIBUTING FACTORS ══════════
+    h+=`<div class="factors-block">`;
+
+    // Factor 1: Profected lord status
+    const profLordSign=signOf(cur[prof.yearLord]||0);
+    const profLordHouse=houseOf(cur[prof.yearLord]||0);
+    const profLordDig=getDignity(prof.yearLord,cur[prof.yearLord]||0);
+    const profLordAsp=topT.find(t=>t.tp===prof.yearLord||t.np===prof.yearLord);
+    h+=`<div class="factor-line" onclick="openMechanic('mech-profections','profection-year','${prof.yearLord}')">`;
+    h+=`<div class="factor-icon">${pSVG(prof.yearLord,16,'var(--gold)')}</div>`;
+    h+=`<div class="factor-text">${prof.yearLord}, your Year-Lord, is in ${profLordSign.name} at ${profLordSign.degree}° in your ${profLordHouse}${profLordHouse===1?'st':profLordHouse===2?'nd':profLordHouse===3?'rd':'th'}${profLordDig?' ('+profLordDig.label+')':''}${profLordAsp?', '+profLordAsp.aspect.motion+' '+profLordAsp.aspect.name+' your natal '+profLordAsp.np:''}</div>`;
+    h+=`<div class="factor-tag" style="background:var(--gold-soft);color:var(--gold)">Year</div>`;
+    h+=`</div>`;
+
+    // Factor 2: Active ZR period
+    if(curSpirit){
+      const zrNote=curSpirit.peak?' Cardinal peak — active phase.':curSpirit.lb?' Loosing of the Bond — themes shift.':'';
+      h+=`<div class="factor-line" onclick="openMechanic('mech-zr','zr-spirit','')">`;
+      h+=`<div class="factor-icon">${sSVG(curSpirit.l1Sign||'Aries',16,'var(--azure)')}</div>`;
+      h+=`<div class="factor-text">ZR Spirit: ${curSpirit.l1Sign||'--'} period.${zrNote}${curSpirit.l2Sign?' L2: '+curSpirit.l2Sign+'.':''}</div>`;
+      h+=`<div class="factor-tag" style="background:var(--azure-soft,rgba(90,160,255,.12));color:var(--azure)">Arc</div>`;
+      h+=`</div>`;
+    }
+
+    // Factor 3: Moon condition
+    h+=`<div class="factor-line" onclick="openMechanic('mech-moon','mansion','')">`;
+    h+=`<div class="factor-icon">${renderMoonSVG(phaseAngle||0,16)}</div>`;
+    let moonFactorText=`Moon ${mPhase.name} in ${moonSign.name} ${signOf(cur.Moon).degree}°`;
+    if(mansion)moonFactorText+=`, ${mansion.mansion||mansion.name||'Mansion '+(mansion.index||'')} (${mansion.nature||'mixed'})`;
+    if(vocResult.voc){
+      const vocMin=vocResult.endsIn?Math.round(vocResult.endsIn*60):0;
+      moonFactorText+=`. Void after ${vocMin>60?Math.floor(vocMin/60)+'h '+vocMin%60+'m':vocMin+'m'}`;
+    }
+    h+=`<div class="factor-text">${moonFactorText}</div>`;
+    h+=`<div class="factor-tag" style="background:var(--violet-soft);color:var(--violet)">Moon</div>`;
+    h+=`</div>`;
+
+    // Factor 4: Top transit
+    if(topT.length){
+      const t0=topT[0];
+      const t0tp=t0.tp==='NorthNode'?'North Node':t0.tp;
+      const t0np=t0.np==='NorthNode'?'North Node':t0.np==='Ascendant'?'Ascendant':t0.np==='MC'?'Midheaven':t0.np;
+      const t0col=t0.aspect.type==='hard'?'var(--crimson)':t0.aspect.type==='easy'?'var(--emerald)':'var(--gold)';
+      h+=`<div class="factor-line" onclick="openMechanic('mech-transits','transit','${t0.tp}-${t0.np}')">`;
+      h+=`<div class="factor-icon">${pSVG(t0.tp,16,t0col)}</div>`;
+      h+=`<div class="factor-text">${t0tp} ${t0.aspect.name} ${t0np} (${t0.aspect.orbActual.toFixed(1)}° orb, ${t0.aspect.motion})</div>`;
+      h+=`<div class="factor-tag" style="background:${t0.aspect.type==='hard'?'rgba(200,40,60,.12)':'rgba(40,180,100,.12)'};color:${t0col}">${t0.aspect.type==='hard'?'Hard':t0.aspect.type==='easy'?'Flow':'Fuse'}</div>`;
+      h+=`</div>`;
+    }
+
+    // Factor 5: Hour and day
+    if(curHourHome||pHours){
+      const dayR=pHours?pHours.dayRuler:'';
+      const hourR=curHourHome?curHourHome.ruler:dayR;
+      h+=`<div class="factor-line" onclick="openMechanic('mech-hours','hour','')">`;
+      h+=`<div class="factor-icon">${pSVG(hourR,16,'var(--text2)')}</div>`;
+      let hourText=`Day of ${dayR}.`;
+      if(curHourHome)hourText+=` Hour of ${hourR} — ${curHourHome.minsLeft}m remaining.`;
+      h+=`<div class="factor-text">${hourText}</div>`;
+      h+=`<div class="factor-tag" style="background:rgba(155,109,255,.1);color:var(--text2)">Hour</div>`;
+      h+=`</div>`;
+    }
+
+    // Factor 6: Notable retrograde/station (personal planets only)
+    const personalRetros=retros.filter(r=>['Mercury','Venus','Mars'].includes(r));
+    const personalStats=typeof stats!=='undefined'?stats.filter(s=>['Mercury','Venus','Mars','Jupiter','Saturn'].includes(s)):[];
+    if(personalStats.length){
+      h+=`<div class="factor-line" onclick="openMechanic('mech-transits','','')">`;
+      h+=`<div class="factor-icon">${pSVG(personalStats[0],16,'var(--crimson)')}</div>`;
+      h+=`<div class="factor-text">${personalStats[0]} is stationary — its themes are amplified to maximum intensity.</div>`;
+      h+=`<div class="factor-tag" style="background:rgba(200,40,60,.12);color:var(--crimson)">Station</div>`;
+      h+=`</div>`;
+    } else if(personalRetros.length){
+      h+=`<div class="factor-line" onclick="openMechanic('mech-transits','','')">`;
+      h+=`<div class="factor-icon">${pSVG(personalRetros[0],16,'var(--text2)')}</div>`;
+      h+=`<div class="factor-text">${personalRetros.join(', ')} retrograde — internal revision outpaces forward motion.</div>`;
+      h+=`<div class="factor-tag" style="background:rgba(155,109,255,.1);color:var(--text2)">Rx</div>`;
+      h+=`</div>`;
+    }
+
+    h+=`</div>`; // end factors-block
+  }
+
+  // ══════════ LAYER 3: MECHANICS (collapsed by default) ══════════
+  h+=`<div class="mech-toggle" onclick="layersExpanded.l3=!layersExpanded.l3;renderApp()">`;
+  h+=`${layersExpanded.l3?'Hide':'Show'} technique`;
+  h+=`</div>`;
+  h+=`<div id="layer3-mechanics" style="display:${layersExpanded.l3?'block':'none'}">`;
 
   // ── Consult (always-visible preview, expandable) ──
   if(isToday){
@@ -3850,7 +4035,7 @@ function renderApp(){
   if(pHours){
     const utNow=isToday?now.getUTCHours()+now.getUTCMinutes()/60:12;
     const curIdx=currentHourIndex(pHours.hours,utNow);
-    h+=`<div class="hours-strip">`;
+    h+=`<div class="hours-strip" id="mech-hours">`;
     // Now-highlight block
     if(isToday && curIdx>=0 && curIdx<24){
       const curHr=pHours.hours[curIdx];
@@ -3978,8 +4163,7 @@ function renderApp(){
   }
   h+=`</div>`;
 
-  h+=`</div>`;/* /t-now */
-  h+=`<div class="t-zone t-day">`;
+  h+=`</div>`; // end hours/consult/electional section
 
   // Energy Meter (expandable — arc ring + tone word, tap for breakdown)
   {
@@ -4036,7 +4220,7 @@ function renderApp(){
   // ── Annual Theme by profected sign ──
 
   // ── Profection Row (tap chip for detail panel; tap ? for glossary) ──
-  h+=`<div class="profection-row">`;
+  h+=`<div class="profection-row" id="mech-profections">`;
   const yearLordActive=transits.some(t=>(t.tp===prof.yearLord||t.np===prof.yearLord)&&t.importance>10);
   const ylaHtml=yearLordActive?`<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--emerald);margin-left:4px;vertical-align:middle;box-shadow:0 0 4px var(--emerald)"></span>`:'';
   h+=`<div class="prof-chip ${profExpanded==='year'?'open':''}" onclick="toggleProf('year')"><div><div class="prof-label">Year${ylaHtml} <span class="help" onclick="event.stopPropagation();showTip('Profection')">?</span></div><div class="prof-val">${pSVG(prof.yearLord,14,'var(--gold)')} ${prof.yearSign}</div></div></div>`;
@@ -4124,7 +4308,7 @@ function renderApp(){
     const sunDig=getDignity('Sun',cur.Sun);
     const sunDec=computeDecan(cur.Sun);
     const sunDecMeaning=sunDec.meaning?sunDec.meaning.replace(/^[A-Za-z]+ in [A-Za-z]+ decan \d+\.\s*/,''):'';
-    h+=`<div style="padding:14px 16px;margin-bottom:10px;border-radius:var(--r-lg);background:var(--card);border:1px solid var(--hairline);cursor:pointer" onclick="toggleSunCard()">`;
+    h+=`<div id="mech-sun" style="padding:14px 16px;margin-bottom:10px;border-radius:var(--r-lg);background:var(--card);border:1px solid var(--hairline);cursor:pointer" onclick="toggleSunCard()">`;
     h+=`<div style="display:flex;align-items:center;gap:12px">`;
     h+=`<div style="flex-shrink:0">${pSVG('Sun',28,'var(--gold)')}</div>`;
     h+=`<div style="flex:1;min-width:0">`;
@@ -4169,7 +4353,7 @@ function renderApp(){
     const msf=moonSignPhaseText(moonSign.name,mPhase.name);
     const mansion=computeMansion(cur.Moon);
 
-    h+=`<div style="padding:14px 16px;margin-bottom:10px;border-radius:var(--r-lg);background:var(--card);border:1px solid var(--hairline);cursor:pointer" onclick="toggleMoon()">`;
+    h+=`<div id="mech-moon" style="padding:14px 16px;margin-bottom:10px;border-radius:var(--r-lg);background:var(--card);border:1px solid var(--hairline);cursor:pointer" onclick="toggleMoon()">`;
     h+=`<div style="display:flex;align-items:center;gap:12px">`;
     h+=`<div style="flex-shrink:0">${renderMoonSVG(phaseAngle,36)}</div>`;
     h+=`<div style="flex:1;min-width:0">`;
@@ -4400,12 +4584,11 @@ function renderApp(){
     h+=`</div>`;
   }
 
-  h+=`</div>`;/* /t-day */
-  h+=`<div class="t-zone t-depth">`;
+  // (continue Layer 3 mechanics — depth techniques)
 
   // ── Seven Hermetic Lots ──
   const lots=computeLots(cur,NATAL.Ascendant,SECT.isNocturnal);
-  h+=`<div class="lots-section">`;
+  h+=`<div class="lots-section" id="mech-lots">`;
   h+=`<div class="lots-title"><span>Hermetic Lots <span class="help" onclick="event.stopPropagation();showTip('Lots')">?</span></span><span style="text-transform:none;letter-spacing:0;font-size:10px;color:var(--text3)">${SECT.isNocturnal?'Nocturnal':'Diurnal'} formulas</span></div>`;
   h+=`<div style="font-size:11px;line-height:1.55;color:var(--text3);padding:0 2px 8px;letter-spacing:.1px">Seven mathematical points mapping destiny, agency, desire, compulsion, courage, success, and fate\'s hidden edge. Tap any lot to see its meaning in your chart.</div>`;
   h+=`<div class="lots-grid">`;
@@ -4519,23 +4702,17 @@ function renderApp(){
 
     h+=`</div>`;
 
-    // ── Zodiacal Releasing ──
-    const birthDate=new Date(Date.UTC(BIRTH.year,BIRTH.month-1,BIRTH.day,Math.floor(BIRTH.hour),Math.round((BIRTH.hour%1)*60)));
-    const nowMs=new Date().getTime();
-    const ageYears=(nowMs-birthDate.getTime())/(365.2425*86400000);
-    // Determine starting sign for each lot
-    const spiritSignIdx=Math.floor(norm(lots.Spirit)/30);
-    const fortuneSignIdx=Math.floor(norm(lots.Fortune)/30);
-    // Project enough years into future to show next major chapter
+    // ── Zodiacal Releasing ── (birthDate, ageYears, spiritSignIdx, zrSpirit, curSpirit hoisted to header)
+    // Compute fortune-side and expanded projection for the full ZR view
     const projectYears=Math.max(ageYears+15,60);
-    const zrSpirit=computeZR(spiritSignIdx,birthDate,projectYears);
+    const zrSpiritFull=computeZR(spiritSignIdx,birthDate,projectYears);
     const zrFortune=computeZR(fortuneSignIdx,birthDate,projectYears);
-    const curSpirit=findCurrentZRPeriod(zrSpirit,ageYears);
+    const curSpiritFull=findCurrentZRPeriod(zrSpiritFull,ageYears);
     const curFortune=findCurrentZRPeriod(zrFortune,ageYears);
-    const activeZR=zrSource==='Spirit'?zrSpirit:zrFortune;
-    const activeCur=zrSource==='Spirit'?curSpirit:curFortune;
+    const activeZR=zrSource==='Spirit'?zrSpiritFull:zrFortune;
+    const activeCur=zrSource==='Spirit'?curSpiritFull:curFortune;
 
-    h+=`<div class="zr-card">`;
+    h+=`<div class="zr-card" id="mech-zr">`;
     h+=`<div class="zr-head" onclick="toggleZR()">`;
     h+=`<span>Zodiacal Releasing — Life Chapters <span class="help" onclick="event.stopPropagation();showTip('Zodiacal Releasing')">?</span></span>`;
     h+=`<span class="section-chev ${zrExpanded?'open':''}">&#9654;</span>`;
@@ -4634,18 +4811,19 @@ function renderApp(){
     }
     h+=`</div>`;
 
-    // ── Firdaria ──
-    const firdaria=computeFirdaria(birthDate,SECT.isNocturnal);
-    const curFir=findCurrentFirdaria(firdaria,ageYears);
-    h+=`<div class="fir-card">`;
+    // ── Firdaria ── (firdaria, curFir hoisted to header)
+    // Re-compute with sect awareness for the full display
+    const firdariaFull=computeFirdaria(birthDate,SECT.isNocturnal);
+    const curFirFull=findCurrentFirdaria(firdariaFull,ageYears);
+    h+=`<div class="fir-card" id="mech-firdaria">`;
     h+=`<div class="fir-head" onclick="toggleFirdaria()">`;
     h+=`<span>Firdaria — Time-Lord Periods (${SECT.isNocturnal?'Nocturnal':'Diurnal'}) <span class="help" onclick="event.stopPropagation();showTip('Firdaria')">?</span></span>`;
     h+=`<span class="section-chev ${firExpanded?'open':''}">&#9654;</span>`;
     h+=`</div>`;
     h+=`<div style="font-size:11px;line-height:1.55;color:var(--text3);padding:0 14px 6px;letter-spacing:.1px">A Persian time-lord system spanning your whole life. Each planet rules a decade-long chapter with shorter sub-periods cycling through all seven traditional planets.</div>`;
 
-    if(curFir){
-      const maj=curFir.major,sub=curFir.sub;
+    if(curFirFull){
+      const maj=curFirFull.major,sub=curFirFull.sub;
       const majVoice=FIRDARIA_VOICE[maj.lord]||{};
       const subVoice=FIRDARIA_VOICE[sub.lord]||{};
       h+=`<div class="fir-now">`;
@@ -4669,12 +4847,12 @@ function renderApp(){
     if(firExpanded){
       h+=`<div class="fir-timeline">`;
       // Major Gantt
-      const totalYears=firdaria.reduce((a,m)=>a+m.lengthYears,0);
+      const totalYears=firdariaFull.reduce((a,m)=>a+m.lengthYears,0);
       h+=`<div class="zr-gantt">`;
       h+=`<div class="zr-gantt-label">Major Periods — ${totalYears}y total</div>`;
       h+=`<div class="zr-timeline" style="height:36px">`;
       const firColors={Sun:'#f5b843',Moon:'#9b6dff',Mercury:'#5cd6a8',Venus:'#f58ca3',Mars:'#e0425d',Jupiter:'#4a9eff',Saturn:'#4a6278'};
-      for(const m of firdaria){
+      for(const m of firdariaFull){
         const leftPct=(m.startYears/totalYears)*100;
         const widthPct=(m.lengthYears/totalYears)*100;
         const isCurr=ageYears>=m.startYears&&ageYears<m.endYears;
@@ -4691,8 +4869,8 @@ function renderApp(){
       h+=`</div>`;
 
       // Sub-period Gantt for current major
-      if(curFir){
-        const maj=curFir.major;
+      if(curFirFull){
+        const maj=curFirFull.major;
         h+=`<div class="zr-gantt">`;
         h+=`<div class="zr-gantt-label">Sub-Periods within ${maj.lord}</div>`;
         h+=`<div class="zr-timeline" style="height:28px">`;
@@ -5021,7 +5199,7 @@ function renderApp(){
     h+=`</div>`;
   }
 
-  h+=`</div>`;/* /t-depth */
+  h+=`</div>`; // end Layer 3 mechanics container
   h+=`</div>`; // end today tab
 
   // ══════════ CHART TAB ══════════

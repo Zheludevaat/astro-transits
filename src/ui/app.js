@@ -4163,8 +4163,6 @@ function renderApp(){
   }
   h+=`</div>`;
 
-  h+=`</div>`; // end hours/consult/electional section
-
   // Energy Meter (expandable — arc ring + tone word, tap for breakdown)
   {
     const eColor=vibe.score>=7?'var(--azure)':vibe.score<=3?'var(--crimson)':'var(--gold)';
@@ -5149,7 +5147,7 @@ function renderApp(){
   // ── Transit Timeline ──
   const timeline=buildTimeline(transits,jd);
   if(timeline.length>0){
-    h+=`<div class="section-title">Upcoming Transits</div>`;
+    h+=`<div class="section-title" id="mech-transits">Upcoming Transits</div>`;
     h+=`<div class="timeline">`;
     for(const ev of timeline){
       const tpName=ev.tp==='NorthNode'?'N.Node':ev.tp;

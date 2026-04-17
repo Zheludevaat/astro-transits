@@ -1681,8 +1681,45 @@ const layersExpanded={l2:true,l3:false};
 let tsOpenCell=null; // 'now'|'month'|'year'|'chapter'|null
 function toggleTsCell(cell){tsOpenCell=tsOpenCell===cell?null:cell;renderApp();}
 let consultOpen=false;
+let consultV2Open=false;
+let consultEventType=null;
+let consultWindow='next3h';
+let consultInvolved=[];
+let consultFreeText='';
+let consultLoading=false;
+let consultResult=null;
+let consultError=null;
 function openConsult(){consultOpen=true;renderApp();}
 function closeConsult(){consultOpen=false;renderApp();}
+function openConsultV2(){consultV2Open=true;consultResult=null;consultError=null;renderApp();}
+function closeConsultV2(){consultV2Open=false;consultLoading=false;consultResult=null;consultError=null;consultEventType=null;consultFreeText='';consultInvolved=[];renderApp();}
+function pickConsultEvent(t){consultEventType=t;renderApp();}
+function pickConsultWindow(w){consultWindow=w;renderApp();}
+function toggleConsultInvolved(id){
+  const idx=consultInvolved.indexOf(id);
+  if(idx>=0)consultInvolved.splice(idx,1);else consultInvolved.push(id);
+  renderApp();
+}
+function onConsultFreeText(v){consultFreeText=v;}
+async function runConsult(){
+  if(!consultEventType||consultLoading)return;
+  consultLoading=true;consultError=null;consultResult=null;renderApp();
+  try{
+    const charts=consultInvolved.map(id=>savedCharts.find(c=>c.id===id)).filter(Boolean);
+    const windowLabels={now:'Right now',next3h:'Next 3 hours',today:'Today',week:'This week'};
+    const result=await consultMoment({
+      eventType:consultEventType,
+      windowScope:windowLabels[consultWindow]||consultWindow,
+      involvedCharts:charts.length?charts:null,
+      freeText:consultFreeText||null
+    });
+    consultResult=result;
+    saveConsult(result);
+  }catch(e){
+    consultError=e.message||'Consult failed';
+  }
+  consultLoading=false;renderApp();
+}
 let electionalOpen=false;
 let electionalTask=null;
 let electionalResults=null;
@@ -4007,6 +4044,81 @@ function renderApp(){
     }
   }
 
+  // ── Consult v2: Event-aware pre-event consultation ──
+  if(isToday&&typeof EVENT_TYPES!=='undefined'){
+    if(!consultV2Open){
+      h+=`<div style="margin:8px 0;text-align:center">`;
+      h+=`<button onclick="openConsultV2()" style="background:var(--card);border:1px solid var(--gold-line);border-radius:8px;padding:8px 20px;color:var(--gold);font-size:12px;font-weight:600;cursor:pointer;letter-spacing:.3px">Consult the moment</button>`;
+      h+=`</div>`;
+    } else {
+      h+=`<div style="background:var(--card);border:1px solid var(--gold-line);border-radius:10px;padding:14px;margin:8px 0">`;
+      h+=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">`;
+      h+=`<div style="font-size:13px;font-weight:600;color:var(--gold)">Consult the moment</div>`;
+      h+=`<button onclick="closeConsultV2()" style="background:none;border:none;color:var(--text2);font-size:18px;cursor:pointer;padding:0 4px">&times;</button>`;
+      h+=`</div>`;
+
+      // Step 1: Pick event type
+      h+=`<div style="font-size:11px;color:var(--text2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">What are you doing?</div>`;
+      h+=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px">`;
+      for(const [key,et] of Object.entries(EVENT_TYPES)){
+        const sel=consultEventType===key;
+        h+=`<button onclick="pickConsultEvent('${key}')" style="background:${sel?'var(--gold-soft)':'var(--bg)'};border:1px solid ${sel?'var(--gold-line)':'var(--border)'};border-radius:6px;padding:8px 4px;cursor:pointer;text-align:center;transition:all .15s">`;
+        h+=`<div>${pSVG(et.icon,16,sel?'var(--gold)':'var(--text2)')}</div>`;
+        h+=`<div style="font-size:10px;color:${sel?'var(--gold)':'var(--text2)'};margin-top:3px;line-height:1.2">${et.label}</div>`;
+        h+=`</button>`;
+      }
+      h+=`</div>`;
+
+      // Step 2: Pick window
+      h+=`<div style="font-size:11px;color:var(--text2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">When?</div>`;
+      h+=`<div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap">`;
+      const windows=[['now','Now'],['next3h','Next 3h'],['today','Today'],['week','This week']];
+      for(const [val,label] of windows){
+        const sel=consultWindow===val;
+        h+=`<button onclick="pickConsultWindow('${val}')" style="background:${sel?'var(--gold-soft)':'var(--bg)'};border:1px solid ${sel?'var(--gold-line)':'var(--border)'};border-radius:6px;padding:6px 12px;font-size:11px;color:${sel?'var(--gold)':'var(--text2)'};cursor:pointer">${label}</button>`;
+      }
+      h+=`</div>`;
+
+      // Step 3: Involved charts (if any saved besides Alexander)
+      const otherCharts=savedCharts.filter(c=>c.id!=='alexander');
+      if(otherCharts.length>0){
+        h+=`<div style="font-size:11px;color:var(--text2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Who's involved? (optional)</div>`;
+        h+=`<div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap">`;
+        for(const c of otherCharts){
+          const sel=consultInvolved.includes(c.id);
+          h+=`<button onclick="toggleConsultInvolved('${c.id}')" style="background:${sel?'var(--gold-soft)':'var(--bg)'};border:1px solid ${sel?'var(--gold-line)':'var(--border)'};border-radius:6px;padding:5px 10px;font-size:11px;color:${sel?'var(--gold)':'var(--text2)'};cursor:pointer">${c.name}</button>`;
+        }
+        h+=`</div>`;
+      }
+
+      // Step 4: Free text
+      h+=`<div style="margin-bottom:12px">`;
+      h+=`<input type="text" placeholder="Context (optional): e.g. first call with new investor" oninput="onConsultFreeText(this.value)" value="${consultFreeText.replace(/"/g,'&quot;')}" style="width:100%;box-sizing:border-box;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:12px;color:var(--text);outline:none">`;
+      h+=`</div>`;
+
+      // Generate button
+      const canGenerate=consultEventType&&!consultLoading&&loadClaudeKey();
+      h+=`<button onclick="runConsult()" ${canGenerate?'':'disabled'} style="width:100%;background:${canGenerate?'var(--gold)':'var(--border)'};border:none;border-radius:8px;padding:10px;font-size:13px;font-weight:600;color:${canGenerate?'#000':'var(--text2)'};cursor:${canGenerate?'pointer':'default'};transition:all .15s">`;
+      h+=consultLoading?'Reading the moment...':(!loadClaudeKey()?'Set API key first':'Generate consult');
+      h+=`</button>`;
+
+      // Error
+      if(consultError){
+        h+=`<div style="margin-top:8px;padding:8px;background:rgba(200,40,60,.1);border-radius:6px;font-size:12px;color:var(--crimson)">${consultError}</div>`;
+      }
+
+      // Result
+      if(consultResult){
+        h+=`<div style="margin-top:12px;padding:12px;background:var(--bg);border:1px solid var(--border);border-radius:8px">`;
+        h+=`<div style="font-size:13px;color:var(--text);line-height:1.7">${consultResult.text}</div>`;
+        h+=`<div style="margin-top:8px;font-size:10px;color:var(--text2)">Haiku &middot; $${(consultResult.cost||0).toFixed(4)} &middot; ${new Date(consultResult.ts).toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit'})}</div>`;
+        h+=`</div>`;
+      }
+
+      h+=`</div>`;
+    }
+  }
+
   // ── Planetary Hours Strip ──
   if(pHours){
     const utNow=isToday?now.getUTCHours()+now.getUTCMinutes()/60:12;
@@ -5583,6 +5695,39 @@ function renderApp(){
       }
     }
     h+=`</div>`;
+
+    // ── Past Consults ──
+    if(typeof loadConsults==='function'){
+      const consults=loadConsults();
+      if(consults.length>0){
+        h+=`<div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:16px">`;
+        h+=`<div style="font-size:13px;font-weight:600;color:var(--bright);margin-bottom:8px">Past Consults</div>`;
+        for(const c of consults.slice(0,20)){
+          const d=new Date(c.ts);
+          const dateStr=d.toLocaleDateString(undefined,{month:'short',day:'numeric'});
+          const timeStr=d.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit'});
+          const etLabel=c.eventType||'';
+          const ratingBadge=c.rating?` <span style="font-size:10px;padding:1px 5px;border-radius:3px;background:${c.rating==='hit'?'#166534':'#991b1b'};color:#fff">${c.rating}</span>`:'';
+          h+=`<div style="border-bottom:1px solid var(--border);padding:8px 0;cursor:pointer" onclick="this.querySelector('.consult-expand')&&this.querySelector('.consult-expand').classList.toggle('ledger-synth-open')">`;
+          h+=`<div style="display:flex;justify-content:space-between;align-items:center">`;
+          h+=`<span style="font-size:12px;color:var(--text2)">${dateStr} ${timeStr}</span>`;
+          h+=`<span style="font-size:11px;color:var(--gold)">${etLabel}</span>${ratingBadge}`;
+          h+=`</div>`;
+          if(c.freeText)h+=`<div style="font-size:11px;color:var(--text2);margin-top:2px">${c.freeText}</div>`;
+          h+=`<div class="consult-expand" style="max-height:0;overflow:hidden;transition:max-height .3s ease">`;
+          h+=`<div style="font-size:12px;color:var(--text1);margin-top:6px;padding:6px;background:var(--bg);border-radius:4px;line-height:1.5">${(c.text||'').slice(0,400)}</div>`;
+          if(!c.rating){
+            h+=`<div style="display:flex;gap:6px;margin-top:6px">`;
+            h+=`<button onclick="event.stopPropagation();rateConsult(${c.ts},'hit');renderApp()" style="font-size:10px;padding:3px 10px;border-radius:4px;border:1px solid #166534;background:none;color:#4ade80;cursor:pointer">Hit</button>`;
+            h+=`<button onclick="event.stopPropagation();rateConsult(${c.ts},'miss');renderApp()" style="font-size:10px;padding:3px 10px;border-radius:4px;border:1px solid #991b1b;background:none;color:#f87171;cursor:pointer">Miss</button>`;
+            h+=`</div>`;
+          }
+          h+=`</div>`;
+          h+=`</div>`;
+        }
+        h+=`</div>`;
+      }
+    }
 
     // ── Export Button ──
     h+=`<div style="text-align:center;padding:12px 0">`;

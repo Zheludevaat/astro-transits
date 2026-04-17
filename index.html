@@ -5780,6 +5780,12 @@ function loadCharts() {
         const tmp = c.month; c.month = c.day; c.day = tmp; migrated = true;
       }
     }
+    // Migration: fix Alexander's hour (was stored as UTC, should be local)
+    const alexChart = savedCharts.find(c => c.id === 'alexander');
+    if (alexChart && Math.abs(alexChart.hour - 4.133) < 0.01 && alexChart.tz === -4) {
+      alexChart.hour = 8 / 60; // 00:08 local (EDT)
+      migrated = true;
+    }
     if (migrated) localStorage.setItem('astro-charts', JSON.stringify(savedCharts));
   } else {
     // Ensure Alexander is the default
@@ -5790,7 +5796,7 @@ function loadCharts() {
         year: BIRTH.year,
         month: BIRTH.month,
         day: BIRTH.day,
-        hour: BIRTH.hour,
+        hour: 8 / 60, // 00:08 local (EDT)
         lat: BIRTH.lat,
         lon: BIRTH.lon,
         tz: -4
@@ -5806,7 +5812,7 @@ function loadCharts() {
       year: BIRTH.year,
       month: BIRTH.month,
       day: BIRTH.day,
-      hour: BIRTH.hour,
+      hour: 8 / 60, // 00:08 local (EDT)
       lat: BIRTH.lat,
       lon: BIRTH.lon,
       tz: -4

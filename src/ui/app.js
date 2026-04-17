@@ -4224,7 +4224,8 @@ function renderApp(){
     // Legend line
     const curHrName=pHours.hours[curIdxClock]?pHours.hours[curIdxClock].ruler:'';
     h+=`<div style="font-size:11px;color:var(--text2);margin-top:6px">`;
-    h+=`Hour of ${curHrName} &middot; Mansion ${mansionClock?mansionClock.index:''} &middot; ${decanClock?decanClock.signName+' decan '+decanClock.decanNum:''}`;
+    const legendParts=[`Hour of ${curHrName}`,mansionClock?`Mansion ${mansionClock.index}`:'',decanClock?`${decanClock.signName} decan ${decanClock.decanNum}`:''].filter(Boolean);
+    h+=legendParts.join(' &middot; ');
     h+=`</div>`;
     h+=`</div>`;
   }
@@ -4233,7 +4234,7 @@ function renderApp(){
   if(pHours){
     const utNow=isToday?now.getUTCHours()+now.getUTCMinutes()/60:12;
     const curIdx=currentHourIndex(pHours.hours,utNow);
-    h+=`<div class="hours-strip" id="mech-hours">`;
+    h+=`<div class="hours-strip" id="mech-hours-strip">`;
     // Now-highlight block
     if(isToday && curIdx>=0 && curIdx<24){
       const curHr=pHours.hours[curIdx];

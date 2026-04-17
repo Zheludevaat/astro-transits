@@ -5850,6 +5850,46 @@ function computeWholeSignHouses(ascLon) {
 // SECTION 4: SYNASTRY COMPUTATION
 // ============================================================================
 
+function getAspectType(aspectName, pA, pB) {
+  if (aspectName === 'trine' || aspectName === 'sextile') return 'easy';
+  if (aspectName === 'square' || aspectName === 'opposition') return 'challenging';
+  if (aspectName === 'conjunction') {
+    const malefics = ['Mars','Saturn','Pluto'];
+    const personals = ['Sun','Moon','Mercury','Venus','Ascendant','MC'];
+    const inv = [pA, pB];
+    if (inv.some(p => malefics.includes(p)) && inv.some(p => personals.includes(p))) return 'challenging';
+    if (inv.filter(p => malefics.includes(p)).length === 2) return 'challenging';
+    return 'easy';
+  }
+  return 'neutral';
+}
+
+function shortArcMidpoint(a, b) {
+  const norm = v => ((v % 360) + 360) % 360;
+  a = norm(a); b = norm(b);
+  let diff = b - a;
+  if (diff > 180) diff -= 360;
+  if (diff < -180) diff += 360;
+  return norm(a + diff / 2);
+}
+
+function findSynAspect(lonA, lonB) {
+  const aspects = [
+    { name:'conjunction', angle:0, orb:8 },
+    { name:'sextile', angle:60, orb:5 },
+    { name:'square', angle:90, orb:6 },
+    { name:'trine', angle:120, orb:6 },
+    { name:'opposition', angle:180, orb:8 }
+  ];
+  const d = Math.abs(lonA - lonB);
+  const minD = Math.min(d, 360 - d);
+  for (const asp of aspects) {
+    const diff = Math.abs(minD - asp.angle);
+    if (diff <= asp.orb) return { ...asp, orbActual: diff };
+  }
+  return null;
+}
+
 function computeSynastryAspects(natalA, natalB) {
   const aspects = [];
   const planets = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto', 'Chiron', 'NorthNode'];
@@ -5907,7 +5947,7 @@ function computeSynastryAspects(natalA, natalB) {
           pB,
           aspect,
           orbActual: orbActual.toFixed(2),
-          type: ['conjunction', 'trine', 'sextile'].includes(aspect) ? 'easy' : 'challenging'
+          type: getAspectType(aspect, pA, pB)
         });
       }
     }
@@ -5926,27 +5966,22 @@ function computeSynastryTraditional(natalA, housesA, natalB, housesB, jdA, jdB, 
     houseOverlays: []
   };
 
-  // Helper: shortest arc
-  const arc = (a, b) => { const d = Math.abs(a - b); return Math.min(d, 360 - d); };
-
-  // Check Sun-Moon contact BOTH DIRECTIONS
-  const sm1 = arc(natalA.Sun, natalB.Moon);
-  const sm2 = arc(natalB.Sun, natalA.Moon);
-  const bestSM = Math.min(sm1, sm2);
-  if (bestSM < 10) {
+  // Aspect-aware Sun-Moon contact (all 5 major aspects, both directions)
+  const sm1 = findSynAspect(natalA.Sun, natalB.Moon);
+  const sm2 = findSynAspect(natalB.Sun, natalA.Moon);
+  const bestSM = [sm1, sm2].filter(Boolean).sort((a,b) => a.orbActual - b.orbActual)[0];
+  if (bestSM) {
     traditional.lunarContact = true;
-    if (bestSM < 2) traditional.lunarContactType = 'exact conjunction';
-    else if (bestSM < 5) traditional.lunarContactType = 'tight conjunction';
-    else traditional.lunarContactType = 'wide conjunction';
+    traditional.lunarContactType = `${bestSM.name} (${bestSM.orbActual.toFixed(1)}°)`;
   }
 
-  // Venus-Mars contact ALL COMBINATIONS
-  const vm1 = arc(natalA.Venus, natalB.Mars);
-  const vm2 = arc(natalB.Venus, natalA.Mars);
-  const vm3 = arc(natalA.Venus, natalB.Venus);
-  const vm4 = arc(natalA.Mars, natalB.Mars);
-  if (Math.min(vm1, vm2) < 8) {
+  // Aspect-aware Venus-Mars contact (all 5 major aspects, both directions)
+  const vm1 = findSynAspect(natalA.Venus, natalB.Mars);
+  const vm2 = findSynAspect(natalB.Venus, natalA.Mars);
+  const bestVM = [vm1, vm2].filter(Boolean).sort((a,b) => a.orbActual - b.orbActual)[0];
+  if (bestVM) {
     traditional.venusMarsMutual = true;
+    traditional.venusMarsMutualType = `${bestVM.name} (${bestVM.orbActual.toFixed(1)}°)`;
   }
 
   // Count Saturn hard aspects from the computed aspects array
@@ -5978,12 +6013,52 @@ function computeSynastryTraditional(natalA, housesA, natalB, housesB, jdA, jdB, 
     }
     return 12;
   };
-  for (const p of ['Sun','Moon','Venus']) {
+  for (const p of ['Sun','Moon','Venus','Mars']) {
     if (natalB[p] !== undefined) {
       traditional.houseOverlays.push({ planet: p, person: 'B', house: houseOf(natalB[p], housesA) });
     }
     if (natalA[p] !== undefined) {
       traditional.houseOverlays.push({ planet: p, person: 'A', house: houseOf(natalA[p], housesB) });
+    }
+  }
+
+  // ── Ruler of the 7th house ──
+  const sign7A = SIGNS[Math.floor(((housesA[6] % 360 + 360) % 360) / 30)];
+  const ruler7A = RULERS[sign7A];
+  if (ruler7A && natalA[ruler7A] !== undefined) {
+    traditional.ruler7thA = { ruler: ruler7A, sign: sign7A, houseInB: houseOf(natalA[ruler7A], housesB) };
+  }
+  const sign7B = SIGNS[Math.floor(((housesB[6] % 360 + 360) % 360) / 30)];
+  const ruler7B = RULERS[sign7B];
+  if (ruler7B && natalB[ruler7B] !== undefined) {
+    traditional.ruler7thB = { ruler: ruler7B, sign: sign7B, houseInA: houseOf(natalB[ruler7B], housesA) };
+  }
+
+  // ── Sect compatibility ──
+  const sunHouseA = houseOf(natalA.Sun, housesA);
+  const sunHouseB = houseOf(natalB.Sun, housesB);
+  const sectA = sunHouseA >= 7 ? 'diurnal' : 'nocturnal';
+  const sectB = sunHouseB >= 7 ? 'diurnal' : 'nocturnal';
+  traditional.sectMatch = sectA === sectB;
+  traditional.sectA = sectA;
+  traditional.sectB = sectB;
+
+  // ── Mutual reception ──
+  traditional.receptions = [];
+  const personalPlanets = ['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn'];
+  for (const pA of personalPlanets) {
+    if (natalA[pA] === undefined) continue;
+    const signA = SIGNS[Math.floor(natalA[pA] / 30) % 12];
+    const rulerOfSignA = RULERS[signA];
+    for (const pB of personalPlanets) {
+      if (natalB[pB] === undefined || pB !== rulerOfSignA) continue;
+      const signB = SIGNS[Math.floor(natalB[pB] / 30) % 12];
+      const rulerOfSignB = RULERS[signB];
+      if (rulerOfSignB === pA) {
+        traditional.receptions.push({ type:'mutual', pA, pB, signA, signB });
+      } else {
+        traditional.receptions.push({ type:'one-way', guest:pA, host:pB, sign:signA });
+      }
     }
   }
 
@@ -5998,57 +6073,80 @@ function generateSynastryNarrative(aspects, traditional) {
   const total = easy + hard;
   const ratio = total > 0 ? easy / total : 0.5;
 
-  // Opening tone
-  if (ratio > 0.7) parts.push('This is a notably harmonious synastry — the charts flow together with natural ease.');
-  else if (ratio > 0.55) parts.push('This synastry leans toward harmony, with enough creative tension to keep things dynamic.');
-  else if (ratio > 0.4) parts.push('This synastry is evenly balanced between harmony and challenge — a relationship that demands growth from both people.');
-  else parts.push('This is an intense synastry with strong friction — the kind that either forges something powerful or burns bright and fast.');
+  // Find standout feature to lead with
+  const tight = aspects.filter(a => parseFloat(a.orbActual) < 2);
+  const hasSunMoon = traditional.lunarContact;
+  const hasVenusMars = traditional.venusMarsMutual;
+  const heavySaturn = traditional.saturnContacts > 2;
+  let ledWithDistinctive = false;
 
-  // Luminaries
-  if (traditional.lunarContact) {
-    if (traditional.lunarContactType === 'exact conjunction') {
+  if (tight.length > 0 && parseFloat(tight[0].orbActual) < 0.5) {
+    const t = tight[0];
+    parts.push(`This synastry is defined by a near-exact ${t.pA} ${t.aspect} ${t.pB} at just ${t.orbActual}°. Everything else in the comparison is secondary to this — it's the signature of your connection.`);
+    ledWithDistinctive = true;
+  } else if (hasSunMoon && hasVenusMars) {
+    parts.push('This is a rare synastry: both the emotional foundation (Sun-Moon) and the physical chemistry (Venus-Mars) are active. Most relationships have one or the other — having both is the traditional marker of a bond that works on every level.');
+    ledWithDistinctive = true;
+  } else if (heavySaturn && !hasSunMoon) {
+    parts.push('Saturn dominates this synastry without a Sun-Moon cushion. The bond feels serious — perhaps obligatory — but the emotional ease that makes commitment feel natural is something you\'ll need to build consciously.');
+    ledWithDistinctive = true;
+  }
+
+  // Fall back to ratio-based opener if no distinctive lead
+  if (!ledWithDistinctive) {
+    if (ratio > 0.7) parts.push('This is a notably harmonious synastry — the charts flow together with natural ease.');
+    else if (ratio > 0.55) parts.push('This synastry leans toward harmony, with enough creative tension to keep things dynamic.');
+    else if (ratio > 0.4) parts.push('This synastry is evenly balanced between harmony and challenge — a relationship that demands growth from both people.');
+    else parts.push('This is an intense synastry with strong friction — the kind that either forges something powerful or burns bright and fast.');
+  }
+
+  // Luminaries (skip if already led with Sun-Moon + Venus-Mars combo)
+  if (hasSunMoon && !ledWithDistinctive) {
+    if (traditional.lunarContactType && traditional.lunarContactType.includes('conjunction')) {
       parts.push('The Sun-Moon contact here is exceptionally tight — you feel an almost fated recognition, as if you\'ve known each other before.');
     } else {
       parts.push('A significant Sun-Moon link creates natural emotional understanding between you — the foundation most astrologers consider essential for lasting bonds.');
     }
   }
 
-  // Venus-Mars
-  if (traditional.venusMarsMutual) {
+  // Venus-Mars (skip if already mentioned)
+  if (hasVenusMars && !(ledWithDistinctive && hasSunMoon)) {
     parts.push('Venus and Mars are connected across your charts, generating the kind of magnetic physical chemistry that draws people together and keeps the spark alive.');
   }
 
-  // Saturn
-  if (traditional.saturnContacts > 2) {
-    parts.push('Multiple Saturn contacts give this bond a karmic, destined quality — serious commitment and hard-won lessons are woven into the fabric of your connection.');
-  } else if (traditional.saturnContacts === 1) {
-    parts.push('A single Saturn contact provides just enough gravity to anchor the relationship without weighing it down.');
+  // Saturn (skip if already led with Saturn dominance)
+  if (!ledWithDistinctive || !heavySaturn) {
+    if (traditional.saturnContacts > 2) {
+      parts.push('Multiple Saturn contacts give this bond a karmic, destined quality — serious commitment and hard-won lessons are woven into the fabric of your connection.');
+    } else if (traditional.saturnContacts === 1) {
+      parts.push('A single Saturn contact provides just enough gravity to anchor the relationship without weighing it down.');
+    }
   }
 
-  // Notable tight aspects
-  const tight = aspects.filter(a => parseFloat(a.orbActual) < 2);
-  if (tight.length > 0) {
+  // Tight aspects (skip if already led with the tightest)
+  if (tight.length > 0 && !(ledWithDistinctive && parseFloat(tight[0].orbActual) < 0.5)) {
     const t = tight[0];
     parts.push(`The tightest aspect is ${t.pA} ${t.aspect} ${t.pB} at just ${t.orbActual}° — this is felt strongly by both people and colors the entire relationship.`);
   }
 
-  // Elements
-  if (traditional.elementBalance && traditional.elementBalance !== 'mixed') {
+  // Elements — only when distinctive (not 'mixed')
+  const distinctiveElements = ['igniting','steamy tension','deeply emotional','grounding','intellectual'];
+  if (traditional.elementBalance && distinctiveElements.includes(traditional.elementBalance)) {
     const elTone = {
       'igniting':'fire-on-fire energy that\'s exciting but needs careful handling',
-      'inspiring':'a natural flow of ideas and enthusiasm',
-      'productive tension':'a grounding dynamic that turns vision into reality',
-      'steamy tension':'passionate emotional intensity',
-      'grounding':'shared practicality and material comfort',
-      'complementary':'a meeting of mind and matter',
-      'nurturing':'emotional depth paired with practical care',
-      'intellectual':'a feast of conversation and ideas',
-      'creative tension':'a push-pull between logic and feeling',
-      'deeply emotional':'profound mutual sensitivity'
+      'steamy tension':'passionate emotional intensity that swings between heat and overwhelm',
+      'deeply emotional':'profound mutual sensitivity — feelings run deep for both of you',
+      'grounding':'shared practicality and material comfort — you build naturally together',
+      'intellectual':'a feast of conversation and ideas — the mental connection is the engine'
     };
     if (elTone[traditional.elementBalance]) {
       parts.push(`Elementally, this pairing brings ${elTone[traditional.elementBalance]}.`);
     }
+  }
+
+  // Mutual reception mention if present
+  if (traditional.receptions && traditional.receptions.filter(r => r.type === 'mutual').length > 0) {
+    parts.push('A mutual reception between your charts creates a hidden exchange — a back-channel of cooperation that strengthens the bond beneath the surface.');
   }
 
   return parts.join(' ');
@@ -6058,141 +6156,84 @@ function generateSynastryNarrative(aspects, traditional) {
 // SECTION 5: SYNASTRY BIWHEEL RENDERER
 // ============================================================================
 
-function renderSynastryWheel(natalA, housesA, natalB, housesB, synAspects, size = 400) {
+function renderSynastryWheel(natalA, housesA, natalB, housesB, synAspects, size = 400, nameA, nameB) {
   size = Math.min(size, 400);
   const cx = size / 2;
   const cy = size / 2;
-  const r1 = size / 2 - 20;
-  const r2 = r1 - 35;
-  const r3 = r2 - 30;
+  const ascDeg = natalA.Ascendant;
+  function toXY(deg, r) { const a = (180 - (deg - ascDeg)) * DEG; return { x: cx + r * Math.cos(a), y: cy - r * Math.sin(a) }; }
+  // Ring radii
+  const rOuter = size / 2 - 4;
+  const rZodInner = rOuter - 22;
+  const rA = rZodInner - 4;
+  const rB = rA - 28;
+  const rInner = size * 0.12;
+  const signNames = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
 
-  let svg = `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="background-color: var(--bg);">`;
+  let svg = `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" class="biwheel-svg" style="background:transparent">`;
+  svg += `<defs><filter id="bw-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1.5" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>`;
+  svg += `<circle cx="${cx}" cy="${cy}" r="${rOuter}" fill="var(--bg)" stroke="var(--gold-line)" stroke-width="1"/>`;
 
-  // Defs for filter and gradients
-  svg += `<defs>
-    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-      <feMerge>
-        <feMergeNode in="coloredBlur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
-  </defs>`;
-
-  // Background
-  svg += `<circle cx="${cx}" cy="${cy}" r="${r1}" fill="var(--bg)" stroke="var(--gold-line)" stroke-width="1"/>`;
-
-  // House lines (A's - solid gold)
+  // ── Zodiac band ──
+  svg += `<circle cx="${cx}" cy="${cy}" r="${rZodInner}" fill="none" stroke="var(--gold-line)" stroke-width="0.5"/>`;
   for (let i = 0; i < 12; i++) {
-    const ang = housesA[i] * DEG;
-    const x1 = cx + r2 * Math.cos(ang);
-    const y1 = cy + r2 * Math.sin(ang);
-    const x2 = cx + r1 * Math.cos(ang);
-    const y2 = cy + r1 * Math.sin(ang);
-    svg += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--gold-line)" stroke-width="0.5"/>`;
+    const deg0 = i * 30, deg1 = (i+1) * 30, mid = deg0 + 15;
+    const p1 = toXY(deg0, rOuter), p2 = toXY(deg0, rZodInner);
+    svg += `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="var(--gold-line)" stroke-width="0.5"/>`;
+    if (i % 2 === 0) {
+      const a1=toXY(deg0,rOuter), b1=toXY(deg1,rOuter), b2=toXY(deg1,rZodInner), a2=toXY(deg0,rZodInner);
+      svg += `<path d="M ${a1.x} ${a1.y} A ${rOuter} ${rOuter} 0 0 0 ${b1.x} ${b1.y} L ${b2.x} ${b2.y} A ${rZodInner} ${rZodInner} 0 0 1 ${a2.x} ${a2.y} Z" fill="rgba(212,168,67,.04)"/>`;
+    }
+    const mp = toXY(mid, (rOuter+rZodInner)/2), gsz = 10;
+    svg += `<g transform="translate(${mp.x-gsz/2},${mp.y-gsz/2})">${sSVG(signNames[i], gsz, 'var(--gold)')}</g>`;
+    for (let t=1;t<3;t++) { const td=deg0+t*10, t1=toXY(td,rOuter), t2=toXY(td,rOuter-3); svg += `<line x1="${t1.x}" y1="${t1.y}" x2="${t2.x}" y2="${t2.y}" stroke="var(--gold-line)" stroke-width="0.3" opacity="0.5"/>`; }
   }
 
-  // House lines (B's - dashed violet)
+  // ── House lines (A's) ──
   for (let i = 0; i < 12; i++) {
-    const ang = housesB[i] * DEG;
-    const x1 = cx + r1 * Math.cos(ang);
-    const y1 = cy + r1 * Math.sin(ang);
-    const x2 = cx + r3 * Math.cos(ang);
-    const y2 = cy + r3 * Math.sin(ang);
-    svg += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--violet)" stroke-width="0.5" stroke-dasharray="2,2"/>`;
+    const p1 = toXY(housesA[i], rZodInner), p2 = toXY(housesA[i], rInner);
+    svg += `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="var(--gold-line)" stroke-width="${i===0||i===9?1.2:0.4}" opacity="${i===0||i===9?0.8:0.3}"/>`;
   }
 
-  // Inner ring separators
-  svg += `<circle cx="${cx}" cy="${cy}" r="${r2}" fill="none" stroke="var(--gold-line)" stroke-width="0.5"/>`;
-  svg += `<circle cx="${cx}" cy="${cy}" r="${r3}" fill="none" stroke="var(--violet)" stroke-width="0.5" stroke-dasharray="2,2"/>`;
+  // ── Ring circles ──
+  svg += `<circle cx="${cx}" cy="${cy}" r="${rA}" fill="none" stroke="var(--gold-line)" stroke-width="0.3" opacity="0.4"/>`;
+  svg += `<circle cx="${cx}" cy="${cy}" r="${rB}" fill="none" stroke="rgba(74,158,255,.3)" stroke-width="0.3"/>`;
 
-  // A's planets (outer ring - gold)
-  const planetsA = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto', 'Chiron', 'NorthNode'];
-  for (let p of planetsA) {
-    if (!(p in natalA)) continue;
-    const lon = natalA[p];
-    const ang = lon * DEG;
-    const x = cx + r2 * Math.cos(ang);
-    const y = cy + r2 * Math.sin(ang);
-    svg += `<g transform="translate(${x},${y})">`;
-    svg += pSVG(p, 18, 'var(--gold)');
-    svg += `</g>`;
+  // ── Aspect lines (A at rA → B at rB) ──
+  for (let asp of synAspects.slice(0, 20)) {
+    const km = { asc:'Ascendant', mc:'MC' };
+    const lonAv = natalA[asp.pA] !== undefined ? natalA[asp.pA] : natalA[km[asp.pA]];
+    const lonBv = natalB[asp.pB] !== undefined ? natalB[asp.pB] : natalB[km[asp.pB]];
+    if (lonAv === undefined || lonBv === undefined) continue;
+    const pa = toXY(lonAv, rA), pb = toXY(lonBv, rB);
+    const ac = asp.type === 'easy' ? 'var(--emerald)' : 'var(--crimson)';
+    const orb = parseFloat(asp.orbActual);
+    svg += `<line x1="${pa.x}" y1="${pa.y}" x2="${pb.x}" y2="${pb.y}" stroke="${ac}" stroke-width="${orb<2?1.2:0.8}" opacity="${orb<2?0.55:orb<4?0.35:0.2}"/>`;
   }
 
-  // A's ASC/MC (outer ring)
-  let ang = natalA.Ascendant * DEG;
-  let x = cx + r2 * Math.cos(ang);
-  let y = cy + r2 * Math.sin(ang);
-  svg += `<g transform="translate(${x},${y})">`;
-  svg += `<circle cx="0" cy="0" r="8" fill="none" stroke="var(--gold)" stroke-width="1"/>`;
-  svg += `<text x="0" y="3" font-size="8" fill="var(--gold)" text-anchor="middle" font-weight="600">AC</text>`;
-  svg += `</g>`;
+  // ── A's planets (outer - gold) ──
+  const pList = ['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto','Chiron','NorthNode'];
+  const psz = 16;
+  for (let p of pList) { if (!(p in natalA)) continue; const pt=toXY(natalA[p],rA); svg += `<g transform="translate(${pt.x-psz/2},${pt.y-psz/2})">${pSVG(p,psz,'var(--gold)')}</g>`; }
+  let pt = toXY(natalA.Ascendant, rA);
+  svg += `<circle cx="${pt.x}" cy="${pt.y}" r="7" fill="none" stroke="var(--gold)" stroke-width="1"/><text x="${pt.x}" y="${pt.y+3}" font-size="7" fill="var(--gold)" text-anchor="middle" font-weight="700">AC</text>`;
+  pt = toXY(natalA.MC, rA);
+  svg += `<circle cx="${pt.x}" cy="${pt.y}" r="7" fill="none" stroke="var(--gold)" stroke-width="1"/><text x="${pt.x}" y="${pt.y+3}" font-size="7" fill="var(--gold)" text-anchor="middle" font-weight="700">MC</text>`;
 
-  ang = natalA.MC * DEG;
-  x = cx + r2 * Math.cos(ang);
-  y = cy + r2 * Math.sin(ang);
-  svg += `<g transform="translate(${x},${y})">`;
-  svg += `<circle cx="0" cy="0" r="8" fill="none" stroke="var(--gold)" stroke-width="1"/>`;
-  svg += `<text x="0" y="3" font-size="8" fill="var(--gold)" text-anchor="middle" font-weight="600">MC</text>`;
-  svg += `</g>`;
+  // ── B's planets (inner - azure) ──
+  const bsz = 14;
+  for (let p of pList) { if (!(p in natalB)) continue; const pt=toXY(natalB[p],rB); svg += `<g transform="translate(${pt.x-bsz/2},${pt.y-bsz/2})">${pSVG(p,bsz,'var(--azure)')}</g>`; }
+  pt = toXY(natalB.Ascendant, rB);
+  svg += `<circle cx="${pt.x}" cy="${pt.y}" r="6" fill="none" stroke="var(--azure)" stroke-width="0.8"/><text x="${pt.x}" y="${pt.y+2.5}" font-size="6" fill="var(--azure)" text-anchor="middle" font-weight="700">AC</text>`;
+  pt = toXY(natalB.MC, rB);
+  svg += `<circle cx="${pt.x}" cy="${pt.y}" r="6" fill="none" stroke="var(--azure)" stroke-width="0.8"/><text x="${pt.x}" y="${pt.y+2.5}" font-size="6" fill="var(--azure)" text-anchor="middle" font-weight="700">MC</text>`;
 
-  // B's planets (inner ring - azure)
-  for (let p of planetsA) {
-    if (!(p in natalB)) continue;
-    const lon = natalB[p];
-    const ang = lon * DEG;
-    const x = cx + r3 * Math.cos(ang);
-    const y = cy + r3 * Math.sin(ang);
-    svg += `<g transform="translate(${x},${y})">`;
-    svg += pSVG(p, 16, 'var(--azure)');
-    svg += `</g>`;
-  }
-
-  // B's ASC/MC (inner ring)
-  ang = natalB.Ascendant * DEG;
-  x = cx + r3 * Math.cos(ang);
-  y = cy + r3 * Math.sin(ang);
-  svg += `<g transform="translate(${x},${y})">`;
-  svg += `<circle cx="0" cy="0" r="7" fill="none" stroke="var(--azure)" stroke-width="1"/>`;
-  svg += `<text x="0" y="2.5" font-size="7" fill="var(--azure)" text-anchor="middle" font-weight="600">AC</text>`;
-  svg += `</g>`;
-
-  ang = natalB.MC * DEG;
-  x = cx + r3 * Math.cos(ang);
-  y = cy + r3 * Math.sin(ang);
-  svg += `<g transform="translate(${x},${y})">`;
-  svg += `<circle cx="0" cy="0" r="7" fill="none" stroke="var(--azure)" stroke-width="1"/>`;
-  svg += `<text x="0" y="2.5" font-size="7" fill="var(--azure)" text-anchor="middle" font-weight="600">MC</text>`;
-  svg += `</g>`;
-
-  // Aspect lines (inter-chart only)
-  const rAsp = (r2 + r3) / 2;
-  for (let asp of synAspects.slice(0, 20)) { // Limit to avoid clutter
-    const keyMapA = { asc: 'Ascendant', mc: 'MC' };
-    const keyMapB = { asc: 'Ascendant', mc: 'MC' };
-    const lonA = natalA[asp.pA] !== undefined ? natalA[asp.pA] : natalA[keyMapA[asp.pA]];
-    const lonB = natalB[asp.pB] !== undefined ? natalB[asp.pB] : natalB[keyMapB[asp.pB]];
-
-    if (lonA === undefined || lonB === undefined) continue;
-
-    const angA = lonA * DEG;
-    const angB = lonB * DEG;
-
-    const x1 = cx + rAsp * Math.cos(angA);
-    const y1 = cy + rAsp * Math.sin(angA);
-    const x2 = cx + rAsp * Math.cos(angB);
-    const y2 = cy + rAsp * Math.sin(angB);
-
-    const aspColor = asp.type === 'easy' ? 'var(--emerald)' : 'var(--crimson)';
-    const aspOpacity = 0.4;
-
-    svg += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${aspColor}" stroke-width="1" opacity="${aspOpacity}"/>`;
-  }
-
-  // Center labels
-  svg += `<circle cx="${cx}" cy="${cy}" r="35" fill="var(--bg)" stroke="var(--gold-line)" stroke-width="1"/>`;
-  svg += `<text x="${cx}" y="${cy - 10}" font-size="10" fill="var(--gold)" text-anchor="middle" font-weight="600">You</text>`;
-  svg += `<text x="${cx}" y="${cy + 8}" font-size="10" fill="var(--azure)" text-anchor="middle" font-weight="600">Partner</text>`;
+  // ── Center hub ──
+  svg += `<circle cx="${cx}" cy="${cy}" r="${rInner}" fill="var(--bg)" stroke="var(--gold-line)" stroke-width="0.8"/>`;
+  const nA = (nameA||'You').length>8?(nameA||'You').substring(0,7)+'.':nameA||'You';
+  const nB = (nameB||'Partner').length>8?(nameB||'Partner').substring(0,7)+'.':nameB||'Partner';
+  svg += `<text x="${cx}" y="${cy-5}" font-size="8" fill="var(--gold)" text-anchor="middle" font-weight="600">${nA}</text>`;
+  svg += `<text x="${cx}" y="${cy+7}" font-size="8" fill="var(--azure)" text-anchor="middle" font-weight="600">${nB}</text>`;
 
   svg += `</svg>`;
   return svg;
@@ -6224,7 +6265,7 @@ function renderSynastryGrid(natalA, natalB, synAspects) {
         (a.pA === pB && a.pB === pA)
       );
 
-      html += `<div class="grid-cell" onclick="synExpanded='${pA}-${pB}'; renderApp();">`;
+      html += `<div class="grid-cell" onclick="toggleSynInterpretation('${pA}','${pB}')">`;
 
       if (asp) {
         const aspColor = asp.type === 'easy' ? 'var(--emerald)' : 'var(--crimson)';
@@ -6237,7 +6278,8 @@ function renderSynastryGrid(natalA, natalB, synAspects) {
 
   html += `</div>`;
 
-  // Expanded interpretation if selected
+  // Expanded interpretation panel
+  html += `<div id="syn-interp-panel">`;
   if (synExpanded) {
     const [pA, pB] = synExpanded.split('-');
     const asp = synAspects.find(a =>
@@ -6250,7 +6292,7 @@ function renderSynastryGrid(natalA, natalB, synAspects) {
       const interp = getSynastryInterpretation(interpKey, asp);
 
       html += `<div class="aspect-interpretation">
-        <div class="header" onclick="synExpanded=null; renderApp();">
+        <div class="header" onclick="toggleSynInterpretation('${pA}','${pB}')">
           ${pSVG(asp.pA, 20, 'var(--gold)')}
           ${aSVG(asp.aspect, 16, asp.type === 'easy' ? 'var(--emerald)' : 'var(--crimson)')}
           ${pSVG(asp.pB, 20, 'var(--azure)')}
@@ -6261,8 +6303,42 @@ function renderSynastryGrid(natalA, natalB, synAspects) {
       </div>`;
     }
   }
+  html += `</div>`; // close syn-interp-panel
 
   return html;
+}
+
+function renderSynInterpretationCard(key) {
+  const [pA, pB] = key.split('-');
+  const asp = synAspects.find(a =>
+    (a.pA === pA && a.pB === pB) ||
+    (a.pA === pB && a.pB === pA)
+  );
+  if (!asp) return '';
+  const interpKey = `${asp.pA}-${asp.pB}|${asp.aspect}`;
+  const interp = getSynastryInterpretation(interpKey, asp);
+  return `<div class="aspect-interpretation">
+    <div class="header" onclick="toggleSynInterpretation('${pA}','${pB}')">
+      ${pSVG(asp.pA, 20, 'var(--gold)')}
+      ${aSVG(asp.aspect, 16, asp.type === 'easy' ? 'var(--emerald)' : 'var(--crimson)')}
+      ${pSVG(asp.pB, 20, 'var(--azure)')}
+      <span class="title">${asp.pA} ${asp.aspect} ${asp.pB}</span>
+      <span style="font-size:var(--fs-label);color:var(--text3);margin-left:auto">orb ${asp.orbActual}°</span>
+    </div>
+    <div class="detail">${interp.detail}</div>
+  </div>`;
+}
+
+function toggleSynInterpretation(pA, pB) {
+  const key = pA + '-' + pB;
+  if (synExpanded === key) { synExpanded = null; }
+  else { synExpanded = key; }
+  const container = document.getElementById('syn-interp-panel');
+  if (container) {
+    container.innerHTML = synExpanded ? renderSynInterpretationCard(synExpanded) : '';
+  } else {
+    renderApp();
+  }
 }
 
 // ============================================================================
@@ -6393,6 +6469,29 @@ const AC_COLORS = {
   Chiron:'#d0cae0', NorthNode:'#d4a843'
 };
 
+const CITIES = [
+  { name: 'London', lat: 51.5, lon: -0.1 },
+  { name: 'New York', lat: 40.7, lon: -74.0 },
+  { name: 'Tokyo', lat: 35.7, lon: 139.7 },
+  { name: 'Sydney', lat: -33.9, lon: 151.2 },
+  { name: 'São Paulo', lat: -23.5, lon: -46.6 },
+  { name: 'Cairo', lat: 30.0, lon: 31.2 },
+  { name: 'Mumbai', lat: 19.1, lon: 72.9 },
+  { name: 'Paris', lat: 48.9, lon: 2.3 },
+  { name: 'Berlin', lat: 52.5, lon: 13.4 },
+  { name: 'Moscow', lat: 55.8, lon: 37.6 },
+  { name: 'Dubai', lat: 25.2, lon: 55.3 },
+  { name: 'Singapore', lat: 1.3, lon: 103.8 },
+  { name: 'LA', lat: 34.1, lon: -118.2 },
+  { name: 'Mexico City', lat: 19.4, lon: -99.1 },
+  { name: 'Lagos', lat: 6.5, lon: 3.4 },
+  { name: 'Bangkok', lat: 13.8, lon: 100.5 },
+  { name: 'Istanbul', lat: 41.0, lon: 29.0 },
+  { name: 'Buenos Aires', lat: -34.6, lon: -58.4 },
+  { name: 'Nairobi', lat: -1.3, lon: 36.8 },
+  { name: 'Rome', lat: 41.9, lon: 12.5 }
+];
+
 function renderAstroCartoMap(lines, toggles, tapInfo, width = 400, height = 250) {
   let svg = `<svg width="${width}" height="${height}" viewBox="0 0 360 180" xmlns="http://www.w3.org/2000/svg">`;
 
@@ -6420,15 +6519,25 @@ function renderAstroCartoMap(lines, toggles, tapInfo, width = 400, height = 250)
     svg += `<path d="${p}" fill="rgba(30,40,75,.9)" stroke="rgba(120,140,200,.4)" stroke-width="0.5" stroke-linejoin="round"/>`;
   }
 
+  // City reference dots
+  for (const city of CITIES) {
+    const cx = ((city.lon + 180) % 360 + 360) % 360;
+    const cy = 90 - city.lat;
+    svg += `<circle cx="${cx}" cy="${cy}" r="0.8" fill="rgba(255,255,255,.4)"/>`;
+    svg += `<text x="${cx + 2}" y="${cy + 1}" font-size="3.5" fill="rgba(255,255,255,.35)" font-family="system-ui">${city.name}</text>`;
+  }
+
   // Planet lines
+  const toMapX = (geoLon) => ((geoLon + 180) % 360 + 360) % 360;
   const activePlanets = Object.keys(toggles).filter(p => toggles[p]);
 
   const drawSegments = (pts, color, w, op, dash) => {
     if (!pts || pts.length < 2) return '';
-    let out = '', segs = [[pts[0]]];
-    for (let i = 1; i < pts.length; i++) {
-      if (Math.abs(pts[i].lon - pts[i-1].lon) > 180) segs.push([]);
-      segs[segs.length-1].push(pts[i]);
+    const mapped = pts.map(p => ({ lat: p.lat, lon: toMapX(p.lon) }));
+    let out = '', segs = [[mapped[0]]];
+    for (let i = 1; i < mapped.length; i++) {
+      if (Math.abs(mapped[i].lon - mapped[i-1].lon) > 180) segs.push([]);
+      segs[segs.length-1].push(mapped[i]);
     }
     for (const seg of segs) {
       if (seg.length < 2) continue;
@@ -6446,16 +6555,16 @@ function renderAstroCartoMap(lines, toggles, tapInfo, width = 400, height = 250)
       const c = AC_COLORS[planet] || '#9089ab';
 
       // MC line (solid vertical)
-      svg += `<line x1="${pl.mc}" y1="5" x2="${pl.mc}" y2="175" stroke="${c}" stroke-width="1.5" opacity="0.75" filter="url(#ac-glow)"/>`;
+      svg += `<line x1="${toMapX(pl.mc)}" y1="5" x2="${toMapX(pl.mc)}" y2="175" stroke="${c}" stroke-width="1.5" opacity="0.75" filter="url(#ac-glow)"/>`;
       // IC line (dashed vertical)
-      svg += `<line x1="${pl.ic}" y1="5" x2="${pl.ic}" y2="175" stroke="${c}" stroke-width="1.2" opacity="0.45" stroke-dasharray="4,3"/>`;
+      svg += `<line x1="${toMapX(pl.ic)}" y1="5" x2="${toMapX(pl.ic)}" y2="175" stroke="${c}" stroke-width="1.2" opacity="0.45" stroke-dasharray="4,3"/>`;
       // ASC curve
       svg += drawSegments(pl.asc, c, 1.3, 0.65, '');
       // DSC curve
       svg += drawSegments(pl.dsc, c, 1.0, 0.4, '3,2');
 
       // Tiny planet icon at MC top
-      svg += `<g transform="translate(${pl.mc}, 4)" opacity="0.8">${pSVG(planet, 7, c)}</g>`;
+      svg += `<g transform="translate(${toMapX(pl.mc)}, 4)" opacity="0.8">${pSVG(planet, 7, c)}</g>`;
     }
   }
 
@@ -7007,7 +7116,358 @@ const SYNASTRY_VOICE = {
   'Sun-Mars|sextile': {
     feel: 'Flirty, attractive chemistry that\'s fun and not overwhelming.',
     detail: 'The Mars person is attracted and gently pursues; the Sun person enjoys being desired. The aspect creates sexual chemistry without the intensity of conjunction or the friction of square.'
-  }
+  },
+  // Moon-Venus
+  'Moon-Venus|conjunction': {
+    feel: 'Tenderness flows without effort; being near this person feels like emotional nourishment.',
+    detail: 'The Moon person feels genuinely cherished by the Venus person, while Venus feels emotionally safe enough to open fully. Venus softens the Moon\'s anxieties and the Moon gives Venus the emotional reciprocity it craves. This works best when both people can receive as well as give — if one partner over-functions as caretaker, the sweetness curdles into quiet resentment.'
+  },
+  'Moon-Venus|opposition': {
+    feel: 'Strong pull between comfort and desire; you want closeness but keep negotiating how it looks.',
+    detail: 'The Moon person\'s emotional needs and the Venus person\'s love style sit at opposite ends, creating magnetic attraction and recurring friction about how affection gets expressed. One wants cozy domesticity while the other wants romance or social pleasure. The tension is productive when both stretch toward the other\'s language of care. It stalls when either insists their way of loving is the only valid one.'
+  },
+  'Moon-Venus|trine': {
+    feel: 'Effortless warmth; affection and emotional safety arise naturally between you.',
+    detail: 'The Moon and Venus operate in the same elemental register, so emotional needs and expressions of love align without negotiation. The Venus person instinctively knows how to please the Moon person, and the Moon person makes Venus feel emotionally held. The risk is complacency — this aspect is so comfortable that both partners may coast and neglect growth. It is a gift, but gifts still need tending.'
+  },
+  'Moon-Venus|square': {
+    feel: 'Affection is real but keeps bumping into emotional sore spots.',
+    detail: 'Venus reaches out with love in a style that inadvertently triggers the Moon person\'s insecurities, and the Moon\'s emotional reactions can make Venus feel rejected or unappreciated. The square forces both people to learn that caring about someone does not automatically mean you know how to care for them. Growth comes from asking what the other actually needs instead of projecting. Without that effort, small hurts accumulate.'
+  },
+  'Moon-Venus|sextile': {
+    feel: 'A gentle, friendly affection that deepens when both people invest in it.',
+    detail: 'The sextile offers opportunity rather than guarantee — there is natural compatibility between emotional needs and love expression, but it activates best through shared activities and conscious gestures. The Venus person can draw the Moon person out of emotional withdrawal, and the Moon person gives Venus a sense of genuine emotional connection. Small acts of kindness compound here more than grand gestures.'
+  },
+
+  // Moon-Mars
+  'Moon-Mars|conjunction': {
+    feel: 'Emotional intensity hits immediately; feelings and desires fuse into something urgent.',
+    detail: 'The Mars person activates the Moon person\'s deepest emotional responses — protectiveness, desire, sometimes defensiveness. The Moon person stirs Mars\'s instinct to act, pursue, or defend. Passion runs high but so does reactivity. This conjunction works when both people have the maturity to distinguish between excitement and agitation, and when Mars learns that the Moon\'s vulnerability is not a problem to solve but a reality to honor.'
+  },
+  'Moon-Mars|opposition': {
+    feel: 'Electric emotional-sexual tension; you provoke and attract each other in equal measure.',
+    detail: 'The Moon person feels emotionally exposed by Mars\'s directness, while Mars feels frustrated or fascinated by the Moon\'s emotional complexity. Fights can escalate fast because Mars pushes and the Moon retreats or floods. The opposition creates powerful physical chemistry and equally powerful arguments. It works when Mars tempers its bluntness and the Moon stops expecting Mars to read between the lines.'
+  },
+  'Moon-Mars|trine': {
+    feel: 'Emotional courage flows easily; you feel energized and protected around each other.',
+    detail: 'Mars\'s drive and the Moon\'s emotional instincts operate in natural harmony. The Mars person helps the Moon person act on feelings rather than stew in them, and the Moon gives Mars emotional grounding that prevents burnout. Physical affection comes naturally without aggression. This is one of the better aspects for a relationship that needs both tenderness and vitality — domesticity does not kill the spark here.'
+  },
+  'Moon-Mars|square': {
+    feel: 'Emotional friction generates heat — sometimes passion, sometimes conflict, often both at once.',
+    detail: 'Mars inadvertently steps on the Moon\'s emotional triggers, and the Moon\'s reactions feel irrational or manipulative to Mars. Arguments tend to follow a pattern: Mars attacks, Moon withdraws or weeps, Mars feels guilty or doubles down. The square demands that both people learn emotional regulation. When they do, the friction becomes productive intensity. When they don\'t, it becomes a cycle of wounding and apologizing.'
+  },
+  'Moon-Mars|sextile': {
+    feel: 'A lively emotional-physical rapport that keeps the connection from going flat.',
+    detail: 'The sextile provides just enough friction to maintain interest without creating chronic conflict. Mars motivates the Moon person to take emotional risks, and the Moon helps Mars channel aggression into care. This aspect favors couples who do things together — shared projects, physical activity, building a home. The chemistry is present but needs action to stay alive; passivity dulls it.'
+  },
+
+  // Moon-Saturn
+  'Moon-Saturn|conjunction': {
+    feel: 'Emotional gravity; this relationship feels serious and fated from the start.',
+    detail: 'Saturn sits directly on the Moon\'s emotional core, which can feel like safety or suppression depending on how Saturn wields its authority. The Moon person often feels emotionally judged or held to a standard, while Saturn feels burdened with responsibility for the Moon\'s wellbeing. At its best, this builds a relationship of extraordinary loyalty and emotional resilience. At its worst, the Moon person\'s feelings are treated as inconvenient, and resentment crystallizes slowly.'
+  },
+  'Moon-Saturn|opposition': {
+    feel: 'One person carries the feelings while the other carries the rules; the imbalance is palpable.',
+    detail: 'The Moon person feels emotionally unsupported or criticized by Saturn\'s distance, while Saturn feels overwhelmed or destabilized by the Moon\'s emotional needs. This opposition often recreates parent-child dynamics in adult relationships. Maturity from both sides transforms it — Saturn learns that emotional availability is not weakness, and the Moon learns that structure is not rejection. Without that growth, one person always feels cold and the other always feels needy.'
+  },
+  'Moon-Saturn|trine': {
+    feel: 'Emotional steadiness and mutual trust built on quiet dependability.',
+    detail: 'Saturn supports the Moon\'s emotional life without crushing it, providing structure that feels protective rather than restrictive. The Moon softens Saturn\'s rigidity without threatening its need for order. This aspect is excellent for long-term partnerships because it favors loyalty, practical care, and emotional resilience through difficulty. It is not glamorous, but it is the kind of bond people build actual lives on.'
+  },
+  'Moon-Saturn|square': {
+    feel: 'Emotional needs clash with expectations of duty; guilt and coldness circulate between you.',
+    detail: 'The Moon person feels perpetually inadequate or emotionally stifled around Saturn, who may not even realize the effect of their criticism or withdrawal. Saturn feels that the Moon person is too sensitive or too dependent. This square tests whether both people can separate genuine accountability from emotional withholding. Growth is possible but requires Saturn to soften genuinely, not performatively, and the Moon to build internal security rather than seeking constant reassurance.'
+  },
+  'Moon-Saturn|sextile': {
+    feel: 'A grounding connection; emotional maturity develops naturally through the relationship.',
+    detail: 'The sextile offers a constructive channel between feeling and responsibility. Saturn helps the Moon person turn emotional awareness into practical action, and the Moon keeps Saturn from becoming purely transactional. This aspect favors partnerships where both people are willing to do real work — emotional, financial, domestic — without keeping score. It rewards effort and matures well over time.'
+  },
+
+  // Venus-Saturn
+  'Venus-Saturn|conjunction': {
+    feel: 'Love feels heavy and real; affection comes with a sense of obligation or permanence.',
+    detail: 'Saturn fuses with Venus, making the relationship feel consequential from the beginning. The Venus person may feel that their love is being tested or that they must earn Saturn\'s approval. Saturn takes the relationship seriously but can express devotion through duty rather than warmth. This works beautifully when Saturn relaxes its grip enough to let Venus enjoy the connection. It becomes painful when love feels like a contract with penalties for noncompliance.'
+  },
+  'Venus-Saturn|opposition': {
+    feel: 'Attraction and restriction pull in opposite directions; wanting closeness but fearing vulnerability.',
+    detail: 'Venus reaches for pleasure, beauty, and ease while Saturn demands proof, patience, and restraint. The Venus person feels rejected or undervalued; Saturn feels that Venus is frivolous or insufficiently committed. This opposition often plays out as hot-and-cold cycles. Resolution requires Saturn to show love without conditions attached and Venus to demonstrate that pleasure and loyalty are not mutually exclusive.'
+  },
+  'Venus-Saturn|trine': {
+    feel: 'Love deepens through shared commitment; affection and responsibility feel like the same thing.',
+    detail: 'Venus and Saturn in trine create a relationship where devotion has staying power. The Venus person appreciates Saturn\'s reliability as a form of love, and Saturn feels that Venus makes the effort worthwhile. Financial and aesthetic decisions tend to align. This is one of the strongest aspects for marriage or long-term partnership because both people value the same blend of warmth and structure.'
+  },
+  'Venus-Saturn|square': {
+    feel: 'Love feels tested; affection is present but blocked by fear, duty, or disapproval.',
+    detail: 'The Venus person feels they can never quite please Saturn or that their expressions of love are met with criticism. Saturn feels that Venus does not take the relationship seriously enough or prioritizes pleasure over responsibility. Money and values are frequent battlegrounds. The square demands that both partners examine whether their standards for love are realistic or whether they are using impossibly high bars as defense mechanisms.'
+  },
+  'Venus-Saturn|sextile': {
+    feel: 'A practical, steady affection that builds slowly and lasts.',
+    detail: 'The sextile between Venus and Saturn creates an opportunity for love to be both enjoyable and durable. Saturn provides just enough structure to keep Venus grounded, and Venus brings enough warmth to prevent Saturn from becoming purely functional. This aspect favors relationships that start as friendships or that develop through shared work. It is not dramatic, but it is reliable, and both people tend to feel that the partnership improves their lives in concrete ways.'
+  },
+
+  // Mars-Saturn
+  'Mars-Saturn|conjunction': {
+    feel: 'Willpower meets resistance; the relationship demands discipline and can feel like a pressure cooker.',
+    detail: 'Mars wants to act and Saturn wants to control the action. The Mars person may feel blocked, slowed down, or constantly corrected by Saturn, while Saturn feels that Mars is reckless or impatient. When both people are mature, this conjunction produces extraordinary joint accomplishment — the energy is focused like a laser. When they are not, frustration and resentment build until Mars explodes or Saturn shuts everything down.'
+  },
+  'Mars-Saturn|opposition': {
+    feel: 'One pushes, the other resists; the power struggle is exhausting unless channeled deliberately.',
+    detail: 'Mars and Saturn face off across the chart, creating a tug-of-war between action and caution. The Mars person feels perpetually blocked; Saturn feels perpetually threatened by Mars\'s intensity. In business partnerships this opposition can work if roles are clearly defined. In intimate relationships it requires both people to respect what the other brings — Mars provides momentum, Saturn provides durability — without trying to dominate the other\'s domain.'
+  },
+  'Mars-Saturn|trine': {
+    feel: 'Disciplined energy; you accomplish more together than either of you could alone.',
+    detail: 'Mars\'s drive flows naturally into Saturn\'s structure, creating a partnership that excels at sustained effort. The Mars person feels that Saturn helps them focus, and Saturn feels that Mars gives them the courage to act on their plans. Physical endurance and practical ambition are shared strengths. This aspect is exceptional for building something tangible — a business, a home, a shared goal — because neither person quits easily.'
+  },
+  'Mars-Saturn|square': {
+    feel: 'Constant friction between go and stop; anger and control become recurring themes.',
+    detail: 'Mars feels chronically frustrated by Saturn\'s limitations, and Saturn feels threatened by Mars\'s aggression or impulsiveness. Timing is always off — when one wants to move, the other wants to wait. This square can produce significant conflict around authority, sex, and shared goals. It demands that both people develop patience with fundamentally different rhythms. Without conscious effort, it creates a dynamic where one person dominates and the other seethes.'
+  },
+  'Mars-Saturn|sextile': {
+    feel: 'Productive tension; you challenge each other toward greater discipline and effectiveness.',
+    detail: 'The sextile provides a constructive link between ambition and patience. Mars learns to plan before acting, and Saturn learns to act instead of endlessly planning. Shared physical or professional goals give this aspect its best expression. It is not the most dramatic connection, but it is one of the most useful — both people tend to feel that the other makes them more competent and more effective in the world.'
+  },
+
+  // Sun-Saturn
+  'Sun-Saturn|conjunction': {
+    feel: 'The relationship feels defining; one person\'s identity is shaped — or shadowed — by the other\'s authority.',
+    detail: 'Saturn sits on the Sun person\'s core self, which can feel like being given a backbone or having one imposed. The Sun person may feel tested, matured, or diminished depending on how Saturn exercises its weight. Saturn often takes on a mentor or authority role, which works until the Sun person needs to outgrow it. This aspect builds resilient partnerships when Saturn respects the Sun\'s autonomy and the Sun respects Saturn\'s wisdom without surrendering selfhood.'
+  },
+  'Sun-Saturn|opposition': {
+    feel: 'Identity and authority face off; one person feels judged while the other feels unappreciated.',
+    detail: 'The Sun person experiences Saturn as critical, withholding, or overly controlling, while Saturn sees the Sun person as self-centered or insufficiently responsible. Father-figure dynamics often surface regardless of gender. The opposition is workable when both people acknowledge the projection — Saturn sees its own unlived vitality in the Sun, and the Sun sees its own fear of inadequacy in Saturn. Without that awareness, the relationship becomes a courtroom.'
+  },
+  'Sun-Saturn|trine': {
+    feel: 'Mutual respect grounded in shared seriousness; you make each other more capable.',
+    detail: 'Saturn supports the Sun\'s identity and goals with practical backing, and the Sun gives Saturn a sense of purpose and warmth. This trine is one of the most reliable indicators of long-term partnership viability because both people feel that the other helps them become more real. Ambition, responsibility, and personal integrity align. It ages well — the relationship gains authority and depth over time rather than losing steam.'
+  },
+  'Sun-Saturn|square': {
+    feel: 'Identity feels constrained; one person\'s self-expression keeps running into the other\'s limits.',
+    detail: 'The Sun person feels that Saturn criticizes or suppresses who they are, and Saturn feels that the Sun person is irresponsible or self-indulgent. This square creates a dynamic where approval must be earned and is rarely given freely. Growth requires Saturn to examine whether its standards are genuine wisdom or control disguised as concern, and the Sun person to consider whether its resistance to structure is freedom or avoidance of accountability.'
+  },
+  'Sun-Saturn|sextile': {
+    feel: 'A stabilizing influence; both people feel more grounded and purposeful in the relationship.',
+    detail: 'The sextile creates a practical link between identity and responsibility. Saturn helps the Sun person turn intentions into results, and the Sun gives Saturn enough warmth to stay engaged rather than retreating into isolation. This aspect favors mentorship, professional collaboration, and partnerships where both people are working toward something concrete. It is not flashy, but it gives the relationship a functional backbone.'
+  },
+
+  // Sun-Jupiter
+  'Sun-Jupiter|conjunction': {
+    feel: 'Expansive optimism and mutual admiration; being together makes everything feel more possible.',
+    detail: 'Jupiter amplifies the Sun person\'s identity, making them feel larger, more confident, and more generous. The Sun gives Jupiter a focal point for its expansive energy. Together they tend toward big plans, big spending, and big faith in each other. The risk is inflation — promising more than either can deliver, enabling excess, or substituting enthusiasm for substance. This works best when both people channel the buoyancy into something real.'
+  },
+  'Sun-Jupiter|opposition': {
+    feel: 'Mutual inspiration that can tip into overreach; you push each other to grow but sometimes too far.',
+    detail: 'The Sun person feels that Jupiter is either the most generous or the most excessive influence in their life, depending on the day. Jupiter sees the Sun as either a worthy vessel for its vision or a limiting focal point. The opposition creates philosophical and cultural tension — beliefs, values, and life direction become points of negotiation. It works when both people can expand without losing center. It falters when growth becomes competitive.'
+  },
+  'Sun-Jupiter|trine': {
+    feel: 'Natural good fortune together; optimism and mutual support flow without effort.',
+    detail: 'Jupiter and the Sun in trine create a partnership that feels lucky. The Sun person\'s confidence is reinforced by Jupiter\'s generosity, and Jupiter feels that the Sun person makes its ideals tangible. Shared adventures, education, and philosophical alignment come easily. The only danger is taking the ease for granted or becoming complacent because things come so readily. This aspect is a genuine gift — use it for something meaningful, not just comfort.'
+  },
+  'Sun-Jupiter|square': {
+    feel: 'Restless expansion; you inspire each other but also push each other into overcommitment.',
+    detail: 'Jupiter inflates the Sun person\'s ambitions past the point of realism, and the Sun provokes Jupiter into promises it cannot keep. Disagreements about beliefs, risk tolerance, or lifestyle are common. The square generates enormous energy that must be directed or it becomes wasteful. Both people need to learn the difference between growth and excess. When they do, this aspect fuels remarkable shared achievements. When they don\'t, it fuels remarkable shared debts.'
+  },
+  'Sun-Jupiter|sextile': {
+    feel: 'Friendly encouragement and shared enthusiasm; you bring out each other\'s confidence.',
+    detail: 'The sextile offers a gentle boost — Jupiter supports the Sun person\'s goals and the Sun gives Jupiter a constructive outlet. This aspect favors learning together, traveling together, and building a shared philosophy of life. It is not as dramatic as the conjunction or square, but it is more sustainable. Both people tend to feel that the relationship makes them slightly better, slightly braver, and slightly more generous than they would be alone.'
+  },
+
+  // Moon-Jupiter
+  'Moon-Jupiter|conjunction': {
+    feel: 'Emotional abundance; feelings are big, generosity is instinctive, and comfort comes easily.',
+    detail: 'Jupiter expands the Moon\'s emotional world, making the Moon person feel safe enough to be fully themselves. The Moon gives Jupiter emotional depth that prevents its optimism from becoming shallow. Together they create an atmosphere of warmth and hospitality. The danger is emotional overindulgence — avoiding hard conversations in favor of keeping things pleasant, or using generosity to sidestep genuine intimacy. Honesty must accompany the warmth.'
+  },
+  'Moon-Jupiter|opposition': {
+    feel: 'Emotional generosity pulls against emotional honesty; the mood swings between expansive and excessive.',
+    detail: 'The Moon person feels that Jupiter is sometimes wonderfully supportive and sometimes dismissive of real emotional concerns through forced positivity. Jupiter feels that the Moon\'s emotional needs are a drag on its enthusiasm. The opposition requires both people to honor emotional reality without drowning in it. Jupiter must learn that not every difficult feeling needs a silver lining, and the Moon must allow Jupiter\'s optimism to coexist with its sensitivity.'
+  },
+  'Moon-Jupiter|trine': {
+    feel: 'Natural emotional generosity and a shared sense that life is fundamentally good.',
+    detail: 'The Moon and Jupiter operate in easy harmony, creating a relationship where emotional support and philosophical alignment reinforce each other. The Moon person feels uplifted without being invalidated, and Jupiter feels emotionally grounded without being weighed down. Family life, domestic comfort, and shared values tend to align. This is one of the most pleasant synastry aspects to live with day to day — it provides resilience through genuine mutual care.'
+  },
+  'Moon-Jupiter|square': {
+    feel: 'Emotional excess; feelings and expectations inflate past what the relationship can realistically deliver.',
+    detail: 'Jupiter overpromises to the Moon person, and the Moon\'s emotional needs can feel bottomless to Jupiter. Expectations are consistently mismatched — one person wants more emotional depth, the other wants more freedom or adventure. The square generates emotional restlessness that must be addressed honestly. Both people need to scale their expectations to reality without cynicism. Unchecked, this aspect produces a cycle of emotional inflation and disappointment.'
+  },
+  'Moon-Jupiter|sextile': {
+    feel: 'Quiet emotional encouragement; you lift each other\'s spirits in practical, consistent ways.',
+    detail: 'The sextile provides a reliable channel for emotional support without excess. Jupiter helps the Moon person see beyond immediate emotional reactions, and the Moon gives Jupiter a genuine emotional connection that keeps its generosity from becoming performative. This aspect favors shared domestic contentment, modest adventures, and a relationship philosophy that values steady kindness over grand gestures.'
+  },
+
+  // Mars-Jupiter
+  'Mars-Jupiter|conjunction': {
+    feel: 'Shared boldness and physical vitality; together you feel unstoppable.',
+    detail: 'Jupiter amplifies Mars\'s drive, creating a partnership defined by action, ambition, and appetite for experience. The Mars person feels emboldened and the Jupiter person feels energized. Adventures, competitive activities, and shared goals come naturally. The risk is recklessness — neither person is inclined to pump the brakes, so impulsive decisions about money, risk, or confrontation can escalate fast. A shared sense of ethics keeps this conjunction constructive.'
+  },
+  'Mars-Jupiter|opposition': {
+    feel: 'Competing drives toward action and meaning; one charges ahead while the other questions the direction.',
+    detail: 'Mars wants to act now and Jupiter wants to act meaningfully, which creates tension about pacing and purpose. The Mars person finds Jupiter preachy or unfocused; Jupiter finds Mars crude or short-sighted. The opposition is powerful for partnerships where both people have clearly defined roles — Mars executes, Jupiter strategizes. Without that clarity, they argue about whether to do the thing or think about the thing until the opportunity passes.'
+  },
+  'Mars-Jupiter|trine': {
+    feel: 'Energetic harmony; shared enthusiasm and physical compatibility flow naturally.',
+    detail: 'Mars and Jupiter in trine create a partnership with abundant energy and shared direction. The Mars person\'s initiative is supported by Jupiter\'s vision, and Jupiter\'s ideals are given force by Mars\'s willingness to act. Physical chemistry is lively and generous. This aspect is excellent for couples who travel, compete, or build together — shared activity is the glue. It favors an active, outward-facing relationship where both people push each other to do more and be braver.'
+  },
+  'Mars-Jupiter|square': {
+    feel: 'Restless ambition and overreach; you amplify each other\'s impulses for better and worse.',
+    detail: 'Mars\'s aggression is inflated by Jupiter\'s excess, creating a dynamic where conflicts escalate quickly and risks are taken without adequate forethought. Both people feel that the other eggs them on and then fails to follow through. Arguments about philosophy, ethics, or the right course of action are common. This square produces enormous energy that needs a constructive outlet. Physical activity, shared projects, or competitive pursuits channel it well. Idle, it turns destructive.'
+  },
+  'Mars-Jupiter|sextile': {
+    feel: 'Mutual encouragement toward action; you make each other braver without making each other reckless.',
+    detail: 'The sextile provides a moderate, constructive link between drive and optimism. Mars feels that Jupiter supports its ambitions, and Jupiter feels that Mars gives its ideas real-world traction. This aspect is best activated through shared activities — exercise, travel, learning, or professional collaboration. It does not generate the intensity of harder aspects, but it provides a sustainable source of shared vitality that keeps the relationship from stagnating.'
+  },
+
+  // Sun-Neptune
+  'Sun-Neptune|conjunction': {
+    feel: 'The other person seems magical, transcendent, or impossible to fully know.',
+    detail: 'Neptune dissolves the Sun person\'s boundaries, which can feel like spiritual merging or identity erosion depending on the health of both people. The Sun person may feel idealized beyond recognition by Neptune, while Neptune may lose themselves in the Sun person\'s identity. This conjunction is potent for creative and spiritual partnerships. It is dangerous when one person needs the other to remain a fantasy rather than becoming a real person with flaws.'
+  },
+  'Sun-Neptune|opposition': {
+    feel: 'Fascination and confusion alternate; you see something transcendent in each other that may or may not be real.',
+    detail: 'The Sun person experiences Neptune as either deeply inspiring or fundamentally dishonest, sometimes both at once. Neptune sees the Sun person as either a beacon of clarity or painfully mundane. The opposition demands radical honesty — both people must be willing to see each other as they actually are, not as they wish each other to be. Deception thrives in this aspect, whether mutual, one-sided, or self-directed. Truth is the only antidote.'
+  },
+  'Sun-Neptune|trine': {
+    feel: 'A natural spiritual and creative rapport; you understand each other beyond words.',
+    detail: 'Neptune supports the Sun person\'s identity with imagination, empathy, and a sense of the transcendent. The Sun grounds Neptune\'s visions without dismissing them. Shared creative or spiritual practices strengthen this bond immeasurably. The trine makes the connection feel effortless, but both people must still verify that their perceptions of each other are grounded in reality. Even harmonious Neptune aspects can sustain beautiful illusions for years.'
+  },
+  'Sun-Neptune|square': {
+    feel: 'Chronic misunderstanding; one person feels unseen while the other feels deceived.',
+    detail: 'Neptune clouds the Sun person\'s self-perception within the relationship, creating confusion about roles, promises, and intentions. The Sun person may feel that Neptune is evasive or dishonest; Neptune may feel that the Sun person is insensitive to subtlety. This square is where idealization turns to disillusionment most sharply. Both people must commit to painful clarity over comfortable vagueness. Addictive or codependent patterns are common if this aspect goes unexamined.'
+  },
+  'Sun-Neptune|sextile': {
+    feel: 'Gentle inspiration; you bring out each other\'s imagination and compassion.',
+    detail: 'The sextile offers a constructive link between identity and transcendence. The Sun person feels that Neptune adds beauty and meaning to their life, and Neptune feels that the Sun person values their sensitivity. Creative collaboration, shared spiritual interests, and mutual compassion flow naturally. This aspect is mild enough to avoid Neptune\'s worst pitfalls while still providing its gifts — a sense of wonder and a willingness to see beyond the material.'
+  },
+
+  // Sun-Pluto
+  'Sun-Pluto|conjunction': {
+    feel: 'Immediate intensity; this person sees through you and you cannot look away.',
+    detail: 'Pluto fuses with the Sun person\'s identity, creating a bond defined by depth, power, and transformation. The Sun person feels exposed and fundamentally changed by the relationship; Pluto feels compelled to possess or transform the Sun. At its best this conjunction catalyzes genuine psychological growth. At its worst it creates a dynamic of obsession, control, and identity annihilation. The determining factor is whether both people can tolerate vulnerability without weaponizing it.'
+  },
+  'Sun-Pluto|opposition': {
+    feel: 'A power struggle wrapped in fascination; you are drawn to and threatened by each other equally.',
+    detail: 'The Sun person and Pluto person stand at opposite poles of a power axis, each holding something the other needs and fears. Projections of power, shadow, and desire run in both directions. The opposition can produce transformative partnerships if both people are willing to own their own darkness rather than projecting it onto the other. Without that willingness, it degenerates into manipulation, control battles, and cycles of crisis and reconciliation.'
+  },
+  'Sun-Pluto|trine': {
+    feel: 'Depth comes naturally; you empower each other without the destructive extremes.',
+    detail: 'Pluto supports the Sun person\'s self-expression with intensity and psychological insight, and the Sun gives Pluto a constructive focal point for its transformative energy. Trust builds through shared experiences of vulnerability. This trine is excellent for partnerships that need to weather genuine difficulty — both people have access to reserves of resilience. The ease of the trine means the depth does not destabilize the relationship the way harder Pluto aspects can.'
+  },
+  'Sun-Pluto|square': {
+    feel: 'Compulsive intensity; the relationship forces confrontation with power, control, and buried truth.',
+    detail: 'Pluto pressures the Sun person\'s identity at the point of greatest resistance, triggering ego battles and forced transformation. The Sun person feels controlled or undermined; Pluto feels that the Sun person refuses to go deep enough. Power dynamics dominate unless both people commit to radical self-honesty. This square can be profoundly growth-producing, but the growth comes through crisis, not comfort. Both must choose transformation over domination.'
+  },
+  'Sun-Pluto|sextile': {
+    feel: 'A steady undercurrent of depth and mutual empowerment.',
+    detail: 'The sextile provides access to Plutonian intensity in manageable doses. The Sun person feels that Pluto adds psychological richness to their self-understanding, and Pluto feels that the Sun person is worth investing in. Shared research, psychological exploration, and quiet acts of mutual support activate this aspect. It lacks the dramatic intensity of the conjunction or square but provides lasting depth that strengthens the partnership incrementally.'
+  },
+
+  // Moon-Neptune
+  'Moon-Neptune|conjunction': {
+    feel: 'Psychic-level emotional sensitivity; you absorb each other\'s feelings without trying.',
+    detail: 'Neptune dissolves the Moon\'s emotional boundaries, creating a bond that can feel telepathic. The Moon person feels profoundly understood at a soul level, while Neptune feels emotionally merged. Shared dreams, artistic sensibility, and spiritual intuition are amplified. The danger is that neither person can tell whose feelings are whose. Codependency, escapism, and emotional confusion thrive here unless both people maintain separate inner lives and honest communication about what they actually feel versus what they imagine.'
+  },
+  'Moon-Neptune|opposition': {
+    feel: 'Deep emotional longing and confusion; you feel everything for each other but trust little of it.',
+    detail: 'The Moon person\'s emotional needs are reflected back by Neptune in a distorted mirror — the feelings are real, but the perceptions are unreliable. Neptune may unconsciously deceive or disappoint the Moon person by being whatever they seem to want. The Moon may project emotional fantasies onto Neptune that no human can fulfill. This opposition requires both people to prioritize honest emotional communication over mystical connection. What feels spiritual may simply be unexamined.'
+  },
+  'Moon-Neptune|trine': {
+    feel: 'Intuitive emotional connection; empathy and spiritual sensitivity flow between you effortlessly.',
+    detail: 'The Moon and Neptune operate in natural harmony, creating a relationship rich in emotional attunement, compassion, and shared imagination. The Moon person feels that Neptune understands their inner world without explanation, and Neptune feels emotionally safe enough to drop its defenses. Creative and spiritual activities deepen the bond. The trine is gentle enough to avoid Neptune\'s worst tendencies, but both people should still periodically reality-check their perceptions of each other.'
+  },
+  'Moon-Neptune|square': {
+    feel: 'Emotional fog; genuine care coexists with chronic misunderstanding and unspoken disappointment.',
+    detail: 'Neptune undermines the Moon person\'s emotional security through vagueness, broken promises, or well-intentioned dishonesty. The Moon person feels that they can never get a straight emotional answer from Neptune, while Neptune feels emotionally overwhelmed or unfairly accused. Addiction, martyrdom, and victim-savior dynamics are common expressions. The square demands that both people learn to be emotionally honest even when the truth is less beautiful than the fantasy.'
+  },
+  'Moon-Neptune|sextile': {
+    feel: 'Gentle emotional-spiritual rapport; you sense each other\'s moods and offer quiet comfort.',
+    detail: 'The sextile provides a mild but real connection between emotional depth and spiritual sensitivity. The Moon person feels that Neptune adds a layer of meaning and beauty to their emotional life, and Neptune feels that the Moon provides genuine emotional grounding. Shared creative, musical, or contemplative practices strengthen this bond. It avoids the confusion of harder Neptune aspects while preserving the gift of unusual empathy and imaginative emotional connection.'
+  },
+
+  // Moon-Pluto
+  'Moon-Pluto|conjunction': {
+    feel: 'Emotional intensity that borders on overwhelming; feelings are volcanic and impossible to ignore.',
+    detail: 'Pluto sits directly on the Moon\'s emotional core, dredging up the deepest feelings, fears, and attachment patterns. The Moon person feels emotionally consumed — seen to the bone and sometimes controlled. Pluto feels compelled to possess the Moon person\'s emotional world entirely. This conjunction creates bonds of extraordinary depth and equally extraordinary difficulty. It demands complete emotional honesty and a willingness to face the darkest parts of oneself. Half-measures do not survive here.'
+  },
+  'Moon-Pluto|opposition': {
+    feel: 'Emotional power struggle; vulnerability and control alternate in a relentless cycle.',
+    detail: 'The Moon person\'s emotional openness triggers Pluto\'s need to control, and Pluto\'s intensity triggers the Moon\'s deepest survival instincts. Jealousy, possessiveness, and emotional manipulation are the shadow expressions. The opposition polarizes the partnership into one who feels and one who controls. Resolution requires both people to sit with emotional discomfort without trying to dominate it. Couples therapy is not a sign of failure with this aspect — it is basic maintenance.'
+  },
+  'Moon-Pluto|trine': {
+    feel: 'Deep emotional trust; you can share your darkest truths and feel held rather than judged.',
+    detail: 'Pluto supports the Moon\'s emotional world with intensity that strengthens rather than destabilizes. The Moon person feels safe enough to explore their own psychological depths, and Pluto feels emotionally nourished by the Moon\'s willingness to go deep. Shared experiences of loss, crisis, or transformation bond this pair profoundly. This trine creates emotional resilience that carries the relationship through difficulties that would end less deeply rooted partnerships.'
+  },
+  'Moon-Pluto|square': {
+    feel: 'Emotional compulsion; the bond is addictive, transformative, and frequently painful.',
+    detail: 'Pluto pressures the Moon at its most vulnerable point, triggering emotional crises that force both people to confront patterns they would rather avoid. The Moon person feels emotionally manipulated or obsessively attached; Pluto feels that the Moon\'s emotional reactions are threats that must be managed. This square produces the most intense emotional dynamics in synastry. It can catalyze profound psychological healing if both people do their own inner work. Without that, it produces trauma bonds.'
+  },
+  'Moon-Pluto|sextile': {
+    feel: 'Emotional depth that enriches without overwhelming; you help each other process difficult feelings.',
+    detail: 'The sextile provides access to Plutonian emotional intensity in a manageable form. The Moon person feels that Pluto helps them understand their own emotional patterns, and Pluto feels that the Moon provides a safe space for vulnerability. Shared conversations about psychology, family history, and emotional truth activate this aspect. It lacks the compulsive quality of harder Moon-Pluto contacts while preserving the capacity for genuine emotional transformation.'
+  },
+
+  // Venus-Neptune
+  'Venus-Neptune|conjunction': {
+    feel: 'Romantic enchantment; love feels like a dream, a poem, or a work of art.',
+    detail: 'Neptune dissolves Venus\'s boundaries, creating a love that feels transcendent and otherworldly. The Venus person feels that they have found their soul\'s romantic ideal; Neptune feels worshipped and inspired. Artistic and spiritual connection is profound. The danger is that the relationship exists more in fantasy than in reality — when the dream fades, disillusionment can be devastating. Both people must build a relationship that survives the loss of its own mythology.'
+  },
+  'Venus-Neptune|opposition': {
+    feel: 'Romantic longing and confusion; you are in love with an image of each other that keeps shifting.',
+    detail: 'Venus reaches for a love that Neptune keeps making beautiful and ungraspable. The Venus person feels alternately enchanted and betrayed; Neptune feels alternately adored and unseen. Financial deception or confusion is common alongside the romantic fog. This opposition requires both people to choose a real relationship over a beautiful illusion. The love can survive disillusionment, but only if both partners value truth as much as they value the fantasy.'
+  },
+  'Venus-Neptune|trine': {
+    feel: 'Effortless romantic and creative harmony; love is tender, imaginative, and quietly transcendent.',
+    detail: 'Neptune supports Venus with beauty, compassion, and spiritual depth, creating a love that feels genuinely inspired. The Venus person feels that Neptune adds poetry to their life, and Neptune feels that Venus appreciates their sensitivity. Shared artistic, musical, or spiritual pursuits are the highest expression. The trine is gentle enough that the Neptunian fog rarely becomes toxic, but periodic reality checks keep the relationship from drifting into comfortable delusion.'
+  },
+  'Venus-Neptune|square': {
+    feel: 'Love is beautiful and unreliable; promises dissolve and expectations are chronically unmet.',
+    detail: 'Neptune undermines Venus\'s values and relationship expectations through idealization followed by disappointment. The Venus person feels deceived or abandoned; Neptune feels that Venus is materialistic or fails to appreciate the spiritual dimension. Affairs, addiction, and financial confusion are the shadow side. This square requires brutal romantic honesty — not cruelty, but clarity about what each person can actually offer versus what they wish they could offer.'
+  },
+  'Venus-Neptune|sextile': {
+    feel: 'A soft romantic and creative connection that adds beauty without distorting reality.',
+    detail: 'The sextile provides a gentle channel between love and imagination. Venus feels that Neptune adds a layer of magic and artistic sensitivity to the relationship, and Neptune feels that Venus values their vision. Shared aesthetic pleasures, gentle romantic gestures, and creative collaboration thrive. This aspect avoids the worst of Neptunian deception while preserving its gifts — a sense that love can be both real and beautiful.'
+  },
+
+  // Venus-Pluto
+  'Venus-Pluto|conjunction': {
+    feel: 'Obsessive, consuming attraction; love and desire merge into something that feels fated and dangerous.',
+    detail: 'Pluto transforms Venus\'s experience of love into something raw and total. The Venus person feels magnetically drawn to Pluto in a way that bypasses rational choice; Pluto feels compelled to possess Venus entirely. Sexual intensity is extreme. Jealousy, power games, and emotional manipulation are the shadow side. This conjunction produces the kind of love people rearrange their lives for — whether that rearrangement is liberation or destruction depends entirely on the psychological maturity of both parties.'
+  },
+  'Venus-Pluto|opposition': {
+    feel: 'Magnetic attraction and power struggle in equal measure; desire and control are indistinguishable.',
+    detail: 'Venus and Pluto face each other across an axis of desire and power, each holding what the other craves and fears. The Venus person feels both irresistibly drawn to and threatened by Pluto\'s intensity; Pluto feels that Venus holds the power to accept or reject them absolutely. Financial and sexual control issues are common. The opposition can become a genuinely transformative partnership if both people commit to equality, or a genuinely destructive one if either pursues domination.'
+  },
+  'Venus-Pluto|trine': {
+    feel: 'Deep, passionate love with an undercurrent of intensity that strengthens rather than destabilizes.',
+    detail: 'Pluto supports Venus with transformative depth, creating a love that is emotionally rich, sexually alive, and psychologically honest. The Venus person feels that Pluto sees and desires the real them, not a surface version. Pluto feels that Venus makes vulnerability worthwhile. This trine is one of the strongest indicators of a relationship with lasting sexual and emotional depth. It weathers difficulty well because both people have access to the relationship\'s reserves of genuine intimacy.'
+  },
+  'Venus-Pluto|square': {
+    feel: 'Obsessive attraction that reveals and aggravates every insecurity around love, worth, and control.',
+    detail: 'Pluto pressures Venus at the point of deepest romantic vulnerability, triggering jealousy, possessiveness, and compulsive attachment. The Venus person feels that their worth is constantly being tested; Pluto feels that Venus is never fully committed. Power plays around sex, money, and loyalty dominate. This square forces both people to confront their deepest fears about love. The transformation is real but comes at a price — both must be willing to be broken open rather than breaking each other.'
+  },
+  'Venus-Pluto|sextile': {
+    feel: 'Quiet intensity; love has depth and psychological honesty without the compulsive extremes.',
+    detail: 'The sextile provides a manageable channel for Plutonian intensity in the love relationship. Venus feels that Pluto adds richness and meaning to their romantic life, and Pluto feels that Venus is worth opening up for. Shared intimacy deepens gradually through honest conversation and genuine vulnerability. This aspect lacks the dramatic compulsion of harder Venus-Pluto contacts but provides lasting depth that makes the relationship feel substantial and irreplaceable.'
+  },
+
+  // Mars-Pluto
+  'Mars-Pluto|conjunction': {
+    feel: 'Raw, primal intensity; the combination of willpower is either unstoppable or mutually annihilating.',
+    detail: 'Mars and Pluto fuse their drives, creating a partnership defined by extreme ambition, sexual intensity, and power. The Mars person feels supercharged but also controlled; Pluto feels both empowered and threatened by Mars\'s directness. Together they can move mountains or destroy each other trying. Physical and sexual energy is off the charts. This conjunction demands absolute honesty about power dynamics. If either person uses force — physical, emotional, or psychological — the damage is severe and lasting.'
+  },
+  'Mars-Pluto|opposition': {
+    feel: 'A confrontation of raw wills; dominance and submission are constant undercurrents.',
+    detail: 'Mars and Pluto face off in a power dynamic that affects every dimension of the relationship — sex, money, decisions, and daily life. The Mars person feels that Pluto manipulates from the shadows; Pluto feels that Mars is blunt and unstrategic. The opposition demands that both people examine their relationship to power honestly. Competition and control battles are inevitable without conscious effort. When both people can own their aggression without projecting, this aspect produces a partnership of extraordinary shared force.'
+  },
+  'Mars-Pluto|trine': {
+    feel: 'Effortless shared power; you amplify each other\'s strength and ambition without the destructive edge.',
+    detail: 'Mars\'s drive flows naturally into Pluto\'s depth, creating a partnership with unusual reserves of energy, resilience, and strategic capability. The Mars person feels empowered rather than controlled by Pluto, and Pluto feels that Mars is a worthy ally rather than a threat. Sexual compatibility is intense and sustaining. This trine is exceptional for partnerships that face real adversity — both people bring courage and staying power that compounds rather than cancels.'
+  },
+  'Mars-Pluto|square': {
+    feel: 'Explosive power dynamics; the intensity is addictive and the conflicts can become dangerous.',
+    detail: 'Mars and Pluto in square create the most volatile power dynamic in synastry. Both people feel compelled to dominate, and neither backs down easily. Sexual intensity is extreme but can blur into aggression. Control battles escalate rapidly and can become physically or psychologically unsafe if boundaries are not maintained. This square demands more self-awareness than most people have at the start of a relationship. Professional support is not optional — it is necessary. The transformation potential is real, but so is the destruction potential.'
+  },
+  'Mars-Pluto|sextile': {
+    feel: 'Shared determination and quiet intensity; you strengthen each other\'s capacity to act with purpose.',
+    detail: 'The sextile provides a constructive channel between Mars\'s initiative and Pluto\'s transformative power. The Mars person feels that Pluto helps them focus their energy on what truly matters, and Pluto feels that Mars provides the courage to act on deep convictions. Shared goals, physical challenges, and strategic collaboration activate this aspect. It provides the depth and power of Mars-Pluto contacts without the compulsive intensity that makes harder aspects so difficult to manage.'
+  },
 };
 
 function getSynastryInterpretation(key, aspect) {
@@ -7019,11 +7479,15 @@ function getSynastryInterpretation(key, aspect) {
   const revKey = `${pB}-${pA}|${aspect.aspect}`;
   if (SYNASTRY_VOICE[revKey]) return SYNASTRY_VOICE[revKey];
 
-  // Fallback generic
-  return {
-    feel: `A ${aspect.aspect} aspect between ${aspect.pA} and ${aspect.pB}.`,
-    detail: `This ${aspect.type} aspect suggests ${aspect.type === 'easy' ? 'harmony and support' : 'tension and growth potential'} between these planetary energies in the synastry chart.`
-  };
+  // Better fallback: compose from existing voice databases
+  const tvA = TRANSIT_VOICE[aspect.pA] || {};
+  const tvB = TRANSIT_VOICE[aspect.pB] || {};
+  const av = ASPECT_VOICE[aspect.aspect] || {};
+
+  const feel = av.feel ? `${av.feel} — ${(tvA.theme || aspect.pA).toLowerCase()} meets ${(tvB.theme || aspect.pB).toLowerCase()}.` : `A ${aspect.aspect} between these planets.`;
+  const detail = `${aspect.pA} (${tvA.theme || 'one energy'}) meets ${aspect.pB} (${tvB.theme || 'another energy'}) through a ${aspect.aspect}. ${av.desc || ''} In synastry, this means one person's ${(tvA.theme || '').toLowerCase()} activates the other's ${(tvB.theme || '').toLowerCase()}, creating ${aspect.type === 'easy' ? 'natural flow and mutual support' : 'friction that demands conscious work from both people'}.`;
+
+  return { feel, detail };
 }
 
 // ============================================================================
@@ -7042,8 +7506,15 @@ function renderSynastryTab() {
   h += `</div>`;
 
   if (savedCharts.length <= 1) {
-    h += `<div style="padding:0 16px 20px">
-      <p style="color:var(--text2);font-size:0.85rem;line-height:1.5;margin-bottom:16px">To get started, add someone you want to compare charts with. You will need their birth date, approximate birth time, and birth city.</p>
+    h += `<div style="padding:20px 16px 30px;text-align:center">
+      <svg width="120" height="80" viewBox="0 0 120 80" style="margin-bottom:14px;opacity:.7">
+        <circle cx="45" cy="40" r="28" fill="none" stroke="var(--gold)" stroke-width="1.5" opacity=".5"/>
+        <circle cx="75" cy="40" r="28" fill="none" stroke="var(--azure)" stroke-width="1.5" opacity=".5"/>
+        <path d="M60,18 A28,28 0 0,1 60,62 A28,28 0 0,1 60,18Z" fill="rgba(212,168,67,.08)"/>
+        <circle cx="45" cy="40" r="2" fill="var(--gold)" opacity=".6"/>
+        <circle cx="75" cy="40" r="2" fill="var(--azure)" opacity=".6"/>
+      </svg>
+      <p style="color:var(--text2);font-size:var(--fs-body);line-height:1.5;margin-bottom:16px;max-width:280px;margin-left:auto;margin-right:auto">Add someone to compare charts with. You will need their birth date, approximate birth time, and birth city.</p>
       <button class="add-chart-btn" onclick="showChartForm=true; editingChartId=null; renderApp();">Add Person</button>
     </div>`;
     return h;
@@ -7091,7 +7562,7 @@ function renderSynastryTab() {
       h += `<span><span class="biwheel-legend-dot" style="background:var(--azure)"></span>${chartB.name} (inner)</span>`;
       h += `</div>`;
       h += `<div class="biwheel-container">`;
-      h += renderSynastryWheel(natalA, housesA, natalB, housesB, synAspects, wheelSize);
+      h += renderSynastryWheel(natalA, housesA, natalB, housesB, synAspects, wheelSize, chartA.name, chartB.name);
       h += `</div>`;
       h += `<div class="biwheel-hint">Lines between planets show aspects. Green = harmony, red = tension.</div>`;
       h += `</div>`;
@@ -7141,7 +7612,7 @@ function renderSynastryTab() {
       h += `<div class="sgrid-val">${signName(natalB.Ascendant)} ${signDeg(natalB.Ascendant)}°</div>`;
       h += `</div>`;
       // Composite Moon
-      const compMoonLon = ((natalA.Moon + natalB.Moon) / 2);
+      const compMoonLon = shortArcMidpoint(natalA.Moon, natalB.Moon);
       const compMoonSign = signName(compMoonLon);
       h += `<div class="composite-moon">`;
       h += `<div style="font-size:var(--fs-label);color:var(--text3);letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px">Composite Moon</div>`;
@@ -7179,11 +7650,14 @@ function renderSynastryTab() {
         const sortedAsp = [...synAspects].sort((a,b) => parseFloat(a.orbActual) - parseFloat(b.orbActual));
         for (const asp of sortedAsp) {
           const aspColor = asp.type === 'easy' ? 'var(--emerald)' : 'var(--crimson)';
-          h += `<div class="syn-asp-item" onclick="synExpanded='${asp.pA}-${asp.pB}';renderApp();">`;
+          const orbVal = parseFloat(asp.orbActual);
+          const aspOpacity = orbVal < 2 ? '1' : orbVal < 4 ? '.85' : '.6';
+          const aspWeight = orbVal < 2 ? '600' : '400';
+          h += `<div class="syn-asp-item" style="opacity:${aspOpacity}" onclick="synExpanded='${asp.pA}-${asp.pB}';renderApp();">`;
           h += pSVG(asp.pA, 14, 'var(--gold)');
           h += aSVG(asp.aspect, 12, aspColor);
           h += pSVG(asp.pB, 14, 'var(--azure)');
-          h += `<span style="font-size:var(--fs-body);color:var(--text)">${asp.pA} ${asp.aspect} ${asp.pB}</span>`;
+          h += `<span style="font-size:var(--fs-body);color:var(--text);font-weight:${aspWeight}">${asp.pA} ${asp.aspect} ${asp.pB}</span>`;
           h += `<span style="font-size:var(--fs-label);color:var(--text3);margin-left:auto">${asp.orbActual}°</span>`;
           h += `</div>`;
         }
@@ -7254,20 +7728,72 @@ function renderSynastryTab() {
       h += elDescriptions[traditional.elementBalance] || 'A blend of elemental energies.';
       h += `</div></div>`;
 
-      // House overlays
+      // 7th house ruler
+      if (traditional.ruler7thA || traditional.ruler7thB) {
+        h += `<div class="indicator-item">`;
+        h += `<div class="indicator-label">${pSVG('Venus',14,'var(--azure)')} 7th House Ruler</div>`;
+        h += `<div style="font-size:var(--fs-body);color:var(--text);line-height:1.6">`;
+        if (traditional.ruler7thA) {
+          h += `Your 7th house ruler (${pSVG(traditional.ruler7thA.ruler,13,'var(--gold)')}&nbsp;${traditional.ruler7thA.ruler}) falls in ${chartB.name}'s <strong>House ${traditional.ruler7thA.houseInB}</strong> — your partnership instinct activates that area of their life.<br>`;
+        }
+        if (traditional.ruler7thB) {
+          h += `${chartB.name}'s 7th house ruler (${pSVG(traditional.ruler7thB.ruler,13,'var(--azure)')}&nbsp;${traditional.ruler7thB.ruler}) falls in your <strong>House ${traditional.ruler7thB.houseInA}</strong> — their partnership instinct activates that area of your life.`;
+        }
+        h += `</div></div>`;
+      }
+
+      // Sect compatibility
+      if (traditional.sectA && traditional.sectB) {
+        h += `<div class="indicator-item">`;
+        h += `<div class="indicator-label">${pSVG('Sun',14,'var(--gold)')} ${pSVG('Moon',14,'var(--pearl)')} Sect</div>`;
+        h += `<div style="font-size:var(--fs-body);color:var(--text);line-height:1.6">`;
+        const sectLabel = s => s === 'diurnal' ? 'Day (Sun sect)' : 'Night (Moon sect)';
+        if (traditional.sectMatch) {
+          h += `<span style="color:var(--emerald);font-weight:600">Same sect</span> — both ${sectLabel(traditional.sectA)}. `;
+          h += `You share the same fundamental orientation to the world. Day charts lead with clarity and action; night charts lead with intuition and receptivity. Same-sect pairs often feel an instinctive kinship in how they approach life.`;
+        } else {
+          h += `<span style="color:var(--gold);font-weight:600">Opposite sect</span> — ${sectLabel(traditional.sectA)} and ${sectLabel(traditional.sectB)}. `;
+          h += `You approach the world from different orientations — one leading with solar clarity, the other with lunar intuition. This creates complementary strengths when respected, and frustration when one style is treated as superior.`;
+        }
+        h += `</div></div>`;
+      }
+
+      // Mutual reception
+      if (traditional.receptions && traditional.receptions.length > 0) {
+        h += `<div class="indicator-item">`;
+        h += `<div class="indicator-label">Reception</div>`;
+        h += `<div style="font-size:var(--fs-body);color:var(--text);line-height:1.6">`;
+        for (const r of traditional.receptions) {
+          if (r.type === 'mutual') {
+            h += `${pSVG(r.pA,13,'var(--gold)')}&nbsp;${r.pA} and ${pSVG(r.pB,13,'var(--azure)')}&nbsp;${r.pB}: <span style="color:var(--emerald);font-weight:600">Mutual reception</span> — each planet occupies a sign the other rules, creating a hidden bond of cooperation and exchange.<br>`;
+          } else {
+            h += `${pSVG(r.guest,13,'var(--azure)')}&nbsp;${r.guest} in ${r.sign}: <span style="color:var(--gold)">Received</span> by ${pSVG(r.host,13,'var(--gold)')}&nbsp;${r.host} — one person's planet is welcomed into the other's domain, strengthening that connection.<br>`;
+          }
+        }
+        h += `</div></div>`;
+      }
+
+      // House overlays with interpretations
       if (traditional.houseOverlays && traditional.houseOverlays.length > 0) {
+        const HOUSE_OVERLAY_VOICE = {
+          Sun: {1:'shapes how you see yourself — you feel more alive and defined',2:'affects your sense of self-worth and finances',3:'lights up your mind — conversation flows and ideas multiply',4:'feels like home — deep emotional familiarity',5:'ignites creativity, romance, and playfulness',6:'motivates daily improvements in health and routines',7:'naturally fits the partner role — feels fated',8:'intense and transformative — power dynamics and intimacy',9:'expands your worldview — travel and meaning-seeking',10:'affects career and public standing — power couple energy',11:'deep friendship foundation — shared hopes and social circles',12:'soul-level connection that feels both magical and elusive'},
+          Moon: {1:'triggers strong instinctive emotional reactions in you',2:'stirs feelings about security, comfort, and material needs',3:'creates emotional ease in daily communication',4:'deep domestic comfort — they feel like family',5:'nurtures your creative and romantic expression',6:'brings emotional awareness to your daily routines',7:'fulfills your emotional need for partnership',8:'reaches your deepest emotional vulnerabilities',9:'expands your emotional horizons and sense of meaning',10:'emotionally invests in your career and public role',11:'creates emotional bonds through shared community',12:'taps into your unconscious — dreams and hidden feelings surface'},
+          Venus: {1:'finds you attractive — you feel beautiful and valued around them',2:'shared values and financial compatibility',3:'easy affectionate communication — flirtatious rapport',4:'creates a beautiful, loving home environment',5:'highly romantic placement — pleasure flows naturally',6:'brings grace and harmony to shared daily life',7:'classic partnership attraction — they embody what you seek',8:'deep financial and intimate bonding',9:'shared love of travel, culture, and philosophical exploration',10:'enhances your public image and professional relationships',11:'friendship and shared social pleasures',12:'hidden or private love — a quiet, soulful connection'},
+          Mars: {1:'energizes and challenges your self-expression',2:'drives ambition around money and shared resources',3:'stimulates mental debates and lively exchanges',4:'activates your domestic life — renovations or family energy',5:'sparks passionate romance and creative drive',6:'motivates you in health and work — productive energy',7:'strong physical attraction and competitive partnership dynamics',8:'intensely transformative — power and sexuality',9:'adventurous energy — travel and philosophical sparring',10:'fuels career ambition and public assertiveness',11:'activates shared goals and community involvement',12:'stirs hidden desires and unconscious drives'}
+        };
         h += `<div class="indicator-item">`;
         h += `<div class="indicator-label">House Overlays</div>`;
         h += `<div style="font-size:var(--fs-meta);color:var(--text3);margin-bottom:6px">Where key planets land in the other's chart, activating specific life areas.</div>`;
         h += `<div style="font-size:var(--fs-body);color:var(--text);line-height:1.7">`;
-        const HOUSE_THEMES = {1:'identity/self',2:'money/values',3:'communication',4:'home/family',5:'romance/creativity',6:'work/health',7:'partnership',8:'intimacy/transformation',9:'adventure/beliefs',10:'career/reputation',11:'community/hopes',12:'spirituality/secrets'};
         const bOverlays = traditional.houseOverlays.filter(o => o.person === 'B');
         const aOverlays = traditional.houseOverlays.filter(o => o.person === 'A');
         for (const o of bOverlays) {
-          h += `${pSVG(o.planet,13,'var(--azure)')} <span style="color:var(--azure)">${chartB.name}'s ${o.planet}</span> in your <strong>House ${o.house}</strong> <span style="color:var(--text3)">(${HOUSE_THEMES[o.house]||''})</span><br>`;
+          const voiceText = HOUSE_OVERLAY_VOICE[o.planet] && HOUSE_OVERLAY_VOICE[o.planet][o.house] ? ` — ${HOUSE_OVERLAY_VOICE[o.planet][o.house]}` : '';
+          h += `${pSVG(o.planet,13,'var(--azure)')} <span style="color:var(--azure)">${chartB.name}'s ${o.planet}</span> in your <strong>House ${o.house}</strong>${voiceText}<br>`;
         }
         for (const o of aOverlays) {
-          h += `${pSVG(o.planet,13,'var(--gold)')} <span style="color:var(--gold)">Your ${o.planet}</span> in ${chartB.name}'s <strong>House ${o.house}</strong> <span style="color:var(--text3)">(${HOUSE_THEMES[o.house]||''})</span><br>`;
+          const voiceText = HOUSE_OVERLAY_VOICE[o.planet] && HOUSE_OVERLAY_VOICE[o.planet][o.house] ? ` — ${HOUSE_OVERLAY_VOICE[o.planet][o.house]}` : '';
+          h += `${pSVG(o.planet,13,'var(--gold)')} <span style="color:var(--gold)">Your ${o.planet}</span> in ${chartB.name}'s <strong>House ${o.house}</strong>${voiceText}<br>`;
         }
         h += `</div></div>`;
       }
@@ -7296,7 +7822,9 @@ function renderAstroCartoTab() {
 
   // Header
   h += `<div class="ac-header">`;
-  h += `<div class="section-title" style="margin-top:0">Your World Map</div>`;
+  const acChartForTitle = savedCharts.find(c => c.id === acSelectedChartId);
+  const acTitleName = acChartForTitle ? (acChartForTitle.name === 'Alexander' ? 'Your' : acChartForTitle.name + "'s") : 'Your';
+  h += `<div class="section-title" style="margin-top:0">${acTitleName} World Map</div>`;
   h += `<p>At the exact moment you were born, each planet was in a specific position in the sky. This map draws lines on Earth showing where each planet was rising, setting, at its highest, or at its lowest. Near these lines, that planet's energy is strongest for you — influencing career, love, home life, and more depending on the line type.</p>`;
   h += `</div>`;
 
@@ -7358,6 +7886,26 @@ function renderAstroCartoTab() {
       const angleLabel = angleLabels[acTapInfo.nearestLine.angleType] || acTapInfo.nearestLine.angleType.toUpperCase();
 
       h += `<div class="ac-info-card">`;
+      // Tap coordinates + nearest city
+      const tapLat = acTapInfo.lat.toFixed(1);
+      const displayLon = acTapInfo.geoLon !== undefined ? (acTapInfo.geoLon > 180 ? acTapInfo.geoLon - 360 : acTapInfo.geoLon) : 0;
+      const latDir = acTapInfo.lat >= 0 ? 'N' : 'S';
+      const lonDir = displayLon >= 0 ? 'E' : 'W';
+      let coordStr = `${Math.abs(parseFloat(tapLat))}${latDir}, ${Math.abs(displayLon).toFixed(1)}${lonDir}`;
+      let nearestCity = null, minCityDist = Infinity;
+      for (const city of CITIES) {
+        const dLat = city.lat - acTapInfo.lat;
+        const cityGeo = ((city.lon % 360) + 360) % 360;
+        const tapGeo = acTapInfo.geoLon !== undefined ? acTapInfo.geoLon : 0;
+        const dLon = Math.min(Math.abs(tapGeo - cityGeo), 360 - Math.abs(tapGeo - cityGeo));
+        const dist = Math.sqrt(dLat * dLat + dLon * dLon);
+        if (dist < minCityDist) { minCityDist = dist; nearestCity = city; }
+      }
+      h += `<div style="font-size:var(--fs-label);color:var(--text3);padding:6px 10px 0;display:flex;gap:8px;align-items:center">`;
+      h += `<span>${coordStr}</span>`;
+      if (nearestCity && minCityDist < 30) h += `<span>Near ${nearestCity.name}</span>`;
+      h += `</div>`;
+
       h += `<div class="ac-info-head">`;
       h += `<div>`;
       h += `<div style="display:flex;align-items:center;gap:8px">`;
@@ -7410,7 +7958,13 @@ function renderAstroCartoTab() {
         h += `<div class="ac-pc-head">`;
         h += pSVG(planet, 18, c);
         h += `<span class="ac-pc-name" style="color:${c}">${planet}</span>`;
-        h += `<span class="ac-pc-angles">4 lines on map</span>`;
+        const pl = acAstrocartoLines[planet];
+        let lineCount = 0;
+        if (pl.mc !== undefined) lineCount++;
+        if (pl.ic !== undefined) lineCount++;
+        if (pl.asc && pl.asc.length > 1) lineCount++;
+        if (pl.dsc && pl.dsc.length > 1) lineCount++;
+        h += `<span class="ac-pc-angles">${lineCount} line${lineCount !== 1 ? 's' : ''} on map</span>`;
         h += `</div>`;
         h += `<div class="ac-pc-brief">`;
         h += `<strong>Career line:</strong> ${mcShort}. `;
@@ -7456,10 +8010,10 @@ function handleMapClick(evt, svgEl, lines) {
   const vbWidth = parseFloat(viewBox[2]);
   const vbHeight = parseFloat(viewBox[3]);
 
-  const lon = (x / rect.width) * vbWidth;
+  const svgLon = (x / rect.width) * vbWidth;
+  const geoLon = ((svgLon - 180) % 360 + 360) % 360;
   const lat = 90 - (y / rect.height) * vbHeight;
 
-  // Find nearest line
   let nearest = null;
   let minDist = Infinity;
 
@@ -7468,37 +8022,31 @@ function handleMapClick(evt, svgEl, lines) {
     if (!(planet in lines)) continue;
 
     const planetLine = lines[planet];
-
-    // Longitude distance with wrap-around
     const lonDist = (a, b) => { const d = Math.abs(a - b); return Math.min(d, 360 - d); };
 
-    // MC line
-    const mcDist = lonDist(lon, planetLine.mc);
+    const mcDist = lonDist(geoLon, planetLine.mc);
     if (mcDist < minDist) { minDist = mcDist; nearest = { planet, angleType: 'mc' }; }
 
-    // IC line
-    const icDist = lonDist(lon, planetLine.ic);
+    const icDist = lonDist(geoLon, planetLine.ic);
     if (icDist < minDist) { minDist = icDist; nearest = { planet, angleType: 'ic' }; }
 
-    // ASC line
     if (planetLine.asc) {
       for (let pt of planetLine.asc) {
-        const dist = Math.sqrt(lonDist(lon, pt.lon) ** 2 + (lat - pt.lat) ** 2);
+        const dist = Math.sqrt(lonDist(geoLon, pt.lon) ** 2 + (lat - pt.lat) ** 2);
         if (dist < minDist) { minDist = dist; nearest = { planet, angleType: 'asc' }; }
       }
     }
 
-    // DSC line
     if (planetLine.dsc) {
       for (let pt of planetLine.dsc) {
-        const dist = Math.sqrt(lonDist(lon, pt.lon) ** 2 + (lat - pt.lat) ** 2);
+        const dist = Math.sqrt(lonDist(geoLon, pt.lon) ** 2 + (lat - pt.lat) ** 2);
         if (dist < minDist) { minDist = dist; nearest = { planet, angleType: 'dsc' }; }
       }
     }
   }
 
   if (nearest && minDist < 20) {
-    acTapInfo = { lat, lon, nearestLine: nearest };
+    acTapInfo = { lat, lon: svgLon, geoLon, nearestLine: nearest };
   }
 
   renderApp();

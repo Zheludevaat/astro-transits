@@ -4119,7 +4119,117 @@ function renderApp(){
     }
   }
 
-  // ── Planetary Hours Strip ──
+  // ── Hour Clock (Phase 5) ──
+  if(pHours&&isToday){
+    const utNowClock=now.getUTCHours()+now.getUTCMinutes()/60;
+    const curIdxClock=currentHourIndex(pHours.hours,utNowClock);
+    const moonLonClock=cur.Moon;
+    const sunLonClock=cur.Sun;
+    const mansionClock=typeof computeMansion==='function'?computeMansion(moonLonClock):null;
+    const decanClock=typeof computeDecan==='function'?computeDecan(sunLonClock):null;
+    const moonSignClock=SIGNS[Math.floor(moonLonClock/30)];
+    const moonDeg=(moonLonClock%30).toFixed(0);
+    const phaseAngleClock=((moonLonClock-sunLonClock+360)%360);
+    const illum=Math.round((1-Math.cos(phaseAngleClock*Math.PI/180))/2*100);
+    const phaseNameClock=typeof moonPhase==='function'?moonPhase(phaseAngleClock):'';
+
+    h+=`<div id="mech-hours" style="text-align:center;padding:8px 0">`;
+    // Build SVG
+    const S=280,C=S/2,R1=130,R2=108,R3=88,R4=68,R5=50;
+    let svg=`<svg viewBox="0 0 ${S} ${S}" width="${S}" style="max-width:100%">`;
+
+    // Helper: arc path for a segment
+    function arcSeg(cx,cy,rOuter,rInner,startDeg,endDeg){
+      const sa=startDeg*Math.PI/180,ea=endDeg*Math.PI/180;
+      const x1=cx+rOuter*Math.cos(sa),y1=cy+rOuter*Math.sin(sa);
+      const x2=cx+rOuter*Math.cos(ea),y2=cy+rOuter*Math.sin(ea);
+      const x3=cx+rInner*Math.cos(ea),y3=cy+rInner*Math.sin(ea);
+      const x4=cx+rInner*Math.cos(sa),y4=cy+rInner*Math.sin(sa);
+      const la=(endDeg-startDeg)>180?1:0;
+      return `M${x1},${y1} A${rOuter},${rOuter} 0 ${la},1 ${x2},${y2} L${x3},${y3} A${rInner},${rInner} 0 ${la},0 ${x4},${y4} Z`;
+    }
+
+    // Outer ring: 24 planetary hours
+    for(let i=0;i<24;i++){
+      const startA=-90+(i*15);
+      const endA=startA+15;
+      const isCur=i===curIdxClock;
+      const hr=pHours.hours[i];
+      const fill=isCur?'var(--gold)':hr.isDay?'rgba(255,255,255,.06)':'rgba(0,0,0,.2)';
+      const stroke=isCur?'var(--gold)':'rgba(255,255,255,.12)';
+      svg+=`<path d="${arcSeg(C,C,R1,R2,startA,endA)}" fill="${fill}" stroke="${stroke}" stroke-width="0.5" opacity="${isCur?1:0.8}"/>`;
+      // Glyph label at midpoint
+      const midA=(startA+7.5)*Math.PI/180;
+      const gR=(R1+R2)/2;
+      const gx=C+gR*Math.cos(midA);
+      const gy=C+gR*Math.sin(midA);
+      const glyphCol=isCur?'#000':'var(--text2)';
+      svg+=`<text x="${gx}" y="${gy}" text-anchor="middle" dominant-baseline="central" font-size="8" fill="${glyphCol}" font-weight="${isCur?'700':'400'}">${hr.ruler.slice(0,2)}</text>`;
+    }
+
+    // Middle ring: 28 lunar mansions
+    if(mansionClock){
+      const mArc=360/28;
+      for(let i=0;i<28;i++){
+        const startA=-90+(i*mArc);
+        const endA=startA+mArc;
+        const isCur=(i+1)===mansionClock.index;
+        const fill=isCur?'rgba(155,109,255,.5)':'rgba(155,109,255,.08)';
+        svg+=`<path d="${arcSeg(C,C,R2-1,R3,startA,endA)}" fill="${fill}" stroke="rgba(155,109,255,.15)" stroke-width="0.3"/>`;
+        if(isCur){
+          const midA2=(startA+mArc/2)*Math.PI/180;
+          const tR=(R2+R3)/2;
+          svg+=`<text x="${C+tR*Math.cos(midA2)}" y="${C+tR*Math.sin(midA2)}" text-anchor="middle" dominant-baseline="central" font-size="7" fill="var(--violet)" font-weight="600">${mansionClock.index}</text>`;
+        }
+      }
+    }
+
+    // Inner ring: 36 decans (show all, highlight current Sun decan)
+    if(decanClock){
+      const dArc=10;
+      for(let i=0;i<36;i++){
+        const startA=-90+(i*dArc);
+        const endA=startA+dArc;
+        const signIdx=Math.floor(i/3);
+        const decanInSign=i%3;
+        const isCur=(SIGNS[signIdx]===decanClock.signName&&decanInSign===decanClock.decanIdx);
+        const fill=isCur?'rgba(var(--gold-rgb,212,175,55),.4)':'rgba(255,255,255,.03)';
+        svg+=`<path d="${arcSeg(C,C,R3-1,R4,startA,endA)}" fill="${isCur?'rgba(212,175,55,.35)':fill}" stroke="rgba(255,255,255,.08)" stroke-width="0.3"/>`;
+      }
+    }
+
+    // Center: Moon info
+    const moonPhaseSvgStr=typeof renderMoonSVG==='function'?renderMoonSVG(phaseAngleClock,24):'';
+    svg+=`<circle cx="${C}" cy="${C}" r="${R5}" fill="var(--card)" stroke="rgba(255,255,255,.1)" stroke-width="0.5"/>`;
+    // Moon text info (can't embed HTML SVGs easily, so use text)
+    svg+=`<text x="${C}" y="${C-12}" text-anchor="middle" font-size="10" fill="var(--bright)" font-weight="600">${moonSignClock}</text>`;
+    svg+=`<text x="${C}" y="${C+2}" text-anchor="middle" font-size="14" fill="var(--gold)" font-weight="700">${moonDeg}deg</text>`;
+    svg+=`<text x="${C}" y="${C+16}" text-anchor="middle" font-size="8" fill="var(--text2)">${illum}% ${phaseNameClock}</text>`;
+
+    // Current hour gold radial bar
+    if(curIdxClock>=0){
+      const curHrClock=pHours.hours[curIdxClock];
+      const nextHrClock=pHours.hours[(curIdxClock+1)%24];
+      const elapsed=utNowClock-curHrClock.start;
+      let duration=nextHrClock.start-curHrClock.start;
+      if(duration<=0)duration+=24;
+      const pct=Math.min(elapsed/duration,1);
+      const handA=(-90+curIdxClock*15+pct*15)*Math.PI/180;
+      svg+=`<line x1="${C+R4*Math.cos(handA)}" y1="${C+R4*Math.sin(handA)}" x2="${C+R1*Math.cos(handA)}" y2="${C+R1*Math.sin(handA)}" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" opacity="0.8"/>`;
+    }
+
+    svg+=`</svg>`;
+    h+=svg;
+
+    // Legend line
+    const curHrName=pHours.hours[curIdxClock]?pHours.hours[curIdxClock].ruler:'';
+    h+=`<div style="font-size:11px;color:var(--text2);margin-top:6px">`;
+    h+=`Hour of ${curHrName} &middot; Mansion ${mansionClock?mansionClock.index:''} &middot; ${decanClock?decanClock.signName+' decan '+decanClock.decanNum:''}`;
+    h+=`</div>`;
+    h+=`</div>`;
+  }
+
+  // ── Planetary Hours Strip (detail view) ──
   if(pHours){
     const utNow=isToday?now.getUTCHours()+now.getUTCMinutes()/60:12;
     const curIdx=currentHourIndex(pHours.hours,utNow);

@@ -853,7 +853,7 @@ body[data-zone="depth"] .t-zone:not(.t-depth){display:none}
 .ref-summary{font-size:var(--fs-meta);line-height:1.6;color:var(--text2);letter-spacing:.1px}
 .ref-meta{margin-top:12px;padding:10px 12px;border-radius:var(--r-sm);background:rgba(212,168,67,.05);
   border:1px solid rgba(212,168,67,.1);font-size:var(--fs-ui);line-height:1.65;animation:fadeUp .25s ease both}
-.ref-meta-row{display:grid;grid-template-columns:72px 1fr;gap:10px;padding:4px 0;border-bottom:1px solid rgba(212,168,67,.08)}
+.ref-meta-row{display:grid;grid-template-columns:auto 1fr;gap:10px;padding:6px 0;border-bottom:1px solid rgba(212,168,67,.08)}
 .ref-meta-row:last-child{border-bottom:none}
 @media(max-width:359px){.ref-meta-row{grid-template-columns:1fr;gap:2px}.ref-meta-k{padding-top:4px}}
 .ref-meta-k{color:var(--gold);text-transform:uppercase;letter-spacing:1px;font-size:var(--fs-label);
@@ -5773,6 +5773,14 @@ function loadCharts() {
   const stored = localStorage.getItem('astro-charts');
   if (stored) {
     savedCharts = JSON.parse(stored);
+    // Migration: fix charts where month/day were swapped (month > 12)
+    let migrated = false;
+    for (const c of savedCharts) {
+      if (c.month > 12 && c.day <= 12) {
+        const tmp = c.month; c.month = c.day; c.day = tmp; migrated = true;
+      }
+    }
+    if (migrated) localStorage.setItem('astro-charts', JSON.stringify(savedCharts));
   } else {
     // Ensure Alexander is the default
     savedCharts = [
@@ -8252,6 +8260,8 @@ function saveChartFromForm() {
     alert('Please fill in all required fields and search for a birth city');
     return;
   }
+  if (month < 1 || month > 12) { alert('Month must be 1-12. The fields are Day / Month / Year.'); return; }
+  if (day < 1 || day > 31) { alert('Day must be 1-31.'); return; }
 
   const cityName = cityResolved ? cityResolved.name : (document.getElementById('chart-city').value.trim() || '');
 
@@ -9392,7 +9402,7 @@ function renderApp(){
       h+=`</div>`;
       h+=`</div>`;
       const majBrief=Array.isArray(majVoice.brief)?pick(majVoice.brief,todaySeed()):majVoice.brief||'';
-      h+=`<div class="fir-brief"><strong>${maj.lord}/${sub.lord}:</strong> ${majBrief} ${sub.lord!==maj.lord?'<strong>Within this, the '+sub.lord+' sub-period emphasizes '+(subVoice.theme||'').toLowerCase()+'.':''}</div>`;
+      h+=`<div class="fir-brief"><strong>${maj.lord}/${sub.lord}:</strong> ${majBrief} ${sub.lord!==maj.lord?'<strong>Within this, the '+sub.lord+' sub-period emphasizes '+(subVoice.theme||'').toLowerCase()+'.</strong>':''}</div>`;
     }
 
     if(firExpanded){

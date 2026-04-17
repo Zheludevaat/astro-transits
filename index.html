@@ -1434,17 +1434,17 @@ html.light .guidance-preview:not(.expanded)::after{background:linear-gradient(tr
 .ac-header p { font-size: var(--fs-body); line-height: 1.55; color: var(--text2); margin-top: 6px; }
 
 .planet-toggles {
-  display: flex; overflow-x: auto; gap: 5px; padding: 6px 12px;
-  -webkit-overflow-scrolling: touch; scrollbar-width: none;
+  display: grid !important; grid-template-columns: repeat(6, 1fr); gap: 4px; padding: 6px 12px;
 }
 .planet-toggles::-webkit-scrollbar { display: none; }
 .planet-toggle {
-  flex: 0 0 auto; padding: 5px 10px; background: var(--card); border: 1px solid var(--hairline);
-  border-radius: 20px; color: var(--text2); font-size: var(--fs-label); cursor: pointer;
-  transition: all 0.15s; display: flex; align-items: center; gap: 4px; white-space: nowrap;
+  padding: 5px 2px; background: var(--card); border: 1px solid var(--hairline);
+  border-radius: 14px; color: var(--text2); font-size: 9px; cursor: pointer;
+  transition: all 0.15s; display: flex; align-items: center; justify-content: center;
+  gap: 2px; white-space: nowrap; text-align: center;
 }
 .planet-toggle.active { background: var(--gold); border-color: var(--gold); color: var(--bg); }
-.planet-toggle svg { width: 13px; height: 13px; }
+.planet-toggle svg { width: 12px; height: 12px; flex-shrink: 0; }
 
 .ac-map-wrap {
   margin: 6px 10px; border-radius: var(--r-md); overflow: hidden;

@@ -1677,6 +1677,9 @@ function toggleGuidance(){guidanceExpanded=!guidanceExpanded;
 
 // ── Layer toggles ──
 const layersExpanded={l2:true,l3:false};
+// ── Mechanic group toggles (Layer 3 categories) ──
+const mechGroupOpen={timing:true,positions:false,timelords:false,transits:false,practice:false};
+function toggleMechGroup(g){mechGroupOpen[g]=!mechGroupOpen[g];renderApp();}
 // ── Time-scale strip state ──
 let tsOpenCell=null; // 'now'|'month'|'year'|'chapter'|null
 function toggleTsCell(cell){tsOpenCell=tsOpenCell===cell?null:cell;renderApp();}
@@ -4007,6 +4010,11 @@ function renderApp(){
   h+=`</div>`;
   h+=`<div id="layer3-mechanics" style="display:${layersExpanded.l3?'block':'none'}">`;
 
+  // ═══ GROUP: TIMING ═══
+  h+=`<div class="mech-group ${mechGroupOpen.timing?'open':''}">`;
+  h+=`<div class="mech-group-head" onclick="toggleMechGroup('timing')"><div class="mech-group-title">Timing &amp; Hours</div><div class="mech-group-chev">&#9654;</div></div>`;
+  h+=`<div class="mech-group-body">`;
+
   // ── Consult (always-visible preview, expandable) ──
   if(isToday){
     const consult=synthesizeConsult(transits,vibe,vocResult,moonSign,prof,pHours,isToday);
@@ -4230,8 +4238,8 @@ function renderApp(){
     h+=`</div>`;
   }
 
-  // ── Planetary Hours Strip (detail view) ──
-  if(pHours){
+  // ── Planetary Hours Strip (detail view — hidden when clock is shown) ──
+  if(pHours&&!isToday){
     const utNow=isToday?now.getUTCHours()+now.getUTCMinutes()/60:12;
     const curIdx=currentHourIndex(pHours.hours,utNow);
     h+=`<div class="hours-strip" id="mech-hours-strip">`;
@@ -4414,7 +4422,12 @@ function renderApp(){
     h+=`<div style="font-size:12px;line-height:1.6;color:var(--text);padding:6px 16px 10px;margin-top:-4px;opacity:.85"><em>${tGuid}</em></div>`;
   }
 
-  // ── Annual Theme by profected sign ──
+  h+=`</div></div>`; // end timing group
+
+  // ═══ GROUP: POSITIONS ═══
+  h+=`<div class="mech-group ${mechGroupOpen.positions?'open':''}">`;
+  h+=`<div class="mech-group-head" onclick="toggleMechGroup('positions')"><div class="mech-group-title">Positions &amp; Sky</div><div class="mech-group-chev">&#9654;</div></div>`;
+  h+=`<div class="mech-group-body">`;
 
   // ── Profection Row (tap chip for detail panel; tap ? for glossary) ──
   h+=`<div class="profection-row" id="mech-profections">`;
@@ -4735,6 +4748,13 @@ function renderApp(){
     h+=`</div>`;
   }
 
+  h+=`</div></div>`; // end positions group
+
+  // ═══ GROUP: TRANSITS ═══
+  h+=`<div class="mech-group ${mechGroupOpen.transits?'open':''}">`;
+  h+=`<div class="mech-group-head" onclick="toggleMechGroup('transits')"><div class="mech-group-title">Transits &amp; Aspects</div><div class="mech-group-chev">&#9654;</div></div>`;
+  h+=`<div class="mech-group-body">`;
+
   // ── Active Transits Summary (top 5, expandable) ──
   if(transits.length>0){
     h+=`<div style="margin:8px 0 12px">`;
@@ -4781,7 +4801,12 @@ function renderApp(){
     h+=`</div>`;
   }
 
-  // (continue Layer 3 mechanics — depth techniques)
+  h+=`</div></div>`; // end transits group
+
+  // ═══ GROUP: TIME LORDS ═══
+  h+=`<div class="mech-group ${mechGroupOpen.timelords?'open':''}">`;
+  h+=`<div class="mech-group-head" onclick="toggleMechGroup('timelords')"><div class="mech-group-title">Time Lords &amp; Lots</div><div class="mech-group-chev">&#9654;</div></div>`;
+  h+=`<div class="mech-group-body">`;
 
   // ── Seven Hermetic Lots ──
   const lots=computeLots(cur,NATAL.Ascendant,SECT.isNocturnal);
@@ -4811,6 +4836,13 @@ function renderApp(){
     h+=`<div class="lot-detail"><strong>${lm.name} in ${s.name}, House ${lHouse}${hv.name?' ('+hv.name+')':''}:</strong> ${lotLong(expandedLot)}</div>`;
   }
   h+=`</div></div>`;
+
+  h+=`</div></div>`; // end timelords group
+
+  // ═══ GROUP: PRACTICE ═══
+  h+=`<div class="mech-group ${mechGroupOpen.practice?'open':''}">`;
+  h+=`<div class="mech-group-head" onclick="toggleMechGroup('practice')"><div class="mech-group-title">Journal &amp; Synthesis</div><div class="mech-group-chev">&#9654;</div></div>`;
+  h+=`<div class="mech-group-body">`;
 
   // ── Journal (only on Today) ──
   if(isToday){
@@ -5416,6 +5448,7 @@ function renderApp(){
     h+=`</div>`;
   }
 
+  h+=`</div></div>`; // end practice group
   h+=`</div>`; // end Layer 3 mechanics container
   h+=`</div>`; // end today tab
 
@@ -5562,7 +5595,7 @@ function renderApp(){
   h+=`<div class="tab-content ${activeTab==='tools'?'active':''}">`;
   // Sub-tab bar
   h+=`<div class="tools-sub-bar" style="display:flex;gap:0;margin:0 0 12px;border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--hairline);font-size:11px;font-weight:600">`;
-  const toolsTabs=[['synastry','Synastry'],['map','Map'],['elect','Elect'],['lore','Lore'],['ledger','Ledger']];
+  const toolsTabs=[['synastry','Synastry'],['map','Map'],['elect','Elect'],['lore','Lore'],['ledger','Ledger'],['guide','Guide']];
   for(const [k,label] of toolsTabs){
     h+=`<div onclick="switchToolsTab('${k}')" style="flex:1;text-align:center;padding:8px 0;cursor:pointer;${toolsSubTab===k?'background:var(--surface);color:var(--bright)':'color:var(--text3)'}">${label}</div>`;
   }
@@ -5844,6 +5877,173 @@ function renderApp(){
     h+=`<div style="text-align:center;padding:12px 0">`;
     h+=`<button onclick="exportLedgerJSON()" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 24px;color:var(--bright);font-size:13px;cursor:pointer">Export Journal as JSON</button>`;
     h+=`</div>`;
+  } else if(toolsSubTab==='guide'){
+    // ═══════ GUIDE & SETTINGS (Phase UX) ═══════
+    h+=`<div style="padding:4px 0">`;
+
+    // ── Settings ──
+    h+=`<div class="guide-section">`;
+    h+=`<div class="guide-h2">Settings</div>`;
+
+    // API key setting
+    const hasKey=!!loadClaudeKey();
+    h+=`<div class="guide-setting">`;
+    h+=`<div><div class="guide-setting-label">Claude API Key</div>`;
+    h+=`<div class="guide-setting-desc">${hasKey?'Key is set. Used for daily synthesis and consults.':'No key set. Deterministic readings only.'}</div></div>`;
+    h+=`<button onclick="switchTab('today');layersExpanded.l3=true;mechGroupOpen.practice=true;renderApp()" style="background:var(--card);border:1px solid var(--gold-line);border-radius:6px;padding:5px 12px;font-size:11px;color:var(--gold);cursor:pointer">${hasKey?'Change':'Set up'}</button>`;
+    h+=`</div>`;
+
+    // Theme setting
+    h+=`<div class="guide-setting">`;
+    h+=`<div><div class="guide-setting-label">Theme</div>`;
+    h+=`<div class="guide-setting-desc">Dark mode with gold accent. Matches the Hermetic register.</div></div>`;
+    h+=`<span style="font-size:11px;color:var(--text2)">Dark</span>`;
+    h+=`</div>`;
+
+    // Observer location
+    h+=`<div class="guide-setting">`;
+    h+=`<div><div class="guide-setting-label">Observer Location</div>`;
+    h+=`<div class="guide-setting-desc">${typeof OBSERVER!=='undefined'?OBSERVER.label+' ('+OBSERVER.lat.toFixed(2)+', '+OBSERVER.lon.toFixed(2)+')':'Not set'}</div></div>`;
+    h+=`<span style="font-size:11px;color:var(--text2)">Fixed</span>`;
+    h+=`</div>`;
+
+    // Birth data
+    h+=`<div class="guide-setting">`;
+    h+=`<div><div class="guide-setting-label">Birth Data</div>`;
+    h+=`<div class="guide-setting-desc">${typeof BIRTH!=='undefined'?BIRTH.year+'-'+BIRTH.month+'-'+BIRTH.day+' at '+Math.floor(BIRTH.hour)+'h'+Math.round((BIRTH.hour%1)*60)+'m EDT':'Not set'}</div></div>`;
+    h+=`<span style="font-size:11px;color:var(--text2)">Hardcoded</span>`;
+    h+=`</div>`;
+
+    // Data
+    h+=`<div class="guide-setting">`;
+    h+=`<div><div class="guide-setting-label">Journal Entries</div>`;
+    h+=`<div class="guide-setting-desc">${loadJournal().length} entries stored locally in your browser.</div></div>`;
+    h+=`<button onclick="switchTab('tools');toolsSubTab='ledger';renderApp()" style="background:var(--card);border:1px solid var(--border);border-radius:6px;padding:5px 12px;font-size:11px;color:var(--text2);cursor:pointer">View Ledger</button>`;
+    h+=`</div>`;
+
+    h+=`</div>`; // end settings section
+
+    // ── Complete User Manual ──
+    h+=`<div class="guide-section">`;
+    h+=`<div class="guide-h2">How This App Works</div>`;
+    h+=`<div class="guide-p">This is a traditional astrology companion built on Hellenistic doctrine. It computes your natal chart, tracks the sky in real time, and synthesizes a daily reading. The interpretive voice draws from Valens, Ptolemy, Paulus, and the Perso-Arabic tradition. It is not pop astrology. Every number you see is computed from astronomical algorithms, not looked up from a horoscope column.</div>`;
+    h+=`</div>`;
+
+    h+=`<div class="guide-section">`;
+    h+=`<div class="guide-h2">The Three Tabs</div>`;
+    h+=`<div class="guide-h3">Today</div>`;
+    h+=`<div class="guide-p">Your daily reading. Opens with a synthesis paragraph (Layer 1) that tells you the shape of the day in plain English. Below that, Layer 2 shows the 5-7 most significant astrological factors active right now. Layer 3 expands into the full workshop of techniques, grouped into five categories: Timing, Positions, Transits, Time Lords, and Practice. You can open and close each group independently.</div>`;
+    h+=`<div class="guide-p">The synthesis paragraph uses citation tokens (gold pills) that link to the technique they reference. Tap any pill to jump directly to that mechanic in Layer 3.</div>`;
+    h+=`<div class="guide-h3">Chart</div>`;
+    h+=`<div class="guide-p">Your natal chart as a studied object. Toggles between Live mode (showing transits against your natal positions, with the biwheel, aspect lines, and current positions grid) and Native mode (your natal chart alone, with fixed stars, natal aspects, and per-planet cards showing sign-ruler chains). The biwheel is the same SVG in both modes; only the overlays and cards below change.</div>`;
+    h+=`<div class="guide-h3">Tools</div>`;
+    h+=`<div class="guide-p">Everything you do with astrology beyond reading the day. Six sub-tabs: Synastry (compare charts), Map (astrocartography lines), Elect (find favorable windows), Lore (reference glossary), Ledger (journal history and accuracy tracking), and this Guide.</div>`;
+    h+=`</div>`;
+
+    h+=`<div class="guide-section">`;
+    h+=`<div class="guide-h2">The Time-Scale Strip</div>`;
+    h+=`<div class="guide-p">The four-cell bar at the top of every screen. It shows where you are on four nested time scales simultaneously. Tap any cell to see a paragraph of context.</div>`;
+    h+=`<div class="guide-h3">Now</div>`;
+    h+=`<div class="guide-p">The current planetary hour and its ruler. Planetary hours divide the day into 12 unequal day-hours (sunrise to sunset) and 12 night-hours (sunset to sunrise), each governed by one of the seven classical planets in Chaldean order. The hour ruler shapes the quality of the current moment: a Mercury hour favors communication, a Saturn hour favors solitary discipline, a Venus hour favors pleasure and connection. The cell shows minutes remaining until the next hour.</div>`;
+    h+=`<div class="guide-h3">Month</div>`;
+    h+=`<div class="guide-p">The profected month lord and sign. Monthly profections advance one sign per calendar month from your birthday. The month lord is the traditional ruler of the profected sign. It tells you which planet is steering your strategic focus this month.</div>`;
+    h+=`<div class="guide-h3">Year</div>`;
+    h+=`<div class="guide-p">The Lord of the Year. Annual profections count one sign per year of life from the Ascendant. At age 29, for example, you are in a 6th-house profection (Gemini if Capricorn rising), making Mercury the year lord. The year lord is the single most important factor in delineating the year. Transits to or from the year lord carry extra weight.</div>`;
+    h+=`<div class="guide-h3">Chapter</div>`;
+    h+=`<div class="guide-p">The active Zodiacal Releasing period (from the Lot of Spirit) and firdaria major lord. These are life-arc techniques spanning years to decades. ZR divides life into chapters by sign, with peaks and Loosing of the Bond transitions marking major turning points. Firdaria assigns a major planetary lord to multi-year periods in sect-dependent sequence (nocturnal charts begin with the Moon). Together they tell you what chapter of life you are in.</div>`;
+    h+=`</div>`;
+
+    h+=`<div class="guide-section">`;
+    h+=`<div class="guide-h2">Layer 1: Shape of the Day</div>`;
+    h+=`<div class="guide-p">The opening paragraph. 80-180 words, no jargon, no degree numbers. It names what today asks of you, the key moments, and what to do with them. If you have a Claude API key set, this is generated by Claude Sonnet using your full chart context and cached for the day. Without a key, a deterministic version is composed from the voice corpus. Either way, it renders instantly on load.</div>`;
+    h+=`<div class="guide-p">Citation tokens appear as gold pills inside the text. Each references a specific astrological technique. Tap one to scroll down to and expand the corresponding mechanic in Layer 3. This is the core navigation pattern: read the sentence, tap the citation, see the technique.</div>`;
+    h+=`</div>`;
+
+    h+=`<div class="guide-section">`;
+    h+=`<div class="guide-h2">Layer 2: Contributing Factors</div>`;
+    h+=`<div class="guide-p">Five to seven scannable lines, each describing one active factor. Ordered by significance: the profected lord, ZR period, Moon condition, top transit, current hour, and any notable retrogrades or stations. Each line is tappable and opens its full mechanic in Layer 3. Think of Layer 2 as the table of contents for the day's astrology.</div>`;
+    h+=`</div>`;
+
+    h+=`<div class="guide-section">`;
+    h+=`<div class="guide-h2">Layer 3: The Mechanics</div>`;
+    h+=`<div class="guide-p">The full workshop, organized into five collapsible groups:</div>`;
+
+    h+=`<div class="guide-h3">Timing &amp; Hours</div>`;
+    h+=`<div class="guide-p"><strong>Consult Preview:</strong> Shows the current planetary hour ruler, a brief on what it is good for, and how many minutes remain. Tap to expand for the full hour purpose, good-for/avoid recommendations, and contributing factors. This is your at-a-glance answer to "what should I be doing right now?"</div>`;
+    h+=`<div class="guide-p"><strong>Consult the Moment:</strong> A deeper, event-specific consultation backed by Claude Haiku. Pick an event type (difficult conversation, decision, meeting, date, etc.), a time window, optionally tag people involved from your saved charts, and add free-text context. Generates a 80-150 word read on whether the moment is favorable, mixed, or unfavorable for your purpose, with a specific timing recommendation if a better window exists. Costs under a cent per consult.</div>`;
+    h+=`<div class="guide-p"><strong>Hour Clock:</strong> A circular visualization showing the 24 planetary hours (outer ring), 28 lunar mansions (middle ring), and 36 decans (inner ring). The gold hand tracks elapsed time in the current hour. Center shows the Moon's sign, degree, illumination, and phase. Read it like a watch for the sky.</div>`;
+    h+=`<div class="guide-p"><strong>Electional Tool:</strong> Pick a task (hard conversation, sign contract, date, begin project, etc.) and the app scores every hour in the next week. Returns the three best windows with explanations grounded in traditional electional criteria: hour ruler, Moon sign, VOC status, and retrograde conditions.</div>`;
+
+    h+=`<div class="guide-h3">Positions &amp; Sky</div>`;
+    h+=`<div class="guide-p"><strong>Profection Chips:</strong> Three chips (Year, Month, Sect Light) showing the active profected lords. Tap any chip to expand its detail panel with the annual or monthly theme, the lord's current position, and any active transits to it. The green dot on the Year chip appears when the year lord is involved in an active transit.</div>`;
+    h+=`<div class="guide-p"><strong>Sun Card:</strong> The Sun's current sign, degree, decan, house, dignity status, and any transits involving the Sun. Expand for the full decan meaning (with tarot correspondence) and house context.</div>`;
+    h+=`<div class="guide-p"><strong>Moon Card:</strong> Everything about the Moon right now: phase (with illumination percentage), sign, degree, decan, lunar mansion (with good/avoid indications), dignity, house, and VOC status with countdown. The Moon moves fast enough that this card changes meaningfully every few hours.</div>`;
+    h+=`<div class="guide-p"><strong>Liturgy:</strong> The Planetary Day correspondences. Each day of the week is ruled by a planet, and the liturgy shows the day's intent, focus, what to avoid, plus traditional correspondences (color, metal, stone, incense, herb, direction, number, meditation). Use this as a framework for the day's theme.</div>`;
+    h+=`<div class="guide-p"><strong>Current Sky:</strong> A grid of all planetary positions (Mercury through Pluto, plus Chiron and North Node) with sign, degree, house, dignity, and motion status. Tap any planet to expand its full interpretation. Outer planets (Uranus, Neptune, Pluto, Chiron) are shown separately since they move slowly.</div>`;
+
+    h+=`<div class="guide-h3">Transits &amp; Aspects</div>`;
+    h+=`<div class="guide-p"><strong>Upcoming Sign Changes:</strong> Lists planets about to change signs in the near future, with the rich Ingress Notes for each planet-sign combination and flags for natal house activation. These are the moments when the sky's texture shifts.</div>`;
+    h+=`<div class="guide-p"><strong>Active Transits:</strong> The top transits ranked by importance score. Each shows the transiting planet, aspect type, natal point, orb, motion (applying/exact/separating), and house. Expand any transit for the full interpretation, including the three-part hard-transit frame for challenging aspects: what it tends to bring, what works against it, and when it lifts. The timing arc shows days until/since exact.</div>`;
+
+    h+=`<div class="guide-h3">Time Lords &amp; Lots</div>`;
+    h+=`<div class="guide-p"><strong>Hermetic Lots:</strong> Seven mathematical points computed from your natal chart (Fortune, Spirit, Eros, Necessity, Courage, Victory, Nemesis). Each maps a dimension of fate and agency. Tap any lot to see its sign, degree, house, and a full interpretation of its meaning in your chart. The formulas are sect-aware (your chart is nocturnal, so the formulas use the nocturnal variants).</div>`;
+    h+=`<div class="guide-p"><strong>Zodiacal Releasing:</strong> A Hellenistic timing technique from Vettius Valens that divides life into chapters by releasing from the Lot of Spirit (for career and purpose) and Lot of Fortune (for body and circumstance). Shown as a Gantt chart with Level 1 (major periods of years) and Level 2 (sub-periods of months). The now-marker shows where you are. Peaks occur when the releasing sign is in an angle from the starting sign. Loosing of the Bond marks major transitions.</div>`;
+    h+=`<div class="guide-p"><strong>Firdaria:</strong> A Persian timing technique assigning a sequence of planetary lords to multi-year periods. Your chart is nocturnal, so the sequence begins with the Moon. Each major period has seven sub-periods. The major lord sets the era's theme; the sub-lord colors the current chapter within it. Shown as a Gantt chart with the current period highlighted.</div>`;
+    h+=`<div class="guide-p"><strong>Solar &amp; Lunar Returns:</strong> Charts cast for the moment the Sun (annually) or Moon (monthly) returns to its exact natal position. The return chart's Ascendant, aspects, and planetary placements describe the coming year or month. The app computes these automatically and provides an interpretation.</div>`;
+    h+=`<div class="guide-p"><strong>Fixed Stars:</strong> Named stars within 1 degree of your natal planets or 0.5 degrees of current transiting planets. Fixed stars add a mythological and fate-driven layer to the reading. Each star has a planetary nature and a traditional meaning.</div>`;
+
+    h+=`<div class="guide-h3">Journal &amp; Synthesis</div>`;
+    h+=`<div class="guide-p"><strong>Journal:</strong> A daily mood tracker tied to your astrological context. Log a 1-5 mood, an optional note, and the app automatically captures the hour ruler, Moon sign, year lord, VOC status, retrogrades, and active transits at the moment of entry. Over time, the Echo card surfaces past entries logged under similar configurations, showing you patterns in how you experience specific astrological conditions.</div>`;
+    h+=`<div class="guide-p"><strong>Synthesis Tracking:</strong> When you log a journal entry, you can optionally rate how well the day's synthesis paragraph matched your experience (Hit, Partial, Miss, or Didn't Test). After 14+ tracked entries, this data feeds back into the Claude prompt as a ledger, letting the AI learn which techniques tend to predict your experience accurately and which to soften.</div>`;
+    h+=`<div class="guide-p"><strong>Claude Synthesis:</strong> If you have a Claude API key, you can request a full reading generated by Claude Sonnet. The reading draws on your complete chart context (natal, transits, profections, ZR, firdaria, lots, hours, mansions, decans, fixed stars) and follows the traditional Hermetic significatory voice. Readings are cached for the day. You can also provide a focus question. Cost is approximately $0.02-0.05 per reading.</div>`;
+    h+=`<div class="guide-p"><strong>Transit Timeline:</strong> A chronological list of upcoming exact transit dates for the next week, showing which planet-aspect-natal combinations are approaching exactitude. Useful for planning.</div>`;
+    h+=`</div>`;
+
+    h+=`<div class="guide-section">`;
+    h+=`<div class="guide-h2">Chart Tab</div>`;
+    h+=`<div class="guide-h3">Live Mode</div>`;
+    h+=`<div class="guide-p">Shows the biwheel with the outer ring displaying current transiting planets against your inner natal chart. Toggle transit aspects on/off. Below the wheel, a positions grid shows every transiting planet's sign, degree, house, dignity, and motion status. Use this mode to see what the sky is doing to your chart right now.</div>`;
+    h+=`<div class="guide-h3">Native Mode</div>`;
+    h+=`<div class="guide-p">Shows your natal chart alone with natal aspect lines. Below: Fixed Stars in Your Chart (stars conjunct natal planets), Aspects in Your Chart (every natal aspect with a full interpretive card drawing from the NATAL_ASPECT_DEPTH corpus), and per-planet Natal Cards showing each planet's sign, house, dignity, ruler chain, and interpretive summary. This is the workstation view for studying the nativity itself.</div>`;
+    h+=`</div>`;
+
+    h+=`<div class="guide-section">`;
+    h+=`<div class="guide-h2">Tools Sub-Tabs</div>`;
+    h+=`<div class="guide-h3">Synastry</div>`;
+    h+=`<div class="guide-p">Compare two natal charts. Add a chart using the input form (name, date, time, city with Nominatim search for coordinates). The biwheel overlays both charts, the aspect grid highlights inter-chart aspects, and Claude generates a full synastry reading covering chemistry, emotional compatibility, communication style, growth edges, and long-term potential. Saved charts persist in your browser.</div>`;
+    h+=`<div class="guide-h3">Map (Astrocartography)</div>`;
+    h+=`<div class="guide-p">A world map showing the lines where each planet would be on your MC, IC, Ascendant, or Descendant if you had been born at that location. Tap any line to see the interpretation. Save locations to track places you are considering living or traveling to. Each planet-angle combination carries a distinct meaning.</div>`;
+    h+=`<div class="guide-h3">Elect</div>`;
+    h+=`<div class="guide-p">The electional tool, also available in Today's Layer 3. Pick a task type and see the three best time windows in the next week, scored on planetary hour, Moon sign, VOC status, and retrograde conditions.</div>`;
+    h+=`<div class="guide-h3">Lore</div>`;
+    h+=`<div class="guide-p">A searchable reference glossary of astrological concepts, techniques, figures, and traditions. Each entry has a full description plus practical metadata: when it matters most, how to read it in your chart, and what to watch for. Categories include Technique, Object, Concept, Tradition, and Figure. Use the search bar to find any term. Citation pills in Layer 1 link here via the "What is this?" affordance.</div>`;
+    h+=`<div class="guide-h3">Ledger</div>`;
+    h+=`<div class="guide-p">Your journal as a longitudinal record. Shows rolling 30/90/365-day mood averages with variance, echo clusters (groups of entries with similar astro configurations color-coded by mood), synthesis accuracy stats (per-technique hit rates), past consult history with rating buttons, a scrollable entry timeline, and a JSON export button for backup.</div>`;
+    h+=`<div class="guide-h3">Guide</div>`;
+    h+=`<div class="guide-p">You are here. Settings and this manual.</div>`;
+    h+=`</div>`;
+
+    h+=`<div class="guide-section">`;
+    h+=`<div class="guide-h2">Key Concepts</div>`;
+    h+=`<div class="guide-h3">Sect</div>`;
+    h+=`<div class="guide-p">Your chart is nocturnal (born at night). This means the Moon is your sect light (the luminary that leads your team), Venus is your sect benefic (your best ally), and Saturn is the out-of-sect malefic (the most challenging planet). All formulas in the app (lots, firdaria sequence, dignity scoring) use the nocturnal variants. This is not a preference; it is structural to how every technique works.</div>`;
+    h+=`<div class="guide-h3">Dignity</div>`;
+    h+=`<div class="guide-p">How well a planet can act in the sign it occupies. A planet in its own domicile or exaltation is dignified and can express its nature freely. A planet in detriment or fall is debilitated and must work harder or through indirect means. The app shows dignity status for every planet and factors it into transit importance scoring.</div>`;
+    h+=`<div class="guide-h3">Void of Course Moon</div>`;
+    h+=`<div class="guide-p">The Moon is void of course when it will make no more exact aspects to any planet before leaving its current sign. Traditionally, actions begun during VOC tend not to come to fruition or take unexpected turns. The app shows a persistent banner with a countdown whenever the Moon is void. The electional tool penalizes VOC windows (except for rest and routine tasks).</div>`;
+    h+=`<div class="guide-h3">Applying vs. Separating</div>`;
+    h+=`<div class="guide-p">An applying aspect is still building toward exactitude. A separating aspect has already peaked and is unwinding. Applying aspects carry forward-looking energy (the thing is coming); separating aspects describe what just happened or is fading. The app marks every transit with its motion status.</div>`;
+    h+=`<div class="guide-h3">The Voice</div>`;
+    h+=`<div class="guide-p">The interpretive register is Hermetic significatory: the planets as living intelligences participating in cosmic order, daily life as microcosm reflecting macrocosm. It is not modern psychological astrology (no talk of "healing your inner child") and not fatalist prediction ("you will meet a tall stranger"). It describes conditions, qualities of time, and what those conditions traditionally ask of the native. The voice is grounded in the textual tradition while remaining warm and practical.</div>`;
+    h+=`</div>`;
+
+    h+=`<div class="guide-section">`;
+    h+=`<div class="guide-h2">Technical Notes</div>`;
+    h+=`<div class="guide-p">Planetary positions are computed from Meeus approximations (Astronomical Algorithms), accurate to within a few arcminutes for the inner planets and arcseconds for the Sun and Moon. Houses are Placidus. The app runs entirely in the browser with no server — your data stays on your device. The Claude API key is stored in localStorage and sent directly to Anthropic's API; it never touches any intermediary server.</div>`;
+    h+=`<div class="guide-p">The app is a Progressive Web App (PWA) and can be installed to your home screen. Offline access is provided by a service worker that caches all code and assets. The service worker uses a cache-first strategy for assets and network-first for the HTML shell.</div>`;
+    h+=`</div>`;
+
+    h+=`</div>`; // end guide padding wrapper
   }
   h+=`</div>`;
 

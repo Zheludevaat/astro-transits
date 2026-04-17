@@ -1,6 +1,20 @@
 // Service Worker for Alexander's Transits PWA
-const CACHE_NAME = 'transits-v42';
-const URLS_TO_CACHE = ['./', './index.html', './manifest.json', './icon.svg', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
+const CACHE_NAME = 'transits-v43';
+const URLS_TO_CACHE = [
+  './', './index.html', './manifest.json', './icon.svg', './icon-192.png', './icon-512.png', './apple-touch-icon.png',
+  './src/engine/ephemeris.js', './src/engine/motion.js', './src/engine/voc.js', './src/engine/aspects.js',
+  './src/hellenistic/sect.js', './src/hellenistic/profections.js', './src/hellenistic/hours.js',
+  './src/hellenistic/lots.js', './src/hellenistic/zr.js', './src/hellenistic/firdaria.js',
+  './src/hellenistic/decans.js', './src/hellenistic/mansions.js', './src/hellenistic/fixedstars.js',
+  './src/hellenistic/returns.js', './src/hellenistic/liturgy.js', './src/hellenistic/electional.js',
+  './src/voice/house-voice.js', './src/voice/natal-voice.js', './src/voice/aspect-voice.js',
+  './src/voice/hard-brings.js', './src/voice/ingress-notes.js', './src/voice/tone.js',
+  './src/voice/synastry-voice.js', './src/voice/astrocarto-voice.js', './src/voice/references.js',
+  './src/synthesis/prompts.js', './src/synthesis/claude-client.js',
+  './src/synthesis/context-builder.js', './src/synthesis/deterministic.js',
+  './src/ui/glyphs.js', './src/ui/widgets/biwheel.js', './src/ui/widgets/synth-card.js',
+  './src/data/chart-storage.js', './src/ui/app.js'
+];
 
 self.addEventListener('install', event => {
   event.waitUntil(

@@ -1518,7 +1518,6 @@ let showNatalAspectLines=true;
 // ══════════════════════════════════════════════════════════════
 
 let expandedCards={},dayOffset=0,activeTab='home',activeFilter='all';
-let showAllTransits=false; // toggle to show all transit cards instead of top 5
 let toolsSubTab='synastry'; // 'synastry'|'map'|'elect'|'lore'|'ledger'
 let guideMode='cards'; // 'cards'|'glossary'|'walkthrough'
 let guideSearch='';

@@ -1116,20 +1116,21 @@ html.light .guidance-preview:not(.expanded)::after{background:linear-gradient(tr
 @keyframes splashNameIn{from{opacity:0;letter-spacing:.2em}to{opacity:1;letter-spacing:.08em}}
 @keyframes splashEnterPulse{0%{opacity:0;transform:translateY(6px)}30%{opacity:.8;transform:translateY(0)}60%{opacity:.4}100%{opacity:.8}}
 
-/* TAB BAR ADJUSTMENTS FOR 7 TABS */
+/* TAB BAR ADJUSTMENTS FOR 6 TABS */
 .tab-bar {
-  justify-content: flex-start;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+  justify-content: space-around;
   gap: 0;
 }
 .tab-bar button {
-  flex: 0 0 auto;
-  padding: 0.5rem 0.6rem;
-  font-size: 0.7rem;
-  min-width: 56px;
-  gap: 0.3rem;
+  flex: 1 1 0;
+  padding: 5px 2px;
+  font-size: 8px;
+  min-width: 0;
+  gap: 2px;
+  letter-spacing: 0.3px;
 }
+.tab-bar button svg{width:16px;height:16px}
+.tab-bar button.active::after{width:16px}
 
 /* SYNASTRY SECTION */
 .synastry-container {
@@ -1808,7 +1809,7 @@ function dismissSplash(){
 <script src="src/data/chart-storage.js"></script>
 
 <!-- Main app (depends on everything above) -->
-<script src="src/ui/app.js?v=51"></script>
+<script src="src/ui/app.js?v=52"></script>
 
 
 </body>

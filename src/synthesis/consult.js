@@ -77,8 +77,7 @@ function buildConsultContext({eventType,windowScope,involvedCharts,freeText}){
   // Profections
   let profInfo=null;
   if(typeof computeProfections==='function'){
-    const ageYears=now.getFullYear()-BIRTH.year;
-    const prof=computeProfections(ageYears,now.getMonth());
+    const prof=computeProfections(now);
     profInfo={yearLord:prof.yearLord,monthLord:prof.monthLord};
   }
 
@@ -87,19 +86,27 @@ function buildConsultContext({eventType,windowScope,involvedCharts,freeText}){
   for(const p of['Mercury','Venus','Mars','Jupiter','Saturn']){
     if(typeof motionStatus==='function'){
       const ms=motionStatus(p,jdNow);
-      if(ms&&ms.includes('retrograde'))retros.push(p);
+      if(ms&&ms.retrograde)retros.push(p);
     }
   }
 
-  // Top transits
+  // Top transits — compute inline (same pattern as renderApp)
   let topTransits=[];
-  if(typeof computeTransits==='function'){
+  if(typeof findAspect==='function'&&typeof transitImportance==='function'){
     const birthJd=julianDate(BIRTH.year,BIRTH.month,BIRTH.day,BIRTH.hour);
     const natal=computeAll(birthJd);
     natal.Ascendant=computeAsc(birthJd,BIRTH.lat,BIRTH.lon);
     natal.MC=computeMC(birthJd,BIRTH.lon);
-    const allTransits=computeTransits(cur,natal,jdNow);
-    topTransits=allTransits.slice(0,5).map(t=>({
+    const TPS=['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn'];
+    const NPS=['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn','Ascendant','MC'];
+    const allT=[];
+    for(const tp of TPS){for(const np of NPS){
+      if(tp===np)continue;
+      const asp=findAspect(cur[tp],natal[np],tp,np,jdNow);
+      if(asp)allT.push({tp,np,aspect:asp,importance:transitImportance(tp,np,asp),orb:asp.orbActual,applying:asp.motion==='applying'});
+    }}
+    allT.sort((a,b)=>b.importance-a.importance);
+    topTransits=allT.slice(0,5).map(t=>({
       planet:t.tp,aspect:t.aspect.name,natal:t.np,orb:t.orb.toFixed(1),
       applying:t.applying,importance:t.importance
     }));
@@ -111,7 +118,7 @@ function buildConsultContext({eventType,windowScope,involvedCharts,freeText}){
     const birthJd=julianDate(BIRTH.year,BIRTH.month,BIRTH.day,BIRTH.hour);
     const natal=computeAll(birthJd);
     natal.Ascendant=computeAsc(birthJd,BIRTH.lat,BIRTH.lon);
-    const lots=computeLots(natal);
+    const lots=computeLots(natal,natal.Ascendant,true); // nocturnal chart
     const lotMapping={
       conversation:['Spirit'],message:['Spirit'],decision:['Spirit','Fortune'],
       meeting:['Victory','Spirit'],contract:['Fortune','Necessity'],
@@ -119,9 +126,9 @@ function buildConsultContext({eventType,windowScope,involvedCharts,freeText}){
       rest:['Fortune'],creative:['Spirit','Eros']
     };
     const relevantLots=(lotMapping[eventType]||[]).map(name=>{
-      const lot=lots.find(l=>l.name===name);
-      if(!lot)return null;
-      return{name:lot.name,sign:SIGNS[Math.floor(lot.deg/30)],deg:lot.deg.toFixed(1)};
+      const deg=lots[name];
+      if(deg===undefined)return null;
+      return{name,sign:SIGNS[Math.floor(deg/30)],deg:deg.toFixed(1)};
     }).filter(Boolean);
     if(relevantLots.length)lotsInfo=relevantLots;
   }
@@ -130,7 +137,7 @@ function buildConsultContext({eventType,windowScope,involvedCharts,freeText}){
   let involvedInfo=null;
   if(involvedCharts&&involvedCharts.length>0){
     involvedInfo=involvedCharts.map(chart=>{
-      const natal=getChartNatal(chart);
+      const {natal}=getChartNatal(chart);
       return{name:chart.name,sun:SIGNS[Math.floor(natal.Sun/30)],moon:SIGNS[Math.floor(natal.Moon/30)],asc:SIGNS[Math.floor((natal.Ascendant||0)/30)]};
     });
   }

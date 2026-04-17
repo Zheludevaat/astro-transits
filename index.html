@@ -6348,20 +6348,44 @@ function getGAST(T) {
 // SECTION 8: WORLD MAP SVG + RENDERING
 // ============================================================================
 
-// Simplified continent outlines in geographic coords (lon -180..180, lat -90..90)
-const WORLD_COASTLINE = `
-M -17,14 L -12,15 L -5,36 L 0,36 L 10,37 L 11,33 L 10,31 L 25,32 L 32,31 L 35,30 L 40,12 L 50,11 L 43,1 L 42,-5 L 40,-11 L 35,-22 L 33,-29 L 28,-33 L 18,-35 L 16,-30 L 12,-25 L 15,-15 L 10,-5 L 8,4 L -3,5 L -8,5 L -14,11 Z
-M -10,36 L 0,36 L 0,43 L 2,43 L 3,47 L -2,48 L -5,48 L -10,44 L -9,39 Z
-M 3,47 L 5,44 L 8,44 L 13,45 L 12,42 L 15,38 L 18,40 L 23,35 L 26,35 L 28,41 L 30,45 L 30,47 L 22,55 L 17,55 L 12,54 L 10,54 L 6,51 Z
-M 5,58 L 5,62 L 7,63 L 15,69 L 20,70 L 25,71 L 30,70 L 30,60 L 25,57 L 18,56 L 12,56 Z
-M -7,50 L -5,50 L 2,51 L 2,54 L -1,55 L -3,56 L -5,58 L -6,55 L -4,54 L -5,51 Z
-M 30,30 L 35,30 L 40,28 L 45,25 L 48,29 L 52,25 L 55,22 L 60,24 L 65,25 L 68,24 L 72,20 L 78,8 L 80,13 L 88,22 L 92,20 L 97,16 L 100,14 L 103,1 L 105,6 L 110,20 L 117,23 L 120,30 L 122,32 L 127,37 L 130,43 L 132,35 L 131,31 L 135,35 L 140,40 L 145,43 L 142,47 L 140,53 L 135,55 L 130,48 L 122,47 L 110,45 L 90,48 L 80,42 L 72,38 L 62,38 L 50,37 L 35,37 L 30,33 Z
-M -170,65 L -165,62 L -155,60 L -150,61 L -140,60 L -135,57 L -128,49 L -123,48 L -120,34 L -117,32 L -110,30 L -105,25 L -100,26 L -97,26 L -95,29 L -90,29 L -88,30 L -82,25 L -80,26 L -82,35 L -76,35 L -74,40 L -70,42 L -67,45 L -66,44 L -60,47 L -55,48 L -55,52 L -60,53 L -65,60 L -75,62 L -85,65 L -95,63 L -95,68 L -110,68 L -120,70 L -140,70 L -155,72 Z
-M -80,9 L -77,8 L -75,12 L -72,12 L -70,7 L -65,10 L -60,5 L -52,4 L -50,0 L -50,-2 L -45,-3 L -42,-3 L -38,-4 L -35,-8 L -35,-12 L -38,-15 L -40,-20 L -42,-23 L -48,-28 L -55,-34 L -58,-38 L -65,-40 L -68,-47 L -68,-53 L -72,-52 L -74,-45 L -72,-35 L -70,-18 L -75,-15 L -76,-5 L -78,0 L -80,2 Z
-M 115,-35 L 117,-33 L 122,-34 L 130,-32 L 136,-35 L 138,-33 L 141,-38 L 145,-38 L 150,-37 L 153,-28 L 150,-23 L 145,-15 L 142,-11 L 136,-12 L 130,-15 L 125,-15 L 117,-20 L 114,-22 L 114,-28 Z
-M -55,60 L -45,60 L -40,65 L -22,70 L -18,76 L -20,82 L -35,83 L -50,80 L -55,75 Z
-M 95,6 L 105,6 L 106,-6 L 110,-7 L 115,-8 L 120,-8 L 130,-3 L 140,-2 L 141,-9 L 127,-8 L 120,-10 L 115,-8 L 110,-7 L 106,-6 L 105,-6 L 100,0 Z
-`;
+// World continent outlines in viewBox coords (x = lon+180 [0..360], y = 90-lat [0..180])
+// Pre-converted so we don't need a transform on the <g>
+const WORLD_PATHS = [
+  // Africa
+  "M 174,55 L 176,54 L 180,44 L 180,41 L 183,40 L 185,42 L 190,40 L 193,41 L 195,43 L 198,44 L 200,47 L 203,49 L 206,51 L 210,54 L 215,56 L 218,59 L 220,62 L 220,67 L 218,70 L 216,74 L 214,78 L 212,82 L 210,87 L 208,91 L 209,95 L 211,100 L 213,104 L 215,110 L 214,114 L 212,118 L 210,122 L 208,124 L 206,123 L 198,121 L 195,118 L 192,115 L 190,110 L 188,105 L 186,100 L 185,95 L 183,91 L 180,87 L 178,82 L 176,78 L 174,73 L 172,68 L 170,63 L 168,59 L 170,57 Z",
+  // Europe
+  "M 170,57 L 174,55 L 176,54 L 180,44 L 180,41 L 178,39 L 176,38 L 172,38 L 170,36 L 173,34 L 176,33 L 180,32 L 185,31 L 190,31 L 195,32 L 200,33 L 203,35 L 205,37 L 208,38 L 210,36 L 211,34 L 209,32 L 207,30 L 205,28 L 203,25 L 200,22 L 195,20 L 190,18 L 186,17 L 182,18 L 178,20 L 176,23 L 172,25 L 168,26 L 165,28 L 162,30 L 160,33 L 158,36 L 160,38 L 162,40 L 162,42 L 160,43 L 158,42 L 156,40 L 155,42 L 157,45 L 160,46 L 162,48 L 165,49 L 168,51 L 170,54 Z",
+  // UK + Ireland
+  "M 174,28 L 176,26 L 178,25 L 179,27 L 178,29 L 176,30 L 174,30 Z M 170,27 L 172,26 L 173,28 L 172,30 L 170,29 Z",
+  // Iceland
+  "M 156,24 L 158,22 L 162,22 L 163,24 L 160,25 L 157,25 Z",
+  // Scandinavia
+  "M 185,17 L 188,14 L 192,12 L 196,10 L 198,12 L 200,16 L 202,20 L 200,24 L 198,26 L 195,28 L 192,27 L 190,25 L 188,22 L 186,19 Z",
+  // Asia (main mass)
+  "M 205,37 L 210,36 L 215,34 L 220,33 L 225,32 L 230,30 L 235,28 L 240,27 L 248,29 L 252,28 L 255,30 L 258,32 L 262,34 L 265,36 L 268,38 L 272,40 L 276,42 L 280,44 L 284,46 L 288,48 L 290,50 L 292,52 L 295,53 L 298,50 L 300,48 L 302,46 L 305,45 L 310,44 L 315,46 L 318,48 L 320,50 L 318,53 L 315,55 L 312,57 L 310,59 L 308,62 L 305,64 L 302,66 L 300,68 L 297,70 L 294,68 L 290,67 L 286,66 L 283,65 L 280,66 L 278,68 L 275,70 L 272,72 L 270,74 L 268,76 L 265,78 L 262,80 L 258,82 L 256,80 L 254,78 L 252,75 L 250,72 L 248,70 L 246,68 L 243,65 L 240,62 L 238,60 L 235,58 L 232,55 L 230,52 L 228,50 L 225,48 L 222,46 L 220,44 L 218,42 L 215,40 L 210,38 Z",
+  // India
+  "M 248,70 L 252,72 L 255,75 L 258,78 L 260,82 L 262,85 L 261,88 L 258,90 L 255,88 L 252,85 L 250,82 L 248,78 L 247,75 L 246,72 Z",
+  // Arabian Peninsula
+  "M 220,62 L 225,60 L 228,62 L 230,65 L 232,68 L 230,70 L 228,72 L 225,73 L 222,72 L 220,70 L 218,67 L 218,64 Z",
+  // Southeast Asia / Indonesia
+  "M 280,82 L 283,80 L 286,82 L 290,83 L 293,82 L 296,83 L 300,85 L 303,84 L 306,85 L 310,84 L 312,86 L 308,88 L 304,87 L 300,88 L 296,87 L 292,86 L 288,85 L 284,84 Z",
+  // Japan
+  "M 310,44 L 312,42 L 315,40 L 317,38 L 319,36 L 320,38 L 318,41 L 316,44 L 313,46 Z",
+  // North America
+  "M 10,25 L 15,22 L 20,20 L 25,18 L 30,16 L 40,14 L 50,12 L 55,13 L 60,16 L 65,18 L 70,20 L 75,22 L 80,25 L 85,28 L 88,30 L 90,33 L 92,36 L 95,38 L 98,40 L 100,42 L 102,44 L 104,46 L 105,48 L 108,50 L 110,52 L 112,55 L 114,58 L 116,60 L 118,63 L 120,65 L 122,67 L 120,68 L 118,66 L 114,64 L 110,62 L 106,60 L 102,58 L 98,56 L 95,55 L 92,56 L 90,58 L 88,60 L 86,62 L 84,64 L 82,66 L 80,64 L 78,62 L 75,60 L 72,58 L 68,56 L 65,55 L 62,56 L 60,58 L 58,60 L 55,58 L 52,56 L 50,54 L 48,52 L 46,50 L 44,48 L 42,46 L 40,44 L 38,42 L 36,40 L 33,38 L 30,36 L 27,34 L 24,32 L 20,30 L 16,28 L 12,27 Z",
+  // Central America
+  "M 82,66 L 85,68 L 88,70 L 90,72 L 92,74 L 95,76 L 97,78 L 98,80 L 100,81 L 98,82 L 96,80 L 94,78 L 92,76 L 90,75 L 88,73 L 86,71 L 84,69 L 82,68 Z",
+  // South America
+  "M 100,81 L 102,82 L 105,80 L 108,78 L 110,80 L 112,82 L 115,83 L 118,84 L 120,86 L 122,88 L 125,90 L 128,92 L 130,95 L 132,98 L 135,102 L 136,106 L 135,110 L 133,114 L 131,118 L 128,122 L 126,126 L 124,130 L 122,134 L 120,137 L 118,140 L 115,142 L 112,143 L 110,140 L 108,136 L 106,132 L 105,128 L 104,124 L 103,120 L 102,116 L 100,112 L 98,108 L 96,104 L 95,100 L 94,96 L 95,92 L 96,88 L 98,85 Z",
+  // Australia
+  "M 295,115 L 300,113 L 305,112 L 310,112 L 315,113 L 320,115 L 325,118 L 330,120 L 332,123 L 333,127 L 330,130 L 326,132 L 322,133 L 318,132 L 314,130 L 310,128 L 306,126 L 302,124 L 298,122 L 296,120 L 295,118 Z",
+  // New Zealand
+  "M 350,132 L 352,130 L 354,132 L 353,135 L 351,136 L 349,135 Z M 352,136 L 354,135 L 356,137 L 355,140 L 353,140 L 352,138 Z",
+  // Greenland
+  "M 125,20 L 130,18 L 135,16 L 140,14 L 145,12 L 150,10 L 155,12 L 158,15 L 155,18 L 150,20 L 145,22 L 140,22 L 135,21 L 130,20 Z",
+  // Madagascar
+  "M 225,105 L 227,103 L 229,105 L 229,109 L 228,112 L 226,113 L 224,111 L 224,108 Z"
+];
 
 const AC_COLORS = {
   Sun:'#d4a843', Moon:'#e8e0d0', Mercury:'#9089ab', Venus:'#3dd9a0', Mars:'#e0425d',
@@ -6377,22 +6401,24 @@ function renderAstroCartoMap(lines, toggles, tapInfo, width = 400, height = 250)
     <filter id="ac-glow" x="-50%" y="-50%" width="200%" height="200%">
       <feGaussianBlur stdDeviation="1.5" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
-    <radialGradient id="ocean-rg" cx="50%" cy="40%"><stop offset="0%" stop-color="#0d1240"/><stop offset="100%" stop-color="#05081a"/></radialGradient>
+    <radialGradient id="ocean-rg" cx="50%" cy="40%"><stop offset="0%" stop-color="#101845"/><stop offset="100%" stop-color="#070b28"/></radialGradient>
   </defs>`;
 
   // Ocean
   svg += `<rect width="360" height="180" fill="url(#ocean-rg)"/>`;
 
   // Graticule
-  for (let lon = 0; lon < 360; lon += 30) svg += `<line x1="${lon}" y1="0" x2="${lon}" y2="180" stroke="rgba(255,255,255,.04)" stroke-width="0.3"/>`;
-  for (let lat = -60; lat <= 60; lat += 30) svg += `<line x1="0" y1="${90-lat}" x2="360" y2="${90-lat}" stroke="rgba(255,255,255,.04)" stroke-width="0.3"/>`;
+  for (let lon = 0; lon < 360; lon += 30) svg += `<line x1="${lon}" y1="0" x2="${lon}" y2="180" stroke="rgba(255,255,255,.06)" stroke-width="0.3"/>`;
+  for (let lat = -60; lat <= 60; lat += 30) svg += `<line x1="0" y1="${90-lat}" x2="360" y2="${90-lat}" stroke="rgba(255,255,255,.06)" stroke-width="0.3"/>`;
   // Tropics and equator
-  svg += `<line x1="0" y1="${90-23.44}" x2="360" y2="${90-23.44}" stroke="rgba(212,168,67,.12)" stroke-width="0.3" stroke-dasharray="2,3"/>`;
-  svg += `<line x1="0" y1="${90+23.44}" x2="360" y2="${90+23.44}" stroke="rgba(212,168,67,.12)" stroke-width="0.3" stroke-dasharray="2,3"/>`;
-  svg += `<line x1="0" y1="90" x2="360" y2="90" stroke="rgba(212,168,67,.18)" stroke-width="0.4"/>`;
+  svg += `<line x1="0" y1="${90-23.44}" x2="360" y2="${90-23.44}" stroke="rgba(212,168,67,.15)" stroke-width="0.3" stroke-dasharray="2,3"/>`;
+  svg += `<line x1="0" y1="${90+23.44}" x2="360" y2="${90+23.44}" stroke="rgba(212,168,67,.15)" stroke-width="0.3" stroke-dasharray="2,3"/>`;
+  svg += `<line x1="0" y1="90" x2="360" y2="90" stroke="rgba(212,168,67,.2)" stroke-width="0.4"/>`;
 
-  // Coastlines
-  svg += `<g transform="translate(180, 90) scale(1, -1)"><path d="${WORLD_COASTLINE}" fill="rgba(14,19,48,.7)" stroke="rgba(155,109,255,.25)" stroke-width="0.4"/></g>`;
+  // Continents — clearly visible against ocean
+  for (const p of WORLD_PATHS) {
+    svg += `<path d="${p}" fill="rgba(30,40,75,.9)" stroke="rgba(120,140,200,.4)" stroke-width="0.5" stroke-linejoin="round"/>`;
+  }
 
   // Planet lines
   const activePlanets = Object.keys(toggles).filter(p => toggles[p]);
@@ -6435,7 +6461,7 @@ function renderAstroCartoMap(lines, toggles, tapInfo, width = 400, height = 250)
 
   // Birth location marker
   if (lines && lines._birthLoc) {
-    const bx = ((lines._birthLoc.lon + 180) % 360);
+    const bx = ((lines._birthLoc.lon % 360) + 360 + 180) % 360;
     const by = 90 - lines._birthLoc.lat;
     svg += `<circle cx="${bx}" cy="${by}" r="2" fill="#d4a843"/>`;
     svg += `<circle cx="${bx}" cy="${by}" r="5" fill="none" stroke="#d4a843" stroke-width="0.6" opacity="0.5">`;
@@ -7270,8 +7296,8 @@ function renderAstroCartoTab() {
 
   // Header
   h += `<div class="ac-header">`;
-  h += `<div class="section-title" style="margin-top:0">Astrocartography</div>`;
-  h += `<p>Your birth chart projected onto the Earth. Each line marks where a planet was rising (ASC), setting (DSC), at its highest point (MC), or deepest point (IC) when you were born. These lines reveal the places on Earth where specific planetary energies are strongest for you — useful for choosing where to live, travel, or do business.</p>`;
+  h += `<div class="section-title" style="margin-top:0">Your World Map</div>`;
+  h += `<p>At the exact moment you were born, each planet was in a specific position in the sky. This map draws lines on Earth showing where each planet was rising, setting, at its highest, or at its lowest. Near these lines, that planet's energy is strongest for you — influencing career, love, home life, and more depending on the line type.</p>`;
   h += `</div>`;
 
   // Chart selector
@@ -7308,12 +7334,12 @@ function renderAstroCartoTab() {
     }
     h += `</div>`;
 
-    // Legend
+    // Legend — plain English
     h += `<div class="ac-legend">`;
-    h += `<span><span class="ac-leg-line" style="border-top:2px solid var(--gold)"></span> MC (career/public)</span>`;
-    h += `<span><span class="ac-leg-line" style="border-top:2px dashed var(--gold)"></span> IC (home/roots)</span>`;
-    h += `<span><span class="ac-leg-line" style="border-top:2px solid var(--gold);opacity:.6"></span> ASC (identity)</span>`;
-    h += `<span><span class="ac-leg-line" style="border-top:2px dashed var(--gold);opacity:.4"></span> DSC (relationships)</span>`;
+    h += `<span><span class="ac-leg-line" style="border-top:2px solid var(--gold)"></span> Highest (career)</span>`;
+    h += `<span><span class="ac-leg-line" style="border-top:2px dashed var(--gold)"></span> Lowest (home)</span>`;
+    h += `<span><span class="ac-leg-line" style="border-top:2px solid var(--gold);opacity:.6"></span> Rising (self)</span>`;
+    h += `<span><span class="ac-leg-line" style="border-top:2px dashed var(--gold);opacity:.4"></span> Setting (others)</span>`;
     h += `</div>`;
 
     // Map
@@ -7327,8 +7353,8 @@ function renderAstroCartoTab() {
     if (acTapInfo) {
       const voice = ASTROCARTO_VOICE[acTapInfo.nearestLine.planet];
       const angleData = voice ? voice[acTapInfo.nearestLine.angleType.toLowerCase()] : null;
-      const angleLabels = {mc:'Midheaven (MC)',ic:'Imum Coeli (IC)',asc:'Ascendant (ASC)',dsc:'Descendant (DSC)'};
-      const angleFullNames = {mc:'Career, public life, and reputation',ic:'Home, roots, and inner foundation',asc:'Identity, first impressions, and vitality',dsc:'Partnerships, relationships, and others'};
+      const angleLabels = {mc:'Highest Point — Career Line',ic:'Lowest Point — Home Line',asc:'Rising — Identity Line',dsc:'Setting — Relationship Line'};
+      const angleFullNames = {mc:'Where this planet boosts your career, visibility, and public reputation',ic:'Where this planet strengthens your home life, roots, and inner world',asc:'Where this planet amplifies who you are, your energy, and first impressions',dsc:'Where this planet draws in partnerships, love, and key relationships'};
       const angleLabel = angleLabels[acTapInfo.nearestLine.angleType] || acTapInfo.nearestLine.angleType.toUpperCase();
 
       h += `<div class="ac-info-card">`;
@@ -7348,10 +7374,10 @@ function renderAstroCartoTab() {
         h += `<div class="ac-info-detail">${angleData.detail}</div>`;
         // Practical advice
         const adviceMap = {
-          mc: 'This is an excellent location for career moves, job interviews, public speaking, or building your professional reputation.',
-          ic: 'Consider this area for settling down, buying property, family reunions, or any activity centered around your private life.',
-          asc: 'You will feel most "yourself" here. Good for first dates, personal reinvention, health retreats, and making strong impressions.',
-          dsc: 'Ideal for meeting significant others, business partnerships, negotiations, and collaborative ventures.'
+          mc: 'Great for: career moves, job interviews, public speaking, launching a business, or building your reputation.',
+          ic: 'Great for: settling down, buying property, family time, healing, or anything centered around your private life.',
+          asc: 'Great for: reinventing yourself, first dates, health retreats, solo travel, or making a strong first impression.',
+          dsc: 'Great for: meeting a partner, business partnerships, negotiations, collaborations, or deepening key relationships.'
         };
         const advice = adviceMap[acTapInfo.nearestLine.angleType];
         if (advice) {
@@ -7368,8 +7394,8 @@ function renderAstroCartoTab() {
     const activePlanets = Object.keys(acPlanetToggles).filter(p => acPlanetToggles[p] && acAstrocartoLines[p]);
     if (activePlanets.length > 0) {
       h += `<div style="padding:10px 12px 4px">`;
-      h += `<div class="section-title">Planet Lines</div>`;
-      h += `<div style="font-size:var(--fs-meta);color:var(--text3);margin-bottom:8px">Tap a planet card to highlight its lines and learn what each angle means in that location.</div>`;
+      h += `<div class="section-title">Your Planet Lines</div>`;
+      h += `<div style="font-size:var(--fs-meta);color:var(--text3);margin-bottom:8px">Each planet has lines on the map. Tap a card below to see what that planet means for you in different places.</div>`;
       h += `</div>`;
       h += `<div class="ac-planet-cards">`;
       for (const planet of activePlanets) {
@@ -7384,32 +7410,32 @@ function renderAstroCartoTab() {
         h += `<div class="ac-pc-head">`;
         h += pSVG(planet, 18, c);
         h += `<span class="ac-pc-name" style="color:${c}">${planet}</span>`;
-        h += `<span class="ac-pc-angles">MC ${Math.round(acAstrocartoLines[planet].mc)}° / IC ${Math.round(acAstrocartoLines[planet].ic)}°</span>`;
+        h += `<span class="ac-pc-angles">4 lines on map</span>`;
         h += `</div>`;
         h += `<div class="ac-pc-brief">`;
-        h += `<strong>MC:</strong> ${mcShort}. `;
-        h += `<strong>ASC:</strong> ${ascShort}.`;
+        h += `<strong>Career line:</strong> ${mcShort}. `;
+        h += `<strong>Identity line:</strong> ${ascShort}.`;
         h += `</div>`;
         h += `</div>`;
       }
       h += `</div>`;
     }
 
-    // ── Understanding the Four Angles ──
+    // ── Understanding the Four Line Types ──
     if (!acTapInfo) {
       h += `<div style="padding:10px 12px">`;
-      h += `<div class="section-title">The Four Angles</div>`;
-      h += `<div style="font-size:var(--fs-meta);color:var(--text3);margin-bottom:10px">Each planet produces four lines on the map, one for each angle. Here is what each angle governs:</div>`;
+      h += `<div class="section-title">What the Lines Mean</div>`;
+      h += `<div style="font-size:var(--fs-meta);color:var(--text3);margin-bottom:10px">Every planet draws four lines on the map. Each line type affects a different part of your life:</div>`;
       const angleExplainers = [
-        { name: 'MC (Midheaven)', icon: 'Career', desc: 'Where the planet reaches its highest point in the sky. Governs career, public reputation, authority, and how the world sees you. The MC line is where you will be most visible and recognized.' },
-        { name: 'IC (Imum Coeli)', icon: 'Home', desc: 'The deepest, most private point. Governs home, family, emotional foundations, and ancestry. The IC line connects you to your roots and inner sense of belonging.' },
-        { name: 'ASC (Ascendant)', icon: 'Self', desc: 'Where the planet rises over the horizon. Governs your personal identity, physical vitality, first impressions, and how you present yourself. The ASC line is where you feel most like "you."' },
-        { name: 'DSC (Descendant)', icon: 'Others', desc: 'Where the planet sets below the horizon. Governs partnerships, marriage, collaboration, and significant others. The DSC line draws important relationships into your life.' }
+        { name: 'Highest Point (MC)', color: 'var(--gold)', desc: 'Where the planet was directly overhead. Near this line, that planet\'s energy boosts your career, public image, and ambitions. You\'ll be noticed and recognized here.' },
+        { name: 'Lowest Point (IC)', color: 'var(--violet)', desc: 'Where the planet was directly below. Near this line, you feel deeply rooted. It strengthens home, family, and your inner emotional world.' },
+        { name: 'Rising Line (ASC)', color: 'var(--emerald)', desc: 'Where the planet was coming up over the horizon. This line amplifies your personal identity and energy. You feel most like yourself here.' },
+        { name: 'Setting Line (DSC)', color: 'var(--azure)', desc: 'Where the planet was going below the horizon. This line attracts relationships, partnerships, and key people into your life.' }
       ];
       for (const a of angleExplainers) {
-        h += `<div class="card" style="margin-bottom:8px;padding:10px 12px">`;
-        h += `<div style="font-size:var(--fs-body);font-weight:600;color:var(--gold);margin-bottom:3px">${a.name}</div>`;
-        h += `<div style="font-size:var(--fs-meta);color:var(--text2);line-height:1.5">${a.desc}</div>`;
+        h += `<div class="card" style="margin-bottom:8px;padding:12px;border-left:3px solid ${a.color}">`;
+        h += `<div style="font-size:var(--fs-body);font-weight:600;color:${a.color};margin-bottom:4px">${a.name}</div>`;
+        h += `<div style="font-size:var(--fs-meta);color:var(--text);line-height:1.55">${a.desc}</div>`;
         h += `</div>`;
       }
       h += `</div>`;

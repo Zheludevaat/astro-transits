@@ -158,6 +158,57 @@ function journalDelete(ts){
   return entries;
 }
 
+function exportLedgerJSON(){
+  const entries=loadJournal();
+  const blob=new Blob([JSON.stringify(entries,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='astro-journal-'+new Date().toISOString().slice(0,10)+'.json';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// Build a rolling ledger summary for injection into Claude synthesis prompt
+function buildLedgerSummary(lookback){
+  if(!lookback)lookback=90;
+  const entries=loadJournal();
+  const cutoff=Date.now()-(lookback*24*60*60*1000);
+  const tracked=entries.filter(e=>e.ts>=cutoff&&e.ctx&&e.ctx.synthesisText);
+  if(tracked.length<14)return null; // need minimum 14 tracked entries
+
+  const summary={totalTracked:tracked.length,lookbackDays:lookback,ratings:{hit:0,partial:0,miss:0,untested:0},moodAvg:0,moodCount:0,tokenAccuracy:{}};
+  let moodSum=0;
+  for(const e of tracked){
+    const r=e.ctx.synthesisRating;
+    if(r&&summary.ratings[r]!==undefined)summary.ratings[r]++;
+    else summary.ratings.untested++;
+    if(e.mood){moodSum+=e.mood;summary.moodCount++;}
+    // Per-token accuracy
+    const tokens=e.ctx.synthesisTokens||[];
+    for(const t of tokens){
+      const tType=t.split(':')[0];
+      if(!summary.tokenAccuracy[tType])summary.tokenAccuracy[tType]={hit:0,partial:0,miss:0,untested:0,total:0};
+      const ta=summary.tokenAccuracy[tType];
+      ta.total++;
+      if(r&&ta[r]!==undefined)ta[r]++;
+      else ta.untested++;
+    }
+  }
+  summary.moodAvg=summary.moodCount?Math.round(moodSum/summary.moodCount*10)/10:0;
+  // Mood-factor correlations: which factors correlate with mood >= 4
+  const highMoodEntries=tracked.filter(e=>e.mood>=4);
+  const factorMoodCorr={};
+  for(const e of highMoodEntries){
+    const tokens=e.ctx.synthesisTokens||[];
+    for(const t of tokens){
+      const tType=t.split(':')[0];
+      factorMoodCorr[tType]=(factorMoodCorr[tType]||0)+1;
+    }
+  }
+  summary.highMoodFactors=factorMoodCorr;
+  return summary;
+}
+
 // Find past entries with similar astro configuration
 function findEchoEntries(ctx){
   const entries=loadJournal();
@@ -1672,6 +1723,10 @@ let journalMood=null;
 let journalNoteInput='';
 let journalHistoryOpen=false;
 let journalContextPending=null; // set when user picks a mood — captures current astro snapshot
+let journalTrackSynthesis=true; // default: save synthesis with entry
+let journalSynthesisRating=null; // 'hit'|'partial'|'miss'|'untested'|null
+let journalSynthesisFeedback='';
+let journalShowSynthTracking=false; // expand the synthesis tracking section
 function pickMood(m){
   journalMood=m;
   // Context is captured at save time against current renderApp closure values via global stash
@@ -1680,15 +1735,30 @@ function pickMood(m){
   setTimeout(()=>{const el=document.getElementById('journal-note');if(el)el.focus();},50);
 }
 function onJournalNoteInput(v){journalNoteInput=v;}
+function toggleJournalSynthTracking(){journalShowSynthTracking=!journalShowSynthTracking;renderApp();}
+function setJournalSynthRating(r){journalSynthesisRating=r;renderApp();}
+function onJournalSynthFeedback(v){journalSynthesisFeedback=v;}
 function saveJournalEntry(){
   if(!journalMood){return;}
   const ctx=window._pendingJournalCtx||{};
+  // Add synthesis tracking if enabled
+  if(journalTrackSynthesis&&window._pendingSynthesisForJournal){
+    const s=window._pendingSynthesisForJournal;
+    ctx.synthesisText=s.text||'';
+    ctx.synthesisTokens=s.tokens||[];
+    ctx.synthesisSource=s.source||'deterministic';
+  }
+  if(journalSynthesisRating)ctx.synthesisRating=journalSynthesisRating;
+  if(journalSynthesisFeedback)ctx.synthesisFeedback=journalSynthesisFeedback;
   journalAddEntry(journalMood,journalNoteInput,ctx);
   journalMood=null;
   journalNoteInput='';
+  journalSynthesisRating=null;
+  journalSynthesisFeedback='';
+  journalShowSynthTracking=false;
   renderApp();
 }
-function cancelJournalEntry(){journalMood=null;journalNoteInput='';renderApp();}
+function cancelJournalEntry(){journalMood=null;journalNoteInput='';journalSynthesisRating=null;journalSynthesisFeedback='';journalShowSynthTracking=false;renderApp();}
 function toggleJournalHistory(){journalHistoryOpen=!journalHistoryOpen;renderApp();}
 function deleteJournalEntry(ts){
   if(!confirm('Delete this entry?'))return;
@@ -3793,6 +3863,8 @@ function renderApp(){
       dayRuler:pHours?pHours.dayRuler:null
     };
     const dayShape=synthesizeDayShape(dayShapeCtx);
+    // Stash synthesis for journal tracking
+    window._pendingSynthesisForJournal={text:dayShape.text,tokens:typeof extractCitations==='function'?extractCitations(dayShape.text):[],source:dayShape.source||'deterministic'};
     h+=`<div class="day-shape">`;
     h+=`<div class="day-shape-text">${renderCitations(dayShape.text)}</div>`;
     h+=`<div class="day-shape-meta">`;
@@ -4552,6 +4624,26 @@ function renderApp(){
 
     if(journalMood){
       h+=`<textarea class="journal-note" id="journal-note" placeholder="One line about what's happening (optional)..." oninput="onJournalNoteInput(this.value)">${journalNoteInput.replace(/</g,'&lt;')}</textarea>`;
+      // Synthesis tracking expand
+      h+=`<div style="margin:6px 0 8px">`;
+      h+=`<div onclick="toggleJournalSynthTracking()" style="font-size:11px;color:var(--text3);cursor:pointer;display:flex;align-items:center;gap:4px">`;
+      h+=`<span style="font-size:8px">${journalShowSynthTracking?'&#9660;':'&#9654;'}</span> Track synthesis accuracy</div>`;
+      if(journalShowSynthTracking){
+        h+=`<div style="padding:8px 0 4px">`;
+        h+=`<div style="font-size:11px;color:var(--text2);margin-bottom:6px">Did the synthesis fit today's experience?</div>`;
+        h+=`<div style="display:flex;gap:6px;flex-wrap:wrap">`;
+        const ratings=[['hit','Hit'],['partial','Partial'],['miss','Miss'],['untested','Didn\'t test']];
+        for(const [val,label] of ratings){
+          const sel=journalSynthesisRating===val?' style="background:var(--surface);color:var(--bright);border-color:var(--gold)"':'';
+          h+=`<div onclick="setJournalSynthRating('${val}')" style="font-size:11px;padding:4px 10px;border-radius:var(--r-sm);border:1px solid var(--hairline);cursor:pointer;color:var(--text2)"${sel}>${label}</div>`;
+        }
+        h+=`</div>`;
+        if(journalSynthesisRating&&journalSynthesisRating!=='untested'){
+          h+=`<textarea id="journal-synth-fb" placeholder="Why? (optional)" oninput="onJournalSynthFeedback(this.value)" style="margin-top:6px;width:100%;padding:6px 10px;font-size:11px;background:var(--surface);color:var(--text);border:1px solid var(--hairline);border-radius:var(--r-sm);resize:none;height:40px">${journalSynthesisFeedback.replace(/</g,'&lt;')}</textarea>`;
+        }
+        h+=`</div>`;
+      }
+      h+=`</div>`;
       h+=`<div class="journal-actions">`;
       h+=`<button class="j-btn cancel" onclick="cancelJournalEntry()">Cancel</button>`;
       h+=`<button class="j-btn save" onclick="saveJournalEntry()">Save entry</button>`;
@@ -5355,10 +5447,146 @@ function renderApp(){
       }
     }
   } else if(toolsSubTab==='ledger'){
-    // Ledger placeholder (Phase 3)
-    h+=`<div style="padding:20px 0;text-align:center">`;
-    h+=`<div style="font-size:14px;font-weight:600;color:var(--bright);margin-bottom:8px">Ledger</div>`;
-    h+=`<div style="font-size:12px;color:var(--text2);line-height:1.5">Journal entries and synthesis accuracy tracking. Coming soon — use the journal in Today's Layer 3 to start logging.</div>`;
+    // ═══════ LEDGER VIEW (Phase 3.3) ═══════
+    const jEntries=loadJournal();
+    const now3=Date.now();
+
+    // ── Mood Stats Strip (30/90/365) ──
+    h+=`<div style="font-size:14px;font-weight:600;color:var(--bright);margin-bottom:12px">Ledger</div>`;
+    h+=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px">`;
+    for(const span of [30,90,365]){
+      const cutoff=now3-(span*86400000);
+      const inRange=jEntries.filter(e=>e.ts>=cutoff);
+      const withMood=inRange.filter(e=>e.mood);
+      const avg=withMood.length?withMood.reduce((s,e)=>s+e.mood,0)/withMood.length:0;
+      const variance=withMood.length>1?Math.sqrt(withMood.reduce((s,e)=>s+Math.pow(e.mood-avg,2),0)/(withMood.length-1)):0;
+      h+=`<div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center">`;
+      h+=`<div style="font-size:11px;color:var(--text2);margin-bottom:4px">${span}d</div>`;
+      h+=`<div style="font-size:20px;font-weight:600;color:var(--bright)">${avg?avg.toFixed(1):'—'}</div>`;
+      h+=`<div style="font-size:10px;color:var(--text2)">${withMood.length} entries${variance?(' · var '+variance.toFixed(1)):''}</div>`;
+      h+=`</div>`;
+    }
+    h+=`</div>`;
+
+    // ── Synthesis Accuracy Panel ──
+    const tracked=jEntries.filter(e=>e.ctx&&e.ctx.synthesisText);
+    const rated=tracked.filter(e=>e.ctx.synthesisRating&&e.ctx.synthesisRating!=='untested');
+    h+=`<div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:16px">`;
+    h+=`<div style="font-size:13px;font-weight:600;color:var(--bright);margin-bottom:8px">Synthesis Accuracy</div>`;
+    if(tracked.length===0){
+      h+=`<div style="font-size:12px;color:var(--text2)">No synthesis entries tracked yet. Use the journal in Today to start logging synthesis accuracy.</div>`;
+    } else {
+      // Overall counts
+      const rc={hit:0,partial:0,miss:0,untested:0};
+      for(const e of tracked){const r=e.ctx.synthesisRating;if(r&&rc[r]!==undefined)rc[r]++;else rc.untested++;}
+      const totalRated=rc.hit+rc.partial+rc.miss;
+      const hitRate=totalRated?Math.round(rc.hit/totalRated*100):0;
+      h+=`<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px">`;
+      h+=`<span style="font-size:12px;color:#4ade80">Hit: ${rc.hit}</span>`;
+      h+=`<span style="font-size:12px;color:#fbbf24">Partial: ${rc.partial}</span>`;
+      h+=`<span style="font-size:12px;color:#f87171">Miss: ${rc.miss}</span>`;
+      h+=`<span style="font-size:12px;color:var(--text2)">Untested: ${rc.untested}</span>`;
+      if(totalRated)h+=`<span style="font-size:12px;color:var(--bright);font-weight:600">Hit rate: ${hitRate}%</span>`;
+      h+=`</div>`;
+
+      // Per-token accuracy
+      const tokenAcc={};
+      for(const e of tracked){
+        const tokens=e.ctx.synthesisTokens||[];
+        const r=e.ctx.synthesisRating||'untested';
+        for(const t of tokens){
+          const tt=t.split(':')[0];
+          if(!tokenAcc[tt])tokenAcc[tt]={hit:0,partial:0,miss:0,untested:0,total:0};
+          tokenAcc[tt].total++;
+          if(tokenAcc[tt][r]!==undefined)tokenAcc[tt][r]++;
+        }
+      }
+      const tokenTypes=Object.keys(tokenAcc).sort((a,b)=>tokenAcc[b].total-tokenAcc[a].total);
+      if(tokenTypes.length){
+        h+=`<div style="font-size:11px;color:var(--text2);margin-bottom:4px;margin-top:8px">Per-technique accuracy</div>`;
+        for(const tt of tokenTypes){
+          const ta=tokenAcc[tt];
+          const tRated=ta.hit+ta.partial+ta.miss;
+          const tHit=tRated?Math.round(ta.hit/tRated*100):null;
+          const label=typeof citationLabel==='function'?citationLabel(tt,''):tt;
+          h+=`<div style="font-size:12px;color:var(--text1);padding:3px 0;display:flex;justify-content:space-between">`;
+          h+=`<span>${label}</span>`;
+          h+=`<span style="color:var(--text2)">${ta.hit}h/${ta.partial}p/${ta.miss}m (${ta.total} total${tHit!==null?' · '+tHit+'%':''})</span>`;
+          h+=`</div>`;
+        }
+      }
+    }
+    h+=`</div>`;
+
+    // ── Echo Cluster Grid ──
+    h+=`<div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:16px">`;
+    h+=`<div style="font-size:13px;font-weight:600;color:var(--bright);margin-bottom:8px">Echo Clusters</div>`;
+    // Group entries by shared configuration signatures
+    const clusters={};
+    for(const e of jEntries){
+      if(!e.ctx)continue;
+      const sig=[e.ctx.moonSign||'',e.ctx.yearLord||'',e.ctx.monthLord||''].join('|');
+      if(!clusters[sig])clusters[sig]={entries:[],moonSign:e.ctx.moonSign,yearLord:e.ctx.yearLord,monthLord:e.ctx.monthLord};
+      clusters[sig].entries.push(e);
+    }
+    const clusterArr=Object.values(clusters).filter(c=>c.entries.length>=2).sort((a,b)=>b.entries.length-a.entries.length).slice(0,8);
+    if(clusterArr.length===0){
+      h+=`<div style="font-size:12px;color:var(--text2)">Not enough entries to form clusters. Keep logging to see patterns.</div>`;
+    } else {
+      h+=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px">`;
+      for(const c of clusterArr){
+        const moods=c.entries.filter(e=>e.mood);
+        const cAvg=moods.length?moods.reduce((s,e)=>s+e.mood,0)/moods.length:0;
+        const moodColor=cAvg>=4?'#4ade80':cAvg>=3?'#fbbf24':'#f87171';
+        h+=`<div style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px;text-align:center">`;
+        h+=`<div style="font-size:11px;color:var(--text2)">${c.moonSign||'?'} Moon</div>`;
+        h+=`<div style="font-size:11px;color:var(--text2)">${c.yearLord||'?'} yr / ${c.monthLord||'?'} mo</div>`;
+        h+=`<div style="font-size:18px;font-weight:600;color:${moodColor};margin:4px 0">${cAvg?cAvg.toFixed(1):'—'}</div>`;
+        h+=`<div style="font-size:10px;color:var(--text2)">${c.entries.length} entries</div>`;
+        h+=`</div>`;
+      }
+      h+=`</div>`;
+    }
+    h+=`</div>`;
+
+    // ── Entry Timeline ──
+    h+=`<div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:16px">`;
+    h+=`<div style="font-size:13px;font-weight:600;color:var(--bright);margin-bottom:8px">Entry Timeline</div>`;
+    const timelineEntries=jEntries.slice(0,50);
+    if(timelineEntries.length===0){
+      h+=`<div style="font-size:12px;color:var(--text2)">No journal entries yet.</div>`;
+    } else {
+      for(const e of timelineEntries){
+        const d=new Date(e.ts);
+        const dateStr=d.toLocaleDateString(undefined,{month:'short',day:'numeric'});
+        const timeStr=d.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit'});
+        const moodDots='*'.repeat(e.mood||0);
+        const moodColor=(e.mood||0)>=4?'#4ade80':(e.mood||0)>=3?'#fbbf24':'#f87171';
+        const hasSynth=e.ctx&&e.ctx.synthesisText;
+        const rating=e.ctx&&e.ctx.synthesisRating;
+        const ratingBadge=rating&&rating!=='untested'?` <span style="font-size:10px;padding:1px 5px;border-radius:3px;background:${rating==='hit'?'#166534':rating==='partial'?'#854d0e':'#991b1b'};color:#fff">${rating}</span>`:'';
+
+        h+=`<div style="border-bottom:1px solid var(--border);padding:8px 0;cursor:pointer" onclick="this.querySelector('.ledger-synth')&&this.querySelector('.ledger-synth').classList.toggle('ledger-synth-open')">`;
+        h+=`<div style="display:flex;justify-content:space-between;align-items:center">`;
+        h+=`<div><span style="font-size:12px;color:var(--text2)">${dateStr} ${timeStr}</span>`;
+        h+=` <span style="color:${moodColor};font-size:13px;font-weight:600">${moodDots}</span>${ratingBadge}</div>`;
+        if(e.ctx)h+=`<span style="font-size:10px;color:var(--text2)">${e.ctx.moonSign||''} ${e.ctx.yearLord||''}</span>`;
+        h+=`</div>`;
+        if(e.note)h+=`<div style="font-size:12px;color:var(--text1);margin-top:3px">${e.note.length>80?e.note.slice(0,80)+'...':e.note}</div>`;
+        if(hasSynth){
+          h+=`<div class="ledger-synth" style="max-height:0;overflow:hidden;transition:max-height .3s ease">`;
+          h+=`<div style="font-size:11px;color:var(--text2);margin-top:6px;padding:6px;background:var(--bg);border-radius:4px;line-height:1.5">${e.ctx.synthesisText.length>300?e.ctx.synthesisText.slice(0,300)+'...':e.ctx.synthesisText}</div>`;
+          if(e.ctx.synthesisFeedback)h+=`<div style="font-size:11px;color:var(--text2);margin-top:4px;font-style:italic">Feedback: ${e.ctx.synthesisFeedback}</div>`;
+          h+=`</div>`;
+        }
+        h+=`</div>`;
+      }
+    }
+    h+=`</div>`;
+
+    // ── Export Button ──
+    h+=`<div style="text-align:center;padding:12px 0">`;
+    h+=`<button onclick="exportLedgerJSON()" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 24px;color:var(--bright);font-size:13px;cursor:pointer">Export Journal as JSON</button>`;
     h+=`</div>`;
   }
   h+=`</div>`;

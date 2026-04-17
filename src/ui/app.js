@@ -1667,6 +1667,11 @@ try{
 
 // Swipe navigation handled below
 
+// ── Scroll-to-target after renderApp() ──
+let _scrollTarget=null;
+let _scrollPending=false;
+function scrollTo_(id){_scrollTarget=id;_scrollPending=true;}
+
 // ── Show more transits ──
 let showAllTransits=false;
 function toggleShowAll(){showAllTransits=!showAllTransits;renderApp();}
@@ -1683,7 +1688,7 @@ function toggleGuidance(){guidanceExpanded=!guidanceExpanded;
 const layersExpanded={l2:true,l3:false};
 // ── Mechanic group toggles (Layer 3 categories) ──
 const mechGroupOpen={timing:true,positions:false,timelords:false,transits:false,practice:false};
-function toggleMechGroup(g){mechGroupOpen[g]=!mechGroupOpen[g];renderApp();}
+function toggleMechGroup(g){mechGroupOpen[g]=!mechGroupOpen[g];if(mechGroupOpen[g])scrollTo_('mg-'+g);renderApp();}
 // ── Time-scale strip state ──
 let tsOpenCell=null; // 'now'|'month'|'year'|'chapter'|null
 function toggleTsCell(cell){tsOpenCell=tsOpenCell===cell?null:cell;renderApp();}
@@ -4009,13 +4014,13 @@ function renderApp(){
   }
 
   // ══════════ LAYER 3: MECHANICS (collapsed by default) ══════════
-  h+=`<div class="mech-toggle" onclick="layersExpanded.l3=!layersExpanded.l3;renderApp()">`;
+  h+=`<div class="mech-toggle" onclick="layersExpanded.l3=!layersExpanded.l3;if(layersExpanded.l3)scrollTo_('layer3-mechanics');renderApp()">`;
   h+=`${layersExpanded.l3?'Hide':'Show'} technique`;
   h+=`</div>`;
   h+=`<div id="layer3-mechanics" style="display:${layersExpanded.l3?'block':'none'}">`;
 
   // ═══ GROUP: TIMING ═══
-  h+=`<div class="mech-group ${mechGroupOpen.timing?'open':''}">`;
+  h+=`<div id="mg-timing" class="mech-group ${mechGroupOpen.timing?'open':''}">`;
   h+=`<div class="mech-group-head" onclick="toggleMechGroup('timing')"><div class="mech-group-title">Timing &amp; Hours</div><div class="mech-group-chev">&#9654;</div></div>`;
   h+=`<div class="mech-group-body">`;
 
@@ -4365,7 +4370,7 @@ function renderApp(){
     const sel=fd.offset===0?'sel':'';
     const barH=Math.max(8,fd.score*4);
     const color=fd.score>=7?'var(--azure)':fd.score<=3?'var(--crimson)':'var(--gold)';
-    h+=`<div class="forecast-day ${sel}" onclick="dayOffset+=${fd.offset};renderApp()">`;
+    h+=`<div class="forecast-day ${sel}" onclick="dayOffset+=${fd.offset};renderApp();window.scrollTo(0,0)">`;
     h+=`<div class="fd-name">${days[fd.date.getDay()]}</div>`;
     h+=`<div class="fd-num">${fd.date.getDate()}</div>`;
     h+=`<div class="fd-bar" style="height:${barH}px;background:${color};width:6px;border-radius:3px"></div>`;
@@ -4429,7 +4434,7 @@ function renderApp(){
   h+=`</div></div>`; // end timing group
 
   // ═══ GROUP: POSITIONS ═══
-  h+=`<div class="mech-group ${mechGroupOpen.positions?'open':''}">`;
+  h+=`<div id="mg-positions" class="mech-group ${mechGroupOpen.positions?'open':''}">`;
   h+=`<div class="mech-group-head" onclick="toggleMechGroup('positions')"><div class="mech-group-title">Positions &amp; Sky</div><div class="mech-group-chev">&#9654;</div></div>`;
   h+=`<div class="mech-group-body">`;
 
@@ -4755,7 +4760,7 @@ function renderApp(){
   h+=`</div></div>`; // end positions group
 
   // ═══ GROUP: TRANSITS ═══
-  h+=`<div class="mech-group ${mechGroupOpen.transits?'open':''}">`;
+  h+=`<div id="mg-transits" class="mech-group ${mechGroupOpen.transits?'open':''}">`;
   h+=`<div class="mech-group-head" onclick="toggleMechGroup('transits')"><div class="mech-group-title">Transits &amp; Aspects</div><div class="mech-group-chev">&#9654;</div></div>`;
   h+=`<div class="mech-group-body">`;
 
@@ -4812,7 +4817,7 @@ function renderApp(){
   h+=`</div></div>`; // end transits group
 
   // ═══ GROUP: TIME LORDS ═══
-  h+=`<div class="mech-group ${mechGroupOpen.timelords?'open':''}">`;
+  h+=`<div id="mg-timelords" class="mech-group ${mechGroupOpen.timelords?'open':''}">`;
   h+=`<div class="mech-group-head" onclick="toggleMechGroup('timelords')"><div class="mech-group-title">Time Lords &amp; Lots</div><div class="mech-group-chev">&#9654;</div></div>`;
   h+=`<div class="mech-group-body">`;
 
@@ -4848,7 +4853,7 @@ function renderApp(){
   h+=`</div></div>`; // end timelords group
 
   // ═══ GROUP: PRACTICE ═══
-  h+=`<div class="mech-group ${mechGroupOpen.practice?'open':''}">`;
+  h+=`<div id="mg-practice" class="mech-group ${mechGroupOpen.practice?'open':''}">`;
   h+=`<div class="mech-group-head" onclick="toggleMechGroup('practice')"><div class="mech-group-title">Journal &amp; Synthesis</div><div class="mech-group-chev">&#9654;</div></div>`;
   h+=`<div class="mech-group-body">`;
 
@@ -5947,7 +5952,7 @@ function renderApp(){
       h+=`<div style="font-size:var(--fs-label);font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text2);margin:16px 0 8px">Quick Consult</div>`;
       h+=`<div style="background:var(--card);border:1px solid var(--hairline);border-radius:var(--r-md);padding:16px;margin-bottom:12px">`;
       h+=`<div style="font-size:var(--fs-body);color:var(--text);line-height:1.6;margin-bottom:12px">Ask whether this moment is right for a specific action. The consult weighs the current planetary hour, Moon condition, active transits, and your natal chart.</div>`;
-      h+=`<button onclick="switchTab('today');layersExpanded.l3=true;mechGroupOpen.timing=true;openConsultV2();renderApp()" style="background:var(--gold-soft);border:1px solid var(--gold-line);border-radius:var(--r-sm);padding:8px 20px;color:var(--gold);font-size:var(--fs-meta);font-weight:600;cursor:pointer;width:100%">Consult the Moment</button>`;
+      h+=`<button onclick="layersExpanded.l3=true;mechGroupOpen.timing=true;openConsultV2();scrollTo_('mg-timing');switchTab('today')" style="background:var(--gold-soft);border:1px solid var(--gold-line);border-radius:var(--r-sm);padding:8px 20px;color:var(--gold);font-size:var(--fs-meta);font-weight:600;cursor:pointer;width:100%">Consult the Moment</button>`;
       h+=`</div>`;
       // Profection status
       h+=`<div style="font-size:var(--fs-label);font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text2);margin:16px 0 8px">Year Lord</div>`;
@@ -5962,7 +5967,7 @@ function renderApp(){
       h+=`<div style="font-size:var(--fs-label);font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text2);margin:16px 0 8px">Evening Reflection</div>`;
       h+=`<div style="background:var(--card);border:1px solid var(--hairline);border-radius:var(--r-md);padding:16px;margin-bottom:12px">`;
       h+=`<div style="font-size:var(--fs-body);color:var(--text);line-height:1.6;margin-bottom:12px">How did the day go? Log your mood and note, and the app will track which astrological configurations correlate with your experiences over time.</div>`;
-      h+=`<button onclick="switchTab('today');layersExpanded.l3=true;mechGroupOpen.practice=true;renderApp()" style="background:var(--violet-soft);border:1px solid var(--violet-line);border-radius:var(--r-sm);padding:8px 20px;color:var(--violet);font-size:var(--fs-meta);font-weight:600;cursor:pointer;width:100%">Open Journal</button>`;
+      h+=`<button onclick="layersExpanded.l3=true;mechGroupOpen.practice=true;scrollTo_('mg-practice');switchTab('today')" style="background:var(--violet-soft);border:1px solid var(--violet-line);border-radius:var(--r-sm);padding:8px 20px;color:var(--violet);font-size:var(--fs-meta);font-weight:600;cursor:pointer;width:100%">Open Journal</button>`;
       h+=`</div>`;
       // Day summary
       const dayShape3=window._pendingSynthesisForJournal;
@@ -6139,7 +6144,7 @@ function renderApp(){
     h+=`<div class="guide-setting">`;
     h+=`<div><div class="guide-setting-label">Status</div>`;
     h+=`<div class="guide-setting-desc">${hasKey?'Active':'Not configured'}</div></div>`;
-    h+=`<button onclick="switchTab('today');layersExpanded.l3=true;mechGroupOpen.practice=true;renderApp()" style="background:var(--card);border:1px solid var(--gold-line);border-radius:6px;padding:5px 12px;font-size:var(--fs-ui);color:var(--gold);cursor:pointer">${hasKey?'Change key':'Set up'}</button>`;
+    h+=`<button onclick="layersExpanded.l3=true;mechGroupOpen.practice=true;scrollTo_('mg-practice');switchTab('today')" style="background:var(--card);border:1px solid var(--gold-line);border-radius:6px;padding:5px 12px;font-size:var(--fs-ui);color:var(--gold);cursor:pointer">${hasKey?'Change key':'Set up'}</button>`;
     h+=`</div></div>`;
 
     // Observer Location
@@ -6289,6 +6294,19 @@ function renderApp(){
     ringArc.style.strokeDashoffset=full;
     requestAnimationFrame(()=>requestAnimationFrame(()=>{ringArc.style.strokeDashoffset=target;}));
   }
+
+  // ── Scroll-to-target: deferred scroll after DOM rebuild ──
+  if(_scrollTarget){
+    const tid=_scrollTarget;
+    _scrollTarget=null;
+    requestAnimationFrame(()=>{
+      const el=document.getElementById(tid);
+      if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+      _scrollPending=false;
+    });
+  } else {
+    _scrollPending=false;
+  }
 }
 
 // ── Event handlers ──
@@ -6321,7 +6339,7 @@ function switchTab(tab){
   if(tab==='synastry'){tab='tools';toolsSubTab='synastry';}
   if(tab==='map'){tab='tools';toolsSubTab='map';}
   if(tab==='lore'){tab='tools';toolsSubTab='lore';}
-  activeTab=tab;renderApp();window.scrollTo(0,0);
+  activeTab=tab;renderApp();if(!_scrollPending)window.scrollTo(0,0);
 }
 function switchToolsTab(sub){toolsSubTab=sub;renderApp();window.scrollTo(0,0);}
 // switchChartMode removed in v52 (Chart tab replaced by Natal tab)

@@ -1133,7 +1133,7 @@ html.light .guidance-preview:not(.expanded)::after{background:linear-gradient(tr
 
 /* SYNASTRY SECTION */
 .synastry-container {
-  padding: 1rem;
+  padding: 0 16px 20px;
 }
 
 .chart-selector {
@@ -1151,24 +1151,39 @@ html.light .guidance-preview:not(.expanded)::after{background:linear-gradient(tr
 }
 
 .add-chart-btn, .edit-chart-btn, .delete-chart-btn {
-  padding: 0.5rem 1rem;
+  padding: 7px 14px;
   background-color: var(--gold);
   color: var(--bg);
   border: none;
-  border-radius: var(--r-sm);
+  border-radius: var(--r-lg);
   font-weight: 600;
   cursor: pointer;
-  margin-right: 0.5rem;
-  margin-bottom: 1rem;
+  font-size: var(--fs-ui);
+  letter-spacing: .3px;
+  transition: transform .1s ease, opacity .15s;
 }
 
 .add-chart-btn:active, .edit-chart-btn:active, .delete-chart-btn:active {
-  opacity: 0.8;
+  transform: scale(.96);
+  opacity: 0.85;
 }
 
 .delete-chart-btn {
   background-color: var(--crimson);
 }
+
+/* Synastry section cards with staggered entry */
+.syn-section { animation: fadeUp .5s ease-out both; }
+.syn-section:nth-child(1) { animation-delay: .05s; }
+.syn-section:nth-child(2) { animation-delay: .1s; }
+.syn-section:nth-child(3) { animation-delay: .15s; }
+.syn-section:nth-child(4) { animation-delay: .2s; }
+.syn-section:nth-child(5) { animation-delay: .25s; }
+.syn-section:nth-child(6) { animation-delay: .3s; }
+.syn-section:nth-child(7) { animation-delay: .35s; }
+.syn-section:nth-child(8) { animation-delay: .4s; }
+.syn-section:nth-child(9) { animation-delay: .45s; }
+.syn-section:nth-child(10) { animation-delay: .5s; }
 
 .chart-form-modal {
   position: fixed;
@@ -1287,28 +1302,66 @@ html.light .guidance-preview:not(.expanded)::after{background:linear-gradient(tr
 }
 
 /* SYNASTRY BIWHEEL */
+.biwheel-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 0 6px;
+  animation: scaleIn .6s ease-out both;
+}
 .biwheel-container {
   display: flex;
   justify-content: center;
-  margin: 1.5rem 0;
   overflow-x: auto;
 }
-
 .biwheel-svg {
   max-width: 100%;
   height: auto;
 }
+.biwheel-legend {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  font-size: var(--fs-label);
+  color: var(--text2);
+  margin-bottom: 6px;
+}
+.biwheel-legend-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+.biwheel-hint {
+  text-align: center;
+  font-size: 10px;
+  color: var(--text3);
+  margin-top: 2px;
+}
 
-/* SYNASTRY NARRATIVE */
+/* SYNASTRY NARRATIVE (guidance-style gradient card) */
 .synastry-narrative {
-  background-color: var(--card);
-  border-left: 3px solid var(--violet);
-  padding: 1rem;
-  border-radius: var(--r-sm);
-  margin: 1.5rem 0;
-  line-height: 1.6;
+  background: linear-gradient(135deg, rgba(212,168,67,.08) 0%, rgba(155,109,255,.06) 100%);
+  border: 1px solid rgba(212,168,67,.15);
+  border-radius: var(--r-lg);
+  padding: 18px 16px;
+  position: relative;
+  overflow: hidden;
+  line-height: 1.7;
   color: var(--text);
-  font-size: 0.9rem;
+  font-size: var(--fs-body);
+}
+.synastry-narrative::before {
+  content: '';
+  position: absolute;
+  top: -30px;
+  right: -30px;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle, rgba(212,168,67,.08), transparent 70%);
+  pointer-events: none;
 }
 
 /* SYNASTRY ASPECT GRID */
@@ -1318,11 +1371,9 @@ html.light .guidance-preview:not(.expanded)::after{background:linear-gradient(tr
   gap: 1px;
   background-color: var(--surface);
   padding: 4px;
-  border-radius: var(--r-sm);
+  border-radius: var(--r-md);
   overflow-x: auto;
-  margin: 1rem 0;
 }
-
 .grid-header {
   background-color: var(--surface);
   color: var(--text2);
@@ -1335,7 +1386,6 @@ html.light .guidance-preview:not(.expanded)::after{background:linear-gradient(tr
   text-align: center;
   min-height: 30px;
 }
-
 .grid-cell {
   background-color: var(--bg);
   border: 1px solid var(--hairline);
@@ -1344,13 +1394,12 @@ html.light .guidance-preview:not(.expanded)::after{background:linear-gradient(tr
   justify-content: center;
   min-height: 30px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, transform .1s;
 }
-
 .grid-cell:active {
   background-color: var(--card-hover);
+  transform: scale(.92);
 }
-
 .grid-cell svg {
   width: 20px;
   height: 20px;
@@ -1358,14 +1407,15 @@ html.light .guidance-preview:not(.expanded)::after{background:linear-gradient(tr
 
 /* SYNASTRY ASPECT INTERPRETATION */
 .aspect-interpretation {
-  background-color: var(--card);
+  background: var(--card);
   border: 1px solid var(--gold-line);
-  border-radius: var(--r-sm);
-  padding: 1rem;
-  margin: 1rem 0;
+  border-left: 3px solid var(--gold);
+  border-radius: var(--r-md);
+  padding: 14px;
   color: var(--text);
+  animation: fadeIn 0.3s ease-out;
+  box-shadow: var(--shadow);
 }
-
 .aspect-interpretation .header {
   display: flex;
   align-items: center;
@@ -1373,57 +1423,96 @@ html.light .guidance-preview:not(.expanded)::after{background:linear-gradient(tr
   margin-bottom: 0.8rem;
   cursor: pointer;
 }
-
 .aspect-interpretation .header svg {
   width: 24px;
   height: 24px;
 }
-
 .aspect-interpretation .title {
   font-weight: 600;
   color: var(--gold);
-  font-size: 1rem;
+  font-size: var(--fs-card);
 }
-
 .aspect-interpretation .detail {
   color: var(--text2);
-  font-size: 0.85rem;
-  line-height: 1.5;
+  font-size: var(--fs-body);
+  line-height: 1.6;
   margin-top: 0.5rem;
 }
 
-/* TRADITIONAL INDICATORS CARD */
+/* TRADITIONAL INDICATORS (proper card style) */
 .traditional-indicators {
-  background-color: var(--card);
-  border: 1px solid var(--violet);
-  border-radius: var(--r-sm);
-  padding: 1rem;
-  margin: 1.5rem 0;
+  background: var(--card);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  padding: 16px;
+  box-shadow: var(--shadow);
 }
-
-.traditional-indicators h3 {
-  color: var(--violet);
-  font-size: 0.95rem;
-  margin-bottom: 0.8rem;
+.traditional-indicators .trad-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
 }
-
 .indicator-item {
-  padding: 0.6rem 0;
+  padding: 10px 0;
   border-bottom: 1px solid var(--hairline);
-  font-size: 0.85rem;
   color: var(--text);
-  line-height: 1.4;
+  line-height: 1.5;
 }
-
 .indicator-item:last-child {
   border-bottom: none;
 }
-
 .indicator-label {
-  color: var(--text2);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--gold);
   font-weight: 600;
-  display: block;
-  margin-bottom: 0.2rem;
+  font-size: var(--fs-body);
+  margin-bottom: 4px;
+}
+
+/* Synastry sign comparison grid */
+.syn-sign-grid {
+  display: grid;
+  grid-template-columns: auto 1fr 1fr;
+  gap: 6px 12px;
+  font-size: var(--fs-body);
+  align-items: center;
+}
+.syn-sign-grid .sgrid-label { color: var(--text3); font-size: var(--fs-label); }
+.syn-sign-grid .sgrid-a { color: var(--gold); font-size: var(--fs-label); font-weight: 600; }
+.syn-sign-grid .sgrid-b { color: var(--azure); font-size: var(--fs-label); font-weight: 600; }
+.syn-sign-grid .sgrid-planet { display: flex; align-items: center; gap: 4px; }
+.syn-sign-grid .sgrid-val { color: var(--text); }
+
+/* Synastry balance bar */
+.syn-balance-bar {
+  display: flex;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--surface);
+}
+.syn-balance-fill { transition: width .5s ease-out; }
+
+/* Synastry aspect list item */
+.syn-asp-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 0;
+  border-top: 1px solid var(--hairline);
+  cursor: pointer;
+  transition: background .15s;
+}
+.syn-asp-item:active { background: var(--surface); border-radius: var(--r-sm); }
+
+/* Composite moon mini-card */
+.composite-moon {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--hairline);
 }
 
 /* ASTROCARTOGRAPHY SECTION */
@@ -6923,7 +7012,7 @@ function renderSynastryTab() {
   // Header + explainer (always shown)
   h += `<div style="padding:14px 16px 8px">`;
   h += `<div class="section-title" style="margin-top:0">Synastry</div>`;
-  h += `<div style="font-size:var(--fs-body);line-height:1.5;color:var(--text2);margin-bottom:10px">Compare your birth chart with another person to see how your planets interact. Synastry reveals the natural chemistry, tensions, and themes between two people — useful for romantic relationships, friendships, or any significant bond.</div>`;
+  h += `<div style="font-size:var(--fs-body);line-height:1.55;color:var(--text2);margin-bottom:10px">Compare your birth chart with another person to see how your planets interact. Synastry reveals the natural chemistry, tensions, and themes between two people.</div>`;
   h += `</div>`;
 
   if (savedCharts.length <= 1) {
@@ -6938,19 +7027,19 @@ function renderSynastryTab() {
 
   // Chart selector row
   h += `<div style="margin-bottom:16px">`;
-  h += `<label style="color:var(--text3);font-size:0.75rem;display:block;margin-bottom:4px">Compare your chart with:</label>`;
+  h += `<label style="color:var(--text3);font-size:var(--fs-label);letter-spacing:.5px;display:block;margin-bottom:5px">Compare your chart with:</label>`;
   h += `<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">`;
-  h += `<select style="flex:1;min-width:140px;padding:8px;background:var(--card);color:var(--text);border:1px solid var(--gold-line);border-radius:var(--r-sm);font-size:0.9rem" onchange="selectedChartId=this.value;synAspects=[];synExpanded=null;renderApp();">`;
+  h += `<select style="flex:1;min-width:140px;padding:8px 10px;background:var(--card);color:var(--text);border:1px solid var(--gold-line);border-radius:var(--r-md);font-size:var(--fs-body)" onchange="selectedChartId=this.value;synAspects=[];synExpanded=null;renderApp();">`;
   h += `<option value="">-- Select --</option>`;
   for (let chart of savedCharts) {
     if (chart.id === 'alexander') continue;
     h += `<option value="${chart.id}" ${selectedChartId===chart.id?'selected':''}>${chart.name}</option>`;
   }
   h += `</select>`;
-  h += `<button class="add-chart-btn" style="margin:0;font-size:0.8rem;padding:8px 12px" onclick="showChartForm=true;editingChartId=null;renderApp();">+ Add</button>`;
+  h += `<button class="add-chart-btn" onclick="showChartForm=true;editingChartId=null;renderApp();">+ Add</button>`;
   if (selectedChartId) {
-    h += `<button class="edit-chart-btn" style="margin:0;font-size:0.75rem;padding:6px 10px;background:var(--surface);color:var(--text2);border:1px solid var(--gold-line)" onclick="editingChartId='${selectedChartId}';showChartForm=true;renderApp();">Edit</button>`;
-    h += `<button class="delete-chart-btn" style="margin:0;font-size:0.75rem;padding:6px 10px" onclick="if(confirm('Remove this person?')){deleteChart('${selectedChartId}');selectedChartId=null;renderApp();}">Remove</button>`;
+    h += `<button class="edit-chart-btn" style="background:var(--surface);color:var(--text2);border:1px solid var(--gold-line)" onclick="editingChartId='${selectedChartId}';showChartForm=true;renderApp();">Edit</button>`;
+    h += `<button class="delete-chart-btn" onclick="if(confirm('Remove this person?')){deleteChart('${selectedChartId}');selectedChartId=null;renderApp();}">Remove</button>`;
   }
   h += `</div></div>`;
 
@@ -6969,34 +7058,37 @@ function renderSynastryTab() {
       const traditional = computeSynastryTraditional(natalA, housesA, natalB, housesB, jdA, jdB, synAspects);
 
       // Biwheel with color legend
-      h += `<div style="display:flex;justify-content:center;gap:16px;font-size:0.75rem;color:var(--text2);margin-bottom:6px">`;
-      h += `<span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--gold);margin-right:4px;vertical-align:middle"></span>${chartA.name} (outer)</span>`;
-      h += `<span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--azure);margin-right:4px;vertical-align:middle"></span>${chartB.name} (inner)</span>`;
+      const wheelSize = Math.min(window.innerWidth - 48, 360);
+      h += `<div class="biwheel-wrap syn-section">`;
+      h += `<div class="biwheel-legend">`;
+      h += `<span><span class="biwheel-legend-dot" style="background:var(--gold)"></span>${chartA.name} (outer)</span>`;
+      h += `<span><span class="biwheel-legend-dot" style="background:var(--azure)"></span>${chartB.name} (inner)</span>`;
       h += `</div>`;
       h += `<div class="biwheel-container">`;
-      h += renderSynastryWheel(natalA, housesA, natalB, housesB, synAspects, 340);
+      h += renderSynastryWheel(natalA, housesA, natalB, housesB, synAspects, wheelSize);
       h += `</div>`;
-      h += `<div style="text-align:center;font-size:0.65rem;color:var(--text3);margin-bottom:12px">Lines between planets show aspects. Green = harmony, red = tension.</div>`;
+      h += `<div class="biwheel-hint">Lines between planets show aspects. Green = harmony, red = tension.</div>`;
+      h += `</div>`;
 
-      // Narrative
+      // Narrative (guidance-style gradient card)
       const narrative = generateSynastryNarrative(synAspects, traditional);
-      h += `<div class="synastry-narrative">${narrative}</div>`;
+      h += `<div class="synastry-narrative syn-section">${narrative}</div>`;
 
-      // ── Compatibility Meter ──
+      // ── Aspect Balance ──
       const easyCount = synAspects.filter(a => a.type === 'easy').length;
       const hardCount = synAspects.filter(a => a.type === 'challenging').length;
       const totalAsp = easyCount + hardCount;
       const harmonyPct = totalAsp > 0 ? Math.round((easyCount / totalAsp) * 100) : 50;
-      h += `<div class="card" style="margin:12px 0">`;
+      h += `<div class="card syn-section">`;
       h += `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">`;
       h += `<span style="font-size:var(--fs-body);font-weight:600;color:var(--text)">Aspect Balance</span>`;
-      h += `<span style="font-size:var(--fs-meta);color:var(--text3)">${totalAsp} aspects found</span>`;
+      h += `<span style="font-size:var(--fs-label);color:var(--text3)">${totalAsp} aspects found</span>`;
       h += `</div>`;
-      h += `<div style="display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--surface)">`;
-      h += `<div style="width:${harmonyPct}%;background:var(--emerald);transition:width 0.3s"></div>`;
-      h += `<div style="width:${100-harmonyPct}%;background:var(--crimson);transition:width 0.3s"></div>`;
+      h += `<div class="syn-balance-bar">`;
+      h += `<div class="syn-balance-fill" style="width:${harmonyPct}%;background:var(--emerald)"></div>`;
+      h += `<div class="syn-balance-fill" style="width:${100-harmonyPct}%;background:var(--crimson)"></div>`;
       h += `</div>`;
-      h += `<div style="display:flex;justify-content:space-between;margin-top:6px;font-size:var(--fs-label);color:var(--text3)">`;
+      h += `<div style="display:flex;justify-content:space-between;margin-top:6px;font-size:var(--fs-label)">`;
       h += `<span style="color:var(--emerald)">${easyCount} harmonious (${harmonyPct}%)</span>`;
       h += `<span style="color:var(--crimson)">${hardCount} challenging (${100-harmonyPct}%)</span>`;
       h += `</div>`;
@@ -7005,42 +7097,31 @@ function renderSynastryTab() {
       // ── Sign Comparison ──
       const signName = (lon) => { const signs = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces']; return signs[Math.floor(lon/30)%12]; };
       const signDeg = (lon) => Math.floor(lon % 30);
-      h += `<div class="card" style="margin:12px 0">`;
-      h += `<div style="font-size:var(--fs-body);font-weight:600;color:var(--gold);margin-bottom:10px">Sign Comparison</div>`;
-      h += `<div style="display:grid;grid-template-columns:auto 1fr 1fr;gap:6px 12px;font-size:var(--fs-body);align-items:center">`;
-      // Header row
-      h += `<div style="color:var(--text3);font-size:var(--fs-label)"></div>`;
-      h += `<div style="color:var(--gold);font-size:var(--fs-label);font-weight:600">${chartA.name}</div>`;
-      h += `<div style="color:var(--azure);font-size:var(--fs-label);font-weight:600">${chartB.name}</div>`;
-      // Sun
-      h += `<div style="display:flex;align-items:center;gap:4px">${pSVG('Sun',14,'var(--gold)')} <span style="color:var(--text2)">Sun</span></div>`;
-      h += `<div style="color:var(--text)">${signName(natalA.Sun)} ${signDeg(natalA.Sun)}°</div>`;
-      h += `<div style="color:var(--text)">${signName(natalB.Sun)} ${signDeg(natalB.Sun)}°</div>`;
-      // Moon
-      h += `<div style="display:flex;align-items:center;gap:4px">${pSVG('Moon',14,'var(--pearl)')} <span style="color:var(--text2)">Moon</span></div>`;
-      h += `<div style="color:var(--text)">${signName(natalA.Moon)} ${signDeg(natalA.Moon)}°</div>`;
-      h += `<div style="color:var(--text)">${signName(natalB.Moon)} ${signDeg(natalB.Moon)}°</div>`;
-      // Venus
-      h += `<div style="display:flex;align-items:center;gap:4px">${pSVG('Venus',14,'var(--emerald)')} <span style="color:var(--text2)">Venus</span></div>`;
-      h += `<div style="color:var(--text)">${signName(natalA.Venus)} ${signDeg(natalA.Venus)}°</div>`;
-      h += `<div style="color:var(--text)">${signName(natalB.Venus)} ${signDeg(natalB.Venus)}°</div>`;
-      // Mars
-      h += `<div style="display:flex;align-items:center;gap:4px">${pSVG('Mars',14,'var(--crimson)')} <span style="color:var(--text2)">Mars</span></div>`;
-      h += `<div style="color:var(--text)">${signName(natalA.Mars)} ${signDeg(natalA.Mars)}°</div>`;
-      h += `<div style="color:var(--text)">${signName(natalB.Mars)} ${signDeg(natalB.Mars)}°</div>`;
-      // ASC
-      h += `<div style="display:flex;align-items:center;gap:4px"><span style="color:var(--text2);font-weight:600;font-size:var(--fs-label)">AC</span></div>`;
-      h += `<div style="color:var(--text)">${signName(natalA.Ascendant)} ${signDeg(natalA.Ascendant)}°</div>`;
-      h += `<div style="color:var(--text)">${signName(natalB.Ascendant)} ${signDeg(natalB.Ascendant)}°</div>`;
+      h += `<div class="card syn-section">`;
+      h += `<div class="section-title" style="margin:0 0 10px">Sign Comparison</div>`;
+      h += `<div class="syn-sign-grid">`;
+      h += `<div class="sgrid-label"></div><div class="sgrid-a">${chartA.name}</div><div class="sgrid-b">${chartB.name}</div>`;
+      // Planet rows
+      const compPlanets = [
+        ['Sun','var(--gold)'],['Moon','var(--pearl)'],['Venus','var(--emerald)'],['Mars','var(--crimson)']
+      ];
+      for (const [p,c] of compPlanets) {
+        h += `<div class="sgrid-planet">${pSVG(p,14,c)} <span style="color:var(--text2)">${p}</span></div>`;
+        h += `<div class="sgrid-val">${signName(natalA[p])} ${signDeg(natalA[p])}°</div>`;
+        h += `<div class="sgrid-val">${signName(natalB[p])} ${signDeg(natalB[p])}°</div>`;
+      }
+      h += `<div class="sgrid-planet"><span style="color:var(--text2);font-weight:600;font-size:var(--fs-label)">AC</span></div>`;
+      h += `<div class="sgrid-val">${signName(natalA.Ascendant)} ${signDeg(natalA.Ascendant)}°</div>`;
+      h += `<div class="sgrid-val">${signName(natalB.Ascendant)} ${signDeg(natalB.Ascendant)}°</div>`;
       h += `</div>`;
       // Composite Moon
       const compMoonLon = ((natalA.Moon + natalB.Moon) / 2);
       const compMoonSign = signName(compMoonLon);
-      h += `<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--hairline)">`;
-      h += `<div style="font-size:var(--fs-meta);color:var(--text3);margin-bottom:4px">Composite Moon (emotional tone of the relationship)</div>`;
-      h += `<div style="display:flex;align-items:center;gap:6px">${pSVG('Moon',16,'var(--violet)')} <span style="font-size:var(--fs-body);color:var(--text);font-weight:600">${compMoonSign}</span></div>`;
+      h += `<div class="composite-moon">`;
+      h += `<div style="font-size:var(--fs-label);color:var(--text3);letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px">Composite Moon</div>`;
+      h += `<div style="display:flex;align-items:center;gap:6px">${pSVG('Moon',18,'var(--violet)')} <span style="font-size:var(--fs-sub);color:var(--bright);font-weight:600">${compMoonSign}</span></div>`;
       const compMoonDescs = {Aries:'The relationship itself feels direct, impulsive, and action-oriented. You activate each other.',Taurus:'The bond craves stability, sensory comfort, and quiet presence. Slow to start but deeply loyal.',Gemini:'Communication is the lifeblood. You talk, text, and think together constantly.',Cancer:'Emotionally protective and nurturing. Home and family become central themes.',Leo:'Warm, generous, and expressive. You bring out each other\'s confidence and playfulness.',Virgo:'Practical devotion. You show love through acts of service and thoughtful attention to detail.',Libra:'Harmony-seeking and aesthetically attuned. Partnership balance matters deeply to you both.',Scorpio:'Intensely bonded. The relationship demands depth, honesty, and emotional courage.',Sagittarius:'Adventurous and philosophical. You grow through travel, learning, and shared beliefs.',Capricorn:'Serious and goal-oriented. The bond builds something lasting and respects commitment.',Aquarius:'Friendship-based and freedom-loving. You give each other space to be individuals.',Pisces:'Deeply intuitive and compassionate. Boundaries blur in the best and most challenging ways.'};
-      h += `<div style="font-size:var(--fs-meta);color:var(--text2);line-height:1.5;margin-top:4px">${compMoonDescs[compMoonSign] || ''}</div>`;
+      h += `<div style="font-size:var(--fs-meta);color:var(--text2);line-height:1.55;margin-top:4px">${compMoonDescs[compMoonSign] || ''}</div>`;
       h += `</div>`;
       h += `</div>`;
 
@@ -7049,30 +7130,30 @@ function renderSynastryTab() {
       if (tightAspects.length > 0) {
         const topAsp = tightAspects[0];
         const topInterp = getSynastryInterpretation(`${topAsp.pA}-${topAsp.pB}|${topAsp.aspect}`, topAsp);
-        h += `<div class="card" style="margin:12px 0;border-left:3px solid var(--gold)">`;
-        h += `<div style="font-size:var(--fs-label);color:var(--text3);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:6px">Dominant Theme</div>`;
+        h += `<div class="card syn-section" style="border-left:3px solid var(--gold)">`;
+        h += `<div style="font-size:var(--fs-label);color:var(--text3);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:8px">Dominant Theme</div>`;
         h += `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">`;
-        h += pSVG(topAsp.pA, 20, 'var(--gold)');
+        h += pSVG(topAsp.pA, 22, 'var(--gold)');
         h += aSVG(topAsp.aspect, 16, topAsp.type === 'easy' ? 'var(--emerald)' : 'var(--crimson)');
-        h += pSVG(topAsp.pB, 20, 'var(--azure)');
-        h += `<span style="font-size:var(--fs-card);font-weight:600;color:var(--text)">${topAsp.pA} ${topAsp.aspect} ${topAsp.pB}</span>`;
+        h += pSVG(topAsp.pB, 22, 'var(--azure)');
+        h += `<span style="font-size:var(--fs-card);font-weight:600;color:var(--bright)">${topAsp.pA} ${topAsp.aspect} ${topAsp.pB}</span>`;
         h += `<span style="font-size:var(--fs-label);color:var(--text3);margin-left:auto">orb ${topAsp.orbActual}°</span>`;
         h += `</div>`;
-        h += `<div style="font-size:var(--fs-body);color:var(--text2);line-height:1.5">${topInterp.detail}</div>`;
+        h += `<div style="font-size:var(--fs-body);color:var(--text);line-height:1.6">${topInterp.detail}</div>`;
         h += `</div>`;
       }
 
       // ── Full Aspect List (collapsible) ──
-      h += `<div class="card" style="margin:12px 0">`;
+      h += `<div class="card syn-section">`;
       h += `<div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="synListOpen=!synListOpen;renderApp();">`;
       h += `<span style="font-size:var(--fs-body);font-weight:600;color:var(--gold)">All Aspects (${synAspects.length})</span>`;
-      h += `<span style="color:var(--text3);font-size:var(--fs-sub);transform:rotate(${typeof synListOpen!=='undefined'&&synListOpen?'180':'0'}deg);transition:transform 0.2s">&#8964;</span>`;
+      h += `<span class="section-chev${typeof synListOpen!=='undefined'&&synListOpen?' open':''}" style="color:var(--text3);font-size:var(--fs-sub)">&#9656;</span>`;
       h += `</div>`;
       if (typeof synListOpen !== 'undefined' && synListOpen) {
         const sortedAsp = [...synAspects].sort((a,b) => parseFloat(a.orbActual) - parseFloat(b.orbActual));
         for (const asp of sortedAsp) {
           const aspColor = asp.type === 'easy' ? 'var(--emerald)' : 'var(--crimson)';
-          h += `<div style="display:flex;align-items:center;gap:6px;padding:6px 0;border-top:1px solid var(--hairline);cursor:pointer" onclick="synExpanded='${asp.pA}-${asp.pB}';renderApp();">`;
+          h += `<div class="syn-asp-item" onclick="synExpanded='${asp.pA}-${asp.pB}';renderApp();">`;
           h += pSVG(asp.pA, 14, 'var(--gold)');
           h += aSVG(asp.aspect, 12, aspColor);
           h += pSVG(asp.pB, 14, 'var(--azure)');
@@ -7084,16 +7165,16 @@ function renderSynastryTab() {
       h += `</div>`;
 
       // Traditional indicators with explanations
-      h += `<div class="traditional-indicators">`;
-      h += `<h3 style="margin-bottom:4px">Traditional Compatibility Markers</h3>`;
-      h += `<div style="font-size:var(--fs-meta);color:var(--text3);margin-bottom:10px">Classical astrology uses these tests to gauge the depth and nature of a bond.</div>`;
+      h += `<div class="traditional-indicators syn-section">`;
+      h += `<div class="section-title" style="margin:0 0 4px">Compatibility Markers</div>`;
+      h += `<div style="font-size:var(--fs-meta);color:var(--text3);margin-bottom:12px;line-height:1.5">Classical astrology uses these tests to gauge the depth and nature of a bond.</div>`;
 
       h += `<div class="indicator-item">`;
-      h += `<span class="indicator-label">${pSVG('Sun',14,'var(--gold)')} ${pSVG('Moon',14,'var(--pearl)')} Lunar Contact</span>`;
-      h += `<div style="font-size:var(--fs-body);color:var(--text);line-height:1.5">`;
+      h += `<div class="indicator-label">${pSVG('Sun',14,'var(--gold)')} ${pSVG('Moon',14,'var(--pearl)')} Lunar Contact</div>`;
+      h += `<div style="font-size:var(--fs-body);color:var(--text);line-height:1.6">`;
       if (traditional.lunarContact) {
         h += `<span style="color:var(--emerald);font-weight:600">Present</span> — ${traditional.lunarContactType}. `;
-        h += `One person's Sun illuminates the other's Moon. This means you instinctively understand each other's emotional needs — the foundation of lasting intimacy.`;
+        h += `One person's Sun illuminates the other's Moon, creating instinctive emotional understanding — the foundation of lasting intimacy.`;
       } else {
         h += `<span style="color:var(--text3)">Absent</span> — No close Sun-Moon link. `;
         h += `Emotional attunement doesn't come automatically, but other aspects can build understanding over time.`;
@@ -7101,26 +7182,26 @@ function renderSynastryTab() {
       h += `</div></div>`;
 
       h += `<div class="indicator-item">`;
-      h += `<span class="indicator-label">${pSVG('Venus',14,'var(--emerald)')} ${pSVG('Mars',14,'var(--crimson)')} Venus-Mars Chemistry</span>`;
-      h += `<div style="font-size:var(--fs-body);color:var(--text);line-height:1.5">`;
+      h += `<div class="indicator-label">${pSVG('Venus',14,'var(--emerald)')} ${pSVG('Mars',14,'var(--crimson)')} Venus-Mars Chemistry</div>`;
+      h += `<div style="font-size:var(--fs-body);color:var(--text);line-height:1.6">`;
       if (traditional.venusMarsMutual) {
         h += `<span style="color:var(--emerald);font-weight:600">Present</span> — `;
-        h += `Venus (what you desire) connects with Mars (how you pursue). This is the classic indicator of physical and romantic chemistry — you naturally attract and excite each other.`;
+        h += `Venus (what you desire) connects with Mars (how you pursue). The classic indicator of physical and romantic chemistry.`;
       } else {
         h += `<span style="color:var(--text3)">Absent</span> — `;
-        h += `No direct Venus-Mars link. Attraction may express through intellectual rapport, emotional safety, or shared purpose rather than raw chemistry.`;
+        h += `No direct Venus-Mars link. Attraction may express through intellectual rapport, emotional safety, or shared purpose.`;
       }
       h += `</div></div>`;
 
       h += `<div class="indicator-item">`;
-      h += `<span class="indicator-label">${pSVG('Saturn',14,'var(--text2)')} Saturn Bonds</span>`;
-      h += `<div style="font-size:var(--fs-body);color:var(--text);line-height:1.5">`;
+      h += `<div class="indicator-label">${pSVG('Saturn',14,'var(--text2)')} Saturn Bonds</div>`;
+      h += `<div style="font-size:var(--fs-body);color:var(--text);line-height:1.6">`;
       if (traditional.saturnContacts > 2) {
         h += `<span style="color:var(--gold);font-weight:600">${traditional.saturnContacts} contacts</span> — `;
-        h += `Heavy Saturn presence. This bond feels fated and serious — Saturn creates commitment and longevity, but also tests, responsibilities, and hard-won lessons.`;
+        h += `Heavy Saturn presence. This bond feels fated and serious — commitment and longevity, but also tests and hard-won lessons.`;
       } else if (traditional.saturnContacts > 0) {
         h += `<span style="color:var(--text2);font-weight:600">${traditional.saturnContacts} contact${traditional.saturnContacts>1?'s':''}</span> — `;
-        h += `Enough Saturn structure to give the relationship staying power without it feeling heavy or restrictive.`;
+        h += `Enough Saturn structure for staying power without it feeling heavy or restrictive.`;
       } else {
         h += `<span style="color:var(--text3)">None</span> — `;
         h += `No Saturn contacts. The connection may feel light and free, but lasting commitment might need conscious building.`;
@@ -7128,21 +7209,21 @@ function renderSynastryTab() {
       h += `</div></div>`;
 
       h += `<div class="indicator-item">`;
-      h += `<span class="indicator-label">Elemental Balance</span>`;
-      h += `<div style="font-size:var(--fs-body);color:var(--text);line-height:1.5">`;
+      h += `<div class="indicator-label">Elemental Balance</div>`;
+      h += `<div style="font-size:var(--fs-body);color:var(--text);line-height:1.6">`;
       h += `<span style="color:var(--gold);font-weight:600;text-transform:capitalize">${traditional.elementBalance}</span> — `;
       const elDescriptions = {
-        'igniting': 'Both charts are fire-dominant. Expect passion, enthusiasm, and mutual inspiration — but watch for burnout or ego clashes.',
-        'inspiring': 'Fire meets air — ideas catch fire, conversation flows, and you push each other toward action. An energizing combination.',
-        'productive tension': 'Fire meets earth — one dreams, the other builds. Creative friction that produces real results if you respect the difference.',
-        'steamy tension': 'Fire meets water — intense emotional chemistry that swings between passion and overwhelm. Handle with care.',
-        'grounding': 'Both charts are earth-dominant. Practical, stable, and naturally aligned on material goals — but may need to cultivate spontaneity.',
-        'complementary': 'Earth meets air — the thinker and the builder. You cover each other\'s blind spots when you communicate well.',
-        'nurturing': 'Earth meets water — a deeply supportive combination. Emotional needs meet practical care. Naturally domestic and protective.',
-        'intellectual': 'Both charts are air-dominant. Endless conversation and ideas, but you may need to ground your connection in shared experience.',
-        'creative tension': 'Air meets water — the mind meets the heart. Stimulating but sometimes confusing when logic and feeling pull in different directions.',
-        'deeply emotional': 'Both charts are water-dominant. Profound emotional resonance and intuitive understanding — but boundaries can blur.',
-        'mixed': 'A diverse elemental spread — you bring different energies that can complement each other with mutual understanding.'
+        'igniting': 'Both charts are fire-dominant. Passion and mutual inspiration — but watch for burnout or ego clashes.',
+        'inspiring': 'Fire meets air — ideas catch fire, conversation flows, and you push each other toward action.',
+        'productive tension': 'Fire meets earth — one dreams, the other builds. Creative friction that produces real results.',
+        'steamy tension': 'Fire meets water — intense emotional chemistry that swings between passion and overwhelm.',
+        'grounding': 'Both charts are earth-dominant. Practical, stable, and naturally aligned on material goals.',
+        'complementary': 'Earth meets air — the thinker and the builder. You cover each other\'s blind spots.',
+        'nurturing': 'Earth meets water — emotional needs meet practical care. Naturally domestic and protective.',
+        'intellectual': 'Both charts are air-dominant. Endless conversation and ideas — may need grounding in shared experience.',
+        'creative tension': 'Air meets water — the mind meets the heart. Stimulating but sometimes confusing.',
+        'deeply emotional': 'Both charts are water-dominant. Profound emotional resonance — but boundaries can blur.',
+        'mixed': 'A diverse elemental spread — different energies that complement each other with mutual understanding.'
       };
       h += elDescriptions[traditional.elementBalance] || 'A blend of elemental energies.';
       h += `</div></div>`;
@@ -7150,8 +7231,8 @@ function renderSynastryTab() {
       // House overlays
       if (traditional.houseOverlays && traditional.houseOverlays.length > 0) {
         h += `<div class="indicator-item">`;
-        h += `<span class="indicator-label">House Overlays</span>`;
-        h += `<div style="font-size:var(--fs-meta);color:var(--text3);margin-bottom:6px">Where each person's key planets land in the other's chart — showing which life areas are activated.</div>`;
+        h += `<div class="indicator-label">House Overlays</div>`;
+        h += `<div style="font-size:var(--fs-meta);color:var(--text3);margin-bottom:6px">Where key planets land in the other's chart, activating specific life areas.</div>`;
         h += `<div style="font-size:var(--fs-body);color:var(--text);line-height:1.7">`;
         const HOUSE_THEMES = {1:'identity/self',2:'money/values',3:'communication',4:'home/family',5:'romance/creativity',6:'work/health',7:'partnership',8:'intimacy/transformation',9:'adventure/beliefs',10:'career/reputation',11:'community/hopes',12:'spirituality/secrets'};
         const bOverlays = traditional.houseOverlays.filter(o => o.person === 'B');
@@ -7168,9 +7249,9 @@ function renderSynastryTab() {
       h += `</div>`;
 
       // Aspect grid with section header
-      h += `<div style="margin-top:16px">`;
-      h += `<div style="font-size:0.95rem;font-weight:600;color:var(--gold);margin-bottom:4px">Aspect Grid</div>`;
-      h += `<div style="font-size:0.75rem;color:var(--text3);margin-bottom:8px">Each cell shows the aspect between ${chartA.name}'s planets (columns) and ${chartB.name}'s planets (rows). Tap a cell to read its meaning.</div>`;
+      h += `<div class="syn-section">`;
+      h += `<div class="section-title">Aspect Grid</div>`;
+      h += `<div style="font-size:var(--fs-meta);color:var(--text3);margin-bottom:8px">${chartA.name}'s planets (columns) vs ${chartB.name}'s planets (rows). Tap a cell to read its meaning.</div>`;
       h += renderSynastryGrid(natalA, natalB, synAspects);
       h += `</div>`;
     }

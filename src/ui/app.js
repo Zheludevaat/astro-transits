@@ -452,7 +452,7 @@ function checkNotifications(){
     if(notifPrefs.vocAlerts){
       const voc=isVoidOfCourse(cur.Moon,jd);
       const prev=notifPrefs.lastFiredIds['_voc'];
-      const curIs=voc&&voc.active?'on':'off';
+      const curIs=voc&&voc.voc?'on':'off';
       if(prev&&prev!==curIs){
         if(curIs==='on'){
           fireNotification('Moon goes void','The Moon has made her last aspect. Hold off on new undertakings until she enters '+(voc.nextSign||'the next sign')+'.','voc-on',{fireKey:now.getTime()});
@@ -3874,7 +3874,7 @@ function renderApp(){
 
   // ── VOC Persistent Banner (above everything) ──
   if(vocResult.voc){
-    const vocTotalMin=vocResult.endsIn?Math.round(vocResult.endsIn*24*60):0;
+    const vocTotalMin=vocResult.endsIn?Math.round(vocResult.endsIn*60):0;
     const vocH=Math.floor(vocTotalMin/60);
     const vocM=vocTotalMin%60;
     const vocTimeStr=vocH>0?`${vocH}h ${vocM}m`:`${vocM}m`;
@@ -4143,7 +4143,7 @@ function renderApp(){
     const moonDeg=(moonLonClock%30).toFixed(0);
     const phaseAngleClock=((moonLonClock-sunLonClock+360)%360);
     const illum=Math.round((1-Math.cos(phaseAngleClock*Math.PI/180))/2*100);
-    const phaseNameClock=typeof moonPhase==='function'?moonPhase(phaseAngleClock):'';
+    const phaseNameClock=typeof moonPhaseInfo==='function'?moonPhaseInfo(phaseAngleClock).name:'';
 
     h+=`<div id="mech-hours" style="text-align:center;padding:8px 0">`;
     // Build SVG
@@ -4602,7 +4602,7 @@ function renderApp(){
       }
       // VOC status inline
       if(vocResult.voc){
-        const vocTotalMin=vocResult.endsIn?Math.round(vocResult.endsIn*24*60):0;
+        const vocTotalMin=vocResult.endsIn?Math.round(vocResult.endsIn*60):0;
         const vocH=Math.floor(vocTotalMin/60);const vocM=vocTotalMin%60;
         h+=`<div style="font-size:12px;color:var(--violet);margin-top:6px;font-weight:600">Void-of-course — Moon enters ${vocResult.nextSign||'next sign'} in ${vocH>0?vocH+'h ':''}${vocM}m. Pause new starts.</div>`;
       }
@@ -5898,7 +5898,7 @@ function renderApp(){
     h+=`<div style="display:flex;align-items:center;gap:16px;background:var(--card);border:1px solid var(--hairline);border-radius:var(--r-md);padding:16px;margin-bottom:12px;cursor:pointer" onclick="switchTab('today')">`;
     h+=`<div>${moonSvgHome}</div>`;
     h+=`<div style="flex:1">`;
-    h+=`<div style="font-size:var(--fs-body);font-weight:600;color:var(--bright)">${mPhase} Moon in ${moonSign}</div>`;
+    h+=`<div style="font-size:var(--fs-body);font-weight:600;color:var(--bright)">${mPhase.name} Moon in ${moonSign.name}</div>`;
     h+=`<div style="font-size:var(--fs-meta);color:var(--text2);margin-top:2px">${vocResult.voc?'Void of course — pause new starts':'Moon is applying aspects'}</div>`;
     h+=`</div>`;
     h+=`<div style="font-size:var(--fs-label);color:var(--text3)">&#8250;</div>`;

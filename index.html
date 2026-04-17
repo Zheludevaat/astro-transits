@@ -1314,26 +1314,26 @@ html.light .guidance-preview:not(.expanded)::after{background:linear-gradient(tr
 /* SYNASTRY ASPECT GRID */
 .aspect-grid {
   display: grid;
-  grid-template-columns: 60px repeat(auto-fit, minmax(50px, 1fr));
-  gap: 2px;
+  grid-template-columns: 40px repeat(10, 1fr);
+  gap: 1px;
   background-color: var(--surface);
-  padding: 0.5rem;
+  padding: 4px;
   border-radius: var(--r-sm);
   overflow-x: auto;
-  margin: 1.5rem 0;
+  margin: 1rem 0;
 }
 
 .grid-header {
   background-color: var(--surface);
   color: var(--text2);
-  font-size: 0.65rem;
+  font-size: var(--fs-label);
   font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.3rem;
+  padding: 2px;
   text-align: center;
-  min-height: 40px;
+  min-height: 30px;
 }
 
 .grid-cell {
@@ -1342,7 +1342,7 @@ html.light .guidance-preview:not(.expanded)::after{background:linear-gradient(tr
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 40px;
+  min-height: 30px;
   cursor: pointer;
   transition: background-color 0.2s;
 }
@@ -1352,8 +1352,8 @@ html.light .guidance-preview:not(.expanded)::after{background:linear-gradient(tr
 }
 
 .grid-cell svg {
-  width: 28px;
-  height: 28px;
+  width: 20px;
+  height: 20px;
 }
 
 /* SYNASTRY ASPECT INTERPRETATION */
@@ -5861,39 +5861,76 @@ function computeSynastryAspects(natalA, natalB) {
   return aspects.sort((a, b) => parseFloat(a.orbActual) - parseFloat(b.orbActual));
 }
 
-function computeSynastryTraditional(natalA, housesA, natalB, housesB, jdA, jdB) {
+function computeSynastryTraditional(natalA, housesA, natalB, housesB, jdA, jdB, aspects) {
   const traditional = {
     lunarContact: false,
     lunarContactType: '',
     venusMarsMutual: false,
     saturnContacts: 0,
-    mutualReceptions: 0,
-    seventhRulerCheck: '',
-    eroticsConnection: false
+    elementBalance: '',
+    houseOverlays: []
   };
 
-  // Check for tight Sun-Moon contact
-  const sunMoonDiff = Math.abs(natalA.Sun - natalB.Moon);
-  const sunMoonDiff2 = Math.abs(360 - sunMoonDiff);
-  const sunMoonMinDiff = Math.min(sunMoonDiff, sunMoonDiff2);
-  if (sunMoonMinDiff < 8) {
+  // Helper: shortest arc
+  const arc = (a, b) => { const d = Math.abs(a - b); return Math.min(d, 360 - d); };
+
+  // Check Sun-Moon contact BOTH DIRECTIONS
+  const sm1 = arc(natalA.Sun, natalB.Moon);
+  const sm2 = arc(natalB.Sun, natalA.Moon);
+  const bestSM = Math.min(sm1, sm2);
+  if (bestSM < 10) {
     traditional.lunarContact = true;
-    traditional.lunarContactType = sunMoonMinDiff < 4 ? 'conjunction' : 'near-conjunction';
+    if (bestSM < 2) traditional.lunarContactType = 'exact conjunction';
+    else if (bestSM < 5) traditional.lunarContactType = 'tight conjunction';
+    else traditional.lunarContactType = 'wide conjunction';
   }
 
-  // Check for Venus-Mars contact
-  const venusMars = Math.abs(natalA.Venus - natalB.Mars);
-  const venusMars2 = Math.abs(360 - venusMars);
-  const venusMarsDiff = Math.min(venusMars, venusMars2);
-  if (venusMarsDiff < 7) {
+  // Venus-Mars contact ALL COMBINATIONS
+  const vm1 = arc(natalA.Venus, natalB.Mars);
+  const vm2 = arc(natalB.Venus, natalA.Mars);
+  const vm3 = arc(natalA.Venus, natalB.Venus);
+  const vm4 = arc(natalA.Mars, natalB.Mars);
+  if (Math.min(vm1, vm2) < 8) {
     traditional.venusMarsMutual = true;
   }
 
-  // Count Saturn contacts (hard aspects)
-  traditional.saturnContacts = synAspects.filter(a =>
+  // Count Saturn hard aspects from the computed aspects array
+  traditional.saturnContacts = aspects ? aspects.filter(a =>
     (a.pA === 'Saturn' || a.pB === 'Saturn') &&
     (a.type === 'challenging')
-  ).length;
+  ).length : 0;
+
+  // Element balance
+  const signEl = (lon) => { const s = Math.floor(lon / 30) % 12; return ['fire','earth','air','water'][s % 4]; };
+  const elCountA = { fire:0, earth:0, air:0, water:0 };
+  const elCountB = { fire:0, earth:0, air:0, water:0 };
+  for (const p of ['Sun','Moon','Mercury','Venus','Mars']) {
+    if (natalA[p] !== undefined) elCountA[signEl(natalA[p])]++;
+    if (natalB[p] !== undefined) elCountB[signEl(natalB[p])]++;
+  }
+  // Find dominant elements
+  const domA = Object.entries(elCountA).sort((a,b) => b[1]-a[1])[0][0];
+  const domB = Object.entries(elCountB).sort((a,b) => b[1]-a[1])[0][0];
+  const elCompat = { 'fire-fire':'igniting','fire-air':'inspiring','fire-earth':'productive tension','fire-water':'steamy tension',
+    'earth-earth':'grounding','earth-air':'complementary','earth-water':'nurturing','air-air':'intellectual','air-water':'creative tension','water-water':'deeply emotional' };
+  const elKey = [domA,domB].sort().join('-');
+  traditional.elementBalance = elCompat[elKey] || 'mixed';
+
+  // House overlays: where partner's Sun/Moon/Venus fall in your houses
+  const houseOf = (lon, houses) => {
+    for (let i = 11; i >= 0; i--) {
+      if (lon >= houses[i]) return i + 1;
+    }
+    return 12;
+  };
+  for (const p of ['Sun','Moon','Venus']) {
+    if (natalB[p] !== undefined) {
+      traditional.houseOverlays.push({ planet: p, person: 'B', house: houseOf(natalB[p], housesA) });
+    }
+    if (natalA[p] !== undefined) {
+      traditional.houseOverlays.push({ planet: p, person: 'A', house: houseOf(natalA[p], housesB) });
+    }
+  }
 
   return traditional;
 }
@@ -6088,20 +6125,20 @@ function renderSynastryWheel(natalA, housesA, natalB, housesB, synAspects, size 
 // ============================================================================
 
 function renderSynastryGrid(natalA, natalB, synAspects) {
-  const planetsA = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn'];
-  const planetsB = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn'];
+  const planetsA = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto'];
+  const planetsB = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto'];
 
   let html = `<div class="aspect-grid">`;
 
   // Header row
   html += `<div class="grid-header" style="border-right: 1px solid var(--hairline);"></div>`;
   for (let p of planetsA) {
-    html += `<div class="grid-header">${p.substring(0, 3)}</div>`;
+    html += `<div class="grid-header">${pSVG(p, 14, 'var(--gold)')}</div>`;
   }
 
   // Data rows
   for (let pB of planetsB) {
-    html += `<div class="grid-header" style="border-right: 1px solid var(--hairline); justify-content: flex-end; padding-right: 0.3rem;">${pB.substring(0, 3)}</div>`;
+    html += `<div class="grid-header" style="border-right: 1px solid var(--hairline);">${pSVG(pB, 14, 'var(--azure)')}</div>`;
 
     for (let pA of planetsA) {
       const asp = synAspects.find(a =>
@@ -6140,6 +6177,7 @@ function renderSynastryGrid(natalA, natalB, synAspects) {
           ${aSVG(asp.aspect, 16, asp.type === 'easy' ? 'var(--emerald)' : 'var(--crimson)')}
           ${pSVG(asp.pB, 20, 'var(--azure)')}
           <span class="title">${asp.pA} ${asp.aspect} ${asp.pB}</span>
+          <span style="font-size:var(--fs-label);color:var(--text3);margin-left:auto">orb ${asp.orbActual}°</span>
         </div>
         <div class="detail">${interp.detail}</div>
       </div>`;
@@ -6184,7 +6222,8 @@ function computeAstroCartoLines(birthJD, natalPositions) {
 function eclToRA(lon) {
   const D = Math.PI / 180;
   const OBLIQ = 23.4392911 * D;
-  return Math.atan2(Math.sin(lon * D) * Math.cos(OBLIQ), Math.cos(lon * D)) * (180 / Math.PI);
+  const ra = Math.atan2(Math.sin(lon * D) * Math.cos(OBLIQ), Math.cos(lon * D)) * (180 / Math.PI);
+  return ((ra % 360) + 360) % 360;
 }
 
 function eclToDec(lon) {
@@ -6196,11 +6235,10 @@ function eclToDec(lon) {
 function computeASCLine(ra, dec, GAST) {
   const D = Math.PI / 180;
   const points = [];
-  for (let lat = -65; lat <= 65; lat += 3) {
+  for (let lat = -65; lat <= 65; lat += 1) {
     const cosH = -Math.tan(lat * D) * Math.tan(dec * D);
-    if (cosH < -1 || cosH > 1) continue; // circumpolar or never rises
+    if (cosH < -1 || cosH > 1) continue;
     const H = Math.acos(cosH) * (180 / Math.PI);
-    // Rising: hour angle is negative (east of meridian)
     const LST = ((ra - H) % 360 + 360) % 360;
     const geoLon = ((LST - GAST) % 360 + 360) % 360;
     points.push({ lat, lon: geoLon });
@@ -6211,11 +6249,10 @@ function computeASCLine(ra, dec, GAST) {
 function computeDSCLine(ra, dec, GAST) {
   const D = Math.PI / 180;
   const points = [];
-  for (let lat = -65; lat <= 65; lat += 3) {
+  for (let lat = -65; lat <= 65; lat += 1) {
     const cosH = -Math.tan(lat * D) * Math.tan(dec * D);
     if (cosH < -1 || cosH > 1) continue;
     const H = Math.acos(cosH) * (180 / Math.PI);
-    // Setting: hour angle is positive (west of meridian)
     const LST = ((ra + H) % 360 + 360) % 360;
     const geoLon = ((LST - GAST) % 360 + 360) % 360;
     points.push({ lat, lon: geoLon });
@@ -6321,25 +6358,59 @@ function renderAstroCartoMap(lines, toggles, tapInfo, width = 400, height = 250)
       const icLon = planetLine.ic;
       svg += `<line x1="${icLon}" y1="0" x2="${icLon}" y2="180" stroke="${color}" stroke-width="1.5" opacity="0.5" stroke-dasharray="3,2"/>`;
 
-      // ASC line (polyline through points)
+      // ASC line -- split at wrap-around
       if (planetLine.asc && planetLine.asc.length > 0) {
-        let pathData = `M ${planetLine.asc[0].lon} ${90 - planetLine.asc[0].lat}`;
+        let segs = [[]];
+        segs[0].push(planetLine.asc[0]);
         for (let i = 1; i < planetLine.asc.length; i++) {
-          const pt = planetLine.asc[i];
-          pathData += ` L ${pt.lon} ${90 - pt.lat}`;
+          const prev = planetLine.asc[i-1], cur = planetLine.asc[i];
+          if (Math.abs(cur.lon - prev.lon) > 180) { segs.push([]); }
+          segs[segs.length-1].push(cur);
         }
-        svg += `<path d="${pathData}" fill="none" stroke="${color}" stroke-width="1" opacity="0.6" filter="url(#ac-glow)"/>`;
+        for (const seg of segs) {
+          if (seg.length < 2) continue;
+          let pathData = `M ${seg[0].lon} ${90 - seg[0].lat}`;
+          for (let i = 1; i < seg.length; i++) pathData += ` L ${seg[i].lon} ${90 - seg[i].lat}`;
+          svg += `<path d="${pathData}" fill="none" stroke="${color}" stroke-width="1.2" opacity="0.6" filter="url(#ac-glow)"/>`;
+        }
       }
 
-      // DSC line (polyline through points)
+      // DSC line -- split at wrap-around
       if (planetLine.dsc && planetLine.dsc.length > 0) {
-        let pathData = `M ${planetLine.dsc[0].lon} ${90 - planetLine.dsc[0].lat}`;
+        let segs = [[]];
+        segs[0].push(planetLine.dsc[0]);
         for (let i = 1; i < planetLine.dsc.length; i++) {
-          const pt = planetLine.dsc[i];
-          pathData += ` L ${pt.lon} ${90 - pt.lat}`;
+          const prev = planetLine.dsc[i-1], cur = planetLine.dsc[i];
+          if (Math.abs(cur.lon - prev.lon) > 180) { segs.push([]); }
+          segs[segs.length-1].push(cur);
         }
-        svg += `<path d="${pathData}" fill="none" stroke="${color}" stroke-width="1" opacity="0.4" stroke-dasharray="2,1"/>`;
+        for (const seg of segs) {
+          if (seg.length < 2) continue;
+          let pathData = `M ${seg[0].lon} ${90 - seg[0].lat}`;
+          for (let i = 1; i < seg.length; i++) pathData += ` L ${seg[i].lon} ${90 - seg[i].lat}`;
+          svg += `<path d="${pathData}" fill="none" stroke="${color}" stroke-width="1" opacity="0.4" stroke-dasharray="2,1"/>`;
+        }
       }
+    }
+  }
+
+  // Birth location marker
+  if (lines && lines._birthLoc) {
+    const bx = ((lines._birthLoc.lon + 180) % 360);
+    const by = 90 - lines._birthLoc.lat;
+    svg += `<circle cx="${bx}" cy="${by}" r="3" fill="var(--gold)" opacity="0.9"/>`;
+    svg += `<circle cx="${bx}" cy="${by}" r="6" fill="none" stroke="var(--gold)" stroke-width="0.5" opacity="0.5"/>`;
+    svg += `<text x="${bx + 5}" y="${by - 4}" font-size="5" fill="var(--gold)" opacity="0.7">Birth</text>`;
+  }
+
+  // MC/IC line labels
+  if (lines) {
+    for (let planet of activePlanets) {
+      if (!(planet in lines)) continue;
+      const pl = lines[planet];
+      const color = planetColors[planet] || 'var(--text2)';
+      svg += `<text x="${pl.mc + 1}" y="10" font-size="4" fill="${color}" opacity="0.6">MC</text>`;
+      svg += `<text x="${pl.ic + 1}" y="10" font-size="4" fill="${color}" opacity="0.5">IC</text>`;
     }
   }
 
@@ -6912,8 +6983,8 @@ function renderSynastryTab() {
 
   // Header + explainer (always shown)
   h += `<div style="padding:14px 16px 8px">`;
-  h += `<div style="font-size:1.1rem;font-weight:600;color:var(--gold);margin-bottom:6px">Synastry</div>`;
-  h += `<div style="font-size:0.8rem;line-height:1.5;color:var(--text2);margin-bottom:10px">Compare your birth chart with another person to see how your planets interact. Synastry reveals the natural chemistry, tensions, and themes between two people -- useful for understanding romantic relationships, friendships, or any significant bond.</div>`;
+  h += `<div class="section-title" style="margin-top:0">Synastry</div>`;
+  h += `<div style="font-size:var(--fs-body);line-height:1.5;color:var(--text2);margin-bottom:10px">Compare your birth chart with another person to see how your planets interact. Synastry reveals the natural chemistry, tensions, and themes between two people — useful for romantic relationships, friendships, or any significant bond.</div>`;
   h += `</div>`;
 
   if (savedCharts.length <= 1) {
@@ -6956,7 +7027,7 @@ function renderSynastryTab() {
       const housesB = computeWholeSignHouses(natalB.Ascendant);
 
       synAspects = computeSynastryAspects(natalA, natalB);
-      const traditional = computeSynastryTraditional(natalA, housesA, natalB, housesB, jdA, jdB);
+      const traditional = computeSynastryTraditional(natalA, housesA, natalB, housesB, jdA, jdB, synAspects);
 
       // Biwheel with color legend
       h += `<div style="display:flex;justify-content:center;gap:16px;font-size:0.75rem;color:var(--text2);margin-bottom:6px">`;
@@ -6975,46 +7046,84 @@ function renderSynastryTab() {
       // Traditional indicators with explanations
       h += `<div class="traditional-indicators">`;
       h += `<h3 style="margin-bottom:4px">Traditional Compatibility Markers</h3>`;
-      h += `<div style="font-size:0.75rem;color:var(--text3);margin-bottom:10px">Classical astrology uses these three tests to gauge the depth and nature of a bond.</div>`;
+      h += `<div style="font-size:var(--fs-meta);color:var(--text3);margin-bottom:10px">Classical astrology uses these tests to gauge the depth and nature of a bond.</div>`;
 
       h += `<div class="indicator-item">`;
-      h += `<span class="indicator-label">Lunar Contact</span>`;
-      h += `<div style="font-size:0.8rem;color:var(--text);line-height:1.5">`;
+      h += `<span class="indicator-label">${pSVG('Sun',14,'var(--gold)')} ${pSVG('Moon',14,'var(--pearl)')} Lunar Contact</span>`;
+      h += `<div style="font-size:var(--fs-body);color:var(--text);line-height:1.5">`;
       if (traditional.lunarContact) {
-        h += `<span style="color:var(--emerald);font-weight:600">Present</span> -- ${traditional.lunarContactType}. `;
-        h += `When one person's Sun connects with the other's Moon, there is a natural emotional understanding. You instinctively "get" each other.`;
+        h += `<span style="color:var(--emerald);font-weight:600">Present</span> — ${traditional.lunarContactType}. `;
+        h += `One person's Sun illuminates the other's Moon. This means you instinctively understand each other's emotional needs — the foundation of lasting intimacy.`;
       } else {
-        h += `<span style="color:var(--text3)">Absent</span> -- No strong Sun-Moon link. `;
-        h += `Emotional understanding may require more conscious effort, but other aspects can compensate.`;
+        h += `<span style="color:var(--text3)">Absent</span> — No close Sun-Moon link. `;
+        h += `Emotional attunement doesn't come automatically, but other aspects can build understanding over time.`;
       }
       h += `</div></div>`;
 
       h += `<div class="indicator-item">`;
-      h += `<span class="indicator-label">Venus-Mars Connection</span>`;
-      h += `<div style="font-size:0.8rem;color:var(--text);line-height:1.5">`;
+      h += `<span class="indicator-label">${pSVG('Venus',14,'var(--emerald)')} ${pSVG('Mars',14,'var(--crimson)')} Venus-Mars Chemistry</span>`;
+      h += `<div style="font-size:var(--fs-body);color:var(--text);line-height:1.5">`;
       if (traditional.venusMarsMutual) {
-        h += `<span style="color:var(--emerald);font-weight:600">Present</span> -- `;
-        h += `Venus (desire and beauty) connects with Mars (pursuit and passion). This is the classic indicator of physical and romantic chemistry.`;
+        h += `<span style="color:var(--emerald);font-weight:600">Present</span> — `;
+        h += `Venus (what you desire) connects with Mars (how you pursue). This is the classic indicator of physical and romantic chemistry — you naturally attract and excite each other.`;
       } else {
-        h += `<span style="color:var(--text3)">Absent</span> -- `;
-        h += `No direct Venus-Mars link. Attraction may express through other channels, or the bond may be more intellectual or spiritual.`;
+        h += `<span style="color:var(--text3)">Absent</span> — `;
+        h += `No direct Venus-Mars link. Attraction may express through intellectual rapport, emotional safety, or shared purpose rather than raw chemistry.`;
       }
       h += `</div></div>`;
 
       h += `<div class="indicator-item">`;
-      h += `<span class="indicator-label">Saturn Contacts</span>`;
-      h += `<div style="font-size:0.8rem;color:var(--text);line-height:1.5">`;
+      h += `<span class="indicator-label">${pSVG('Saturn',14,'var(--text2)')} Saturn Bonds</span>`;
+      h += `<div style="font-size:var(--fs-body);color:var(--text);line-height:1.5">`;
       if (traditional.saturnContacts > 2) {
-        h += `<span style="color:var(--gold);font-weight:600">${traditional.saturnContacts} contacts</span> -- `;
-        h += `Heavy Saturn presence. This bond feels fated and serious. Saturn creates commitment and longevity, but also tests, responsibilities, and hard lessons.`;
+        h += `<span style="color:var(--gold);font-weight:600">${traditional.saturnContacts} contacts</span> — `;
+        h += `Heavy Saturn presence. This bond feels fated and serious — Saturn creates commitment and longevity, but also tests, responsibilities, and hard-won lessons.`;
       } else if (traditional.saturnContacts > 0) {
-        h += `<span style="color:var(--text2);font-weight:600">${traditional.saturnContacts} contact${traditional.saturnContacts>1?'s':''}</span> -- `;
-        h += `Some Saturn grounding. Enough structure to give the relationship staying power without feeling burdensome.`;
+        h += `<span style="color:var(--text2);font-weight:600">${traditional.saturnContacts} contact${traditional.saturnContacts>1?'s':''}</span> — `;
+        h += `Enough Saturn structure to give the relationship staying power without it feeling heavy or restrictive.`;
       } else {
-        h += `<span style="color:var(--text3)">None</span> -- `;
-        h += `No Saturn contacts. The connection may feel light and easy, but lasting commitment might require conscious building.`;
+        h += `<span style="color:var(--text3)">None</span> — `;
+        h += `No Saturn contacts. The connection may feel light and free, but lasting commitment might need conscious building.`;
       }
       h += `</div></div>`;
+
+      h += `<div class="indicator-item">`;
+      h += `<span class="indicator-label">Elemental Balance</span>`;
+      h += `<div style="font-size:var(--fs-body);color:var(--text);line-height:1.5">`;
+      h += `<span style="color:var(--gold);font-weight:600;text-transform:capitalize">${traditional.elementBalance}</span> — `;
+      const elDescriptions = {
+        'igniting': 'Both charts are fire-dominant. Expect passion, enthusiasm, and mutual inspiration — but watch for burnout or ego clashes.',
+        'inspiring': 'Fire meets air — ideas catch fire, conversation flows, and you push each other toward action. An energizing combination.',
+        'productive tension': 'Fire meets earth — one dreams, the other builds. Creative friction that produces real results if you respect the difference.',
+        'steamy tension': 'Fire meets water — intense emotional chemistry that swings between passion and overwhelm. Handle with care.',
+        'grounding': 'Both charts are earth-dominant. Practical, stable, and naturally aligned on material goals — but may need to cultivate spontaneity.',
+        'complementary': 'Earth meets air — the thinker and the builder. You cover each other\'s blind spots when you communicate well.',
+        'nurturing': 'Earth meets water — a deeply supportive combination. Emotional needs meet practical care. Naturally domestic and protective.',
+        'intellectual': 'Both charts are air-dominant. Endless conversation and ideas, but you may need to ground your connection in shared experience.',
+        'creative tension': 'Air meets water — the mind meets the heart. Stimulating but sometimes confusing when logic and feeling pull in different directions.',
+        'deeply emotional': 'Both charts are water-dominant. Profound emotional resonance and intuitive understanding — but boundaries can blur.',
+        'mixed': 'A diverse elemental spread — you bring different energies that can complement each other with mutual understanding.'
+      };
+      h += elDescriptions[traditional.elementBalance] || 'A blend of elemental energies.';
+      h += `</div></div>`;
+
+      // House overlays
+      if (traditional.houseOverlays && traditional.houseOverlays.length > 0) {
+        h += `<div class="indicator-item">`;
+        h += `<span class="indicator-label">House Overlays</span>`;
+        h += `<div style="font-size:var(--fs-meta);color:var(--text3);margin-bottom:6px">Where each person's key planets land in the other's chart — showing which life areas are activated.</div>`;
+        h += `<div style="font-size:var(--fs-body);color:var(--text);line-height:1.7">`;
+        const HOUSE_THEMES = {1:'identity/self',2:'money/values',3:'communication',4:'home/family',5:'romance/creativity',6:'work/health',7:'partnership',8:'intimacy/transformation',9:'adventure/beliefs',10:'career/reputation',11:'community/hopes',12:'spirituality/secrets'};
+        const bOverlays = traditional.houseOverlays.filter(o => o.person === 'B');
+        const aOverlays = traditional.houseOverlays.filter(o => o.person === 'A');
+        for (const o of bOverlays) {
+          h += `${pSVG(o.planet,13,'var(--azure)')} <span style="color:var(--azure)">${chartB.name}'s ${o.planet}</span> in your <strong>House ${o.house}</strong> <span style="color:var(--text3)">(${HOUSE_THEMES[o.house]||''})</span><br>`;
+        }
+        for (const o of aOverlays) {
+          h += `${pSVG(o.planet,13,'var(--gold)')} <span style="color:var(--gold)">Your ${o.planet}</span> in ${chartB.name}'s <strong>House ${o.house}</strong> <span style="color:var(--text3)">(${HOUSE_THEMES[o.house]||''})</span><br>`;
+        }
+        h += `</div></div>`;
+      }
 
       h += `</div>`;
 
@@ -7040,8 +7149,8 @@ function renderAstroCartoTab() {
 
   // Header + explainer
   h += `<div style="padding:14px 16px 8px">`;
-  h += `<div style="font-size:1.1rem;font-weight:600;color:var(--gold);margin-bottom:6px">Astrocartography</div>`;
-  h += `<div style="font-size:0.8rem;line-height:1.5;color:var(--text2);margin-bottom:10px">Your birth chart mapped onto the world. Each line shows where a planet was rising, setting, culminating, or at its lowest point when you were born. Living near or visiting these lines activates that planet's energy in your life. Tap any line on the map to learn what it means for you.</div>`;
+  h += `<div class="section-title" style="margin-top:0">Astrocartography</div>`;
+  h += `<div style="font-size:var(--fs-body);line-height:1.5;color:var(--text2);margin-bottom:10px">Your birth chart mapped onto the world. Each line shows where a planet was rising, setting, culminating, or at its lowest point when you were born. Living near or visiting these lines activates that planet's energy in your life. Tap the map to learn what each line means.</div>`;
   h += `</div>`;
 
   // Chart selector
@@ -7063,6 +7172,7 @@ function renderAstroCartoTab() {
     if (!acAstrocartoLines || acAstrocartoLines.chart !== acSelectedChartId) {
       acAstrocartoLines = computeAstroCartoLines(jd, natalPos);
       acAstrocartoLines.chart = acSelectedChartId;
+      acAstrocartoLines._birthLoc = { lat: selectedChart.lat, lon: selectedChart.lon };
     }
 
     // Planet toggles — horizontal scrolling pill bar
@@ -7079,11 +7189,11 @@ function renderAstroCartoTab() {
     h += `</div>`;
 
     // Legend
-    h += `<div style="display:flex;gap:12px;padding:6px 12px;font-size:0.65rem;color:var(--text3);flex-wrap:wrap">`;
-    h += `<span><span style="display:inline-block;width:16px;border-top:2px solid var(--text2);vertical-align:middle;margin-right:3px"></span>MC (career)</span>`;
-    h += `<span><span style="display:inline-block;width:16px;border-top:2px dashed var(--text2);vertical-align:middle;margin-right:3px"></span>IC (home)</span>`;
-    h += `<span><span style="display:inline-block;width:16px;border-top:2px solid var(--text2);vertical-align:middle;margin-right:3px;opacity:0.5"></span>ASC (self)</span>`;
-    h += `<span><span style="display:inline-block;width:16px;border-top:2px dashed var(--text2);vertical-align:middle;margin-right:3px;opacity:0.4"></span>DSC (others)</span>`;
+    h += `<div style="display:flex;gap:10px;padding:8px 12px;font-size:var(--fs-ui);color:var(--text2);flex-wrap:wrap;background:var(--card);border-radius:var(--r-sm);margin:4px 10px">`;
+    h += `<span><span style="display:inline-block;width:20px;border-top:2.5px solid var(--gold);vertical-align:middle;margin-right:4px"></span>MC</span>`;
+    h += `<span><span style="display:inline-block;width:20px;border-top:2.5px dashed var(--gold);vertical-align:middle;margin-right:4px"></span>IC</span>`;
+    h += `<span><span style="display:inline-block;width:20px;border-top:2.5px solid var(--gold);vertical-align:middle;margin-right:4px;opacity:0.6"></span>ASC</span>`;
+    h += `<span><span style="display:inline-block;width:20px;border-top:2.5px dashed var(--gold);vertical-align:middle;margin-right:4px;opacity:0.4"></span>DSC</span>`;
     h += `</div>`;
 
     // Map
@@ -7112,6 +7222,22 @@ function renderAstroCartoTab() {
         h += `<div style="font-size:0.8rem;line-height:1.6;color:var(--text);margin-top:10px">${angleData.detail}</div>`;
       }
       h += `</div>`;
+    }
+
+    // Summary of strongest lines near birth location
+    const summaryPlanets = Object.keys(acPlanetToggles).filter(p => acPlanetToggles[p] && lines[p]);
+    if (summaryPlanets.length > 0 && !acTapInfo) {
+      h += `<div style="padding:10px 12px">`;
+      h += `<div style="font-size:var(--fs-body);font-weight:600;color:var(--gold);margin-bottom:6px">Your active lines</div>`;
+      h += `<div style="font-size:var(--fs-meta);color:var(--text2);line-height:1.6">`;
+      for (const planet of summaryPlanets) {
+        const pl = lines[planet];
+        const voice = ASTROCARTO_VOICE[planet];
+        if (voice && voice.mc) {
+          h += `${pSVG(planet, 13, planetColors[planet] || 'var(--text2)')} <strong style="color:var(--text)">${planet}</strong> — ${voice.mc.short.split('.')[0]}.<br>`;
+        }
+      }
+      h += `</div></div>`;
     }
   }
 

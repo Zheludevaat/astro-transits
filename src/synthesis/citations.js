@@ -74,6 +74,52 @@ function extractCitations(text){
   return tokens;
 }
 
+// Map token types to Lore REFERENCES terms
+const CITATION_LORE={
+  'profection-year':'Annual Profection',
+  'profection-month':'Annual Profection',
+  'sect-light':'Sect',
+  'transit':null, // no single lore entry
+  'hour':'Planetary Hours',
+  'mansion':'Lunar Mansions',
+  'decan-sun':'Decans',
+  'decan-moon':'Decans',
+  'zr-spirit':'Zodiacal Releasing',
+  'zr-fortune':'Zodiacal Releasing',
+  'firdaria-major':'Firdaria',
+  'firdaria-sub':'Firdaria',
+  'lot':'Lots',
+  'return-solar':'Solar Return',
+  'return-lunar':'Lunar Return',
+  'fixed-star':'Fixed Stars',
+  'house':null
+};
+
+// Open the Lore entry for a token type — navigate to Tools/Lore with the term expanded
+function openLoreForToken(tokenType){
+  const loreTerm=CITATION_LORE[tokenType];
+  if(!loreTerm){console.log('No lore entry for token type:',tokenType);return;}
+  // Check if REFERENCES has this term
+  if(typeof REFERENCES!=='undefined'){
+    const found=REFERENCES.some(r=>r.term===loreTerm);
+    if(!found){console.log('REFERENCES missing entry for:',loreTerm);return;}
+  }
+  // Expand the term and navigate to lore
+  if(typeof refExpanded!=='undefined')refExpanded[loreTerm]=true;
+  if(typeof switchTab==='function'){switchTab('tools');}
+  if(typeof switchToolsTab==='function'){switchToolsTab('lore');}
+  // Scroll to term after render
+  setTimeout(()=>{
+    const cards=document.querySelectorAll('.ref-term');
+    for(const c of cards){
+      if(c.textContent.trim().replace(/[^a-zA-Z ]/g,'')===loreTerm){
+        c.closest('.ref-card')?.scrollIntoView({behavior:'smooth',block:'center'});
+        break;
+      }
+    }
+  },150);
+}
+
 // Open a Layer 3 mechanic: scroll into view and expand
 function openMechanic(mechId,tokenType,tokenValue){
   // First ensure Layer 3 is visible

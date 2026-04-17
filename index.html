@@ -1577,6 +1577,26 @@ html.light .guidance-preview:not(.expanded)::after{background:linear-gradient(tr
   padding: 10px 12px; cursor: pointer; transition: border-color 0.15s;
 }
 .ac-planet-card:active { border-color: var(--gold-line); }
+
+.ac-region-row { display:flex;gap:4px;padding:6px 12px;flex-wrap:wrap;justify-content:center; }
+.ac-region-btn { padding:4px 8px;background:var(--card);border:1px solid var(--hairline);border-radius:12px;color:var(--text3);font-size:9px;cursor:pointer;transition:all 0.15s; }
+.ac-region-btn.active { background:var(--gold);border-color:var(--gold);color:var(--bg);font-weight:600; }
+.ac-intention-row { display:flex;gap:5px;padding:4px 12px 2px;flex-wrap:wrap;justify-content:center; }
+.ac-intention-chip { padding:5px 10px;border-radius:14px;font-size:10px;cursor:pointer;border:1px solid var(--hairline);background:var(--card);color:var(--text2);transition:all 0.15s;font-weight:500; }
+.ac-intention-chip.active { color:var(--bg);font-weight:700; }
+.ac-crossing-marker { fill:#d4a843;stroke:#000;stroke-width:0.3; }
+.ac-crossing-card { background:var(--card);border:1px solid var(--hairline);border-radius:var(--r-sm);padding:10px 12px;margin-bottom:6px; }
+.ac-crossing-head { display:flex;align-items:center;gap:6px;margin-bottom:4px; }
+.ac-crossing-city { font-size:var(--fs-label);color:var(--text3); }
+.ac-crossing-interp { font-size:var(--fs-meta);color:var(--text2);line-height:1.5; }
+.ac-saved-section { padding:10px 12px; }
+.ac-saved-card { background:var(--card);border:1px solid var(--hairline);border-radius:var(--r-sm);padding:10px 12px;margin-bottom:6px;position:relative; }
+.ac-saved-name { font-size:var(--fs-body);font-weight:600;color:var(--gold);margin-bottom:4px; }
+.ac-saved-coords { font-size:var(--fs-label);color:var(--text3);margin-bottom:6px; }
+.ac-saved-lines { font-size:var(--fs-meta);color:var(--text2);line-height:1.5; }
+.ac-saved-remove { position:absolute;top:8px;right:8px;background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px; }
+.ac-save-btn { display:inline-flex;align-items:center;gap:4px;padding:6px 12px;background:var(--gold-soft);border:1px solid var(--gold-line);border-radius:14px;color:var(--gold);font-size:var(--fs-label);cursor:pointer;margin-top:8px; }
+
 .ac-planet-card .ac-pc-head {
   display: flex; align-items: center; gap: 8px; margin-bottom: 4px;
 }
@@ -3388,6 +3408,92 @@ Write an integrated reading. Open with the quality of the day, move through the 
   return{text,usage:data.usage||null,ts:Date.now()};
 }
 
+// ── Synastry Claude synthesis ──
+const SYN_SYNTH_CACHE_KEY='astro_syn_synth_cache_v1';
+function loadSynSynthCache(){try{return JSON.parse(localStorage.getItem(SYN_SYNTH_CACHE_KEY)||'null');}catch(e){return null;}}
+function saveSynSynthCache(c){try{localStorage.setItem(SYN_SYNTH_CACHE_KEY,JSON.stringify(c));}catch(e){}}
+
+const CLAUDE_SYNASTRY_PROMPT=`You are a traditional astrologer writing a synastry reading for two people. The voice is educated, grounded, and literary — closer to Demetra George or Liz Greene than to newspaper-column astrology. You work primarily from Hellenistic and classical doctrine.
+
+Rules:
+- Ground every observation in the actual planetary positions and aspects provided.
+- Weight tight aspects (small orb) more heavily. Sun-Moon, Venus-Mars, and Saturn contacts are the backbone.
+- Address the native directly ("you") and refer to the partner by name.
+- Discuss chemistry, emotional compatibility, communication style, growth edges, and long-term potential.
+- Never give generic sign-based pop astrology. Use the concrete positions.
+- Be honest about challenges while offering constructive framing.
+- Favor English prose paragraphs. Avoid bullet lists. Avoid emoji.
+- Keep the reading under ~800 words.`;
+
+function buildSynastryContext(natalA,natalB,synAspects,traditional,chartAName,chartBName){
+  const fmt=(p,v)=>{const s=signOf(v);return`${p} ${s.name} ${s.degree.toFixed(1)}°`;};
+  const planets=['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto','Chiron','NorthNode'];
+  const topAspects=[...synAspects].sort((a,b)=>parseFloat(a.orbActual)-parseFloat(b.orbActual)).slice(0,15).map(a=>`${a.pA} ${a.aspect} ${a.pB} (orb ${a.orbActual}°, ${a.type})`);
+  const overlays=(traditional.houseOverlays||[]).map(o=>`${o.person==='B'?chartBName:chartAName}'s ${o.planet} in ${o.person==='B'?chartAName:chartBName}'s House ${o.house}`);
+  return{
+    personA:{name:chartAName,planets:planets.filter(p=>natalA[p]!==undefined).map(p=>fmt(p,natalA[p])),ascendant:natalA.Ascendant!==undefined?`${signOf(natalA.Ascendant).name} ${signOf(natalA.Ascendant).degree.toFixed(1)}°`:null},
+    personB:{name:chartBName,planets:planets.filter(p=>natalB[p]!==undefined).map(p=>fmt(p,natalB[p])),ascendant:natalB.Ascendant!==undefined?`${signOf(natalB.Ascendant).name} ${signOf(natalB.Ascendant).degree.toFixed(1)}°`:null},
+    synastryAspects:topAspects,
+    houseOverlays:overlays,
+    lunarContact:traditional.lunarContact?traditional.lunarContactType:'none',
+    venusMarsChem:traditional.venusMarsMutual?traditional.venusMarsMutualType:'none',
+    saturnContacts:traditional.saturnContacts,
+    elementBalance:traditional.elementBalance,
+    receptions:(traditional.receptions||[]).map(r=>r.type==='mutual'?`${r.pA} and ${r.pB}: mutual reception`:`${r.guest} received by ${r.host} in ${r.sign}`)
+  };
+}
+
+async function callClaudeSynastry(synCtx){
+  const key=loadClaudeKey();
+  if(!key)throw new Error('No API key set.');
+  const userMsg=`Here is the synastry data for ${synCtx.personA.name} and ${synCtx.personB.name}.
+
+Chart context (JSON):
+\`\`\`json
+${JSON.stringify(synCtx,null,2)}
+\`\`\`
+
+Write an integrated synastry reading. Open with the overall chemistry and tone of the relationship, move through the most significant inter-chart contacts, discuss the growth edges, and close with the long-term potential. Name the relevant aspects concretely.`;
+
+  const body={
+    model:CLAUDE_MODEL,
+    max_tokens:2048,
+    system:CLAUDE_SYNASTRY_PROMPT,
+    messages:[{role:'user',content:userMsg}]
+  };
+  const ctrl=new AbortController();
+  const timeoutId=setTimeout(()=>ctrl.abort(),60000);
+  let res;
+  try{
+    res=await fetch(CLAUDE_API_URL,{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':key,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body:JSON.stringify(body),
+      signal:ctrl.signal
+    });
+  }catch(e){
+    clearTimeout(timeoutId);
+    if(e.name==='AbortError')throw new Error('Request timed out after 60s.');
+    throw e;
+  }
+  clearTimeout(timeoutId);
+  if(!res.ok){
+    let errText='';
+    try{const j=await res.json();errText=j.error&&j.error.message||JSON.stringify(j);}catch(e){errText=await res.text();}
+    errText=String(errText).replace(/<[^>]*>/g,'').slice(0,400);
+    const hint=res.status===429?' (rate limited)':res.status===401?' (check API key)':'';
+    throw new Error('API error '+res.status+hint+': '+errText);
+  }
+  const data=await res.json();
+  const text=(data.content||[]).map(c=>c.type==='text'?c.text:'').join('\n').trim();
+  return{text,usage:data.usage||null,ts:Date.now()};
+}
+
 // ══════════════════════════════════════════════════════════════
 // NOTIFICATIONS (foreground + optional service-worker)
 // ══════════════════════════════════════════════════════════════
@@ -5131,8 +5237,9 @@ function renderMoonSVG(phaseAngle,size){
 }
 
 let showAspectLines=true,showTransitRing=true;
+let showNatalAspectLines=true;
 
-function renderChartWheel(cur,transits,jd,size){
+function renderChartWheel(cur,transits,jd,size,natalAspects){
   size=size||400;const cx=size/2,cy=size/2;
   const lt=document.documentElement.classList.contains("light");
   // Ring layout (outside→in): zodiac band → transit ring → house/natal area → center
@@ -5312,6 +5419,22 @@ function renderChartWheel(cur,transits,jd,size){
     }
   }
 
+  // ── NATAL ASPECT LINES (natal-to-natal) ──
+  if(showNatalAspectLines&&natalAspects&&natalAspects.length>0){
+    for(const a of natalAspects){
+      const lon1=NATAL[a.p1];const lon2=NATAL[a.p2];
+      if(lon1===undefined||lon2===undefined)continue;
+      const p1=toXY(lon1,rNatal);const p2=toXY(lon2,rNatal);
+      let color='var(--text3)';
+      if(a.type==='hard')color='var(--crimson)';
+      else if(a.type==='easy')color='var(--emerald)';
+      else if(a.aspect==='conjunction')color='var(--gold)';
+      const opacity=a.orb<1?0.6:a.orb<3?0.4:0.2;
+      const width=a.orb<1?1.2:a.orb<3?0.8:0.5;
+      svg+=`<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="${color}" stroke-width="${width}" opacity="${opacity}"/>`;
+    }
+  }
+
   // ── CENTER ──
   svg+=`<text x="${cx}" y="${cy-5}" text-anchor="middle" fill="var(--gold)" font-size="7" font-weight="600" letter-spacing="1.5" opacity=".5">NATAL</text>`;
   svg+=sChG(signOf(NATAL.Sun).index, cx-7, cy+6, 9, 'var(--gold)', 0.4);
@@ -5368,12 +5491,171 @@ let selectedChartId=null;
 let synAspects=[];
 let synExpanded=null;
 let synListOpen=false;
+let synSynthResult=loadSynSynthCache(),synSynthLoading=false,synSynthError='',synSynthExpanded=false;
+let synTechOpen=false;
 let showChartForm=false;
 let editingChartId=null;
 let acPlanetToggles={Sun:true,Moon:true,Venus:true,Mars:true,Jupiter:true,Saturn:true,Mercury:false,Uranus:false,Neptune:false,Pluto:false,Chiron:false,NorthNode:false};
 let acTapInfo=null;
 let acSelectedChartId='alexander';
 let acAstrocartoLines=null;
+
+const MAP_REGIONS={
+  world:{name:'World',viewBox:'0 0 360 180'},
+  europe:{name:'Europe',viewBox:'140 15 80 55'},
+  northAmerica:{name:'N. America',viewBox:'20 15 130 75'},
+  asia:{name:'Asia',viewBox:'200 10 160 85'},
+  southAmerica:{name:'S. America',viewBox:'75 70 80 80'},
+  africa:{name:'Africa',viewBox:'150 30 80 105'},
+  oceania:{name:'Oceania',viewBox:'275 70 90 80'},
+  middleEast:{name:'Middle East',viewBox:'195 30 65 50'}
+};
+let acRegion='world';
+
+const ASTRO_INTENTIONS={
+  romance:{label:'Romance',planets:['Venus','Moon','Jupiter'],color:'var(--emerald)'},
+  career:{label:'Career',planets:['Sun','Jupiter','Saturn','Mars'],color:'var(--gold)'},
+  creativity:{label:'Creativity',planets:['Venus','Sun','Neptune','Moon'],color:'var(--violet)'},
+  healing:{label:'Healing',planets:['Chiron','Moon','Neptune','Jupiter'],color:'var(--azure)'},
+  settling:{label:'Roots',planets:['Moon','Saturn','Venus','Sun'],color:'var(--pearl)'}
+};
+let acIntention=null;
+
+let savedLocations=(function(){try{return JSON.parse(localStorage.getItem('ac_saved_locs_v1'))||[];}catch(e){return[];}})();
+function loadSavedLocations(){try{savedLocations=JSON.parse(localStorage.getItem('ac_saved_locs_v1'))||[];}catch(e){savedLocations=[];}}
+function saveSavedLocations(){try{localStorage.setItem('ac_saved_locs_v1',JSON.stringify(savedLocations));}catch(e){}}
+function addSavedLocation(name,lat,geoLon){savedLocations.push({name,lat,geoLon,id:Date.now()});saveSavedLocations();}
+function removeSavedLocation(id){savedLocations=savedLocations.filter(l=>l.id!==id);saveSavedLocations();renderApp();}
+
+function getNearestLines(lat,geoLon,lines,topN){
+  topN=topN||3;
+  const results=[];
+  const lonDist=function(a,b){const d=Math.abs(a-b);return Math.min(d,360-d);};
+  for(var planet of Object.keys(acPlanetToggles)){
+    if(!(planet in lines))continue;
+    var pl=lines[planet];
+    results.push({planet:planet,angleType:'mc',dist:lonDist(geoLon,pl.mc)});
+    results.push({planet:planet,angleType:'ic',dist:lonDist(geoLon,pl.ic)});
+    if(pl.asc){for(var pt of pl.asc){results.push({planet:planet,angleType:'asc',dist:Math.sqrt(lonDist(geoLon,pt.lon)**2+(lat-pt.lat)**2)});}}
+    if(pl.dsc){for(var pt of pl.dsc){results.push({planet:planet,angleType:'dsc',dist:Math.sqrt(lonDist(geoLon,pt.lon)**2+(lat-pt.lat)**2)});}}
+  }
+  results.sort(function(a,b){return a.dist-b.dist;});
+  var seen={};
+  return results.filter(function(r){var k=r.planet+r.angleType;if(seen[k])return false;seen[k]=true;return true;}).slice(0,topN);
+}
+
+function selectIntention(key){
+  if(acIntention===key){acIntention=null;}
+  else{
+    acIntention=key;
+    var intent=ASTRO_INTENTIONS[key];
+    for(var p of Object.keys(acPlanetToggles))acPlanetToggles[p]=false;
+    for(var p of intent.planets)acPlanetToggles[p]=true;
+  }
+  renderApp();
+}
+
+function computeLineCrossings(lines,activeToggles){
+  var crossings=[];
+  var activePlanets=Object.keys(activeToggles).filter(function(p){return activeToggles[p]&&lines[p];});
+  var toMapX=function(geoLon){return((geoLon+180)%360+360)%360;};
+  for(var i=0;i<activePlanets.length;i++){
+    for(var j=0;j<activePlanets.length;j++){
+      if(i===j)continue;
+      var pA=activePlanets[i],pB=activePlanets[j];
+      var plA=lines[pA],plB=lines[pB];
+      var curveTypes=['asc','dsc'];
+      for(var ci=0;ci<curveTypes.length;ci++){
+        var curveType=curveTypes[ci];
+        if(!plA[curveType]||plA[curveType].length<2)continue;
+        var angTypes=['mc','ic'];
+        for(var ai=0;ai<angTypes.length;ai++){
+          var angType=angTypes[ai];
+          var vLon=plB[angType];
+          if(vLon===undefined)continue;
+          var vX=toMapX(vLon);
+          var pts=plA[curveType];
+          for(var k=1;k<pts.length;k++){
+            var x0=toMapX(pts[k-1].lon),x1=toMapX(pts[k].lon);
+            if(Math.abs(x1-x0)>180)continue;
+            if((x0<=vX&&x1>=vX)||(x1<=vX&&x0>=vX)){
+              var t=(x0===x1)?0.5:(vX-x0)/(x1-x0);
+              var crossLat=pts[k-1].lat+t*(pts[k].lat-pts[k-1].lat);
+              if(crossLat>85||crossLat<-85)continue;
+              crossings.push({pA:pA,pB:pB,angA:curveType,angB:angType,lat:crossLat,lon:vX,geoLon:vLon});
+            }
+          }
+        }
+      }
+    }
+  }
+  var unique=[];
+  for(var c of crossings){
+    var dup=unique.find(function(u){return Math.abs(u.lat-c.lat)<3&&Math.abs(u.lon-c.lon)<3&&((u.pA===c.pA&&u.pB===c.pB)||(u.pA===c.pB&&u.pB===c.pA));});
+    if(!dup)unique.push(c);
+  }
+  return unique;
+}
+
+function getCrossingInterpretation(pA,pB,angA,angB){
+  var benefics=['Venus','Jupiter','Sun','Moon'];
+  var malefics=['Mars','Saturn','Pluto','Uranus'];
+  var angTheme={asc:'personal identity',dsc:'relationships',mc:'career and public life',ic:'home and inner world'};
+  var isBenA=benefics.indexOf(pA)>=0,isBenB=benefics.indexOf(pB)>=0;
+  var themeA=angTheme[angA]||angA,themeB=angTheme[angB]||angB;
+  if(isBenA&&isBenB)return 'A powerfully fortunate crossing: '+pA+' energy flowing through your '+themeA+' meets '+pB+' influence on your '+themeB+'. This location amplifies luck, ease, and natural gifts in both areas simultaneously.';
+  if(!isBenA&&!isBenB)return 'An intense crossing: '+pA+' energy channeled through your '+themeA+' collides with '+pB+' force on your '+themeB+'. This location demands conscious effort but offers deep transformation if you engage honestly with both energies.';
+  return 'A dynamic crossing: '+pA+' energy through your '+themeA+' intersects '+pB+' influence on your '+themeB+'. This location blends challenge and opportunity, pushing growth in both domains through creative tension.';
+}
+
+function getChartSpecificAstroCartoVoice(planet,angleType,natalPositions){
+  var base=ASTROCARTO_VOICE[planet]?ASTROCARTO_VOICE[planet][angleType]:null;
+  if(!base||!natalPositions)return base;
+  var pLon=natalPositions[planet];
+  if(pLon===undefined||pLon===null)return base;
+  var signs=['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
+  var signIdx=Math.floor(((pLon%360)+360)%360/30);
+  var sign=signs[signIdx];
+  var dignities={Sun:{dom:'Leo',exalt:'Aries',det:'Aquarius',fall:'Libra'},Moon:{dom:'Cancer',exalt:'Taurus',det:'Capricorn',fall:'Scorpio'},Venus:{dom:'Taurus',exalt:'Pisces',det:'Scorpio',fall:'Virgo'},Mars:{dom:'Aries',exalt:'Capricorn',det:'Libra',fall:'Cancer'},Jupiter:{dom:'Sagittarius',exalt:'Cancer',det:'Gemini',fall:'Capricorn'},Saturn:{dom:'Capricorn',exalt:'Libra',det:'Cancer',fall:'Aries'},Mercury:{dom:'Gemini',exalt:'Virgo',det:'Sagittarius',fall:'Pisces'}};
+  var dig=dignities[planet];
+  var dignityNote='';
+  if(dig){
+    if(sign===dig.dom)dignityNote='Your natal '+planet+' is in its home sign '+sign+', making this line exceptionally powerful and natural for you.';
+    else if(sign===dig.exalt)dignityNote='Your natal '+planet+' is exalted in '+sign+', amplifying the best qualities of this line with extra grace and ease.';
+    else if(sign===dig.det)dignityNote='Your natal '+planet+' is in detriment in '+sign+', which means this line may require more conscious effort to harness, but offers unique growth.';
+    else if(sign===dig.fall)dignityNote='Your natal '+planet+' is in fall in '+sign+', suggesting this line presents challenges that become your greatest teachers.';
+    else dignityNote='Your natal '+planet+' is in '+sign+', giving this line a distinctly '+sign+' flavor in how it manifests for you.';
+  }else{
+    dignityNote='Your natal '+planet+' is in '+sign+', coloring this line with '+sign+' qualities unique to your chart.';
+  }
+  var houseNum=natalPositions.Ascendant!==undefined?Math.floor(((pLon-natalPositions.Ascendant+360)%360)/30)+1:null;
+  var houseNote='';
+  if(houseNum){
+    var suf=houseNum===1?'st':houseNum===2?'nd':houseNum===3?'rd':'th';
+    houseNote=' In your natal chart, '+planet+' lives in the '+houseNum+suf+' house, so this line also activates those life themes.';
+  }
+  return{title:base.title,short:base.short,detail:base.detail+' '+dignityNote+houseNote};
+}
+
+function getPlanetSpecificAdvice(planet,angleType){
+  var advice={
+    Sun:{mc:'Great for: leadership roles, career breakthroughs, public recognition, executive positions, or launching a personal brand.',ic:'Great for: finding your true home, connecting with family heritage, building a legacy property, or deepening self-understanding.',asc:'Great for: reinventing your image, solo ventures, health optimization, athletic pursuits, or stepping into the spotlight.',dsc:'Great for: meeting a life partner, creative collaborations, business partnerships with complementary strengths, or diplomatic work.'},
+    Moon:{mc:'Great for: careers in nurturing fields (therapy, teaching, hospitality), public emotional engagement, or community leadership.',ic:'Great for: creating a sanctuary home, healing childhood patterns, gardening, cooking, or deepening family bonds.',asc:'Great for: emotional healing retreats, developing intuition, creative writing, photography, or counseling training.',dsc:'Great for: deepening emotional intimacy, finding a nurturing partner, co-parenting, or building trust-based partnerships.'},
+    Venus:{mc:'Great for: careers in beauty, art, design, or finance. Networking events, brand partnerships, or luxury business ventures.',ic:'Great for: home beautification, real estate investment, hosting gatherings, culinary exploration, or creating domestic harmony.',asc:'Great for: first dates, personal styling, beauty treatments, art classes, or social events where charm matters.',dsc:'Great for: romantic getaways, marriage proposals, couples retreats, art collecting with a partner, or financial partnerships.'},
+    Mars:{mc:'Great for: competitive career moves, athletic competitions, military or emergency services, surgery, or assertive negotiations.',ic:'Great for: home renovation, physical training regimens, martial arts practice, building personal courage, or confronting family issues.',asc:'Great for: physical challenges, adventure travel, starting a fitness journey, assertiveness training, or solo competitive events.',dsc:'Great for: passionate relationships, business partnerships requiring drive, competitive team ventures, or couples fitness goals.'},
+    Jupiter:{mc:'Great for: career expansion, international business, higher education, publishing, legal matters, or philanthropic leadership.',ic:'Great for: expanding your home, hosting international guests, philosophical study, family celebrations, or real estate growth.',asc:'Great for: study abroad, spiritual retreats, personal growth workshops, adventure travel, or expanding your worldview.',dsc:'Great for: cross-cultural partnerships, joint business expansion, generous gift-giving, or finding a partner who broadens your horizons.'},
+    Saturn:{mc:'Great for: long-term career building, government work, earning certifications, establishing authority, or restructuring your professional path.',ic:'Great for: establishing permanent roots, family responsibility, estate planning, structural home improvements, or ancestral research.',asc:'Great for: discipline-building, long-term health commitments, professional certifications, or projects requiring patience and endurance.',dsc:'Great for: committed long-term partnerships, business contracts, mentorship relationships, or building lasting institutional bonds.'},
+    Mercury:{mc:'Great for: writing, publishing, teaching, public speaking, journalism, tech careers, or communication-based ventures.',ic:'Great for: home-based writing projects, local community engagement, learning new skills, or organizing your personal space.',asc:'Great for: networking, study, learning languages, starting a blog or podcast, or any venture requiring quick thinking.',dsc:'Great for: intellectual partnerships, co-writing, debate teams, couples counseling, or communication-heavy collaborations.'},
+    Uranus:{mc:'Great for: tech startups, innovation roles, activism, breaking into unconventional careers, or sudden professional pivots.',ic:'Great for: smart home technology, unconventional living arrangements, breaking family patterns, or digital nomad setups.',asc:'Great for: radical self-reinvention, technology adoption, joining activist movements, or embracing your unique identity.',dsc:'Great for: unconventional relationships, tech partnerships, freedom-based arrangements, or collaborating with innovators.'},
+    Neptune:{mc:'Great for: artistic careers, spiritual teaching, healing professions, filmmaking, music, or compassionate public service.',ic:'Great for: meditation retreats, creating a spiritual home, waterfront living, artistic sanctuary building, or dream work.',asc:'Great for: spiritual development, artistic expression, photography, dance, acting, or developing psychic sensitivity.',dsc:'Great for: soul-level partnerships, artistic collaborations, spiritual practice with a partner, or compassionate joint ventures.'},
+    Pluto:{mc:'Great for: psychology careers, investigation, financial management, power restructuring, or deep institutional reform.',ic:'Great for: deep psychological work, ancestral healing, property renovation from the ground up, or confronting family shadows.',asc:'Great for: personal transformation, intense self-work, depth psychology, or stepping into personal power.',dsc:'Great for: transformative partnerships, therapeutic relationships, joint financial ventures, or deep trust-building.'},
+    Chiron:{mc:'Great for: healing professions, mentoring, teaching from experience, holistic health careers, or advocacy work.',ic:'Great for: family healing, creating a healing home environment, processing childhood wounds, or ancestral reconciliation.',asc:'Great for: healing retreats, personal wound integration, training as a healer or counselor, or vulnerability-based leadership.',dsc:'Great for: healing partnerships, mutual mentoring, therapeutic relationships, or working with wounded healers.'},
+    NorthNode:{mc:'Great for: aligning career with soul purpose, taking destined professional leaps, or finding your true calling.',ic:'Great for: finding your soul-home, karmic family healing, establishing roots aligned with your destiny.',asc:'Great for: stepping into your destined identity, courage-building, or authentic self-expression aligned with your path.',dsc:'Great for: destined partnerships, karmic relationship lessons, or meeting soul-aligned collaborators.'}
+  };
+  var pa=advice[planet];
+  if(!pa)return 'Great for: exploring how this planet\'s energy manifests in this location for you.';
+  return pa[angleType]||'Great for: exploring how this planet\'s energy manifests in this location for you.';
+}
 
 let todayZone=(function(){try{return localStorage.getItem('today_zone_v1')||'all';}catch(e){return 'all';}})();
 function setTodayZone(z){todayZone=z;try{localStorage.setItem('today_zone_v1',z);}catch(e){}renderApp();window.scrollTo({top:0,behavior:'smooth'});}
@@ -5541,6 +5823,20 @@ function synthRenderBlocks(text){
   return blocks.map(b=>`<div class="synth-section">${esc(b).replace(/\n/g,'<br>')}</div>`).join('');
 }
 function synthClearKey(){if(confirm('Remove saved API key?')){synthKey='';saveClaudeKey('');renderApp();}}
+function renderInlineKeySetup(){
+  let s='';
+  s+=`<div class="synth-sub">Bring your own Anthropic API key. Requests go directly from this device to Anthropic — no intermediate server.</div>`;
+  s+=`<div class="synth-field">`;
+  s+=`<label class="synth-field-label">Anthropic API Key ${synthKey?'<span style="color:var(--emerald);font-weight:700">· saved</span>':'<span class="optional">(required)</span>'}</label>`;
+  s+=`<input class="synth-input" type="${synthKeyVisible?'text':'password'}" placeholder="sk-ant-..." value="${(synthKey||'').replace(/"/g,'&quot;')}" onchange="synthSetKey(this.value)" oninput="synthKey=this.value" onclick="event.stopPropagation()">`;
+  s+=`</div>`;
+  s+=`<div class="synth-row" style="margin-bottom:10px">`;
+  s+=`<button class="synth-btn secondary" onclick="synthToggleKeyVisible()">${synthKeyVisible?'Hide':'Show'}</button>`;
+  if(synthKey)s+=`<button class="synth-btn secondary" onclick="synthClearKey()">Remove</button>`;
+  s+=`</div>`;
+  s+=`<div class="synth-safety"><strong>On privacy:</strong> your key lives only in this browser\'s localStorage. It never leaves your device except as an Authorization header to Anthropic.</div>`;
+  return s;
+}
 function synthSetFocus(f){synthFocus=f;}
 function synthToggleKeyVisible(){synthKeyVisible=!synthKeyVisible;renderApp();}
 function synthToggleSettings(){synthSettingsOpen=!synthSettingsOpen;renderApp();}
@@ -5596,6 +5892,34 @@ async function synthGenerate(){
   }catch(e){
     synthError=e.message||String(e);
     synthLoading=false;renderApp();
+  }
+}
+
+async function synSynthGenerate(){
+  if(!synthKey){synSynthError='Please add your Anthropic API key first.';renderApp();return;}
+  if(synSynthResult&&synSynthResult.ts){
+    const ageMin=Math.round((Date.now()-synSynthResult.ts)/60000);
+    if(ageMin<60){if(!confirm('You have a reading from '+ageMin+' min ago. Generate a new one?'))return;}
+  }
+  synSynthLoading=true;synSynthError='';renderApp();
+  try{
+    const chartA=savedCharts.find(c=>c.id==='alexander');
+    const chartB=savedCharts.find(c=>c.id===selectedChartId);
+    if(!chartA||!chartB)throw new Error('Select a person first.');
+    const{natal:natalA,jd:jdA}=getChartNatal(chartA);
+    const{natal:natalB,jd:jdB}=getChartNatal(chartB);
+    const housesA=computeWholeSignHouses(natalA.Ascendant);
+    const housesB=computeWholeSignHouses(natalB.Ascendant);
+    const aspects=computeSynastryAspects(natalA,natalB);
+    const traditional=computeSynastryTraditional(natalA,housesA,natalB,housesB,jdA,jdB,aspects);
+    const ctx=buildSynastryContext(natalA,natalB,aspects,traditional,chartA.name,chartB.name);
+    const result=await callClaudeSynastry(ctx);
+    synSynthResult=result;saveSynSynthCache(result);
+    synSynthExpanded=true;
+    synSynthLoading=false;renderApp();
+  }catch(e){
+    synSynthError=e.message||String(e);
+    synSynthLoading=false;renderApp();
   }
 }
 
@@ -6079,6 +6403,53 @@ function computeSynastryTraditional(natalA, housesA, natalB, housesB, jdA, jdB, 
   return traditional;
 }
 
+function computeRelationshipWeather(natalA,natalB,partnerName){
+  const items=[];
+  const now=getTargetDate();
+  const jd=julianDate(now.getUTCFullYear(),now.getUTCMonth()+1,now.getUTCDate(),now.getUTCHours()+now.getUTCMinutes()/60);
+  const cur=computeAll(jd);
+  const transitPlanets=['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn'];
+  const natalTargets=['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn','Ascendant'];
+  const WEATHER_ASPECTS=[{name:'conjunction',angle:0,orb:6,type:'conjunction'},{name:'opposition',angle:180,orb:5,type:'hard'},{name:'trine',angle:120,orb:5,type:'easy'},{name:'square',angle:90,orb:5,type:'hard'},{name:'sextile',angle:60,orb:4,type:'easy'}];
+  const meanings={
+    'Sun|conjunction':'Your identity lights up this area of the relationship.',
+    'Sun|trine':'Easy warmth and mutual visibility between you.',
+    'Sun|square':'Friction around ego and direction — stay aware.',
+    'Sun|opposition':'Opposing pulls on shared goals.',
+    'Moon|conjunction':'Emotional activation — feelings run close to the surface.',
+    'Moon|trine':'Emotional ease and nurturing energy flows.',
+    'Moon|square':'Emotional friction — be gentle with each other.',
+    'Venus|conjunction':'Affection and attraction heightened.',
+    'Venus|trine':'Harmonious romantic and social energy.',
+    'Venus|square':'Desire and values may clash — negotiate.',
+    'Mars|conjunction':'Passionate energy — channel it well.',
+    'Mars|trine':'Productive shared drive and motivation.',
+    'Mars|square':'Irritability or arguments more likely — take space if needed.',
+    'Mars|opposition':'Tension around action and desire.',
+    'Saturn|conjunction':'Serious tone — commitment themes surface.',
+    'Saturn|square':'Pressure and restriction on this connection.',
+    'Jupiter|conjunction':'Expansion and optimism in the relationship.',
+    'Jupiter|trine':'Growth and good fortune between you.',
+  };
+  for(const tp of transitPlanets){
+    if(cur[tp]===undefined)continue;
+    for(const np of natalTargets){
+      if(natalB[np]===undefined)continue;
+      for(const asp of WEATHER_ASPECTS){
+        let d=Math.abs(norm(cur[tp]-natalB[np])-asp.angle);if(d>180)d=360-d;
+        if(d<=asp.orb){
+          const key=`${tp}|${asp.name}`;
+          const meaning=meanings[key]||`Transit ${tp} ${asp.name} activates ${partnerName}'s ${np}.`;
+          items.push({transit:tp,natal:np,aspect:asp.name,type:asp.type,orb:d.toFixed(1),meaning});
+          break;
+        }
+      }
+    }
+  }
+  items.sort((a,b)=>parseFloat(a.orb)-parseFloat(b.orb));
+  return items.slice(0,6);
+}
+
 function generateSynastryNarrative(aspects, traditional) {
   let parts = [];
 
@@ -6314,6 +6685,7 @@ function renderSynastryGrid(natalA, natalB, synAspects) {
           <span style="font-size:var(--fs-label);color:var(--text3);margin-left:auto">orb ${asp.orbActual}°</span>
         </div>
         <div class="detail">${interp.detail}</div>
+        ${interp.counsel?'<div style="margin-top:10px;padding:10px;border-radius:var(--r-sm);background:rgba(61,217,160,.06);border-left:2px solid var(--emerald)"><div style="font-size:var(--fs-label);font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--emerald);margin-bottom:4px">Counsel</div><div style="font-size:var(--fs-body);line-height:1.6;color:var(--text)">'+interp.counsel+'</div></div>':''}
       </div>`;
     }
   }
@@ -6331,7 +6703,7 @@ function renderSynInterpretationCard(key) {
   if (!asp) return '';
   const interpKey = `${asp.pA}-${asp.pB}|${asp.aspect}`;
   const interp = getSynastryInterpretation(interpKey, asp);
-  return `<div class="aspect-interpretation">
+  let card=`<div class="aspect-interpretation">
     <div class="header" onclick="toggleSynInterpretation('${pA}','${pB}')">
       ${pSVG(asp.pA, 20, 'var(--gold)')}
       ${aSVG(asp.aspect, 16, asp.type === 'easy' ? 'var(--emerald)' : 'var(--crimson)')}
@@ -6339,8 +6711,15 @@ function renderSynInterpretationCard(key) {
       <span class="title">${asp.pA} ${asp.aspect} ${asp.pB}</span>
       <span style="font-size:var(--fs-label);color:var(--text3);margin-left:auto">orb ${asp.orbActual}°</span>
     </div>
-    <div class="detail">${interp.detail}</div>
-  </div>`;
+    <div class="detail">${interp.detail}</div>`;
+  if(interp.counsel){
+    card+=`<div style="margin-top:10px;padding:10px;border-radius:var(--r-sm);background:rgba(61,217,160,.06);border-left:2px solid var(--emerald)">`;
+    card+=`<div style="font-size:var(--fs-label);font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--emerald);margin-bottom:4px">Counsel</div>`;
+    card+=`<div style="font-size:var(--fs-body);line-height:1.6;color:var(--text)">${interp.counsel}</div>`;
+    card+=`</div>`;
+  }
+  card+=`</div>`;
+  return card;
 }
 
 function toggleSynInterpretation(pA, pB) {
@@ -6506,8 +6885,8 @@ const CITIES = [
   { name: 'Rome', lat: 41.9, lon: 12.5 }
 ];
 
-function renderAstroCartoMap(lines, toggles, tapInfo, width = 400, height = 250) {
-  let svg = `<svg width="${width}" height="${height}" viewBox="0 0 360 180" xmlns="http://www.w3.org/2000/svg">`;
+function renderAstroCartoMap(lines, toggles, tapInfo, width = 400, height = 250, viewBox = '0 0 360 180') {
+  let svg = `<svg width="${width}" height="${height}" viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg">`;
 
   // Defs — glow filter and ocean gradient
   svg += `<defs>
@@ -6579,6 +6958,15 @@ function renderAstroCartoMap(lines, toggles, tapInfo, width = 400, height = 250)
 
       // Tiny planet icon at MC top
       svg += `<g transform="translate(${toMapX(pl.mc)}, 4)" opacity="0.8">${pSVG(planet, 7, c)}</g>`;
+    }
+  }
+
+  // Line crossing diamond markers
+  if (lines) {
+    const xings = computeLineCrossings(lines, toggles);
+    for (const xing of xings) {
+      const cx = xing.lon, cy = 90 - xing.lat;
+      svg += `<polygon points="${cx},${cy-3} ${cx+2},${cy} ${cx},${cy+3} ${cx-2},${cy}" class="ac-crossing-marker" opacity="0.85"/>`;
     }
   }
 
@@ -6897,7 +7285,8 @@ const SYNASTRY_VOICE = {
   },
   'Sun-Sun|opposition': {
     feel: 'Opposite expressions of purpose that either polarize or perfectly complement.',
-    detail: 'You approach life from fundamentally different angles, which can create friction or perfect balance depending on intention. The challenge is to appreciate rather than oppose each other\'s styles. This aspect often indicates growth through accepting differences.'
+    detail: 'You approach life from fundamentally different angles, which can create friction or perfect balance depending on intention. The challenge is to appreciate rather than oppose each other\'s styles. This aspect often indicates growth through accepting differences.',
+    counsel: 'Practice curiosity over judgment. When your partner\'s approach baffles you, ask "help me understand why this matters to you." Oppositions work best when each person takes turns leading in their area of strength.'
   },
   'Sun-Sun|trine': {
     feel: 'Effortless mutual respect and admiration of each other\'s way of being.',
@@ -6905,7 +7294,8 @@ const SYNASTRY_VOICE = {
   },
   'Sun-Sun|square': {
     feel: 'Competitive tension that either motivates or frustrates both partners.',
-    detail: 'You challenge each other\'s sense of self, which can either spur growth or create friction. The key is channeling this competitive energy constructively. Together you accomplish more than either would alone, but cooperation doesn\'t come naturally.'
+    detail: 'You challenge each other\'s sense of self, which can either spur growth or create friction. The key is channeling this competitive energy constructively. Together you accomplish more than either would alone, but cooperation doesn\'t come naturally.',
+    counsel: 'Name the competition when you notice it. Say "I think we\'re competing right now" — it defuses the charge. Find arenas where you can be on the same team: a shared project, a game, a cause you both care about. Channel the friction into fuel.'
   },
   'Sun-Sun|sextile': {
     feel: 'Comfortable support and gentle encouragement of each other\'s personal goals.',
@@ -6919,7 +7309,8 @@ const SYNASTRY_VOICE = {
   },
   'Sun-Moon|opposition': {
     feel: 'Opposing emotional and personal styles that create tension and fascination.',
-    detail: 'The Sun person\'s way of being triggers the Moon person\'s deepest emotional reactions. This can manifest as attraction to someone who both attracts and unsettles you. The dynamic demands maturity to appreciate opposites rather than demand sameness.'
+    detail: 'The Sun person\'s way of being triggers the Moon person\'s deepest emotional reactions. This can manifest as attraction to someone who both attracts and unsettles you. The dynamic demands maturity to appreciate opposites rather than demand sameness.',
+    counsel: 'Recognize that the fascination and the friction have the same source. The Moon person should avoid making the Sun person responsible for their emotional security. The Sun person should resist dismissing the Moon person\'s reactions as irrational.'
   },
   'Sun-Moon|trine': {
     feel: 'Easy emotional understanding; the Moon person naturally feels safe with the Sun person.',
@@ -6927,7 +7318,8 @@ const SYNASTRY_VOICE = {
   },
   'Sun-Moon|square': {
     feel: 'Emotional friction that challenges both partners to grow emotionally and psychologically.',
-    detail: 'The Sun person may feel emotionally misunderstood or overwhelmed by the Moon person\'s reactions. The Moon person struggles with the Sun person\'s apparent emotional detachment. This aspect requires conscious emotional communication and the willingness to meet each other halfway.'
+    detail: 'The Sun person may feel emotionally misunderstood or overwhelmed by the Moon person\'s reactions. The Moon person struggles with the Sun person\'s apparent emotional detachment. This aspect requires conscious emotional communication and the willingness to meet each other halfway.',
+    counsel: 'When emotions rise, pause before reacting. The Moon person needs to feel heard before problem-solving begins; the Sun person needs space to process without being labeled cold. A daily check-in of "how are you really feeling?" can bridge this gap over time.'
   },
   'Sun-Moon|sextile': {
     feel: 'Comfortable emotional support and understanding without demanding complete sameness.',
@@ -6941,7 +7333,8 @@ const SYNASTRY_VOICE = {
   },
   'Venus-Mars|opposition': {
     feel: 'Magnetic attraction that can become volatile; desire meets resistance.',
-    detail: 'The Venus-Mars opposition creates intense fascination and sexual tension, but the dynamics can become adversarial. The Mars person may pursue too aggressively while the Venus person withdraws. The aspect demands mutual respect and clear communication about desires and boundaries.'
+    detail: 'The Venus-Mars opposition creates intense fascination and sexual tension, but the dynamics can become adversarial. The Mars person may pursue too aggressively while the Venus person withdraws. The aspect demands mutual respect and clear communication about desires and boundaries.',
+    counsel: 'The Mars person should practice slowing down and asking rather than pursuing. The Venus person should practice saying what they want directly instead of withdrawing. Scheduled time for both intimacy and independence helps balance the push-pull.'
   },
   'Venus-Mars|trine': {
     feel: 'Harmonious blend of passion and affection; desire expressed with tenderness.',
@@ -6949,7 +7342,8 @@ const SYNASTRY_VOICE = {
   },
   'Venus-Mars|square': {
     feel: 'Sexual frustration or mismatch in desire; passion and affection clash.',
-    detail: 'One partner\'s desire doesn\'t align with the other\'s sense of how affection should be expressed. This can create either ongoing frustration or exciting challenge, depending on how the couple approaches it. Sexual compatibility requires conscious negotiation.'
+    detail: 'One partner\'s desire doesn\'t align with the other\'s sense of how affection should be expressed. This can create either ongoing frustration or exciting challenge, depending on how the couple approaches it. Sexual compatibility requires conscious negotiation.',
+    counsel: 'Talk about desire outside the bedroom, when there is no pressure. Learn each other\'s love languages — what feels like pursuit to one person may feel like pressure to the other. The square demands creative compromise, not surrender.'
   },
   'Venus-Mars|sextile': {
     feel: 'Flirtatious ease and natural romantic chemistry.',
@@ -6963,7 +7357,8 @@ const SYNASTRY_VOICE = {
   },
   'Mercury-Mercury|opposition': {
     feel: 'Different thinking styles that either complement or create constant debate.',
-    detail: 'You approach problems, communication, and learning from opposite angles. This can create stimulating discussion or unending argument depending on how you handle differences. The key is valuing how each person\'s mind works rather than insisting on agreement.'
+    detail: 'You approach problems, communication, and learning from opposite angles. This can create stimulating discussion or unending argument depending on how you handle differences. The key is valuing how each person\'s mind works rather than insisting on agreement.',
+    counsel: 'Establish a "debate vs. discussion" signal. Before a conversation, agree whether you are trying to decide something or just sharing perspectives. Many Mercury-opposition arguments happen because one person is brainstorming while the other is problem-solving.'
   },
   'Mercury-Mercury|trine': {
     feel: 'Easy intellectual rapport and compatible communication styles.',
@@ -6971,7 +7366,8 @@ const SYNASTRY_VOICE = {
   },
   'Mercury-Mercury|square': {
     feel: 'Misunderstandings and communication friction despite good intentions.',
-    detail: 'You tend to talk past each other or have different priorities in what\'s important to discuss. This requires conscious effort to hear and be heard. The friction can push both partners to communicate more clearly and intentionally.'
+    detail: 'You tend to talk past each other or have different priorities in what\'s important to discuss. This requires conscious effort to hear and be heard. The friction can push both partners to communicate more clearly and intentionally.',
+    counsel: 'Repeat back what you heard before responding. "So what you\'re saying is..." prevents the most common Mercury-square misfire. Write important things down when speaking fails — sometimes a text or note lands better than talking for this aspect.'
   },
   'Mercury-Mercury|sextile': {
     feel: 'Friendly, easy conversation and genuine interest in each other\'s thoughts.',
@@ -7190,7 +7586,8 @@ const SYNASTRY_VOICE = {
   },
   'Moon-Saturn|square': {
     feel: 'Emotional needs clash with expectations of duty; guilt and coldness circulate between you.',
-    detail: 'The Moon person feels perpetually inadequate or emotionally stifled around Saturn, who may not even realize the effect of their criticism or withdrawal. Saturn feels that the Moon person is too sensitive or too dependent. This square tests whether both people can separate genuine accountability from emotional withholding. Growth is possible but requires Saturn to soften genuinely, not performatively, and the Moon to build internal security rather than seeking constant reassurance.'
+    detail: 'The Moon person feels perpetually inadequate or emotionally stifled around Saturn, who may not even realize the effect of their criticism or withdrawal. Saturn feels that the Moon person is too sensitive or too dependent. This square tests whether both people can separate genuine accountability from emotional withholding. Growth is possible but requires Saturn to soften genuinely, not performatively, and the Moon to build internal security rather than seeking constant reassurance.',
+    counsel: 'Saturn must learn to say "I care about you" in words, not just actions. Moon must resist interpreting Saturn\'s reserve as rejection. Set a weekly emotional check-in where Saturn practices vulnerability and Moon practices self-soothing. This aspect rewards patience measured in years, not weeks.'
   },
   'Moon-Saturn|sextile': {
     feel: 'A grounding connection; emotional maturity develops naturally through the relationship.',
@@ -7234,7 +7631,8 @@ const SYNASTRY_VOICE = {
   },
   'Mars-Saturn|square': {
     feel: 'Constant friction between go and stop; anger and control become recurring themes.',
-    detail: 'Mars feels chronically frustrated by Saturn\'s limitations, and Saturn feels threatened by Mars\'s aggression or impulsiveness. Timing is always off — when one wants to move, the other wants to wait. This square can produce significant conflict around authority, sex, and shared goals. It demands that both people develop patience with fundamentally different rhythms. Without conscious effort, it creates a dynamic where one person dominates and the other seethes.'
+    detail: 'Mars feels chronically frustrated by Saturn\'s limitations, and Saturn feels threatened by Mars\'s aggression or impulsiveness. Timing is always off — when one wants to move, the other wants to wait. This square can produce significant conflict around authority, sex, and shared goals. It demands that both people develop patience with fundamentally different rhythms. Without conscious effort, it creates a dynamic where one person dominates and the other seethes.',
+    counsel: 'Build in structured outlets for Mars\'s energy — physical activity, separate projects, time apart. Saturn should resist the urge to say "no" reflexively and instead say "when" or "how." Take turns leading decisions. Neither person should always be the one who waits.'
   },
   'Mars-Saturn|sextile': {
     feel: 'Productive tension; you challenge each other toward greater discipline and effectiveness.',
@@ -7410,7 +7808,8 @@ const SYNASTRY_VOICE = {
   },
   'Moon-Pluto|square': {
     feel: 'Emotional compulsion; the bond is addictive, transformative, and frequently painful.',
-    detail: 'Pluto pressures the Moon at its most vulnerable point, triggering emotional crises that force both people to confront patterns they would rather avoid. The Moon person feels emotionally manipulated or obsessively attached; Pluto feels that the Moon\'s emotional reactions are threats that must be managed. This square produces the most intense emotional dynamics in synastry. It can catalyze profound psychological healing if both people do their own inner work. Without that, it produces trauma bonds.'
+    detail: 'Pluto pressures the Moon at its most vulnerable point, triggering emotional crises that force both people to confront patterns they would rather avoid. The Moon person feels emotionally manipulated or obsessively attached; Pluto feels that the Moon\'s emotional reactions are threats that must be managed. This square produces the most intense emotional dynamics in synastry. It can catalyze profound psychological healing if both people do their own inner work. Without that, it produces trauma bonds.',
+    counsel: 'Individual therapy is not optional with this aspect — it is infrastructure. Both people must maintain their own emotional ground. When intensity spikes, agree to a cooling-off period before discussing. Never use the other person\'s vulnerabilities as leverage. The healing path is parallel, not merged.'
   },
   'Moon-Pluto|sextile': {
     feel: 'Emotional depth that enriches without overwhelming; you help each other process difficult feelings.',
@@ -7568,22 +7967,64 @@ function renderSynastryTab() {
       synAspects = computeSynastryAspects(natalA, natalB);
       const traditional = computeSynastryTraditional(natalA, housesA, natalB, housesB, jdA, jdB, synAspects);
 
-      // Biwheel with color legend
-      const wheelSize = Math.min(window.innerWidth - 48, 360);
-      h += `<div class="biwheel-wrap syn-section">`;
-      h += `<div class="biwheel-legend">`;
-      h += `<span><span class="biwheel-legend-dot" style="background:var(--gold)"></span>${chartA.name} (outer)</span>`;
-      h += `<span><span class="biwheel-legend-dot" style="background:var(--azure)"></span>${chartB.name} (inner)</span>`;
-      h += `</div>`;
-      h += `<div class="biwheel-container">`;
-      h += renderSynastryWheel(natalA, housesA, natalB, housesB, synAspects, wheelSize, chartA.name, chartB.name);
-      h += `</div>`;
-      h += `<div class="biwheel-hint">Lines between planets show aspects. Green = harmony, red = tension.</div>`;
-      h += `</div>`;
+      // ── Claude Synastry Synthesis ──
+      {
+        h += `<div class="synth-card" style="margin-bottom:12px">`;
+        h += `<div class="synth-head" onclick="synSynthExpanded=!synSynthExpanded;renderApp()" style="cursor:pointer">`;
+        h += `<span class="synth-title" style="color:var(--violet)">Claude Reading</span>`;
+        h += `<span class="section-chev ${synSynthExpanded?'open':''}" style="color:var(--text3)">&#9654;</span>`;
+        h += `</div>`;
+        if(!synSynthExpanded){
+          const sub=synthKey
+            ?(synSynthResult&&synSynthResult.text?'Last reading saved. Tap to open.':'Ready. Tap to generate a deep synastry reading.')
+            :'Add an API key to enable Claude readings.';
+          h += `<div class="synth-sub" style="margin-top:6px">${sub}</div>`;
+        }
+        if(synSynthExpanded){
+          if(!synthKey){
+            h += renderInlineKeySetup();
+          } else {
+            h += `<div class="synth-row" style="margin-top:8px">`;
+            h += `<button class="synth-btn ${synSynthLoading?'loading':''}" onclick="synSynthGenerate()" ${synSynthLoading?'disabled':''}>${synSynthLoading?'<span class="synth-spinner"></span>Reading the charts':(synSynthResult&&synSynthResult.text?'Generate new reading':'Generate Deep Reading')}</button>`;
+            h += `</div>`;
+            if(synSynthError)h += `<div class="synth-error">${synSynthError.replace(/</g,'&lt;')}</div>`;
+            if(synSynthResult&&synSynthResult.text){
+              const when=synSynthResult.ts?new Date(synSynthResult.ts).toLocaleString(undefined,{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}):'';
+              h += `<div class="synth-output" style="margin-top:10px">`;
+              h += `<div class="synth-output-header"><span class="synth-output-stamp">${when?'Reading · '+when:'Reading'}</span></div>`;
+              h += synthRenderBlocks(synSynthResult.text);
+              const u=synSynthResult.usage||{};
+              h += `<div class="synth-output-meta">${CLAUDE_MODEL}${u.input_tokens?' · '+u.input_tokens+' in / '+u.output_tokens+' out':''}</div>`;
+              h += `</div>`;
+            }
+          }
+        }
+        h += `</div>`;
+      }
 
-      // Narrative (guidance-style gradient card)
+      // Narrative (guidance-style gradient card) — fallback when no Claude reading
       const narrative = generateSynastryNarrative(synAspects, traditional);
-      h += `<div class="synastry-narrative syn-section">${narrative}</div>`;
+      if(!synSynthResult||!synSynthResult.text){
+        h += `<div class="synastry-narrative syn-section">${narrative}</div>`;
+      }
+
+      // ── Relationship Weather: This Week Between You ──
+      {
+        const weatherItems=computeRelationshipWeather(natalA,natalB,chartB.name);
+        if(weatherItems.length>0){
+          h += `<div class="card syn-section" style="border-left:3px solid var(--azure)">`;
+          h += `<div style="font-size:var(--fs-label);color:var(--azure);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:8px;font-weight:700">This Week Between You</div>`;
+          for(const w of weatherItems){
+            h += `<div style="margin-bottom:10px;font-size:var(--fs-body);line-height:1.6;color:var(--text)">`;
+            h += `<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">${pSVG(w.transit,14,'var(--bright)')} ${aSVG(w.aspect,12,w.type==='hard'?'var(--crimson)':'var(--emerald)')} ${pSVG(w.natal,14,'var(--azure)')}`;
+            h += `<span style="font-weight:600">${w.transit} ${w.aspect} ${chartB.name}'s ${w.natal}</span>`;
+            h += `<span style="font-size:var(--fs-label);color:var(--text3);margin-left:auto">${w.orb}°</span></div>`;
+            h += `<div style="color:var(--text2)">${w.meaning}</div>`;
+            h += `</div>`;
+          }
+          h += `</div>`;
+        }
+      }
 
       // ── Aspect Balance ──
       const easyCount = synAspects.filter(a => a.type === 'easy').length;
@@ -7799,8 +8240,9 @@ function renderSynastryTab() {
         h += `<div class="indicator-label">House Overlays</div>`;
         h += `<div style="font-size:var(--fs-meta);color:var(--text3);margin-bottom:6px">Where key planets land in the other's chart, activating specific life areas.</div>`;
         h += `<div style="font-size:var(--fs-body);color:var(--text);line-height:1.7">`;
-        const bOverlays = traditional.houseOverlays.filter(o => o.person === 'B');
-        const aOverlays = traditional.houseOverlays.filter(o => o.person === 'A');
+        const overlayImportance=(o)=>{let s=0;if(o.house===7)s+=10;if(o.house===1)s+=6;if(o.house===5)s+=5;if(o.house===8)s+=4;const pRank={Sun:10,Moon:9,Venus:8,Mars:6};s+=(pRank[o.planet]||3);return s;};
+        const bOverlays = traditional.houseOverlays.filter(o => o.person === 'B').sort((a,b)=>overlayImportance(b)-overlayImportance(a));
+        const aOverlays = traditional.houseOverlays.filter(o => o.person === 'A').sort((a,b)=>overlayImportance(b)-overlayImportance(a));
         for (const o of bOverlays) {
           const voiceText = HOUSE_OVERLAY_VOICE[o.planet] && HOUSE_OVERLAY_VOICE[o.planet][o.house] ? ` — ${HOUSE_OVERLAY_VOICE[o.planet][o.house]}` : '';
           h += `${pSVG(o.planet,13,'var(--azure)')} <span style="color:var(--azure)">${chartB.name}'s ${o.planet}</span> in your <strong>House ${o.house}</strong>${voiceText}<br>`;
@@ -7814,11 +8256,35 @@ function renderSynastryTab() {
 
       h += `</div>`;
 
-      // Aspect grid with section header
-      h += `<div class="syn-section">`;
-      h += `<div class="section-title">Aspect Grid</div>`;
-      h += `<div style="font-size:var(--fs-meta);color:var(--text3);margin-bottom:8px">${chartA.name}'s planets (columns) vs ${chartB.name}'s planets (rows). Tap a cell to read its meaning.</div>`;
-      h += renderSynastryGrid(natalA, natalB, synAspects);
+      // ── Technical View (collapsible: biwheel + aspect grid) ──
+      h += `<div class="card syn-section" style="padding:12px">`;
+      h += `<div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="synTechOpen=!synTechOpen;renderApp()">`;
+      h += `<span style="font-size:var(--fs-body);font-weight:600;color:var(--text2)">Technical View</span>`;
+      h += `<span class="section-chev${synTechOpen?' open':''}" style="color:var(--text3);font-size:var(--fs-sub)">&#9656;</span>`;
+      h += `</div>`;
+      if(!synTechOpen){
+        h += `<div style="font-size:var(--fs-meta);color:var(--text3);margin-top:6px">Biwheel and aspect grid. Tap to expand.</div>`;
+      }
+      if(synTechOpen){
+        // Biwheel
+        const wheelSize = Math.min(window.innerWidth - 48, 360);
+        h += `<div class="biwheel-wrap" style="margin-top:12px">`;
+        h += `<div class="biwheel-legend">`;
+        h += `<span><span class="biwheel-legend-dot" style="background:var(--gold)"></span>${chartA.name} (outer)</span>`;
+        h += `<span><span class="biwheel-legend-dot" style="background:var(--azure)"></span>${chartB.name} (inner)</span>`;
+        h += `</div>`;
+        h += `<div class="biwheel-container">`;
+        h += renderSynastryWheel(natalA, housesA, natalB, housesB, synAspects, wheelSize, chartA.name, chartB.name);
+        h += `</div>`;
+        h += `<div class="biwheel-hint">Lines between planets show aspects. Green = harmony, red = tension.</div>`;
+        h += `</div>`;
+        // Aspect grid
+        h += `<div style="margin-top:16px">`;
+        h += `<div class="section-title">Aspect Grid</div>`;
+        h += `<div style="font-size:var(--fs-meta);color:var(--text3);margin-bottom:8px">${chartA.name}'s planets (columns) vs ${chartB.name}'s planets (rows). Tap a cell to read its meaning.</div>`;
+        h += renderSynastryGrid(natalA, natalB, synAspects);
+        h += `</div>`;
+      }
       h += `</div>`;
     }
   }
@@ -7864,12 +8330,23 @@ function renderAstroCartoTab() {
       acAstrocartoLines._birthLoc = { lat: selectedChart.lat, lon: selectedChart.lon };
     }
 
+    // Intention chips
+    h += `<div class="ac-intention-row">`;
+    for (let ik of Object.keys(ASTRO_INTENTIONS)) {
+      const intent = ASTRO_INTENTIONS[ik];
+      const iActive = acIntention === ik;
+      h += `<button class="ac-intention-chip ${iActive?'active':''}" style="${iActive?'background:'+intent.color+';border-color:'+intent.color:''}" onclick="selectIntention('${ik}')">`;
+      h += intent.label;
+      h += `</button>`;
+    }
+    h += `</div>`;
+
     // Planet toggles
     h += `<div class="planet-toggles">`;
     const pNames = {Sun:'Sun',Moon:'Moon',Mercury:'Merc',Venus:'Venus',Mars:'Mars',Jupiter:'Jup',Saturn:'Sat',Uranus:'Ura',Neptune:'Nep',Pluto:'Pluto',Chiron:'Chi',NorthNode:'Node'};
     for (let planet of Object.keys(pNames)) {
       const active = acPlanetToggles[planet];
-      h += `<button class="planet-toggle ${active?'active':''}" onclick="acPlanetToggles['${planet}']=!acPlanetToggles['${planet}'];renderApp();">`;
+      h += `<button class="planet-toggle ${active?'active':''}" onclick="acPlanetToggles['${planet}']=!acPlanetToggles['${planet}'];acIntention=null;renderApp();">`;
       h += pSVG(planet, 13, active ? 'var(--bg)' : 'var(--text2)');
       h += `<span>${pNames[planet]}</span>`;
       h += `</button>`;
@@ -7884,17 +8361,25 @@ function renderAstroCartoTab() {
     h += `<span><span class="ac-leg-line" style="border-top:2px dashed var(--gold);opacity:.4"></span> Setting (others)</span>`;
     h += `</div>`;
 
+    // Region selector
+    h += `<div class="ac-region-row">`;
+    for (let rk of Object.keys(MAP_REGIONS)) {
+      const reg = MAP_REGIONS[rk];
+      h += `<button class="ac-region-btn ${acRegion===rk?'active':''}" onclick="acRegion='${rk}';renderApp();">${reg.name}</button>`;
+    }
+    h += `</div>`;
+
     // Map
     const mapWidth = Math.min(window.innerWidth - 20, 500);
+    const regionVB = MAP_REGIONS[acRegion].viewBox;
     h += `<div class="ac-map-wrap" onclick="handleMapClick(event, this, acAstrocartoLines)">`;
-    h += renderAstroCartoMap(acAstrocartoLines, acPlanetToggles, acTapInfo, mapWidth, Math.round(mapWidth * 0.55));
+    h += renderAstroCartoMap(acAstrocartoLines, acPlanetToggles, acTapInfo, mapWidth, Math.round(mapWidth * 0.55), regionVB);
     h += `<div class="ac-map-hint">Tap the map to read any line</div>`;
     h += `</div>`;
 
     // Info card on tap
     if (acTapInfo) {
-      const voice = ASTROCARTO_VOICE[acTapInfo.nearestLine.planet];
-      const angleData = voice ? voice[acTapInfo.nearestLine.angleType.toLowerCase()] : null;
+      const angleData = getChartSpecificAstroCartoVoice(acTapInfo.nearestLine.planet, acTapInfo.nearestLine.angleType.toLowerCase(), natalPos);
       const angleLabels = {mc:'Highest Point — Career Line',ic:'Lowest Point — Home Line',asc:'Rising — Identity Line',dsc:'Setting — Relationship Line'};
       const angleFullNames = {mc:'Where this planet boosts your career, visibility, and public reputation',ic:'Where this planet strengthens your home life, roots, and inner world',asc:'Where this planet amplifies who you are, your energy, and first impressions',dsc:'Where this planet draws in partnerships, love, and key relationships'};
       const angleLabel = angleLabels[acTapInfo.nearestLine.angleType] || acTapInfo.nearestLine.angleType.toUpperCase();
@@ -7934,14 +8419,8 @@ function renderAstroCartoTab() {
       h += `</div>`;
       if (angleData) {
         h += `<div class="ac-info-detail">${angleData.detail}</div>`;
-        // Practical advice
-        const adviceMap = {
-          mc: 'Great for: career moves, job interviews, public speaking, launching a business, or building your reputation.',
-          ic: 'Great for: settling down, buying property, family time, healing, or anything centered around your private life.',
-          asc: 'Great for: reinventing yourself, first dates, health retreats, solo travel, or making a strong first impression.',
-          dsc: 'Great for: meeting a partner, business partnerships, negotiations, collaborations, or deepening key relationships.'
-        };
-        const advice = adviceMap[acTapInfo.nearestLine.angleType];
+        // Practical advice (planet-specific)
+        const advice = getPlanetSpecificAdvice(acTapInfo.nearestLine.planet, acTapInfo.nearestLine.angleType);
         if (advice) {
           h += `<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--hairline)">`;
           h += `<div style="font-size:var(--fs-label);color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Practical Use</div>`;
@@ -7949,6 +8428,11 @@ function renderAstroCartoTab() {
           h += `</div>`;
         }
       }
+      // Save location button
+      h += `<div style="padding:6px 10px 0">`;
+      h += `<button class="ac-save-btn" onclick="var n=prompt('Name this location:');if(n){addSavedLocation(n,${acTapInfo.lat.toFixed(2)},${(acTapInfo.geoLon!==undefined?acTapInfo.geoLon:0).toFixed(2)});renderApp();}">`;
+      h += `+ Save this location</button>`;
+      h += `</div>`;
       h += `</div>`;
     }
 
@@ -8008,6 +8492,72 @@ function renderAstroCartoTab() {
       }
       h += `</div>`;
     }
+
+    // ── Power Crossings ──
+    const crossings = computeLineCrossings(acAstrocartoLines, acPlanetToggles);
+    if (crossings.length > 0) {
+      h += `<div style="padding:10px 12px 4px">`;
+      h += `<div class="section-title">Power Crossings</div>`;
+      h += `<div style="font-size:var(--fs-meta);color:var(--text3);margin-bottom:8px">Where two planetary lines cross, their energies combine powerfully. These locations carry double significance.</div>`;
+      h += `</div>`;
+      h += `<div style="padding:0 12px">`;
+      for (const xing of crossings.slice(0, 12)) {
+        const cA = AC_COLORS[xing.pA] || '#9089ab';
+        const cB = AC_COLORS[xing.pB] || '#9089ab';
+        const angLabels2 = {asc:'Rising',dsc:'Setting',mc:'Highest',ic:'Lowest'};
+        let nearCity = null, minD = Infinity;
+        for (const city of CITIES) {
+          const dLat = city.lat - xing.lat;
+          const cityGeo = ((city.lon % 360) + 360) % 360;
+          const dLon = Math.min(Math.abs(xing.geoLon - cityGeo), 360 - Math.abs(xing.geoLon - cityGeo));
+          const d = Math.sqrt(dLat * dLat + dLon * dLon);
+          if (d < minD) { minD = d; nearCity = city; }
+        }
+        const interp = getCrossingInterpretation(xing.pA, xing.pB, xing.angA, xing.angB);
+        h += `<div class="ac-crossing-card">`;
+        h += `<div class="ac-crossing-head">`;
+        h += pSVG(xing.pA, 16, cA);
+        h += `<span style="font-size:var(--fs-body);font-weight:600;color:${cA}">${xing.pA} ${angLabels2[xing.angA]||xing.angA}</span>`;
+        h += `<span style="color:var(--text3);font-size:var(--fs-label)">x</span>`;
+        h += pSVG(xing.pB, 16, cB);
+        h += `<span style="font-size:var(--fs-body);font-weight:600;color:${cB}">${xing.pB} ${angLabels2[xing.angB]||xing.angB}</span>`;
+        h += `</div>`;
+        if (nearCity && minD < 40) h += `<div class="ac-crossing-city">Near ${nearCity.name}</div>`;
+        h += `<div class="ac-crossing-interp">${interp}</div>`;
+        h += `</div>`;
+      }
+      h += `</div>`;
+    }
+
+    // ── My Places (Saved Locations) ──
+    loadSavedLocations();
+    if (savedLocations.length > 0) {
+      h += `<div class="ac-saved-section">`;
+      h += `<div class="section-title">My Places</div>`;
+      h += `<div style="font-size:var(--fs-meta);color:var(--text3);margin-bottom:8px">Saved locations with your nearest planetary lines.</div>`;
+      for (const loc of savedLocations) {
+        const latD = loc.lat >= 0 ? 'N' : 'S';
+        const dispLon = loc.geoLon > 180 ? loc.geoLon - 360 : loc.geoLon;
+        const lonD = dispLon >= 0 ? 'E' : 'W';
+        const nearest = getNearestLines(loc.lat, loc.geoLon, acAstrocartoLines, 3);
+        h += `<div class="ac-saved-card">`;
+        h += `<div class="ac-saved-name">${loc.name}</div>`;
+        h += `<div class="ac-saved-coords">${Math.abs(loc.lat).toFixed(1)}${latD}, ${Math.abs(dispLon).toFixed(1)}${lonD}</div>`;
+        h += `<div class="ac-saved-lines">`;
+        for (const nl of nearest) {
+          const angL = {mc:'Highest',ic:'Lowest',asc:'Rising',dsc:'Setting'};
+          const c = AC_COLORS[nl.planet] || '#9089ab';
+          h += `<div style="display:flex;align-items:center;gap:4px;margin-bottom:3px">`;
+          h += pSVG(nl.planet, 14, c);
+          h += `<span style="color:${c};font-weight:600">${nl.planet}</span> <span>${angL[nl.angleType]||nl.angleType}</span> <span style="color:var(--text3)">(${nl.dist.toFixed(0)} away)</span>`;
+          h += `</div>`;
+        }
+        h += `</div>`;
+        h += `<button class="ac-saved-remove" onclick="removeSavedLocation(${loc.id})">&times;</button>`;
+        h += `</div>`;
+      }
+      h += `</div>`;
+    }
   }
 
   h += `</div>`;
@@ -8021,12 +8571,14 @@ function handleMapClick(evt, svgEl, lines) {
 
   const svg = svgEl.querySelector('svg');
   const viewBox = svg.getAttribute('viewBox').split(' ');
+  const vbX = parseFloat(viewBox[0]);
+  const vbY = parseFloat(viewBox[1]);
   const vbWidth = parseFloat(viewBox[2]);
   const vbHeight = parseFloat(viewBox[3]);
 
-  const svgLon = (x / rect.width) * vbWidth;
+  const svgLon = vbX + (x / rect.width) * vbWidth;
   const geoLon = ((svgLon - 180) % 360 + 360) % 360;
-  const lat = 90 - (y / rect.height) * vbHeight;
+  const lat = 90 - (vbY + (y / rect.height) * vbHeight);
 
   let nearest = null;
   let minDist = Infinity;
@@ -8376,6 +8928,34 @@ function renderApp(){
   // Verdict
   const verdictText=buildVerdict(transits,mPhase,vocResult,curHourHome,pHoursHome,moonSign);
   h+=`<div class="home-verdict"><div class="home-verdict-label">Today's Verdict</div><div class="home-verdict-text">${verdictText}</div></div>`;
+  // Claude Reading card
+  {
+    const diamondSvg=`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="14" y="2" width="12" height="12" rx="2" transform="rotate(45 14 2)" stroke="var(--violet)" stroke-width="1.5" opacity=".7"/><rect x="14" y="5" width="8" height="8" rx="1.5" transform="rotate(45 14 5)" fill="var(--violet-soft)" stroke="var(--violet)" stroke-width="1" opacity=".5"/></svg>`;
+    if(synthKey&&synthResult&&synthResult.text){
+      const preview=synthResult.text.split(/\n\s*\n/)[0]||'';
+      const trimmed=preview.length>120?preview.slice(0,120)+'...':preview;
+      const when=synthResult.ts?new Date(synthResult.ts).toLocaleString(undefined,{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}):'';
+      h+=`<div class="card" style="border-left:3px solid var(--violet);cursor:pointer;margin-bottom:10px" onclick="switchTab('today');setTodayZone('depth')">`;
+      h+=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">${diamondSvg}<div>`;
+      h+=`<div style="font-size:var(--fs-body);font-weight:600;color:var(--violet)">Claude Reading</div>`;
+      h+=`<div style="font-size:var(--fs-label);color:var(--text3)">${when}</div>`;
+      h+=`</div></div>`;
+      h+=`<div style="font-size:var(--fs-meta);color:var(--text2);line-height:1.55">${trimmed.replace(/</g,'&lt;')}</div>`;
+      h+=`</div>`;
+    } else if(!synthKey){
+      h+=`<div class="card" style="border-left:3px solid var(--violet);cursor:pointer;margin-bottom:10px" onclick="switchTab('today');setTodayZone('depth')">`;
+      h+=`<div style="display:flex;align-items:center;gap:10px">${diamondSvg}<div>`;
+      h+=`<div style="font-size:var(--fs-body);font-weight:600;color:var(--violet)">Claude Reading</div>`;
+      h+=`<div style="font-size:var(--fs-meta);color:var(--text3);line-height:1.5">Add an API key to enable a traditional-voice daily reading.</div>`;
+      h+=`</div></div></div>`;
+    } else {
+      h+=`<div class="card" style="border-left:3px solid var(--violet);cursor:pointer;margin-bottom:10px" onclick="switchTab('today');setTodayZone('depth')">`;
+      h+=`<div style="display:flex;align-items:center;gap:10px">${diamondSvg}<div>`;
+      h+=`<div style="font-size:var(--fs-body);font-weight:600;color:var(--violet)">Claude Reading</div>`;
+      h+=`<div style="font-size:var(--fs-meta);color:var(--text3)">Ready. Tap to consult Claude on today's sky.</div>`;
+      h+=`</div></div></div>`;
+    }
+  }
   // 4-card grid
   h+=`<div class="home-grid">`;
   // Card 1: Sky Now (Sun + Moon phase SVG)
@@ -9539,6 +10119,68 @@ function renderApp(){
   h+=`<div class="guidance-preview${guidanceExpanded?' expanded':''}">${guidance}</div>`;
   h+=`<div class="guidance-toggle" onclick="toggleGuidance()">${guidanceExpanded?'Show less':'Read more'}</div></div>`;
 
+  // ── Claude Synthesis ──
+  {
+    h+=`<div class="synth-card">`;
+    h+=`<div class="synth-head" onclick="synthToggleExpanded()" style="cursor:pointer">`;
+    h+=`<span class="synth-title">Claude Synthesis</span>`;
+    h+=`<span class="section-chev ${synthExpanded?'open':''}" style="color:var(--text3)">&#9654;</span>`;
+    h+=`</div>`;
+    if(!synthExpanded){
+      const sub=synthKey
+        ?(synthResult&&synthResult.text?`Last reading saved. Tap to open.`:`Ready. Tap to consult Claude on today\'s sky.`)
+        :`Add an API key to enable a traditional-voice daily reading.`;
+      h+=`<div class="synth-sub" style="margin-top:6px">${sub}</div>`;
+    }
+    if(synthExpanded){
+      const activeTabLocal = synthKey ? synthTab : 'setup';
+      h+=`<div class="synth-seg" role="tablist">`;
+      h+=`<button class="${activeTabLocal==='setup'?'on':''}" onclick="synthSelectTab('setup')">Setup</button>`;
+      h+=`<button class="${activeTabLocal==='consult'?'on':''}" onclick="synthSelectTab('consult')" ${synthKey?'':'disabled style="opacity:.45;cursor:not-allowed"'}>Consult</button>`;
+      h+=`</div>`;
+      if(activeTabLocal==='setup'){
+        h+=renderInlineKeySetup();
+      } else {
+        h+=`<div class="synth-sub">Ask Claude for an integrated reading of today\'s sky against your nativity — traditional voice, weighted by importance, nested from transit to ZR chapter.</div>`;
+        h+=`<div class="synth-field">`;
+        h+=`<label class="synth-field-label">Focus <span class="optional">(optional)</span></label>`;
+        h+=`<textarea class="synth-input synth-textarea" placeholder="A decision, a relationship, a question you\'re holding..." oninput="synthSetFocus(this.value)">${(synthFocus||'').replace(/</g,'&lt;')}</textarea>`;
+        h+=`</div>`;
+        h+=`<div class="synth-row">`;
+        h+=`<button class="synth-btn ${synthLoading?'loading':''}" onclick="synthGenerate()" ${synthLoading?'disabled':''}>${synthLoading?'<span class="synth-spinner"></span>Consulting the sky':(synthResult&&synthResult.text?'Generate new reading':'Generate reading')}</button>`;
+        h+=`</div>`;
+        h+=`<div class="token-estimate">Estimated cost: ~4,200 input / 600 output tokens · ~$0.014 per reading</div>`;
+        if(synthError)h+=`<div class="synth-error">${synthError.replace(/</g,'&lt;')}</div>`;
+        if(synthResult&&synthResult.text){
+          const when=synthResult.ts?new Date(synthResult.ts).toLocaleString(undefined,{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}):'';
+          const wc=(synthResult.text.trim().split(/\s+/).length);
+          if(synthOutputCollapsed){
+            h+=`<div class="synth-output" style="margin-top:14px">`;
+            h+=`<div class="synth-collapsed" onclick="toggleSynthOutput()">`;
+            h+=`<div class="synth-collapsed-meta"><strong>Last reading</strong>${when?' · '+when:''}<br>${wc} words · tap to view</div>`;
+            h+=`<div class="synth-expand-hint">Open ▾</div>`;
+            h+=`</div></div>`;
+          } else {
+            h+=`<div class="synth-output">`;
+            h+=`<div class="synth-output-header">`;
+            h+=`<span class="synth-output-stamp">${when?'Reading · '+when:'Reading'}</span>`;
+            h+=`<div style="display:flex;gap:6px">`;
+            h+=`<button class="synth-output-copy ${synthCopied?'copied':''}" onclick="synthCopyOutput()">${synthCopied?'Copied':'Copy'}</button>`;
+            h+=`<button class="synth-output-copy" onclick="synthShareOutput()">Share</button>`;
+            h+=`<button class="synth-output-copy" onclick="toggleSynthOutput()">Collapse</button>`;
+            h+=`</div>`;
+            h+=`</div>`;
+            h+=synthRenderBlocks(synthResult.text);
+            const u=synthResult.usage||{};
+            h+=`<div class="synth-output-meta">${CLAUDE_MODEL}${u.input_tokens?' · '+u.input_tokens+' in / '+u.output_tokens+' out':''}</div>`;
+            h+=`</div>`;
+          }
+        }
+      }
+    }
+    h+=`</div>`;
+  }
+
   // Filter chips
   h+=`<div class="filters">`;
   h+=`<div class="filter-chip ${activeFilter==='all'?'on':''}" onclick="setFilter('all')">All (${transits.length})</div>`;
@@ -9673,80 +10315,6 @@ function renderApp(){
     h+=`</div>`;
   }
 
-  // ── Claude Synthesis ──
-  {
-    h+=`<div class="synth-card">`;
-    h+=`<div class="synth-head" onclick="synthToggleExpanded()" style="cursor:pointer">`;
-    h+=`<span class="synth-title">Claude Synthesis</span>`;
-    h+=`<span class="section-chev ${synthExpanded?'open':''}" style="color:var(--text3)">&#9654;</span>`;
-    h+=`</div>`;
-    if(!synthExpanded){
-      const sub=synthKey
-        ?(synthResult&&synthResult.text?`Last reading saved. Tap to open.`:`Ready. Tap to consult Claude on today\'s sky.`)
-        :`Add an API key to enable a traditional-voice daily reading.`;
-      h+=`<div class="synth-sub" style="margin-top:6px">${sub}</div>`;
-    }
-    if(synthExpanded){
-      // Segmented control
-      const activeTabLocal = synthKey ? synthTab : 'setup';
-      h+=`<div class="synth-seg" role="tablist">`;
-      h+=`<button class="${activeTabLocal==='setup'?'on':''}" onclick="synthSelectTab('setup')">Setup</button>`;
-      h+=`<button class="${activeTabLocal==='consult'?'on':''}" onclick="synthSelectTab('consult')" ${synthKey?'':'disabled style="opacity:.45;cursor:not-allowed"'}>Consult</button>`;
-      h+=`</div>`;
-
-      if(activeTabLocal==='setup'){
-        h+=`<div class="synth-sub">Bring your own Anthropic API key. Requests go directly from this device to Anthropic — no intermediate server, no account tracking on our end.</div>`;
-        h+=`<div class="synth-field">`;
-        h+=`<label class="synth-field-label">Anthropic API Key ${synthKey?'<span style="color:var(--emerald);font-weight:700">· saved</span>':'<span class="optional">(required)</span>'}</label>`;
-        h+=`<input class="synth-input" type="${synthKeyVisible?'text':'password'}" placeholder="sk-ant-..." value="${(synthKey||'').replace(/"/g,'&quot;')}" onchange="synthSetKey(this.value)" oninput="synthKey=this.value" onclick="event.stopPropagation()">`;
-        h+=`</div>`;
-        h+=`<div class="synth-row" style="margin-bottom:10px">`;
-        h+=`<button class="synth-btn secondary" onclick="synthToggleKeyVisible()">${synthKeyVisible?'Hide':'Show'}</button>`;
-        if(synthKey)h+=`<button class="synth-btn secondary" onclick="synthClearKey()">Remove</button>`;
-        h+=`</div>`;
-        h+=`<div class="synth-safety"><strong>On privacy:</strong> your key lives only in this browser\'s localStorage. It never leaves your device except as an Authorization header to Anthropic. Treat any browser as you would a password manager — only install this on a device you control.</div>`;
-      } else {
-        // Consult tab
-        h+=`<div class="synth-sub">Ask Claude for an integrated reading of today\'s sky against your nativity — traditional voice, weighted by importance, nested from transit to ZR chapter.</div>`;
-        h+=`<div class="synth-field">`;
-        h+=`<label class="synth-field-label">Focus <span class="optional">(optional)</span></label>`;
-        h+=`<textarea class="synth-input synth-textarea" placeholder="A decision, a relationship, a question you\'re holding..." oninput="synthSetFocus(this.value)">${(synthFocus||'').replace(/</g,'&lt;')}</textarea>`;
-        h+=`</div>`;
-        h+=`<div class="synth-row">`;
-        h+=`<button class="synth-btn ${synthLoading?'loading':''}" onclick="synthGenerate()" ${synthLoading?'disabled':''}>${synthLoading?'<span class="synth-spinner"></span>Consulting the sky':(synthResult&&synthResult.text?'Generate new reading':'Generate reading')}</button>`;
-        h+=`</div>`;
-        h+=`<div class="token-estimate">Estimated cost: ~4,200 input / 600 output tokens · ~$0.014 per reading</div>`;
-        if(synthError)h+=`<div class="synth-error">${synthError.replace(/</g,'&lt;')}</div>`;
-        if(synthResult&&synthResult.text){
-          const when=synthResult.ts?new Date(synthResult.ts).toLocaleString(undefined,{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-          const wc=(synthResult.text.trim().split(/\s+/).length);
-          if(synthOutputCollapsed){
-            h+=`<div class="synth-output" style="margin-top:14px">`;
-            h+=`<div class="synth-collapsed" onclick="toggleSynthOutput()">`;
-            h+=`<div class="synth-collapsed-meta"><strong>Last reading</strong>${when?' · '+when:''}<br>${wc} words · tap to view</div>`;
-            h+=`<div class="synth-expand-hint">Open ▾</div>`;
-            h+=`</div></div>`;
-          } else {
-            h+=`<div class="synth-output">`;
-            h+=`<div class="synth-output-header">`;
-            h+=`<span class="synth-output-stamp">${when?'Reading · '+when:'Reading'}</span>`;
-            h+=`<div style="display:flex;gap:6px">`;
-            h+=`<button class="synth-output-copy ${synthCopied?'copied':''}" onclick="synthCopyOutput()">${synthCopied?'Copied':'Copy'}</button>`;
-            h+=`<button class="synth-output-copy" onclick="synthShareOutput()">Share</button>`;
-            h+=`<button class="synth-output-copy" onclick="toggleSynthOutput()">Collapse</button>`;
-            h+=`</div>`;
-            h+=`</div>`;
-            h+=synthRenderBlocks(synthResult.text);
-            const u=synthResult.usage||{};
-            h+=`<div class="synth-output-meta">${CLAUDE_MODEL}${u.input_tokens?' · '+u.input_tokens+' in / '+u.output_tokens+' out':''}</div>`;
-            h+=`</div>`;
-          }
-        }
-      }
-    }
-    h+=`</div>`;
-  }
-
   // ── Notifications settings ──
   {
     const permState=('Notification' in window)?Notification.permission:'unsupported';
@@ -9806,7 +10374,11 @@ function renderApp(){
 
   // ══════════ NATAL TAB ══════════
   h+=`<div class="tab-content ${activeTab==='natal'?'active':''}">`;
-  h+=`<div class="chart-wrap full" style="margin-bottom:16px">${renderChartWheel(cur,[],jd,400)}</div>`;
+  const natalAspList=findNatalAspects();
+  h+=`<div class="chart-wrap full" style="margin-bottom:16px">${renderChartWheel(cur,[],jd,400,natalAspList)}</div>`;
+  h+=`<div style="display:flex;justify-content:center;gap:8px;margin:-8px 0 12px">`;
+  h+=`<div class="chart-toggle ${showNatalAspectLines?'on':''}" onclick="showNatalAspectLines=!showNatalAspectLines;renderApp()">Aspects</div>`;
+  h+=`</div>`;
 
   // Fixed Star natal contacts
   const fsNatal=scanNatalFixedStars(1.0);
@@ -9830,7 +10402,6 @@ function renderApp(){
   h+=`</div>`;
 
   // ─── Natal Aspects ───
-  const natalAspList=findNatalAspects();
   h+=`<div class="fs-card">`;
   h+=`<div class="fs-head" onclick="toggleNatalAspects()">`;
   h+=`<span>Aspects in Your Chart</span>`;

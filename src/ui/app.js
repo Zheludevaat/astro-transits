@@ -1518,7 +1518,7 @@ let showNatalAspectLines=true;
 // ══════════════════════════════════════════════════════════════
 
 let expandedCards={},dayOffset=0,activeTab='home',activeFilter='all';
-let chartMode='live'; // retained for Today live biwheel toggle
+// chartMode removed in v52 (Chart tab split into Natal tab)
 let toolsSubTab='synastry'; // 'synastry'|'map'|'elect'|'lore'|'ledger'
 let guideMode='cards'; // 'cards'|'glossary'|'walkthrough'
 let guideSearch='';
@@ -4801,7 +4801,7 @@ function renderApp(){
       h+=`</div>`;
     }
     if(transits.length>5){
-      h+=`<div style="text-align:center;padding:8px;font-size:12px;color:var(--gold);cursor:pointer" onclick="switchTab('chart')">See all ${transits.length} transits &rarr;</div>`;
+      h+=`<div style="text-align:center;padding:8px;font-size:12px;color:var(--gold);cursor:pointer" onclick="switchTab('natal')">See all ${transits.length} transits &rarr;</div>`;
     }
     h+=`</div>`;
   }
@@ -6264,10 +6264,14 @@ function renderApp(){
   const curCell=hRow&&hRow.querySelector('.current');
   if(curCell&&hRow){curCell.scrollIntoView({inline:'center',block:'nearest',behavior:'instant'});}
 
-  // Restore focus to reference search input if it's the active field
+  // Restore focus to search inputs after re-render
   if(activeTab==='tools'&&toolsSubTab==='lore'&&refQuery){
     const si=document.querySelector('.ref-search');
     if(si){si.focus();const len=si.value.length;try{si.setSelectionRange(len,len);}catch(e){}}
+  }
+  if(activeTab==='guide'&&guideMode==='glossary'&&guideSearch){
+    const gi=document.querySelector('.ref-search');
+    if(gi){gi.focus();const len=gi.value.length;try{gi.setSelectionRange(len,len);}catch(e){}}
   }
 
   // Energy ring fill animation: start from full offset, animate to target
@@ -6313,7 +6317,7 @@ function switchTab(tab){
   activeTab=tab;renderApp();window.scrollTo(0,0);
 }
 function switchToolsTab(sub){toolsSubTab=sub;renderApp();window.scrollTo(0,0);}
-function switchChartMode(mode){chartMode=mode;renderApp();}
+// switchChartMode removed in v52 (Chart tab replaced by Natal tab)
 function toggleCard(id){
   expandedCards[id]=!expandedCards[id];
   // Direct DOM toggle instead of full re-render

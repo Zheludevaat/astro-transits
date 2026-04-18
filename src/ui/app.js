@@ -1842,6 +1842,13 @@ let zrExpanded=false;
 let zrSource='Spirit'; // 'Spirit' or 'Fortune'
 function toggleZR(){zrExpanded=!zrExpanded;renderApp();}
 function setZRSource(s){zrSource=s;renderApp();}
+function toggleZRTip(el){
+  // Close any other open tips first
+  document.querySelectorAll('.zr-segment.tip-open').forEach(s=>{if(s!==el)s.classList.remove('tip-open');});
+  el.classList.toggle('tip-open');
+  // Auto-dismiss after 3s
+  setTimeout(()=>el.classList.remove('tip-open'),3000);
+}
 let firExpanded=false;
 function toggleFirdaria(){firExpanded=!firExpanded;renderApp();}
 
@@ -1923,9 +1930,18 @@ function showTooltip(term,el){
   }
   tip.innerHTML=`<strong>${term}</strong>${g}${loreLink}<div class="tip-close-hint">tap to dismiss</div>`;
   const rect=el.getBoundingClientRect();
-  tip.style.left=Math.min(rect.left,window.innerWidth-290)+'px';
-  tip.style.top=(rect.top-tip.offsetHeight-8)+'px';
-  tip.classList.add('open');
+  // Viewport-safe positioning: clamp left so tooltip stays on-screen
+  const tipW=280; // max-width from CSS
+  let tipLeft=Math.max(8,Math.min(rect.left,window.innerWidth-tipW-8));
+  tip.style.left=tipLeft+'px';
+  // Position above the element; if that would go off-screen top, position below instead
+  tip.classList.add('open'); // must be open to measure height
+  const tipH=tip.offsetHeight;
+  if(rect.top-tipH-8<0){
+    tip.style.top=(rect.bottom+8)+'px';
+  } else {
+    tip.style.top=(rect.top-tipH-8)+'px';
+  }
   // Long auto-dismiss; user can tap anywhere to close sooner.
   if(window._tipTO) clearTimeout(window._tipTO);
   window._tipTO=setTimeout(()=>tip.classList.remove('open'),20000);
@@ -3916,7 +3932,7 @@ function renderApp(){
   // Hoisted: used by consult, hours strip, liturgy, guidance, journal context
   const pHours=pHoursHome;
 
-  // ── VOC Persistent Banner (above everything) ──
+  // ── VOC Persistent Banner ──
   if(vocResult.voc){
     const vocTotalMin=vocResult.endsIn?Math.round(vocResult.endsIn*60):0;
     const vocH=Math.floor(vocTotalMin/60);
@@ -3979,7 +3995,7 @@ function renderApp(){
     const profLordAsp=topT.find(t=>t.tp===prof.yearLord||t.np===prof.yearLord);
     h+=`<div class="factor-line" onclick="openMechanic('mech-profections','profection-year','${prof.yearLord}')">`;
     h+=`<div class="factor-icon">${pSVG(prof.yearLord,16,'var(--gold)')}</div>`;
-    h+=`<div class="factor-text">${prof.yearLord}, your Year-Lord, is in ${profLordSign.name} at ${profLordSign.degree}° in your ${profLordHouse}${profLordHouse===1?'st':profLordHouse===2?'nd':profLordHouse===3?'rd':'th'}${profLordDig?' ('+profLordDig.label+')':''}${profLordAsp?', '+profLordAsp.aspect.motion+' '+profLordAsp.aspect.name+' your natal '+profLordAsp.np:''}</div>`;
+    h+=`<div class="factor-body"><div class="factor-primary">${prof.yearLord} is your Year-Lord</div><div class="factor-secondary">${profLordSign.name} ${profLordSign.degree}°, house ${profLordHouse}${profLordDig?' · '+profLordDig.label:''}${profLordAsp?' · '+profLordAsp.aspect.motion+' '+profLordAsp.aspect.name+' natal '+profLordAsp.np:''}</div></div>`;
     h+=`<div class="factor-tag" style="background:var(--gold-soft);color:var(--gold)">Year</div>`;
     h+=`</div>`;
 
@@ -3988,7 +4004,7 @@ function renderApp(){
       const zrNote=curSpirit.l1.peak?' Cardinal peak — active phase.':curSpirit.l1.lbFollows?' Loosing of the Bond — themes shift.':'';
       h+=`<div class="factor-line" onclick="openMechanic('mech-zr','zr-spirit','')">`;
       h+=`<div class="factor-icon">${sSVG(curSpirit.l1.sign||'Aries',16,'var(--azure)')}</div>`;
-      h+=`<div class="factor-text">ZR Spirit: ${curSpirit.l1.sign||'--'} period.${zrNote}${curSpirit.l2&&curSpirit.l2.sign?' L2: '+curSpirit.l2.sign+'.':''}</div>`;
+      h+=`<div class="factor-body"><div class="factor-primary">ZR Spirit: ${curSpirit.l1.sign||'--'} period</div><div class="factor-secondary">${zrNote||'Active life chapter'}${curSpirit.l2&&curSpirit.l2.sign?' · L2: '+curSpirit.l2.sign:''}</div></div>`;
       h+=`<div class="factor-tag" style="background:var(--azure-soft,rgba(90,160,255,.12));color:var(--azure)">Arc</div>`;
       h+=`</div>`;
     }
@@ -3996,13 +4012,14 @@ function renderApp(){
     // Factor 3: Moon condition
     h+=`<div class="factor-line" onclick="openMechanic('mech-moon','mansion','')">`;
     h+=`<div class="factor-icon">${renderMoonSVG(phaseAngle||0,16)}</div>`;
-    let moonFactorText=`Moon ${mPhase.name} in ${moonSign.name} ${signOf(cur.Moon).degree}°`;
-    if(mansion)moonFactorText+=`, ${mansion.mansion||mansion.name||'Mansion '+(mansion.index||'')} (${mansion.nature||'mixed'})`;
+    let moonPrimary=`${mPhase.name} Moon in ${moonSign.name}`;
+    let moonSecondary=`${signOf(cur.Moon).degree}°`;
+    if(mansion)moonSecondary+=` · ${mansion.mansion||mansion.name||'Mansion '+(mansion.index||'')} (${mansion.nature||'mixed'})`;
     if(vocResult.voc){
       const vocMin=vocResult.endsIn?Math.round(vocResult.endsIn*60):0;
-      moonFactorText+=`. Void after ${vocMin>60?Math.floor(vocMin/60)+'h '+vocMin%60+'m':vocMin+'m'}`;
+      moonSecondary+=` · Void ${vocMin>60?Math.floor(vocMin/60)+'h '+vocMin%60+'m':vocMin+'m'}`;
     }
-    h+=`<div class="factor-text">${moonFactorText}</div>`;
+    h+=`<div class="factor-body"><div class="factor-primary">${moonPrimary}</div><div class="factor-secondary">${moonSecondary}</div></div>`;
     h+=`<div class="factor-tag" style="background:var(--violet-soft);color:var(--violet)">Moon</div>`;
     h+=`</div>`;
 
@@ -4014,7 +4031,7 @@ function renderApp(){
       const t0col=t0.aspect.type==='hard'?'var(--crimson)':t0.aspect.type==='easy'?'var(--emerald)':'var(--gold)';
       h+=`<div class="factor-line" onclick="openMechanic('mech-transits','transit','${t0.tp}-${t0.np}')">`;
       h+=`<div class="factor-icon">${pSVG(t0.tp,16,t0col)}</div>`;
-      h+=`<div class="factor-text">${t0tp} ${t0.aspect.name} ${t0np} (${t0.aspect.orbActual.toFixed(1)}° orb, ${t0.aspect.motion})</div>`;
+      h+=`<div class="factor-body"><div class="factor-primary">${t0tp} ${t0.aspect.name} natal ${t0np}</div><div class="factor-secondary">${t0.aspect.orbActual.toFixed(1)}° orb · ${t0.aspect.motion}</div></div>`;
       h+=`<div class="factor-tag" style="background:${t0.aspect.type==='hard'?'rgba(200,40,60,.12)':'rgba(40,180,100,.12)'};color:${t0col}">${t0.aspect.type==='hard'?'Hard':t0.aspect.type==='easy'?'Flow':'Fuse'}</div>`;
       h+=`</div>`;
     }
@@ -4025,9 +4042,7 @@ function renderApp(){
       const hourR=curHourHome?curHourHome.ruler:dayR;
       h+=`<div class="factor-line" onclick="openMechanic('mech-hours','hour','')">`;
       h+=`<div class="factor-icon">${pSVG(hourR,16,'var(--text2)')}</div>`;
-      let hourText=`Day of ${dayR}.`;
-      if(curHourHome)hourText+=` Hour of ${hourR} — ${curHourHome.minsLeft}m remaining.`;
-      h+=`<div class="factor-text">${hourText}</div>`;
+      h+=`<div class="factor-body"><div class="factor-primary">${curHourHome?'Hour of '+hourR:'Day of '+dayR}</div><div class="factor-secondary">${dayR}'s day${curHourHome?' · '+curHourHome.minsLeft+'m remaining':''}</div></div>`;
       h+=`<div class="factor-tag" style="background:rgba(155,109,255,.1);color:var(--text2)">Hour</div>`;
       h+=`</div>`;
     }
@@ -4038,13 +4053,13 @@ function renderApp(){
     if(personalStats.length){
       h+=`<div class="factor-line" onclick="openMechanic('mech-transits','','')">`;
       h+=`<div class="factor-icon">${pSVG(personalStats[0],16,'var(--crimson)')}</div>`;
-      h+=`<div class="factor-text">${personalStats[0]} is stationary — its themes are amplified to maximum intensity.</div>`;
+      h+=`<div class="factor-body"><div class="factor-primary">${personalStats[0]} stationary</div><div class="factor-secondary">Themes amplified to maximum intensity</div></div>`;
       h+=`<div class="factor-tag" style="background:rgba(200,40,60,.12);color:var(--crimson)">Station</div>`;
       h+=`</div>`;
     } else if(personalRetros.length){
       h+=`<div class="factor-line" onclick="openMechanic('mech-transits','','')">`;
       h+=`<div class="factor-icon">${pSVG(personalRetros[0],16,'var(--text2)')}</div>`;
-      h+=`<div class="factor-text">${personalRetros.join(', ')} retrograde — internal revision outpaces forward motion.</div>`;
+      h+=`<div class="factor-body"><div class="factor-primary">${personalRetros.join(', ')} retrograde</div><div class="factor-secondary">Internal revision outpaces forward motion</div></div>`;
       h+=`<div class="factor-tag" style="background:rgba(155,109,255,.1);color:var(--text2)">Rx</div>`;
       h+=`</div>`;
     }
@@ -4119,7 +4134,7 @@ function renderApp(){
       for(const [key,et] of Object.entries(EVENT_TYPES)){
         const sel=consultEventType===key;
         h+=`<button onclick="pickConsultEvent('${key}')" style="background:${sel?'var(--gold-soft)':'var(--bg)'};border:1px solid ${sel?'var(--gold-line)':'var(--border)'};border-radius:6px;padding:8px 4px;cursor:pointer;text-align:center;transition:all .15s">`;
-        h+=`<div>${pSVG(et.icon,16,sel?'var(--gold)':'var(--text2)')}</div>`;
+        h+=`<div style="color:${sel?'var(--gold)':'var(--text2)'}">${et.svg||pSVG(et.icon,16,sel?'var(--gold)':'var(--text2)')}</div>`;
         h+=`<div style="font-size:10px;color:${sel?'var(--gold)':'var(--text2)'};margin-top:3px;line-height:1.2">${et.label}</div>`;
         h+=`</button>`;
       }
@@ -4211,8 +4226,8 @@ function renderApp(){
       const endA=startA+15;
       const isCur=i===curIdxClock;
       const hr=pHours.hours[i];
-      const fill=isCur?'var(--gold)':hr.isDay?'rgba(255,255,255,.06)':'rgba(0,0,0,.2)';
-      const stroke=isCur?'var(--gold)':'rgba(255,255,255,.12)';
+      const fill=isCur?'var(--gold)':hr.isDay?'var(--inset)':'var(--overlay)';
+      const stroke=isCur?'var(--gold)':'var(--hairline)';
       svg+=`<path d="${arcSeg(C,C,R1,R2,startA,endA)}" fill="${fill}" stroke="${stroke}" stroke-width="0.5" opacity="${isCur?1:0.8}"/>`;
       // Glyph label at midpoint
       const midA=(startA+7.5)*Math.PI/180;
@@ -5068,7 +5083,8 @@ function renderApp(){
         const isCurr=ageYears>=p.startYears&&ageYears<p.endYears;
         const color=ZR_COLORS[p.sign]||'#888';
         const cls=(isCurr?'current ':'')+(p.peak?'peak ':'')+(p.lbFollows?'lb':'');
-        h+=`<div class="zr-segment ${cls}" style="left:${leftPct}%;width:${widthPct}%;background:${color}" title="${p.sign} ${fmtZRDate(p.startDate)}-${fmtZRDate(p.endDate)}${p.peak?' (PEAK)':''}${p.lbFollows?' (LB follows)':''}">${p.sign.slice(0,3)}</div>`;
+        const segLabel=widthPct>4?p.sign.slice(0,3):'';
+        h+=`<div class="zr-segment ${cls}" style="left:${leftPct}%;width:${widthPct}%;background:${color}" onclick="event.stopPropagation();toggleZRTip(this)">${segLabel}<div class="zr-segment-tip">${p.sign} ${fmtZRDate(p.startDate)}-${fmtZRDate(p.endDate)}${p.peak?' (PEAK)':''}${p.lbFollows?' (LB)':''}</div></div>`;
       }
       // Now marker
       const nowPct=(ageYears/span)*100;
@@ -5095,7 +5111,8 @@ function renderApp(){
           const isCurr=ageYears>=s.startYears&&ageYears<s.endYears;
           const color=ZR_COLORS[s.sign]||'#888';
           const cls=(isCurr?'current ':'')+(s.peak?'peak':'');
-          h+=`<div class="zr-segment ${cls}" style="left:${leftPct}%;width:${widthPct}%;background:${color}" title="${s.sign} ${fmtZRDate(s.startDate)}-${fmtZRDate(s.endDate)}${s.peak?' (peak)':''}">${s.sign.slice(0,3)}</div>`;
+          const segLabel2=widthPct>6?s.sign.slice(0,3):'';
+          h+=`<div class="zr-segment ${cls}" style="left:${leftPct}%;width:${widthPct}%;background:${color}" onclick="event.stopPropagation();toggleZRTip(this)">${segLabel2}<div class="zr-segment-tip">${s.sign} ${fmtZRDate(s.startDate)}-${fmtZRDate(s.endDate)}${s.peak?' (peak)':''}</div></div>`;
         }
         // Now marker (relative to L1)
         const relPct=((ageYears-p.startYears)/p.lengthYears)*100;
@@ -5160,7 +5177,8 @@ function renderApp(){
         const leftPct=(m.startYears/totalYears)*100;
         const widthPct=(m.lengthYears/totalYears)*100;
         const isCurr=ageYears>=m.startYears&&ageYears<m.endYears;
-        h+=`<div class="zr-segment ${isCurr?'current':''}" style="left:${leftPct}%;width:${widthPct}%;background:${firColors[m.lord]}" title="${m.lord} ${fmtZRDate(m.startDate)}-${fmtZRDate(m.endDate)} (${m.lengthYears}y)">${m.lord.slice(0,2)}</div>`;
+        const firSegLabel=widthPct>5?m.lord.slice(0,2):'';
+        h+=`<div class="zr-segment ${isCurr?'current':''}" style="left:${leftPct}%;width:${widthPct}%;background:${firColors[m.lord]}" onclick="event.stopPropagation();toggleZRTip(this)">${firSegLabel}<div class="zr-segment-tip">${m.lord} ${fmtZRDate(m.startDate)}-${fmtZRDate(m.endDate)} (${m.lengthYears}y)</div></div>`;
       }
       const nowPct=Math.min(100,(ageYears/totalYears)*100);
       h+=`<div class="zr-now-marker" style="left:${nowPct}%"></div>`;
@@ -5182,7 +5200,8 @@ function renderApp(){
           const leftPct=((s.startYears-maj.startYears)/maj.lengthYears)*100;
           const widthPct=((s.endYears-s.startYears)/maj.lengthYears)*100;
           const isCurr=ageYears>=s.startYears&&ageYears<s.endYears;
-          h+=`<div class="zr-segment ${isCurr?'current':''}" style="left:${leftPct}%;width:${widthPct}%;background:${firColors[s.lord]}" title="${maj.lord}/${s.lord} ${fmtZRDate(s.startDate)}-${fmtZRDate(s.endDate)}">${s.lord.slice(0,2)}</div>`;
+          const firSubLabel=widthPct>8?s.lord.slice(0,2):'';
+          h+=`<div class="zr-segment ${isCurr?'current':''}" style="left:${leftPct}%;width:${widthPct}%;background:${firColors[s.lord]}" onclick="event.stopPropagation();toggleZRTip(this)">${firSubLabel}<div class="zr-segment-tip">${maj.lord}/${s.lord} ${fmtZRDate(s.startDate)}-${fmtZRDate(s.endDate)}</div></div>`;
         }
         const relPct=((ageYears-maj.startYears)/maj.lengthYears)*100;
         h+=`<div class="zr-now-marker" style="left:${relPct}%"></div>`;
@@ -5944,10 +5963,11 @@ function renderApp(){
       if(minsLeftHome<0)minsLeftHome+=24*60;
     }
 
-    // Hero card
+    // Hero card — glance dashboard
     h+=`<div style="text-align:center;padding:24px 0 16px">`;
     h+=`<div style="font-size:var(--fs-sub);color:var(--bright);font-weight:600;margin-bottom:4px">${greeting}</div>`;
     h+=`<div style="font-size:var(--fs-meta);color:var(--text2)">${now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',timeZone:OBSERVER.tzName})}</div>`;
+    h+=`<div style="font-size:var(--fs-label);color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-top:6px">At a glance</div>`;
     h+=`</div>`;
 
     // Moon + phase card
@@ -6306,8 +6326,11 @@ function renderApp(){
   tabBarHtml+=`<button class="${activeTab==='guide'?'active':''}" onclick="switchTab('guide')">${svgGuide}<span>Guide</span></button>`;
   tabBarHtml+=`<button class="${activeTab==='settings'?'active':''}" onclick="switchTab('settings')">${svgSettings}<span>Settings</span></button>`;
 
+  // Preserve scroll position across re-renders
+  const _scrollY=window.scrollY;
   document.getElementById('app').innerHTML=h;
   document.getElementById('tab-bar-host').innerHTML=tabBarHtml;
+  window.scrollTo(0,_scrollY);
 
   // Render chart form modal into its own host (above tab bar stacking context)
   const modalHost=document.getElementById('modal-form-host');

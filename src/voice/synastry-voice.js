@@ -914,4 +914,312 @@ const SYNASTRY_VOICE = {
     feel: 'Shared determination and quiet intensity; you strengthen each other\'s capacity to act with purpose.',
     detail: 'The sextile provides a constructive channel between Mars\'s initiative and Pluto\'s transformative power. The Mars person feels that Pluto helps them focus their energy on what truly matters, and Pluto feels that Mars provides the courage to act on deep convictions. Shared goals, physical challenges, and strategic collaboration activate this aspect. It provides the depth and power of Mars-Pluto contacts without the compulsive intensity that makes harder aspects so difficult to manage.'
   },
+
+  // Mercury-Neptune
+  'Mercury-Neptune|conjunction': {
+    feel: 'Minds dissolve into each other; words become unnecessary.',
+    detail: 'Mercury\'s rational mind merges with Neptune\'s boundless imagination, creating an almost telepathic quality to communication. The Mercury person finds their thinking expanded into poetic and intuitive territory, while Neptune feels finally understood without having to explain the inexplicable. The danger is mutual deception or confused communication where both people hear what they want to hear rather than what was actually said. Clarity requires deliberate effort here.'
+  },
+  'Mercury-Neptune|opposition': {
+    feel: 'One speaks in facts, the other in dreams; translation is constant.',
+    detail: 'Mercury\'s need for clear information confronts Neptune\'s preference for ambiguity and nuance. The Mercury person may feel that Neptune is evasive or dishonest, while Neptune feels that Mercury\'s literalism misses the deeper truth. This opposition can produce beautiful creative collaboration if both people accept that reality has more than one language. Without that acceptance, misunderstandings and feelings of being deceived become chronic.'
+  },
+  'Mercury-Neptune|trine': {
+    feel: 'Imaginative conversations that wander into shared wonder.',
+    detail: 'Mercury\'s intellect flows naturally into Neptune\'s visionary waters, creating a partnership rich in creative exchange, spiritual conversation, and intuitive understanding. The Mercury person finds their thinking enriched by Neptune\'s imagination without losing clarity, and Neptune feels that Mercury gives their visions articulate form. This trine is exceptional for artistic collaboration, shared spiritual practice, or any endeavor where logic and intuition must work together.'
+  },
+  'Mercury-Neptune|square': {
+    feel: 'Beautiful confusion; what was said and what was heard rarely match.',
+    detail: 'Mercury and Neptune in square create persistent miscommunication that both people find baffling. The Mercury person feels they spoke clearly, but Neptune heard something entirely different. Neptune feels their meaning is obvious, but Mercury cannot grasp it. Deception is possible but more often the issue is genuinely different modes of processing information. Important agreements should always be written down and confirmed. This square requires patience and a willingness to say "let me make sure I understand you correctly" often.'
+  },
+  'Mercury-Neptune|sextile': {
+    feel: 'Gentle inspiration that sharpens rather than blurs the mind.',
+    detail: 'The sextile links Mercury\'s communication with Neptune\'s imagination in a constructive way. The Mercury person finds that Neptune adds depth and poetry to their thinking, while Neptune appreciates Mercury\'s ability to articulate subtle feelings. Shared creative projects, music, film, and spiritual study activate this aspect beautifully. It provides the creative richness of Mercury-Neptune contacts without the confusion that harder aspects bring.'
+  },
+
+  // Mercury-Uranus
+  'Mercury-Uranus|conjunction': {
+    feel: 'Electric minds sparking off each other at lightning speed.',
+    detail: 'Mercury and Uranus fuse into a connection defined by intellectual excitement and rapid-fire exchange. The Mercury person feels their thinking accelerated and liberated by Uranus, while Uranus finds Mercury quick enough to keep up. Conversations leap from topic to topic, and both people feel genuinely stimulated. The risk is mental restlessness and an inability to slow down for emotional processing. Not everything needs to be brilliant — sometimes it just needs to be felt.'
+  },
+  'Mercury-Uranus|opposition': {
+    feel: 'Radical disagreements that crack open new ways of thinking.',
+    detail: 'Mercury\'s established thought patterns are disrupted by Uranus\'s contrarian perspective, and Uranus feels that Mercury\'s conventional logic misses the revolutionary truth. This opposition creates exhilarating debate but can also produce stubborn intellectual standoffs where neither person will concede. At its best, each person genuinely changes how the other thinks. At its worst, both people feel the other is being deliberately provocative or obtuse.'
+  },
+  'Mercury-Uranus|trine': {
+    feel: 'Shared brilliance; ideas flow freely and surprise delights rather than destabilizes.',
+    detail: 'Mercury\'s mind harmonizes naturally with Uranus\'s inventiveness, creating a partnership where original thinking is the norm. Conversations are stimulating without being combative, and both people feel intellectually free. The Mercury person\'s ideas are enhanced by Uranus\'s unconventional angle, and Uranus appreciates Mercury\'s ability to develop their flashes of insight into something communicable. This trine is exceptional for any partnership involving innovation, technology, or reform.'
+  },
+  'Mercury-Uranus|square': {
+    feel: 'Mental disruption; one person\'s insight is the other\'s chaos.',
+    detail: 'Uranus continually upends Mercury\'s thinking in ways that feel exciting at first but become destabilizing. The Mercury person may feel they can never finish a thought before Uranus introduces something that invalidates it. Uranus feels that Mercury is too attached to conventional reasoning. This square produces genuine intellectual growth but the process is uncomfortable. Both people need to learn that being right matters less than being understood.'
+  },
+  'Mercury-Uranus|sextile': {
+    feel: 'Friendly intellectual spark; you make each other cleverer.',
+    detail: 'The sextile creates a lively and constructive link between Mercury\'s communication and Uranus\'s originality. Conversations are interesting without being contentious, and both people feel that the other broadens their perspective. This aspect is excellent for friendships and partnerships that involve learning, problem-solving, or any shared intellectual pursuit. It provides stimulation without the nervous energy of harder Mercury-Uranus contacts.'
+  },
+
+  // Mercury-Chiron
+  'Mercury-Chiron|conjunction': {
+    feel: 'Words that touch the wound; conversations that heal or reopen old pain.',
+    detail: 'Mercury lands directly on Chiron\'s deepest vulnerability, which means communication between these two people carries unusual weight. The Mercury person may inadvertently say things that trigger Chiron\'s core wound around self-expression, intelligence, or being heard. Equally, Chiron teaches Mercury something profound about the limits of intellect and the power of compassionate speech. This conjunction can produce deeply healing dialogue once both people understand the sensitivity involved.'
+  },
+  'Mercury-Chiron|opposition': {
+    feel: 'The mind confronts what it cannot fix; words expose vulnerability.',
+    detail: 'Mercury\'s rational approach faces Chiron\'s wound from across the chart, creating a dynamic where one person\'s attempts to communicate or solve problems inadvertently highlight the other\'s deepest insecurity. The Mercury person may feel that Chiron is too sensitive, while Chiron feels that Mercury intellectualizes pain rather than witnessing it. Growth comes when Mercury learns that some things cannot be explained away, and Chiron learns that articulating pain can itself be medicine.'
+  },
+  'Mercury-Chiron|trine': {
+    feel: 'Healing through understanding; words become medicine.',
+    detail: 'Mercury\'s communication flows naturally toward Chiron\'s wound in a way that soothes rather than aggravates. The Mercury person intuitively knows how to speak to the Chiron person\'s vulnerability, and Chiron helps Mercury access deeper wisdom beyond mere cleverness. This trine often appears in partnerships where one or both people work in healing, teaching, or counseling. Conversations have a naturally therapeutic quality.'
+  },
+  'Mercury-Chiron|square': {
+    feel: 'Accidental cruelty through careless words; the tongue finds the bruise.',
+    detail: 'Mercury\'s communication style clashes with Chiron\'s wound in a way that creates recurring hurt. The Mercury person says things that land on Chiron\'s most sensitive spot, often without realizing it. Chiron may withdraw from communication or become defensive in ways Mercury finds confusing. This square requires the Mercury person to develop real sensitivity about word choice, and the Chiron person to communicate their boundaries rather than expecting the other to intuit them.'
+  },
+  'Mercury-Chiron|sextile': {
+    feel: 'Gentle insight into each other\'s tender places; kind knowing.',
+    detail: 'The sextile creates a constructive link between Mercury\'s mind and Chiron\'s wound, allowing both people to discuss difficult subjects with unusual care. The Mercury person finds that Chiron deepens their understanding of suffering and healing, while Chiron feels that Mercury provides language for experiences that usually resist articulation. This aspect supports partnerships where honest, vulnerable communication is valued.'
+  },
+
+  // Venus-Chiron
+  'Venus-Chiron|conjunction': {
+    feel: 'Love lands on the wound; devotion and vulnerability are inseparable.',
+    detail: 'Venus arrives at the exact point of Chiron\'s deepest hurt around love, worthiness, and belonging. The Venus person\'s affection simultaneously heals and reopens Chiron\'s wound — being loved by Venus is both the medicine and the reminder of every time love was not enough. Chiron teaches Venus that real love requires witnessing pain without trying to fix it. This conjunction creates profound intimacy but demands that both people are willing to be genuinely vulnerable.'
+  },
+  'Venus-Chiron|opposition': {
+    feel: 'What one offers as love, the other receives as a reminder of lack.',
+    detail: 'Venus\'s expression of affection confronts Chiron\'s wound from across the chart, creating a painful dynamic where love triggers rather than heals. The Venus person may feel that nothing they offer is enough, while Chiron feels that Venus\'s love highlights everything they believe they don\'t deserve. This opposition requires both people to examine their assumptions about worthiness. When navigated with maturity, it produces a love that has genuinely reckoned with imperfection.'
+  },
+  'Venus-Chiron|trine': {
+    feel: 'Love as balm; affection flows naturally toward the place that needs it most.',
+    detail: 'Venus\'s warmth reaches Chiron\'s wound without effort, creating a partnership where the Chiron person feels genuinely valued and the Venus person feels that their love matters deeply. This trine often indicates a relationship where both people feel that being together has healed something in them. The Venus person may not even realize how significant their simple presence is to the Chiron person\'s sense of self-worth.'
+  },
+  'Venus-Chiron|square': {
+    feel: 'Love that hurts; affection and rejection become tangled.',
+    detail: 'Venus\'s way of expressing love clashes with Chiron\'s wound, creating a pattern where affection is offered in a form that the Chiron person cannot receive, or is received as a reminder of inadequacy. The Venus person may feel rejected despite their best efforts, while Chiron feels that Venus doesn\'t understand their real needs. This square demands that both people learn new languages of love rather than insisting on their native one.'
+  },
+  'Venus-Chiron|sextile': {
+    feel: 'Tender awareness of each other\'s soft spots; love given with care.',
+    detail: 'The sextile creates a supportive link between Venus\'s affection and Chiron\'s vulnerability, allowing both people to approach love with unusual gentleness. The Venus person instinctively avoids Chiron\'s triggers while still offering genuine warmth, and Chiron helps Venus understand that love is most powerful when it meets people where they actually are rather than where they should be.'
+  },
+
+  // Mars-Chiron
+  'Mars-Chiron|conjunction': {
+    feel: 'Action meets the open wound; assertion and vulnerability collide.',
+    detail: 'Mars\'s direct energy lands on Chiron\'s most sensitive point, creating a dynamic where the Mars person\'s natural assertiveness triggers Chiron\'s wound around agency, anger, or the right to take up space. The Mars person may feel that Chiron is overly fragile, while Chiron feels that Mars is careless with their force. When handled with awareness, Mars can help Chiron reclaim their own power, and Chiron can teach Mars that real strength includes restraint.'
+  },
+  'Mars-Chiron|opposition': {
+    feel: 'One person\'s strength exposes the other\'s deepest weakness.',
+    detail: 'Mars and Chiron face off across the chart, creating a polarized dynamic around power and vulnerability. The Mars person\'s assertiveness may feel aggressive to Chiron, triggering old experiences of being overpowered or dismissed. Chiron\'s vulnerability may feel like weakness to Mars, who doesn\'t understand why action isn\'t the solution. Growth requires Mars to develop patience with pain that cannot simply be overcome by willpower, and Chiron to recognize that Mars\'s directness is not the same as the original wound.'
+  },
+  'Mars-Chiron|trine': {
+    feel: 'Strength in service of healing; courage flows toward what hurts.',
+    detail: 'Mars\'s energy harmonizes with Chiron\'s wound in a way that empowers rather than overwhelms. The Mars person naturally helps the Chiron person take action on things they\'ve been afraid to confront, and Chiron gives Mars a sense of purpose beyond mere ambition. This trine often appears in partnerships where both people become braver together, tackling challenges that neither could face alone. Physical activity, shared goals, and constructive conflict resolution come naturally.'
+  },
+  'Mars-Chiron|square': {
+    feel: 'The fighter and the wound clash; aggression triggers old pain.',
+    detail: 'Mars\'s way of taking action clashes with Chiron\'s vulnerability, creating conflicts that escalate beyond what the situation warrants because they are activating much older material. The Mars person may feel that Chiron shuts them down or makes them the villain, while Chiron feels that Mars bulldozes through their pain. This square requires both people to slow down during conflict and ask whether the intensity matches the actual disagreement, or whether something older has been activated.'
+  },
+  'Mars-Chiron|sextile': {
+    feel: 'Gentle courage; you help each other face what\'s difficult.',
+    detail: 'The sextile provides a constructive link between Mars\'s initiative and Chiron\'s wound, allowing the Mars person to encourage Chiron without overwhelming them, and Chiron to deepen Mars\'s understanding of what truly requires bravery. This aspect supports partnerships where both people grow stronger through mutual encouragement and honest acknowledgment of vulnerability.'
+  },
+
+  // Jupiter-Saturn
+  'Jupiter-Saturn|conjunction': {
+    feel: 'Expansion meets restriction; vision and discipline forge something lasting.',
+    detail: 'Jupiter\'s optimism and Saturn\'s caution meet at the same point, creating a partnership that balances ambition with realism. The Jupiter person provides vision and faith, while Saturn supplies structure and follow-through. When this works well, both people build something neither could achieve alone. When it doesn\'t, Jupiter feels constantly restrained and Saturn feels that Jupiter is reckless and unreliable. The conjunction demands mutual respect for fundamentally different approaches to risk.'
+  },
+  'Jupiter-Saturn|opposition': {
+    feel: 'The optimist and the realist face off; faith versus evidence.',
+    detail: 'Jupiter and Saturn oppose each other, creating a tug of war between expansion and contraction. The Jupiter person wants to grow, spend, take risks, and believe, while the Saturn person wants to conserve, plan, and prepare for the worst. This opposition can produce excellent balance in practical matters if both people value what the other brings. Without that respect, Jupiter feels imprisoned and Saturn feels endangered by Jupiter\'s optimism.'
+  },
+  'Jupiter-Saturn|trine': {
+    feel: 'Measured growth; ambition that knows its own timing.',
+    detail: 'Jupiter\'s expansive vision flows naturally into Saturn\'s capacity for patient execution, creating a partnership with unusual ability to plan well and follow through. The Jupiter person\'s ideas find structure and form through Saturn\'s discipline, and Saturn\'s careful approach is energized by Jupiter\'s faith. This trine is exceptional for business partnerships, long-term planning, and any endeavor requiring both vision and endurance.'
+  },
+  'Jupiter-Saturn|square': {
+    feel: 'Growth and limitation at war; too much caution or too much risk.',
+    detail: 'Jupiter\'s desire to expand clashes with Saturn\'s need for control and security, creating ongoing tension about pace, risk, and priorities. The Jupiter person feels that Saturn blocks every opportunity, while Saturn feels that Jupiter is irresponsible and naive. This square forces both people to refine their approach — Jupiter must learn that not every opportunity is worth pursuing, and Saturn must learn that some risks are necessary for growth. Financial disagreements are common.'
+  },
+  'Jupiter-Saturn|sextile': {
+    feel: 'Productive balance between faith and prudence.',
+    detail: 'The sextile creates a cooperative link between Jupiter\'s optimism and Saturn\'s realism. Both people feel that the other provides what they lack — Jupiter brings hope and possibility, Saturn brings structure and accountability. This aspect supports partnerships where long-term goals are pursued with both enthusiasm and discipline. It provides the productive tension of Jupiter-Saturn contacts without the frustration of harder aspects.'
+  },
+
+  // Jupiter-Uranus
+  'Jupiter-Uranus|conjunction': {
+    feel: 'Lightning strikes gold; sudden expansion and radical possibility.',
+    detail: 'Jupiter and Uranus combine their energies at the same degree, creating a partnership defined by unexpected opportunities, shared excitement about the future, and a mutual disdain for convention. Together these two people feel that anything is possible, and their combined energy can produce genuinely innovative results. The risk is instability — both planets resist routine, and the partnership may lack the patience for sustained effort.'
+  },
+  'Jupiter-Uranus|opposition': {
+    feel: 'Competing visions of freedom; radical growth pulls in opposite directions.',
+    detail: 'Jupiter\'s expansive philosophy opposes Uranus\'s revolutionary impulse, creating a dynamic where both people want change but disagree about its direction. The Jupiter person seeks growth through established channels — education, travel, spiritual practice — while Uranus wants to demolish the existing structure entirely. This opposition can produce extraordinary creative tension or an exhausting cycle of mutual disruption.'
+  },
+  'Jupiter-Uranus|trine': {
+    feel: 'Shared genius; innovation flows naturally toward opportunity.',
+    detail: 'Jupiter\'s vision harmonizes with Uranus\'s originality, creating a partnership with genuine capacity for breakthrough thinking and fortunate timing. Both people feel liberated by the other\'s presence, and ideas that seem wild to everyone else feel perfectly natural between them. This trine is exceptional for partnerships involving technology, reform, or any field where conventional thinking is a liability.'
+  },
+  'Jupiter-Uranus|square': {
+    feel: 'Restless brilliance; too many ideas and not enough follow-through.',
+    detail: 'Jupiter\'s desire for expansion clashes with Uranus\'s need for radical change, creating a partnership that generates enormous excitement but struggles with consistency. Every week brings a new plan, a new revelation, a new direction. Both people feed each other\'s restlessness, and neither is naturally inclined to slow down and consolidate. This square requires conscious effort to choose one path and walk it long enough to see results.'
+  },
+  'Jupiter-Uranus|sextile': {
+    feel: 'Friendly innovation; you bring out each other\'s best ideas.',
+    detail: 'The sextile links Jupiter\'s optimism with Uranus\'s inventiveness in a way that is stimulating without being destabilizing. Both people feel that the other expands their thinking and opens doors they wouldn\'t have noticed alone. This aspect is excellent for friendships and partnerships involving learning, creative work, or social causes. It provides the excitement of Jupiter-Uranus contacts with enough stability to actually build something.'
+  },
+
+  // Jupiter-Neptune
+  'Jupiter-Neptune|conjunction': {
+    feel: 'Boundless shared faith; the dream expands beyond all limits.',
+    detail: 'Jupiter and Neptune merge at the same degree, creating a partnership of extraordinary shared idealism, spiritual connection, and creative vision. Together these two people can imagine and believe in possibilities that others would dismiss as fantasy. The danger is equally extraordinary — mutual enabling, shared delusion, and a complete absence of practical grounding. This conjunction needs at least one strong Saturn contact elsewhere in the synastry to prevent both people from drifting into beautiful unreality.'
+  },
+  'Jupiter-Neptune|opposition': {
+    feel: 'One person\'s faith is the other\'s fantasy; belief and illusion trade places.',
+    detail: 'Jupiter\'s philosophical convictions confront Neptune\'s spiritual impressions from across the chart. The Jupiter person may see themselves as the voice of reason while viewing Neptune as deluded, or may feel that Neptune undermines their beliefs with vague mysticism. Neptune may feel that Jupiter is spiritually arrogant or that their faith lacks genuine surrender. This opposition demands humility from both people — truth is larger than either person\'s version of it.'
+  },
+  'Jupiter-Neptune|trine': {
+    feel: 'Shared vision that uplifts both souls; faith and imagination in harmony.',
+    detail: 'Jupiter\'s wisdom flows naturally into Neptune\'s spiritual depth, creating a partnership rich in shared meaning, creative inspiration, and genuine compassion. Both people feel that the other understands something essential about the nature of existence. This trine is exceptional for partnerships involving art, music, spiritual practice, or service to others. It provides a sense of shared purpose that transcends the mundane without losing touch with practical reality.'
+  },
+  'Jupiter-Neptune|square': {
+    feel: 'Inflated dreams; mutual idealism without a reality check.',
+    detail: 'Jupiter\'s optimism clashes with Neptune\'s boundlessness in a way that amplifies illusion rather than vision. Both people may encourage each other\'s least realistic tendencies — excessive spending, substance issues, spiritual bypassing, or simply believing things will work out without doing the necessary work. This square requires at least one person to serve as an anchor to reality. Financial and practical decisions should never be made in the glow of shared enthusiasm without sleeping on them first.'
+  },
+  'Jupiter-Neptune|sextile': {
+    feel: 'Gentle shared idealism; faith and imagination support each other.',
+    detail: 'The sextile creates a constructive link between Jupiter\'s expansive vision and Neptune\'s imaginative depth. Both people feel that the other enriches their sense of meaning and possibility without pulling them into unreality. This aspect supports shared spiritual interests, creative collaboration, and charitable impulses. It provides the best of Jupiter-Neptune contacts — inspiration, compassion, and shared faith — with enough grounding to remain productive.'
+  },
+
+  // Jupiter-Pluto
+  'Jupiter-Pluto|conjunction': {
+    feel: 'Massive shared ambition; together you seek power on a grand scale.',
+    detail: 'Jupiter and Pluto combine their forces at the same degree, creating a partnership with extraordinary drive for influence, wealth, and transformation. Both people feel that the other amplifies their capacity to achieve and acquire. The partnership can accomplish genuinely impressive things — but the desire for power must be tempered by ethical consideration. Without moral grounding, this conjunction can produce ruthless ambition that destroys as much as it builds.'
+  },
+  'Jupiter-Pluto|opposition': {
+    feel: 'Competing claims to truth and power; philosophical intensity.',
+    detail: 'Jupiter\'s beliefs confront Pluto\'s will to power from across the chart, creating a dynamic where each person feels the other is trying to dominate the narrative. The Jupiter person may use philosophy or morality to justify control, while Pluto uses psychological intensity to undermine Jupiter\'s convictions. This opposition can produce genuinely transformative dialogue about power, truth, and ethics — or an exhausting battle for ideological supremacy.'
+  },
+  'Jupiter-Pluto|trine': {
+    feel: 'Empowered growth; transformation serves expansion and vice versa.',
+    detail: 'Jupiter\'s vision flows naturally into Pluto\'s transformative depth, creating a partnership with unusual capacity for reinvention and achievement. The Jupiter person feels that Pluto gives their ambitions strategic depth, and Pluto feels that Jupiter provides moral purpose for their intensity. Together they can navigate complex situations with both wisdom and power. This trine is exceptional for business partnerships, shared research, or any endeavor requiring both vision and tenacity.'
+  },
+  'Jupiter-Pluto|square': {
+    feel: 'Excess meets obsession; the hunger for more becomes consuming.',
+    detail: 'Jupiter\'s expansiveness clashes with Pluto\'s compulsive intensity, creating a partnership that tends toward extremes. Both people may push each other toward greater ambition, acquisition, or control than either would pursue alone. Financial overreach, power struggles disguised as philosophical disagreements, and an inability to accept limitation are common. This square requires both people to ask regularly whether their shared goals serve genuine growth or merely appetite.'
+  },
+  'Jupiter-Pluto|sextile': {
+    feel: 'Strategic vision; you strengthen each other\'s capacity for meaningful achievement.',
+    detail: 'The sextile links Jupiter\'s optimism with Pluto\'s depth in a productive way. Both people feel that the other adds something essential — Jupiter provides faith and breadth, Pluto provides focus and psychological insight. This aspect supports partnerships where significant goals are pursued with both enthusiasm and strategic awareness. It provides the ambition of Jupiter-Pluto contacts without the compulsive quality of harder aspects.'
+  },
+
+  // Jupiter-Chiron
+  'Jupiter-Chiron|conjunction': {
+    feel: 'The wound becomes the teaching; meaning grows from suffering.',
+    detail: 'Jupiter meets Chiron at the same degree, creating a partnership where one person\'s philosophical wisdom directly addresses the other\'s core wound. The Jupiter person may serve as teacher, guide, or source of meaning for the Chiron person, helping them find purpose in their pain. Chiron in turn deepens Jupiter\'s understanding beyond mere optimism into genuine wisdom earned through suffering. This conjunction often indicates a mentor-student quality to the relationship, even in romantic contexts.'
+  },
+  'Jupiter-Chiron|opposition': {
+    feel: 'Excessive optimism confronts irreducible pain.',
+    detail: 'Jupiter\'s faith opposes Chiron\'s wound, creating a dynamic where the Jupiter person may try to fix or philosophize away Chiron\'s suffering, and Chiron may feel that Jupiter\'s positivity is dismissive of real pain. The Jupiter person means well but their "everything happens for a reason" approach can feel like a minimization. Chiron may feel that Jupiter doesn\'t truly understand suffering. Growth comes when Jupiter learns that some pain must be witnessed rather than explained, and Chiron accepts that meaning is possible without the wound being resolved.'
+  },
+  'Jupiter-Chiron|trine': {
+    feel: 'Grace in the wound; faith and vulnerability strengthen each other.',
+    detail: 'Jupiter\'s wisdom flows naturally toward Chiron\'s tender place, creating a partnership where both people feel that their connection has a healing purpose. The Jupiter person provides hope and perspective without dismissing Chiron\'s pain, and Chiron gives Jupiter\'s philosophy the depth that only lived experience provides. This trine often indicates a relationship that both people describe as genuinely healing — not because the wound disappears, but because it becomes integrated into a larger story of meaning.'
+  },
+  'Jupiter-Chiron|square': {
+    feel: 'Good intentions that miss the wound; help that doesn\'t help.',
+    detail: 'Jupiter\'s expansive approach clashes with Chiron\'s vulnerability, creating situations where attempts to encourage or uplift land painfully wrong. The Jupiter person may offer advice, opportunities, or philosophical frameworks that Chiron experiences as tone-deaf or patronizing. Chiron may feel that Jupiter lacks the humility to truly sit with suffering. This square asks Jupiter to stop trying to fix and start learning to witness, and asks Chiron to receive good intentions even when the delivery is imperfect.'
+  },
+  'Jupiter-Chiron|sextile': {
+    feel: 'Quiet encouragement toward wholeness; growth through gentle understanding.',
+    detail: 'The sextile creates a supportive link between Jupiter\'s faith and Chiron\'s wound, allowing both people to approach vulnerability with optimism that doesn\'t deny reality. The Jupiter person naturally encourages Chiron without overwhelming them, and Chiron helps Jupiter understand that true wisdom includes reckoning with pain. This aspect supports partnerships where personal growth is valued and supported without being forced.'
+  },
+
+  // Saturn-Uranus
+  'Saturn-Uranus|conjunction': {
+    feel: 'Order and chaos fused at a single point; structured rebellion.',
+    detail: 'Saturn\'s need for structure meets Uranus\'s demand for freedom at the same degree, creating a partnership that embodies the tension between tradition and revolution. One person may represent the established order while the other pushes for radical change, or both may oscillate between these roles. When this conjunction works, it produces innovative structures and disciplined reform. When it doesn\'t, both people feel trapped in a cycle of control and rebellion that neither can resolve.'
+  },
+  'Saturn-Uranus|opposition': {
+    feel: 'Freedom versus security; the rebel confronts the builder.',
+    detail: 'Saturn and Uranus face off across the chart, creating a fundamental tension between stability and change. The Saturn person needs commitment, routine, and clear expectations; the Uranus person needs space, novelty, and the freedom to reinvent. This opposition often produces a relationship where one person is always trying to lock things down while the other is trying to break free. Resolution requires both people to stop identifying exclusively with one pole and acknowledge their own need for both structure and freedom.'
+  },
+  'Saturn-Uranus|trine': {
+    feel: 'Progressive stability; change happens within a structure that holds.',
+    detail: 'Saturn\'s discipline harmonizes with Uranus\'s innovation, creating a partnership that can implement change without losing what already works. The Saturn person provides the patience and framework that Uranus\'s ideas need to become real, and Uranus prevents Saturn from becoming rigid and fearful of the future. This trine is exceptional for partnerships navigating periods of change — career transitions, relocation, or any situation requiring both courage and careful planning.'
+  },
+  'Saturn-Uranus|square': {
+    feel: 'Chronic tension between predictability and disruption; control triggers rebellion.',
+    detail: 'Saturn\'s desire for order clashes with Uranus\'s need for freedom in a way that makes both people feel fundamentally misunderstood. The Saturn person sees Uranus as irresponsible and destabilizing; Uranus sees Saturn as controlling and afraid of change. Every attempt at compromise feels like capitulation. This square demands that both people develop genuine flexibility — Saturn must release some control, and Uranus must accept some structure — or the relationship becomes an exhausting oscillation between restriction and revolt.'
+  },
+  'Saturn-Uranus|sextile': {
+    feel: 'Constructive innovation; discipline and originality cooperate.',
+    detail: 'The sextile creates a productive link between Saturn\'s stability and Uranus\'s inventiveness. Both people feel that the other provides a useful counterbalance — Saturn grounds Uranus\'s wilder impulses, and Uranus keeps Saturn from becoming stagnant. This aspect supports partnerships where new ideas are tested and implemented rather than merely discussed or rigidly resisted. It provides the creative tension of Saturn-Uranus contacts without the polarization of harder aspects.'
+  },
+
+  // Saturn-Neptune
+  'Saturn-Neptune|conjunction': {
+    feel: 'Dreams given form, or imagination imprisoned; it depends on the day.',
+    detail: 'Saturn\'s reality principle meets Neptune\'s boundless imagination at the same degree, creating a partnership that oscillates between practical idealism and mutual disillusionment. The Saturn person can help Neptune manifest their vision, giving structure to what would otherwise remain fantasy. But Saturn can also crush Neptune\'s spirit with excessive criticism of their dreams. Neptune can soften Saturn\'s rigidity or undermine their confidence. This conjunction demands that both people respect what the other brings without trying to convert them.'
+  },
+  'Saturn-Neptune|opposition': {
+    feel: 'The pragmatist faces the mystic; neither trusts the other\'s reality.',
+    detail: 'Saturn\'s concrete worldview opposes Neptune\'s fluid spirituality, creating a fundamental disagreement about what is real and what matters. The Saturn person may dismiss Neptune\'s intuitions, dreams, and spiritual experiences as impractical nonsense. Neptune may see Saturn as spiritually dead, trapped in a material prison. This opposition can produce extraordinary creative work if both people use the tension productively — Saturn gives Neptune\'s visions form, Neptune gives Saturn\'s structures meaning.'
+  },
+  'Saturn-Neptune|trine': {
+    feel: 'Grounded imagination; dreams built on solid foundations.',
+    detail: 'Saturn\'s discipline flows naturally into Neptune\'s visionary capacity, creating a partnership with unusual ability to manifest creative and spiritual ideals in practical form. The Saturn person provides the commitment and structure that Neptune\'s dreams require, and Neptune provides the inspiration and meaning that Saturn\'s discipline needs to feel worthwhile. This trine is exceptional for creative careers, spiritual communities, and any partnership where the ideal must become real.'
+  },
+  'Saturn-Neptune|square': {
+    feel: 'Disillusionment and doubt; one person\'s reality dissolves the other\'s certainty.',
+    detail: 'Saturn\'s need for concrete evidence clashes with Neptune\'s need for faith and possibility, creating chronic tension about what is real and what to trust. The Saturn person may feel that Neptune is deceptive or deluded; Neptune may feel that Saturn drains the magic from everything they believe in. Practical promises that dissolve, vague commitments that frustrate, and a persistent sense that the other person inhabits a different reality are common. This square requires radical honesty and clearly defined expectations.'
+  },
+  'Saturn-Neptune|sextile': {
+    feel: 'Practical compassion; structure in service of a higher purpose.',
+    detail: 'The sextile creates a cooperative link between Saturn\'s realism and Neptune\'s idealism. Both people feel that the other adds something essential — Saturn provides accountability and form, Neptune provides vision and heart. This aspect supports partnerships where meaningful work is done with both discipline and compassion. It provides the best of Saturn-Neptune contacts without the disillusionment that harder aspects often produce.'
+  },
+
+  // Saturn-Pluto
+  'Saturn-Pluto|conjunction': {
+    feel: 'Relentless shared intensity; you build empires or endure ordeals together.',
+    detail: 'Saturn and Pluto combine their formidable energies at the same degree, creating a partnership defined by extreme ambition, endurance, and shared confrontation with difficult realities. Both people feel that the relationship demands more from them than any other — more discipline, more honesty, more willingness to face uncomfortable truths. This conjunction can produce extraordinary achievement born from shared hardship, or it can become an oppressive dynamic where both people feel trapped by the weight of their mutual expectations.'
+  },
+  'Saturn-Pluto|opposition': {
+    feel: 'An immovable force meets an unstoppable will; power tested to its limits.',
+    detail: 'Saturn\'s authority confronts Pluto\'s transformative power from across the chart, creating a relationship where control is the central issue. The Saturn person relies on rules, structure, and established authority; the Pluto person operates through psychological depth, strategic intensity, and sheer force of will. Neither yields easily, and conflicts can become brutal tests of endurance. This opposition requires both people to examine their relationship to power honestly and accept that domination is not partnership.'
+  },
+  'Saturn-Pluto|trine': {
+    feel: 'Shared resilience; together you endure what would break others.',
+    detail: 'Saturn\'s patience harmonizes with Pluto\'s depth, creating a partnership with extraordinary staying power and the ability to navigate extreme circumstances. Both people feel that the other can be relied upon when things are genuinely difficult. The Saturn person\'s steadiness gives Pluto\'s intensity constructive form, and Pluto\'s depth gives Saturn\'s discipline genuine purpose. This trine is exceptional for partnerships that face real adversity — financial, medical, or circumstantial — and emerge stronger.'
+  },
+  'Saturn-Pluto|square': {
+    feel: 'Grinding power struggle; control and resistance reach their breaking point.',
+    detail: 'Saturn\'s desire for authority clashes with Pluto\'s compulsive need for control, creating a relationship marked by entrenched power dynamics. Both people feel simultaneously constrained and threatened by the other\'s strength. The Saturn person uses rules and expectations to maintain control; the Pluto person uses psychological manipulation or sheer intensity. This square often surfaces in relationships that feel impossible to leave but painful to stay in. Breaking the pattern requires professional support and genuine willingness from both people to release the need for dominance.'
+  },
+  'Saturn-Pluto|sextile': {
+    feel: 'Disciplined depth; shared strength deployed with purpose.',
+    detail: 'The sextile links Saturn\'s structure with Pluto\'s transformative power in a constructive way. Both people feel that the other adds necessary strength — Saturn provides stability and accountability, Pluto provides depth and the willingness to confront what others avoid. This aspect supports partnerships where difficult realities are faced with both courage and practical wisdom. It provides the resilience of Saturn-Pluto contacts without the oppressive intensity of harder aspects.'
+  },
+
+  // Saturn-Chiron
+  'Saturn-Chiron|conjunction': {
+    feel: 'The wound crystallized; old pain becomes a permanent teacher.',
+    detail: 'Saturn meets Chiron at the same degree, creating a partnership where one person\'s sense of duty, authority, or structure directly contacts the other\'s core wound. The Saturn person may inadvertently embody the authority figure who originally caused Chiron\'s wound, triggering deep patterns of inadequacy or fear. Equally, Chiron can help Saturn understand that their rigid need for control stems from their own unhealed pain. This conjunction is heavy but profoundly maturing — both people grow through reckoning with how pain and responsibility intertwine.'
+  },
+  'Saturn-Chiron|opposition': {
+    feel: 'Duty and vulnerability face off; structure cannot contain the wound.',
+    detail: 'Saturn\'s expectations confront Chiron\'s wound from across the chart, creating a dynamic where one person\'s need for responsibility and order triggers the other\'s deepest sense of inadequacy. The Saturn person may demand more than Chiron can give, not understanding why simple expectations feel crushing. Chiron may feel that Saturn is cold, rigid, or punishing. Growth requires Saturn to soften their standards with compassion, and Chiron to distinguish between present-day expectations and the voice of their original wound.'
+  },
+  'Saturn-Chiron|trine': {
+    feel: 'Patient healing; time and commitment mend what was broken.',
+    detail: 'Saturn\'s steadiness flows naturally toward Chiron\'s wound, creating a partnership where healing happens through reliability, commitment, and the slow accumulation of trust. The Saturn person provides the stable container that Chiron\'s wound needs to heal — showing up consistently, holding boundaries with kindness, demonstrating through action that not all structure is punishment. Chiron helps Saturn access tenderness beneath their reserve. This trine often indicates a relationship that heals through ordinary faithfulness rather than dramatic breakthroughs.'
+  },
+  'Saturn-Chiron|square': {
+    feel: 'Authority reopens old wounds; expectations feel like punishment.',
+    detail: 'Saturn\'s need for structure clashes with Chiron\'s vulnerability in a way that creates recurring pain around authority, competence, and worth. The Saturn person\'s natural tendency to critique and correct lands on Chiron\'s most sensitive spot, making every suggestion feel like confirmation of their deepest inadequacy. Chiron\'s reactivity frustrates Saturn, who cannot understand why reasonable expectations produce such disproportionate pain. This square demands extraordinary patience and willingness from both people to examine the difference between present reality and past wounds.'
+  },
+  'Saturn-Chiron|sextile': {
+    feel: 'Gentle structure around the tender place; responsible caring.',
+    detail: 'The sextile creates a supportive link between Saturn\'s stability and Chiron\'s wound, allowing both people to approach vulnerability with maturity and care. The Saturn person provides practical support for Chiron\'s healing without being heavy-handed, and Chiron helps Saturn understand that strength includes the capacity to be gentle with what is broken. This aspect supports partnerships where difficult truths are faced with both realism and compassion.'
+  },
 };

@@ -12,7 +12,7 @@ const MANSIONS=[
  {name:'Al Thurayya',eng:'The Pleiades',nature:'favorable',good:'Alchemy, hunting, voyages, revenge on enemies.',avoid:'Sowing, marriage, buildings.',
   modern:'A restless, transformative energy. Great for pursuing goals with focus and intensity, especially creative or investigative work. Less ideal for settling down or making permanent commitments \u2014 this mansion wants movement, not roots.'},
  {name:'Al Dabaran',eng:'The Follower',nature:'unfavorable',good:'Destruction and hindrance of works only.',avoid:'Nearly all beginnings; sowing, marriage, journeys.',
-  modern:'A day to clear the decks rather than build. Cancel what isn\'t working, end draining commitments, and declutter. Trying to force new starts will meet friction \u2014 lean into endings and editing instead.'},
+  modern:'A day to clear the decks rather than build. Cancel what isn\'t working, end draining commitments, and declutter. Trying to force new starts will meet friction \u2014 spend the energy on endings and editing instead.'},
  {name:'Al Haq\'ah',eng:'The White Spot',nature:'favorable',good:'Safety at sea, the return of travelers, love between friends.',avoid:'Marriage, enmity, sowing.',
   modern:'Protective and reunion-oriented energy. Reach out to friends you haven\'t spoken to in a while; welcome people back into your life. Travel is safe and connections deepen naturally. Keep things warm and low-pressure.'},
  {name:'Al Han\'ah',eng:'The Brand',nature:'favorable',good:'Hunting, besieging cities, revenge. Favorable for reaping harvests.',avoid:'Voyages, marriage.',

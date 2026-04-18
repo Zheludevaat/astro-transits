@@ -1,5 +1,5 @@
 // Service Worker for Alexander's Transits PWA
-const CACHE_NAME = 'transits-v62';
+const CACHE_NAME = 'transits-v63';
 const URLS_TO_CACHE = [
   './', './index.html', './manifest.json', './icon.svg', './icon-192.png', './icon-512.png', './apple-touch-icon.png',
   './src/engine/ephemeris.js', './src/engine/motion.js', './src/engine/voc.js', './src/engine/aspects.js',
@@ -7,9 +7,9 @@ const URLS_TO_CACHE = [
   './src/hellenistic/lots.js', './src/hellenistic/zr.js', './src/hellenistic/firdaria.js',
   './src/hellenistic/decans.js', './src/hellenistic/mansions.js', './src/hellenistic/fixedstars.js',
   './src/hellenistic/returns.js', './src/hellenistic/liturgy.js', './src/hellenistic/electional.js',
-  './src/voice/house-voice.js', './src/voice/natal-voice.js', './src/voice/aspect-voice.js?v=61',
-  './src/voice/hard-brings.js', './src/voice/ingress-notes.js', './src/voice/tone.js?v=61',
-  './src/voice/synastry-voice.js?v=61', './src/voice/astrocarto-voice.js', './src/voice/references.js',
+  './src/voice/house-voice.js', './src/voice/natal-voice.js', './src/voice/aspect-voice.js?v=63',
+  './src/voice/hard-brings.js', './src/voice/ingress-notes.js?v=63', './src/voice/tone.js?v=63',
+  './src/voice/synastry-voice.js?v=63', './src/voice/astrocarto-voice.js', './src/voice/references.js',
   './src/synthesis/prompts.js', './src/synthesis/claude-client.js',
   './src/synthesis/context-builder.js', './src/synthesis/deterministic.js',
   './src/synthesis/synthesizer.js', './src/synthesis/citations.js', './src/synthesis/consult.js',

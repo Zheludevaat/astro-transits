@@ -23,8 +23,8 @@ const SYNASTRY_VOICE = {
     counsel: 'Name the competition when you notice it. Say "I think we\'re competing right now" — it defuses the charge. Find arenas where you can be on the same team: a shared project, a game, a cause you both care about. Channel the friction into fuel.'
   },
   'Sun-Sun|sextile': {
-    feel: 'Comfortable support and gentle encouragement of each other\'s personal goals.',
-    detail: 'You appreciate each other\'s individuality and naturally help each other shine. The aspect provides ease without the risk of taking each other for granted. Partnership strengthens each person\'s sense of purpose.'
+    feel: 'You bring out a better version of each other without even trying very hard.',
+    detail: 'You genuinely admire the way the other person moves through the world, and that admiration is specific — not generic cheerleading but real recognition of what makes each of you distinct. Together you take on slightly bolder projects and pursue goals with more confidence than either of you musters alone. The dynamic is collaborative rather than competitive, and both people tend to feel more fully themselves in the relationship.'
   },
 
   // Sun-Moon
@@ -47,8 +47,8 @@ const SYNASTRY_VOICE = {
     counsel: 'When emotions rise, pause before reacting. The Moon person needs to feel heard before problem-solving begins; the Sun person needs space to process without being labeled cold. A daily check-in of "how are you really feeling?" can bridge this gap over time.'
   },
   'Sun-Moon|sextile': {
-    feel: 'Comfortable emotional support and understanding without demanding complete sameness.',
-    detail: 'The Sun person naturally supports the Moon person\'s emotional needs, and the Moon person intuitively understands what the Sun person needs to feel appreciated. This aspect provides emotional ease with enough difference to keep the partnership interesting.'
+    feel: 'You understand each other\'s rhythm — when to talk, when to be quiet, when to push and when to let it go.',
+    detail: 'The Sun person makes the Moon person feel safe enough to be emotional without performing strength, and the Moon person gives the Sun person a soft place to land without making them feel babied. You read each other\'s needs with a low-effort accuracy that makes daily life together remarkably smooth. The slight difference in your natures keeps things interesting; the underlying compatibility keeps things stable.'
   },
 
   // Venus-Mars
@@ -71,8 +71,8 @@ const SYNASTRY_VOICE = {
     counsel: 'Talk about desire outside the bedroom, when there is no pressure. Learn each other\'s love languages — what feels like pursuit to one person may feel like pressure to the other. The square demands creative compromise, not surrender.'
   },
   'Venus-Mars|sextile': {
-    feel: 'Flirtatious ease and natural romantic chemistry.',
-    detail: 'Mars person gently pursues while Venus person enjoys being desired in a balanced way. Passion and affection combine naturally without the intensity of conjunction or the friction of square. This is a supportive aspect for romance and physical intimacy.'
+    feel: 'You flirt well together — the chemistry is playful rather than overwhelming.',
+    detail: 'The Mars person pursues with just enough heat to make the Venus person feel desired without being pressured, and Venus responds with a warmth that keeps Mars engaged without having to escalate. You touch casually. You tease each other in ways that land right. The sexual energy between you stays alive because neither person has to perform intensity — it emerges naturally through small, specific gestures of desire and affection.'
   },
 
   // Mercury-Mercury
@@ -95,8 +95,8 @@ const SYNASTRY_VOICE = {
     counsel: 'Repeat back what you heard before responding. "So what you\'re saying is..." prevents the most common Mercury-square misfire. Write important things down when speaking fails — sometimes a text or note lands better than talking for this aspect.'
   },
   'Mercury-Mercury|sextile': {
-    feel: 'Friendly, easy conversation and genuine interest in each other\'s thoughts.',
-    detail: 'You enjoy talking with each other and naturally support each other\'s intellectual pursuits. Communication is easy without being so similar that you lose individual perspective. This aspect supports genuine intellectual partnership.'
+    feel: 'Talking to each other is one of the best parts of the relationship.',
+    detail: 'You do not think identically, but your different angles on things make conversations richer rather than frustrating. One person notices what the other missed. You recommend each other books, articles, and ideas with a hit rate that stays high over the years. Daily debriefs, long car rides, and lazy Sunday mornings talking in bed are where this bond does its best work.'
   },
 
   // Jupiter-Jupiter
@@ -117,8 +117,8 @@ const SYNASTRY_VOICE = {
     detail: 'You each have strong opinions about what makes life good and how to succeed. This can push both partners to clarify their true values, or it can create ongoing friction about priorities and direction.'
   },
   'Jupiter-Jupiter|sextile': {
-    feel: 'Supportive approach to each other\'s growth and shared optimism.',
-    detail: 'You naturally encourage each other\'s expansion without pushing so hard that it becomes overwhelming. The partnership brings genuine opportunity and good fortune to both. This is one of the most benefic aspects for long-term partnership.'
+    feel: 'You make each other more generous and more adventurous than you would be apart.',
+    detail: 'Together you take trips neither of you would plan alone, sign up for classes that stretch you, and say yes to invitations you might otherwise decline. Both people tend to feel that the relationship has genuinely expanded their world. You share a relaxed optimism that does not need to be forced — things simply tend to go a little better when you are together.'
   },
 
   // Saturn-Saturn
@@ -136,11 +136,11 @@ const SYNASTRY_VOICE = {
   },
   'Saturn-Saturn|square': {
     feel: 'Karmic tension around commitment, responsibility, and control.',
-    detail: 'You challenge each other\'s approach to duty and obligation, which can feel restrictive or irresponsible depending on perspective. This aspect often involves learning to balance freedom and commitment, spontaneity and structure.'
+    detail: 'You challenge each other\'s approach to duty and obligation — one person\'s discipline reads as rigidity to the other, and one person\'s flexibility reads as carelessness. The friction sharpens both approaches until you each adopt what actually works from the other\'s system.'
   },
   'Saturn-Saturn|sextile': {
-    feel: 'Comfortable alignment on what\'s necessary for partnership to work.',
-    detail: 'You both understand the work required in partnership and are willing to invest time and effort. The relationship feels grounded without being burdensome. This aspect supports lasting, mature partnerships.'
+    feel: 'You agree on the basics — what constitutes a promise, what hard work looks like, what counts as showing up.',
+    detail: 'Neither person has to explain why reliability matters or why commitments should be kept. You share a quiet understanding of what a real partnership requires, and you both invest the effort without keeping score. The relationship feels solid without feeling heavy, and both people tend to become more competent and more organized together than they were apart.'
   },
 
   // Venus-Venus
@@ -161,8 +161,8 @@ const SYNASTRY_VOICE = {
     detail: 'Your aesthetics and values don\'t naturally align, which means constant decisions about shared spaces and lifestyle. This aspect pushes partners to communicate about values and find middle ground.'
   },
   'Venus-Venus|sextile': {
-    feel: 'Comfortable compatibility in values and taste without rigid sameness.',
-    detail: 'You appreciate each other\'s aesthetic choices and share enough values to create ease in lifestyle decisions. This aspect provides compatibility that feels natural but doesn\'t require identical preferences.'
+    feel: 'You like enough of the same things to share a life, and enough different things to keep surprising each other.',
+    detail: 'Decorating a home together, choosing a restaurant, or planning a vacation does not become a negotiation. You share enough taste to make daily decisions easy, but your different aesthetic instincts introduce each other to pleasures you would not have found alone. Money conversations are relatively painless because your values overlap where it matters most.'
   },
 
   // Mars-Mars
@@ -183,8 +183,8 @@ const SYNASTRY_VOICE = {
     detail: 'You each want to lead and may undermine each other\'s projects. This aspect works best when energy is channeled into shared goals rather than competing agendas. The friction can motivate or frustrate depending on context.'
   },
   'Mars-Mars|sextile': {
-    feel: 'Supportive, complementary energy and natural motivation for each other.',
-    detail: 'You inspire each other to action without the friction of square or the overwhelming intensity of conjunction. Energy combines productively, and you naturally support each other\'s pursuits.'
+    feel: 'You motivate each other without competing — your drives run parallel rather than head-to-head.',
+    detail: 'You are good workout partners, good project collaborators, and good at dividing labor without resentment. One person\'s initiative inspires the other rather than threatening them. You tend to get more done together than you planned because your different styles of effort complement each other. When one person flags, the other\'s energy picks up the slack naturally.'
   },
 
   // Moon-Moon
@@ -205,8 +205,8 @@ const SYNASTRY_VOICE = {
     detail: 'You have different emotional needs and responses, which can feel invalidating to both. This aspect pushes partners to truly listen and honor different emotional languages. Growth comes through accepting differences.'
   },
   'Moon-Moon|sextile': {
-    feel: 'Comfortable emotional compatibility without demanding complete sameness.',
-    detail: 'You understand each other\'s emotional nature and naturally support each other\'s needs. Emotional ease combines with enough difference to keep the partnership interesting and growing.'
+    feel: 'You feel emotionally safe together without the relationship becoming a cocoon.',
+    detail: 'You process feelings differently enough to offer each other fresh perspective but similarly enough to avoid chronic misunderstanding. Bad days are handled well — one person\'s distress does not automatically destabilize the other. You cook for each other, check in without hovering, and create a domestic atmosphere that both people genuinely want to come home to.'
   },
 
   // Sun-Venus
@@ -227,8 +227,8 @@ const SYNASTRY_VOICE = {
     detail: 'The Venus person is attracted to the Sun person but struggles with accepting their essential nature. The Sun person senses the criticism beneath the attraction. This aspect requires work to separate genuine affection from judgment.'
   },
   'Sun-Venus|sextile': {
-    feel: 'Easy romantic attraction and natural appreciation of each other.',
-    detail: 'The Venus person finds the Sun person attractive in an uncomplicated way, and the Sun person feels appreciated. This aspect creates genuine affection without the intensity of conjunction or the friction of square.'
+    feel: 'You find each other attractive in a way that does not require effort or explanation.',
+    detail: 'The Venus person genuinely likes who the Sun person is — not a projected fantasy, but the actual person. The Sun person feels seen and valued in a way that does not come with conditions attached. You compliment each other naturally, notice when the other looks good, and maintain a low-level current of appreciation that sustains the relationship through unremarkable days.'
   },
 
   // Sun-Mars
@@ -249,8 +249,8 @@ const SYNASTRY_VOICE = {
     detail: 'The Mars person may pursue too aggressively for the Sun person\'s comfort, or the Sun person may feel the pursuit is not what they want. This aspect requires clear communication about desire and boundaries.'
   },
   'Sun-Mars|sextile': {
-    feel: 'Flirty, attractive chemistry that\'s fun and not overwhelming.',
-    detail: 'The Mars person is attracted and gently pursues; the Sun person enjoys being desired. The aspect creates sexual chemistry without the intensity of conjunction or the friction of square.'
+    feel: 'The attraction between you is playful and energizing rather than consuming.',
+    detail: 'The Mars person finds the Sun person genuinely exciting without feeling compelled to possess them, and the Sun person enjoys being pursued without feeling hunted. You spar lightly, tease each other, and maintain a physical spark through active engagement — working out together, planning adventures, challenging each other to try new things. The chemistry stays alive because you keep doing things, not just feeling things.'
   },
   // Moon-Venus
   'Moon-Venus|conjunction': {
@@ -271,7 +271,7 @@ const SYNASTRY_VOICE = {
   },
   'Moon-Venus|sextile': {
     feel: 'A gentle, friendly affection that deepens when both people invest in it.',
-    detail: 'The sextile offers opportunity rather than guarantee — there is natural compatibility between emotional needs and love expression, but it activates best through shared activities and conscious gestures. The Venus person can draw the Moon person out of emotional withdrawal, and the Moon person gives Venus a sense of genuine emotional connection. Small acts of kindness compound here more than grand gestures.'
+    detail: 'The Venus person instinctively knows the small gesture that will lift the Moon person\'s mood — the right text, the right touch, the right thing to bring home. The Moon person gives Venus something that flattery and social charm cannot provide: a genuine emotional connection that makes Venus feel known rather than merely admired. This bond grows strongest through shared activities and conscious gestures of kindness rather than grand declarations.'
   },
 
   // Moon-Mars
@@ -293,7 +293,7 @@ const SYNASTRY_VOICE = {
   },
   'Moon-Mars|sextile': {
     feel: 'A lively emotional-physical rapport that keeps the connection from going flat.',
-    detail: 'The sextile provides just enough friction to maintain interest without creating chronic conflict. Mars motivates the Moon person to take emotional risks, and the Moon helps Mars channel aggression into care. This aspect favors couples who do things together — shared projects, physical activity, building a home. The chemistry is present but needs action to stay alive; passivity dulls it.'
+    detail: 'Mars motivates the Moon person to take emotional risks they would otherwise avoid, and the Moon helps Mars channel raw drive into something warmer than pure ambition. You are the couple that builds things together — renovating the kitchen, training for a race, tackling a shared project that requires both tenderness and effort. The chemistry between you stays alive through action; sitting still together is pleasant, but doing things together is where you both come alive.'
   },
 
   // Moon-Saturn
@@ -316,7 +316,7 @@ const SYNASTRY_VOICE = {
   },
   'Moon-Saturn|sextile': {
     feel: 'A grounding connection; emotional maturity develops naturally through the relationship.',
-    detail: 'The sextile offers a constructive channel between feeling and responsibility. Saturn helps the Moon person turn emotional awareness into practical action, and the Moon keeps Saturn from becoming purely transactional. This aspect favors partnerships where both people are willing to do real work — emotional, financial, domestic — without keeping score. It rewards effort and matures well over time.'
+    detail: 'Saturn helps the Moon person turn vague emotional unease into something actionable — not by dismissing the feeling, but by asking "what do you need right now?" and then helping make it happen. The Moon keeps Saturn human, reminding them that efficiency is not the point of a relationship. You handle bills, logistics, and household decisions with minimal drama. Neither person keeps score, and both feel that the relationship has made them more capable and more emotionally honest.'
   },
 
   // Venus-Saturn
@@ -338,7 +338,7 @@ const SYNASTRY_VOICE = {
   },
   'Venus-Saturn|sextile': {
     feel: 'A practical, steady affection that builds slowly and lasts.',
-    detail: 'The sextile between Venus and Saturn creates an opportunity for love to be both enjoyable and durable. Saturn provides just enough structure to keep Venus grounded, and Venus brings enough warmth to prevent Saturn from becoming purely functional. This aspect favors relationships that start as friendships or that develop through shared work. It is not dramatic, but it is reliable, and both people tend to feel that the partnership improves their lives in concrete ways.'
+    detail: 'You two handle money well together. Neither makes the other feel guilty about spending or saving. There is a practical tenderness here — love expressed through showing up reliably, splitting responsibilities fairly, and building something real together rather than performing romance. The relationship often starts as friendship or grows through shared work, and both people tend to feel that being together has made their actual, daily life measurably better.'
   },
 
   // Mars-Saturn
@@ -361,7 +361,7 @@ const SYNASTRY_VOICE = {
   },
   'Mars-Saturn|sextile': {
     feel: 'Productive tension; you challenge each other toward greater discipline and effectiveness.',
-    detail: 'The sextile provides a constructive link between ambition and patience. Mars learns to plan before acting, and Saturn learns to act instead of endlessly planning. Shared physical or professional goals give this aspect its best expression. It is not the most dramatic connection, but it is one of the most useful — both people tend to feel that the other makes them more competent and more effective in the world.'
+    detail: 'Mars learns to plan before charging ahead, and Saturn learns to actually start instead of endlessly preparing. You are excellent collaborators on anything that requires sustained effort — building a business, training for an event, managing a household renovation. Both people tend to feel that the other makes them more competent. It is not the most exciting dynamic in the relationship, but it is one of the most useful, and you will look back on what you accomplished together with real satisfaction.'
   },
 
   // Sun-Saturn
@@ -383,7 +383,7 @@ const SYNASTRY_VOICE = {
   },
   'Sun-Saturn|sextile': {
     feel: 'A stabilizing influence; both people feel more grounded and purposeful in the relationship.',
-    detail: 'The sextile creates a practical link between identity and responsibility. Saturn helps the Sun person turn intentions into results, and the Sun gives Saturn enough warmth to stay engaged rather than retreating into isolation. This aspect favors mentorship, professional collaboration, and partnerships where both people are working toward something concrete. It is not flashy, but it gives the relationship a functional backbone.'
+    detail: 'Saturn helps the Sun person follow through on what they say they want to do, and the Sun gives Saturn a reason to care about something beyond duty. You are good at setting shared goals and actually reaching them. The relationship has a functional backbone that other couples envy — you handle logistics, finances, and long-term planning without the drama that derails less grounded partnerships.'
   },
 
   // Sun-Jupiter
@@ -404,8 +404,8 @@ const SYNASTRY_VOICE = {
     detail: 'Jupiter inflates the Sun person\'s ambitions past the point of realism, and the Sun provokes Jupiter into promises it cannot keep. Disagreements about beliefs, risk tolerance, or lifestyle are common. The square generates enormous energy that must be directed or it becomes wasteful. Both people need to learn the difference between growth and excess. When they do, this aspect fuels remarkable shared achievements. When they don\'t, it fuels remarkable shared debts.'
   },
   'Sun-Jupiter|sextile': {
-    feel: 'Friendly encouragement and shared enthusiasm; you bring out each other\'s confidence.',
-    detail: 'The sextile offers a gentle boost — Jupiter supports the Sun person\'s goals and the Sun gives Jupiter a constructive outlet. This aspect favors learning together, traveling together, and building a shared philosophy of life. It is not as dramatic as the conjunction or square, but it is more sustainable. Both people tend to feel that the relationship makes them slightly better, slightly braver, and slightly more generous than they would be alone.'
+    feel: 'You bring out each other\'s confidence and make each other braver.',
+    detail: 'Jupiter believes in the Sun person in a way that is specific and encouraging rather than inflated, and the Sun gives Jupiter\'s expansive ideas a focused outlet. You learn together well — taking a class, reading the same book, exploring a new city. Both people tend to feel that the relationship has made them slightly more generous, slightly more curious, and slightly more willing to try things they would have talked themselves out of alone.'
   },
 
   // Moon-Jupiter
@@ -426,8 +426,8 @@ const SYNASTRY_VOICE = {
     detail: 'Jupiter overpromises to the Moon person, and the Moon\'s emotional needs can feel bottomless to Jupiter. Expectations are consistently mismatched — one person wants more emotional depth, the other wants more freedom or adventure. The square generates emotional restlessness that must be addressed honestly. Both people need to scale their expectations to reality without cynicism. Unchecked, this aspect produces a cycle of emotional inflation and disappointment.'
   },
   'Moon-Jupiter|sextile': {
-    feel: 'Quiet emotional encouragement; you lift each other\'s spirits in practical, consistent ways.',
-    detail: 'The sextile provides a reliable channel for emotional support without excess. Jupiter helps the Moon person see beyond immediate emotional reactions, and the Moon gives Jupiter a genuine emotional connection that keeps its generosity from becoming performative. This aspect favors shared domestic contentment, modest adventures, and a relationship philosophy that values steady kindness over grand gestures.'
+    feel: 'You lift each other\'s spirits in practical, consistent ways.',
+    detail: 'Jupiter helps the Moon person zoom out when they are spiraling — not by dismissing the feeling, but by gently reminding them of the bigger picture. The Moon gives Jupiter something that performative generosity cannot buy: a genuine emotional connection that keeps Jupiter honest. You are good at modest adventures together — the weekend trip, the new recipe, the neighborhood walk that turns into a real conversation. Steady kindness is your love language as a couple.'
   },
 
   // Mars-Jupiter
@@ -448,8 +448,8 @@ const SYNASTRY_VOICE = {
     detail: 'Mars\'s aggression is inflated by Jupiter\'s excess, creating a dynamic where conflicts escalate quickly and risks are taken without adequate forethought. Both people feel that the other eggs them on and then fails to follow through. Arguments about philosophy, ethics, or the right course of action are common. This square produces enormous energy that needs a constructive outlet. Physical activity, shared projects, or competitive pursuits channel it well. Idle, it turns destructive.'
   },
   'Mars-Jupiter|sextile': {
-    feel: 'Mutual encouragement toward action; you make each other braver without making each other reckless.',
-    detail: 'The sextile provides a moderate, constructive link between drive and optimism. Mars feels that Jupiter supports its ambitions, and Jupiter feels that Mars gives its ideas real-world traction. This aspect is best activated through shared activities — exercise, travel, learning, or professional collaboration. It does not generate the intensity of harder aspects, but it provides a sustainable source of shared vitality that keeps the relationship from stagnating.'
+    feel: 'You make each other braver without making each other reckless.',
+    detail: 'Mars feels that Jupiter genuinely backs their ambitions rather than just nodding politely, and Jupiter feels that Mars actually does the things Jupiter only talks about. You are good exercise partners, travel companions, and co-conspirators on projects that require both energy and vision. The relationship stays vital because you keep doing things together rather than settling into routine — and the things you do tend to work out better than either of you expected.'
   },
 
   // Sun-Neptune
@@ -470,8 +470,8 @@ const SYNASTRY_VOICE = {
     detail: 'Neptune clouds the Sun person\'s self-perception within the relationship, creating confusion about roles, promises, and intentions. The Sun person may feel that Neptune is evasive or dishonest; Neptune may feel that the Sun person is insensitive to subtlety. This square is where idealization turns to disillusionment most sharply. Both people must commit to painful clarity over comfortable vagueness. Addictive or codependent patterns are common if this aspect goes unexamined.'
   },
   'Sun-Neptune|sextile': {
-    feel: 'Gentle inspiration; you bring out each other\'s imagination and compassion.',
-    detail: 'The sextile offers a constructive link between identity and transcendence. The Sun person feels that Neptune adds beauty and meaning to their life, and Neptune feels that the Sun person values their sensitivity. Creative collaboration, shared spiritual interests, and mutual compassion flow naturally. This aspect is mild enough to avoid Neptune\'s worst pitfalls while still providing its gifts — a sense of wonder and a willingness to see beyond the material.'
+    feel: 'You bring out each other\'s imagination and compassion without losing touch with reality.',
+    detail: 'The Sun person feels that Neptune adds a quality of beauty and meaning to ordinary life — the evening feels more atmospheric, the conversation more layered, the music more moving. Neptune feels that the Sun person genuinely values their sensitivity rather than treating it as impractical. You collaborate well on creative projects, share spiritual curiosity without requiring identical beliefs, and treat each other with a compassion that stays grounded enough to be useful rather than merely sentimental.'
   },
 
   // Sun-Pluto
@@ -493,7 +493,7 @@ const SYNASTRY_VOICE = {
   },
   'Sun-Pluto|sextile': {
     feel: 'A steady undercurrent of depth and mutual empowerment.',
-    detail: 'The sextile provides access to Plutonian intensity in manageable doses. The Sun person feels that Pluto adds psychological richness to their self-understanding, and Pluto feels that the Sun person is worth investing in. Shared research, psychological exploration, and quiet acts of mutual support activate this aspect. It lacks the dramatic intensity of the conjunction or square but provides lasting depth that strengthens the partnership incrementally.'
+    detail: 'The Sun person feels that Pluto sees them more clearly than most people do — not their surface, but the real architecture of who they are — and this perception is empowering rather than invasive. Pluto feels that the Sun person is genuinely worth their intensity and investment. You tend to have conversations that go deeper than either of you planned, and quiet acts of mutual support accumulate into a bond that is more resilient than it appears on the surface.'
   },
 
   // Moon-Neptune
@@ -514,8 +514,8 @@ const SYNASTRY_VOICE = {
     detail: 'Neptune undermines the Moon person\'s emotional security through vagueness, broken promises, or well-intentioned dishonesty. The Moon person feels that they can never get a straight emotional answer from Neptune, while Neptune feels emotionally overwhelmed or unfairly accused. Addiction, martyrdom, and victim-savior dynamics are common expressions. The square demands that both people learn to be emotionally honest even when the truth is less beautiful than the fantasy.'
   },
   'Moon-Neptune|sextile': {
-    feel: 'Gentle emotional-spiritual rapport; you sense each other\'s moods and offer quiet comfort.',
-    detail: 'The sextile provides a mild but real connection between emotional depth and spiritual sensitivity. The Moon person feels that Neptune adds a layer of meaning and beauty to their emotional life, and Neptune feels that the Moon provides genuine emotional grounding. Shared creative, musical, or contemplative practices strengthen this bond. It avoids the confusion of harder Neptune aspects while preserving the gift of unusual empathy and imaginative emotional connection.'
+    feel: 'You sense each other\'s moods before a word is spoken.',
+    detail: 'The Moon person feels that Neptune adds a quality of magic to their emotional life — dreams become more vivid, music hits differently, quiet moments together carry an unusual richness. Neptune feels emotionally held by the Moon in a way that does not require them to explain their inner world. You comfort each other through presence more than words, and shared creative or contemplative activities strengthen the bond without either person having to articulate exactly why.'
   },
 
   // Moon-Pluto
@@ -538,7 +538,7 @@ const SYNASTRY_VOICE = {
   },
   'Moon-Pluto|sextile': {
     feel: 'Emotional depth that enriches without overwhelming; you help each other process difficult feelings.',
-    detail: 'The sextile provides access to Plutonian emotional intensity in a manageable form. The Moon person feels that Pluto helps them understand their own emotional patterns, and Pluto feels that the Moon provides a safe space for vulnerability. Shared conversations about psychology, family history, and emotional truth activate this aspect. It lacks the compulsive quality of harder Moon-Pluto contacts while preserving the capacity for genuine emotional transformation.'
+    detail: 'The Moon person feels that Pluto helps them see patterns in their own emotional life that they could not have identified alone — recurring reactions, family legacies, the real reason behind the surface upset. Pluto feels that the Moon person makes it safe to be vulnerable without being consumed by intensity. Your late-night conversations about family, psychology, and what you actually feel tend to leave both people feeling lighter, not heavier.'
   },
 
   // Venus-Neptune
@@ -560,7 +560,7 @@ const SYNASTRY_VOICE = {
   },
   'Venus-Neptune|sextile': {
     feel: 'A soft romantic and creative connection that adds beauty without distorting reality.',
-    detail: 'The sextile provides a gentle channel between love and imagination. Venus feels that Neptune adds a layer of magic and artistic sensitivity to the relationship, and Neptune feels that Venus values their vision. Shared aesthetic pleasures, gentle romantic gestures, and creative collaboration thrive. This aspect avoids the worst of Neptunian deception while preserving its gifts — a sense that love can be both real and beautiful.'
+    detail: 'Venus feels that Neptune adds a layer of magic to ordinary romance — candlelight actually means something, a love letter is not corny, a shared sunset genuinely moves you both. Neptune feels that Venus appreciates their vision rather than dismissing it as impractical. You enjoy the same music, are moved by the same films, and share gentle romantic gestures that other couples might find sentimental but that feel perfectly natural between you.'
   },
 
   // Venus-Pluto
@@ -582,7 +582,7 @@ const SYNASTRY_VOICE = {
   },
   'Venus-Pluto|sextile': {
     feel: 'Quiet intensity; love has depth and psychological honesty without the compulsive extremes.',
-    detail: 'The sextile provides a manageable channel for Plutonian intensity in the love relationship. Venus feels that Pluto adds richness and meaning to their romantic life, and Pluto feels that Venus is worth opening up for. Shared intimacy deepens gradually through honest conversation and genuine vulnerability. This aspect lacks the dramatic compulsion of harder Venus-Pluto contacts but provides lasting depth that makes the relationship feel substantial and irreplaceable.'
+    detail: 'Venus feels that Pluto adds a richness to the romantic life that they have not found elsewhere — conversations that go deeper than expected, physical intimacy that communicates something words cannot, a feeling that this relationship matters in a way that is hard to articulate. Pluto feels that Venus is worth the risk of opening up. Trust builds gradually through honest exchange and genuine vulnerability, and both people tend to feel that what they have together is substantial and not easily replaced.'
   },
 
   // Sun-Uranus
@@ -603,8 +603,8 @@ const SYNASTRY_VOICE = {
     detail: 'Uranus destabilizes the Sun person\'s sense of self through unpredictable behavior, sudden changes of plan, or refusal to conform to expectations. The Sun person feels jerked around; Uranus feels suffocated by the Sun person\'s need for consistency. Breakups and reconciliations are common. This square demands that both people develop tolerance for genuine difference without sacrificing their core needs. Compromise here means expanding your definition of normal, not abandoning your identity.'
   },
   'Sun-Uranus|sextile': {
-    feel: 'Stimulating individuality; you keep each other interesting without the shock of harder aspects.',
-    detail: 'The sextile provides a gentle current of excitement and mutual respect for independence. The Sun person finds Uranus refreshing and intellectually stimulating; Uranus appreciates the Sun person\'s willingness to try new things. The relationship benefits from shared unconventional interests, experiments, and a willingness to let each other grow in unexpected directions. It keeps the bond lively without making it volatile.'
+    feel: 'You keep each other interesting without destabilizing each other.',
+    detail: 'The Sun person finds Uranus refreshing — someone who thinks differently enough to be stimulating without being exhausting. Uranus appreciates that the Sun person is genuinely open to new ideas and does not try to normalize them. You share unconventional interests, try experiments together, and give each other room to grow in directions that neither expected at the beginning. The relationship stays alive because both people keep evolving, and neither tries to freeze the other in place.'
   },
 
   // Sun-Chiron
@@ -625,8 +625,8 @@ const SYNASTRY_VOICE = {
     detail: 'Chiron aggravates the Sun person\'s core wound through friction that feels personal even when it isn\'t intentional. The Sun person may feel diminished or inadequate around the Chiron person; Chiron may feel that the Sun person dismisses their sensitivity. The square forces both people to confront self-worth issues they would rather avoid. Growth requires acknowledging the pain without making the other person responsible for fixing it.'
   },
   'Sun-Chiron|sextile': {
-    feel: 'Quiet mutual understanding of each other\'s vulnerabilities and a gentle willingness to help.',
-    detail: 'The sextile creates an opportunity for healing through the relationship without the intensity of harder Chiron aspects. The Sun person feels that the Chiron person understands their struggles without judgment, and Chiron feels that the Sun person values their depth and sensitivity. Shared conversations about past wounds and personal growth activate this aspect. The healing is subtle but cumulative.'
+    feel: 'You understand each other\'s vulnerabilities without needing them explained.',
+    detail: 'The Sun person feels that the Chiron person gets their struggles on a level that most people miss, and Chiron feels valued for their depth rather than pitied for their pain. Healing happens in this relationship through accumulation rather than breakthrough — a conversation here, a moment of acceptance there, a pattern that slowly shifts because someone finally witnessed it without flinching. Neither person has to perform wholeness around the other.'
   },
 
   // Moon-Uranus
@@ -647,8 +647,8 @@ const SYNASTRY_VOICE = {
     detail: 'Uranus jolts the Moon person\'s emotional world at unpredictable intervals, creating a pattern of excitement followed by anxiety. The Moon person never quite feels settled; Uranus feels that the Moon person\'s emotional reactions are attempts to control them. Sudden separations or emotional withdrawals are common. The square demands that both people build tolerance for emotional unpredictability without normalizing chaos. Stability and excitement must coexist, not alternate.'
   },
   'Moon-Uranus|sextile': {
-    feel: 'A lively emotional connection that keeps things fresh without the instability of harder aspects.',
-    detail: 'The sextile provides enough Uranian stimulation to prevent emotional stagnation without creating chronic disruption. The Moon person finds Uranus emotionally refreshing, and Uranus appreciates the Moon person\'s emotional responsiveness. Trying new things together, breaking routines, and sharing unconventional interests strengthen the bond. The emotional tone stays curious and open.'
+    feel: 'Emotionally refreshing — you keep each other from getting stuck in ruts.',
+    detail: 'The Moon person finds Uranus emotionally surprising in ways that feel exciting rather than threatening — an unexpected date night idea, an unconventional perspective on a problem, a willingness to try a completely different approach to something that is not working. Uranus appreciates that the Moon person responds to their eccentricity with genuine warmth rather than anxiety. Together you break routines before they calcify, and the emotional atmosphere stays curious rather than stale.'
   },
 
   // Moon-Chiron
@@ -670,7 +670,7 @@ const SYNASTRY_VOICE = {
   },
   'Moon-Chiron|sextile': {
     feel: 'A gentle emotional understanding that makes space for vulnerability without forcing it.',
-    detail: 'The sextile provides an opening for emotional healing through the relationship in manageable doses. The Moon person feels that the Chiron person understands their emotional sensitivities, and Chiron feels that the Moon person creates a safe environment for their own healing process. Shared conversations about emotional history and family patterns strengthen the bond. The healing is quiet but real.'
+    detail: 'The Moon person senses the Chiron person\'s tender spots without having to be told, and handles them with a care that feels instinctive rather than clinical. Chiron feels emotionally safe enough to lower their guard in this relationship — not all at once, but gradually, one honest conversation at a time. You talk about family patterns, childhood memories, and old hurts in a way that leaves both people feeling lighter rather than drained.'
   },
 
   // Moon-Mercury
@@ -691,8 +691,8 @@ const SYNASTRY_VOICE = {
     detail: 'Mercury\'s communication style rubs against the Moon person\'s emotional triggers, creating a pattern where conversations about feelings escalate rather than resolve. The Moon person feels that Mercury is cold, dismissive, or overly analytical; Mercury feels that the Moon person is irrational or refuses to engage logically. The square demands that both people develop new communication skills. Mercury must learn to lead with empathy, and the Moon must learn to name feelings specifically rather than expecting them to be intuited.'
   },
   'Moon-Mercury|sextile': {
-    feel: 'Comfortable emotional dialogue; you talk through feelings with gentle ease.',
-    detail: 'The sextile provides a reliable channel for emotional communication without the intensity of harder aspects. Mercury helps the Moon person articulate what they feel, and the Moon gives Mercury\'s words emotional weight and sincerity. Daily conversation, check-ins, and shared journaling or reflection strengthen this bond. It supports a relationship where emotional intelligence grows through practice and mutual patience.'
+    feel: 'You talk through feelings with a gentle ease that most couples have to work much harder to achieve.',
+    detail: 'Mercury helps the Moon person find words for feelings that would otherwise remain vague and overwhelming, and the Moon gives Mercury\'s communication an emotional sincerity that prevents it from becoming merely clever. You are good at daily check-ins, at debriefing the day over dinner, at saying "tell me what happened" and actually listening. Emotional intelligence in this relationship is a shared practice that improves over time rather than a fixed trait either person brings.'
   },
 
   // Mercury-Venus
@@ -713,8 +713,8 @@ const SYNASTRY_VOICE = {
     detail: 'Mercury\'s communication style clashes with Venus\'s values or aesthetic sensibilities, creating friction around topics like spending, taste, and how affection should be expressed verbally. The Mercury person may feel that Venus is superficial or indulgent; Venus may feel that Mercury is critical or unromantic. The square requires both people to appreciate that intelligence and beauty speak different languages and that neither is more valid than the other.'
   },
   'Mercury-Venus|sextile': {
-    feel: 'Pleasant intellectual rapport and shared appreciation for culture, art, and good conversation.',
-    detail: 'The sextile creates an easy bridge between mind and heart. Mercury finds Venus\'s perspective on beauty and values enriching, and Venus enjoys Mercury\'s way of articulating ideas with wit and precision. Shared outings to galleries, bookstores, and restaurants activate this aspect. It provides a steady source of enjoyment and mutual admiration that keeps the relationship culturally and conversationally alive.'
+    feel: 'You enjoy the same pleasures and talk about them well together.',
+    detail: 'Mercury finds Venus\'s taste genuinely interesting rather than baffling, and Venus enjoys the way Mercury talks about things — with a precision and wit that makes everyday observations feel fresh. You are good at gallery visits, restaurant discoveries, and lazy afternoons in bookstores together. The relationship stays culturally alive because both people bring different but compatible perspectives to shared pleasures, and talking about what you enjoy is itself enjoyable.'
   },
 
   // Mercury-Mars
@@ -735,8 +735,8 @@ const SYNASTRY_VOICE = {
     detail: 'Mercury\'s communication style triggers Mars\'s combativeness, and Mars\'s directness triggers Mercury\'s defensiveness. Discussions about even minor topics can become heated quickly. The Mercury person feels bulldozed; Mars feels nitpicked. The square requires both people to develop rules of engagement for disagreements. Learning to argue without attacking character or raising voices transforms this aspect from a liability into a source of genuine intellectual growth.'
   },
   'Mercury-Mars|sextile': {
-    feel: 'Lively conversation and mutual mental stimulation without the edge of harder aspects.',
-    detail: 'The sextile provides a constructive link between thought and action. Mercury enjoys Mars\'s directness and energy, and Mars appreciates Mercury\'s ability to articulate ideas clearly. Friendly competition, shared puzzles, and active discussions keep the bond engaging. It supports a relationship where both people feel intellectually respected and mentally alive around each other.'
+    feel: 'You enjoy arguing with each other — in the good way.',
+    detail: 'Mercury finds Mars\'s directness energizing rather than threatening, and Mars respects Mercury\'s ability to think clearly under pressure. You play board games competitively, debate current events without it turning personal, and plan projects together with an efficiency that comes from combining strategic thinking with the willingness to act. Both people feel sharper and more mentally alive in each other\'s company.'
   },
 
   // Mercury-Jupiter
@@ -757,8 +757,8 @@ const SYNASTRY_VOICE = {
     detail: 'Jupiter inflates Mercury\'s ideas into impractical territory, and Mercury deflates Jupiter\'s vision with excessive criticism or detail. Disagreements about beliefs, education, or the right way to think about problems are recurring themes. The square generates intellectual energy that must be channeled into projects, study, or shared goals to avoid becoming mere friction. Both people benefit from learning when to think big and when to think precisely.'
   },
   'Mercury-Jupiter|sextile': {
-    feel: 'Friendly intellectual encouragement and shared curiosity about the world.',
-    detail: 'The sextile creates a gentle bridge between Mercury\'s analytical mind and Jupiter\'s expansive vision. Conversation is enjoyable and educational without becoming overwhelming. The Mercury person feels that Jupiter broadens their perspective, and Jupiter appreciates Mercury\'s ability to engage with ideas concretely. Shared reading, courses, and travel bring out the best in this aspect.'
+    feel: 'Conversations between you have a way of going somewhere genuinely interesting.',
+    detail: 'Mercury feels that Jupiter stretches their thinking without making them feel small, and Jupiter appreciates that Mercury can take a grand idea and test it against concrete reality without deflating it. You learn well together — sharing books, taking a class, comparing notes after a documentary. The intellectual life of the relationship stays healthy because both people are genuinely curious and neither insists on being the smart one.'
   },
 
   // Mercury-Saturn
@@ -779,8 +779,8 @@ const SYNASTRY_VOICE = {
     detail: 'Saturn blocks or criticizes Mercury\'s expression, creating a pattern where the Mercury person feels intellectually stifled or afraid to speak freely. Saturn feels that Mercury is undisciplined or superficial. Conversations become guarded, and important things go unsaid to avoid criticism. The square demands that Saturn examine whether its corrections are genuine wisdom or control, and that Mercury develop enough confidence to speak even when judged.'
   },
   'Mercury-Saturn|sextile': {
-    feel: 'Steady intellectual partnership; you help each other think more carefully and communicate more clearly.',
-    detail: 'The sextile provides a constructive channel between Mercury\'s curiosity and Saturn\'s discipline. Communication improves over time as both people learn from each other\'s style. Mercury gains depth and precision from Saturn, while Saturn gains flexibility and openness from Mercury. Shared projects, planning, and long-term goal-setting bring out the best in this aspect.'
+    feel: 'You help each other think more carefully and communicate more clearly.',
+    detail: 'Mercury gains depth and precision from Saturn — the ideas become more rigorous, the arguments tighter, the plans more realistic. Saturn gains flexibility and lightness from Mercury — the rules become less rigid, the perspective broader, the willingness to reconsider stronger. Communication between you improves year over year as each person absorbs the other\'s strengths. You plan well together, and the plans tend to work.'
   },
 
   // Mercury-Pluto
@@ -801,8 +801,8 @@ const SYNASTRY_VOICE = {
     detail: 'Pluto pressures Mercury\'s mind at points of vulnerability, creating conversations that feel invasive or psychologically threatening. The Mercury person may feel that Pluto twists their words or reads malicious intent where none exists. Pluto feels that Mercury is evasive or dishonest. The square forces both people to examine their own tendencies toward mental manipulation. When both develop genuine transparency, the depth of understanding becomes the relationship\'s greatest asset.'
   },
   'Mercury-Pluto|sextile': {
-    feel: 'A quiet depth to conversation that reveals more over time.',
-    detail: 'The sextile provides manageable access to Pluto\'s investigative depth through Mercury\'s communication. Both people gradually share more of their inner world as trust builds. The Mercury person feels that Pluto adds psychological richness to their thinking, and Pluto feels that Mercury creates a safe outlet for intense thoughts. Shared interest in psychology, mystery, or research activates this aspect without overwhelming the partnership.'
+    feel: 'Conversations between you have a way of going deeper than either of you planned.',
+    detail: 'Mercury feels that Pluto adds a layer of psychological richness to their thinking — observations become insights, gossip becomes analysis, and idle curiosity becomes genuine investigation. Pluto feels that Mercury gives them a safe outlet for thoughts that would overwhelm most people. As trust builds, both people share more of their inner world. You bond over mysteries, psychology, true crime, research rabbit holes, and late-night conversations about what people really mean beneath what they say.'
   },
 
   // Venus-Jupiter
@@ -823,8 +823,8 @@ const SYNASTRY_VOICE = {
     detail: 'Jupiter overinflates Venus\'s desires, creating expectations that no real relationship can consistently meet. The Venus person wants more romance, more beauty, more pleasure than Jupiter can provide, while Jupiter promises more than it can deliver. Financial excess and lifestyle disagreements are common. The square requires both people to find genuine contentment within realistic bounds. Unchecked, it produces a cycle of indulgence and disappointment.'
   },
   'Venus-Jupiter|sextile': {
-    feel: 'Warm generosity and shared enjoyment that builds steadily over time.',
-    detail: 'The sextile provides a reliable source of mutual pleasure and appreciation without the excess of harder aspects. Venus feels that Jupiter adds optimism and breadth to their life, and Jupiter feels that Venus adds warmth and beauty. Shared meals, cultural outings, and small acts of generosity are where this aspect shines. It sustains a relationship that feels genuinely good to be in on a daily basis.'
+    feel: 'Being together feels genuinely good on a daily basis.',
+    detail: 'Venus feels that Jupiter makes life larger and more interesting without making it chaotic, and Jupiter feels that Venus makes it warmer and more beautiful without making it shallow. You are good at shared meals, cultural outings, and small acts of generosity that accumulate into a relationship both people genuinely enjoy. Neither person has to perform happiness around the other — the pleasure is real, consistent, and grounded in specific shared experiences rather than vague good vibes.'
   },
 
   // Venus-Uranus
@@ -845,8 +845,8 @@ const SYNASTRY_VOICE = {
     detail: 'Uranus destabilizes Venus\'s sense of romantic security through unpredictable behavior, sudden changes in availability, or attraction to other people. The Venus person feels that they can never fully relax into the love; Uranus feels that Venus\'s need for stability is suffocating. Breakups and reconciliations are common. The square demands radical honesty about what both people actually need from love and whether those needs are compatible. Pretending otherwise extends the pain.'
   },
   'Venus-Uranus|sextile': {
-    feel: 'A pleasant spark of unconventionality that keeps the romance interesting.',
-    detail: 'The sextile provides enough Uranian stimulation to prevent romantic routine without creating instability. Venus finds Uranus refreshingly different, and Uranus appreciates that Venus is open to new experiences in love and aesthetics. Trying new things together, maintaining individual interests, and allowing the relationship to evolve keep this aspect alive. It supports a love that grows more interesting rather than more predictable over time.'
+    feel: 'The romance between you keeps evolving instead of settling into a script.',
+    detail: 'Venus finds Uranus refreshingly different — the date ideas are unexpected, the gifts are surprising, and the way Uranus approaches love defies the cliches. Uranus appreciates that Venus is genuinely open to trying new things rather than demanding the conventional romance playbook. You stay interesting to each other by maintaining individual interests, experimenting together, and allowing the relationship itself to change shape as both people grow.'
   },
 
   // Mars-Uranus
@@ -867,8 +867,8 @@ const SYNASTRY_VOICE = {
     detail: 'Uranus destabilizes Mars\'s drive through sudden disruptions, provocative behavior, or refusal to cooperate with plans. The Mars person feels chronically frustrated; Uranus feels that Mars is controlling or aggressive. Conflicts escalate rapidly and unpredictably. The square demands that both people develop awareness of their triggers and agree to cooling-off protocols before the energy spirals. Physical outlets for the tension are not optional; they are essential safety valves.'
   },
   'Mars-Uranus|sextile': {
-    feel: 'Stimulating shared energy and a taste for adventure that keeps the relationship dynamic.',
-    detail: 'The sextile provides a constructive channel between Mars\'s drive and Uranus\'s inventiveness. The Mars person feels that Uranus helps them act more creatively, and Uranus appreciates Mars\'s willingness to try bold approaches. Shared physical activities, experiments, and projects that break routine activate this aspect. It keeps the partnership energized without the volatility of harder Mars-Uranus contacts.'
+    feel: 'You bring out each other\'s appetite for adventure and unconventional action.',
+    detail: 'Mars feels that Uranus makes their actions more creative and less predictable, and Uranus appreciates that Mars is willing to actually do the bold thing rather than just theorize about it. You try new sports, take spontaneous trips, and tackle problems with an improvisational energy that makes the relationship feel alive. Neither person gets bored easily around the other, and the shared experiments tend to produce stories you tell for years.'
   },
 
   // Mars-Neptune
@@ -889,8 +889,8 @@ const SYNASTRY_VOICE = {
     detail: 'Neptune undermines Mars\'s ability to act clearly, creating chronic confusion about what both people actually want from each other and from the relationship. The Mars person feels misled or energetically drained; Neptune feels that Mars is crude or misunderstands their intentions. Passive-aggression, martyr dynamics, and sexual misunderstanding are common expressions. The square requires radical honesty about desire and motivation. What feels like spiritual surrender may actually be avoidance, and what feels like directness may actually be insensitivity.'
   },
   'Mars-Neptune|sextile': {
-    feel: 'Gentle passion and inspired action; you bring out each other\'s idealism without losing ground.',
-    detail: 'The sextile creates a constructive link between Mars\'s drive and Neptune\'s imagination. The Mars person feels that Neptune adds a compassionate dimension to their ambitions, and Neptune feels that Mars helps turn dreams into action. Shared creative projects, acts of service, and physical activities with a spiritual dimension bring out the best in this aspect. It provides inspiration without the confusion of harder Mars-Neptune contacts.'
+    feel: 'You bring out each other\'s idealism without losing your grip on the practical.',
+    detail: 'Mars feels that Neptune gives their drive a compassionate direction — ambition stops being purely self-serving and starts meaning something. Neptune feels that Mars actually does the thing they have been dreaming about, turning vision into reality. You work well together on creative projects, charitable efforts, and anything that combines physical effort with a sense of purpose. The inspiration between you is genuine, and it stays grounded enough to produce results.'
   },
 
   // Mars-Pluto
@@ -911,8 +911,8 @@ const SYNASTRY_VOICE = {
     detail: 'Mars and Pluto in square create the most volatile power dynamic in synastry. Both people feel compelled to dominate, and neither backs down easily. Sexual intensity is extreme but can blur into aggression. Control battles escalate rapidly and can become physically or psychologically unsafe if boundaries are not maintained. This square demands more self-awareness than most people have at the start of a relationship. Professional support is not optional — it is necessary. The transformation potential is real, but so is the destruction potential.'
   },
   'Mars-Pluto|sextile': {
-    feel: 'Shared determination and quiet intensity; you strengthen each other\'s capacity to act with purpose.',
-    detail: 'The sextile provides a constructive channel between Mars\'s initiative and Pluto\'s transformative power. The Mars person feels that Pluto helps them focus their energy on what truly matters, and Pluto feels that Mars provides the courage to act on deep convictions. Shared goals, physical challenges, and strategic collaboration activate this aspect. It provides the depth and power of Mars-Pluto contacts without the compulsive intensity that makes harder aspects so difficult to manage.'
+    feel: 'You strengthen each other\'s capacity to act with purpose and intensity.',
+    detail: 'Mars feels that Pluto helps them focus — the scattered energy narrows into a laser when Pluto is involved, and the things that get done actually matter. Pluto feels that Mars gives them the courage to act on convictions they might otherwise keep hidden. You train together, strategize together, and face difficult situations as a unit with a combined force that surprises people who know you individually. The shared intensity stays productive because neither person has to dominate the other to feel powerful.'
   },
 
   // Mercury-Neptune
@@ -933,8 +933,8 @@ const SYNASTRY_VOICE = {
     detail: 'Mercury and Neptune in square create persistent miscommunication that both people find baffling. The Mercury person feels they spoke clearly, but Neptune heard something entirely different. Neptune feels their meaning is obvious, but Mercury cannot grasp it. Deception is possible but more often the issue is genuinely different modes of processing information. Important agreements should always be written down and confirmed. This square requires patience and a willingness to say "let me make sure I understand you correctly" often.'
   },
   'Mercury-Neptune|sextile': {
-    feel: 'Gentle inspiration that sharpens rather than blurs the mind.',
-    detail: 'The sextile links Mercury\'s communication with Neptune\'s imagination in a constructive way. The Mercury person finds that Neptune adds depth and poetry to their thinking, while Neptune appreciates Mercury\'s ability to articulate subtle feelings. Shared creative projects, music, film, and spiritual study activate this aspect beautifully. It provides the creative richness of Mercury-Neptune contacts without the confusion that harder aspects bring.'
+    feel: 'Conversations between you have a poetic quality that neither person achieves alone.',
+    detail: 'Mercury finds that Neptune adds depth and nuance to their thinking — observations become metaphors, analysis softens into empathy, and ordinary language reaches toward something more beautiful. Neptune appreciates that Mercury can articulate the subtle feelings they usually cannot put into words. You bond over music, film, poetry, and shared creative projects. The imaginative richness of your dialogue is genuine and stays grounded enough to enrich your actual lives rather than floating away into fantasy.'
   },
 
   // Mercury-Uranus
@@ -955,8 +955,8 @@ const SYNASTRY_VOICE = {
     detail: 'Uranus continually upends Mercury\'s thinking in ways that feel exciting at first but become destabilizing. The Mercury person may feel they can never finish a thought before Uranus introduces something that invalidates it. Uranus feels that Mercury is too attached to conventional reasoning. This square produces genuine intellectual growth but the process is uncomfortable. Both people need to learn that being right matters less than being understood.'
   },
   'Mercury-Uranus|sextile': {
-    feel: 'Friendly intellectual spark; you make each other cleverer.',
-    detail: 'The sextile creates a lively and constructive link between Mercury\'s communication and Uranus\'s originality. Conversations are interesting without being contentious, and both people feel that the other broadens their perspective. This aspect is excellent for friendships and partnerships that involve learning, problem-solving, or any shared intellectual pursuit. It provides stimulation without the nervous energy of harder Mercury-Uranus contacts.'
+    feel: 'You make each other cleverer — conversations spark ideas neither of you would have alone.',
+    detail: 'Mercury feels that Uranus cracks open their thinking in unexpected directions, and Uranus appreciates that Mercury is quick enough to keep up and articulate enough to develop the flash of insight into something usable. You are good at brainstorming together, solving problems from unusual angles, and sharing the kind of intellectual excitement that makes both people feel genuinely smarter for having spent the afternoon talking. The stimulation stays enjoyable because neither person feels the need to one-up the other.'
   },
 
   // Mercury-Chiron
@@ -977,8 +977,8 @@ const SYNASTRY_VOICE = {
     detail: 'Mercury\'s communication style clashes with Chiron\'s wound in a way that creates recurring hurt. The Mercury person says things that land on Chiron\'s most sensitive spot, often without realizing it. Chiron may withdraw from communication or become defensive in ways Mercury finds confusing. This square requires the Mercury person to develop real sensitivity about word choice, and the Chiron person to communicate their boundaries rather than expecting the other to intuit them.'
   },
   'Mercury-Chiron|sextile': {
-    feel: 'Gentle insight into each other\'s tender places; kind knowing.',
-    detail: 'The sextile creates a constructive link between Mercury\'s mind and Chiron\'s wound, allowing both people to discuss difficult subjects with unusual care. The Mercury person finds that Chiron deepens their understanding of suffering and healing, while Chiron feels that Mercury provides language for experiences that usually resist articulation. This aspect supports partnerships where honest, vulnerable communication is valued.'
+    feel: 'You discuss difficult things with unusual care and precision.',
+    detail: 'Mercury finds that Chiron deepens their understanding of pain in a way that makes their communication more compassionate and less glib. Chiron feels that Mercury gives them words for experiences they have carried silently — naming the hurt, the pattern, the thing nobody else could articulate. You talk about hard subjects with a care that does not feel forced. The conversations that matter most in this relationship are the ones where both people find language for what usually resists being spoken.'
   },
 
   // Venus-Chiron
@@ -1000,7 +1000,7 @@ const SYNASTRY_VOICE = {
   },
   'Venus-Chiron|sextile': {
     feel: 'Tender awareness of each other\'s soft spots; love given with care.',
-    detail: 'The sextile creates a supportive link between Venus\'s affection and Chiron\'s vulnerability, allowing both people to approach love with unusual gentleness. The Venus person instinctively avoids Chiron\'s triggers while still offering genuine warmth, and Chiron helps Venus understand that love is most powerful when it meets people where they actually are rather than where they should be.'
+    detail: 'Venus knows exactly how to touch the Chiron person\'s sore spot without pressing on it -- a compliment that lands on the right insecurity, a gesture of affection timed to the moment Chiron most needs it. In return, Chiron teaches Venus something about love that flattery and charm cannot reach: that the most meaningful tenderness is the kind offered to someone who is not performing their best self. Over time, Venus becomes a gentler lover and Chiron becomes someone who can actually receive kindness without flinching.'
   },
 
   // Mars-Chiron
@@ -1022,7 +1022,7 @@ const SYNASTRY_VOICE = {
   },
   'Mars-Chiron|sextile': {
     feel: 'Gentle courage; you help each other face what\'s difficult.',
-    detail: 'The sextile provides a constructive link between Mars\'s initiative and Chiron\'s wound, allowing the Mars person to encourage Chiron without overwhelming them, and Chiron to deepen Mars\'s understanding of what truly requires bravery. This aspect supports partnerships where both people grow stronger through mutual encouragement and honest acknowledgment of vulnerability.'
+    detail: 'The Mars person knows when to push the Chiron person toward something scary and when to back off -- their timing with encouragement is unusually good, because they can feel the difference between hesitation that needs a nudge and a wound that needs space. Chiron, meanwhile, gives Mars something rare: an understanding that real courage is not the absence of fear but the willingness to act while fully aware of what could go wrong. Together they tackle difficult conversations and hard decisions that neither would face as readily alone.'
   },
 
   // Jupiter-Saturn
@@ -1044,7 +1044,7 @@ const SYNASTRY_VOICE = {
   },
   'Jupiter-Saturn|sextile': {
     feel: 'Productive balance between faith and prudence.',
-    detail: 'The sextile creates a cooperative link between Jupiter\'s optimism and Saturn\'s realism. Both people feel that the other provides what they lack — Jupiter brings hope and possibility, Saturn brings structure and accountability. This aspect supports partnerships where long-term goals are pursued with both enthusiasm and discipline. It provides the productive tension of Jupiter-Saturn contacts without the frustration of harder aspects.'
+    detail: 'Jupiter comes up with the plan for the business, the trip, the five-year goal, and Saturn immediately knows which parts will actually work and which need rethinking -- and Jupiter does not experience this as criticism but as genuine help. Saturn, who tends to plan endlessly without starting, finds that Jupiter\'s confidence is contagious enough to get them moving. You are the couple that actually follows through on the things you talk about over dinner, and the results tend to be both ambitious and solid.'
   },
 
   // Jupiter-Uranus
@@ -1066,7 +1066,7 @@ const SYNASTRY_VOICE = {
   },
   'Jupiter-Uranus|sextile': {
     feel: 'Friendly innovation; you bring out each other\'s best ideas.',
-    detail: 'The sextile links Jupiter\'s optimism with Uranus\'s inventiveness in a way that is stimulating without being destabilizing. Both people feel that the other expands their thinking and opens doors they wouldn\'t have noticed alone. This aspect is excellent for friendships and partnerships involving learning, creative work, or social causes. It provides the excitement of Jupiter-Uranus contacts with enough stability to actually build something.'
+    detail: 'Jupiter says "what if we tried this completely different approach" and Uranus, instead of rolling their eyes, immediately sees three ways to make it work -- and then improves on it. Conversations between you generate ideas at a rate that surprises both of you, and the ideas are good, not just exciting. You sign up for strange classes together, discover obscure interests in common, and tend to be the couple that friends come to when they need a creative solution to an unusual problem.'
   },
 
   // Jupiter-Neptune
@@ -1088,7 +1088,7 @@ const SYNASTRY_VOICE = {
   },
   'Jupiter-Neptune|sextile': {
     feel: 'Gentle shared idealism; faith and imagination support each other.',
-    detail: 'The sextile creates a constructive link between Jupiter\'s expansive vision and Neptune\'s imaginative depth. Both people feel that the other enriches their sense of meaning and possibility without pulling them into unreality. This aspect supports shared spiritual interests, creative collaboration, and charitable impulses. It provides the best of Jupiter-Neptune contacts — inspiration, compassion, and shared faith — with enough grounding to remain productive.'
+    detail: 'You bring out each other\'s spiritual and creative depth in ways that stay tethered to something real. Jupiter helps Neptune articulate their visions clearly enough to act on them, and Neptune gives Jupiter\'s optimism a quality of genuine wonder rather than mere cheerfulness. You are the couple that volunteers together, prays or meditates together, or collaborates on a creative project that surprises you both with how meaningful it becomes. Shared faith between you is quiet and sincere rather than performative.'
   },
 
   // Jupiter-Pluto
@@ -1110,7 +1110,7 @@ const SYNASTRY_VOICE = {
   },
   'Jupiter-Pluto|sextile': {
     feel: 'Strategic vision; you strengthen each other\'s capacity for meaningful achievement.',
-    detail: 'The sextile links Jupiter\'s optimism with Pluto\'s depth in a productive way. Both people feel that the other adds something essential — Jupiter provides faith and breadth, Pluto provides focus and psychological insight. This aspect supports partnerships where significant goals are pursued with both enthusiasm and strategic awareness. It provides the ambition of Jupiter-Pluto contacts without the compulsive quality of harder aspects.'
+    detail: 'Jupiter\'s big-picture thinking meets Pluto\'s instinct for where the real leverage is, and together you make moves that are both bold and strategically precise. Pluto stops Jupiter from scattering their effort across too many projects, and Jupiter keeps Pluto from becoming so fixated on one obsession that they miss the larger opportunity. You tend to achieve more together than your individual track records would predict, because the combination of breadth and depth is genuinely rare.'
   },
 
   // Jupiter-Chiron
@@ -1132,7 +1132,7 @@ const SYNASTRY_VOICE = {
   },
   'Jupiter-Chiron|sextile': {
     feel: 'Quiet encouragement toward wholeness; growth through gentle understanding.',
-    detail: 'The sextile creates a supportive link between Jupiter\'s faith and Chiron\'s wound, allowing both people to approach vulnerability with optimism that doesn\'t deny reality. The Jupiter person naturally encourages Chiron without overwhelming them, and Chiron helps Jupiter understand that true wisdom includes reckoning with pain. This aspect supports partnerships where personal growth is valued and supported without being forced.'
+    detail: 'Jupiter has a way of reminding the Chiron person that their wound is not the whole story -- not by dismissing the pain, but by genuinely seeing the rest of who they are and reflecting it back. Chiron, in turn, gives Jupiter\'s philosophy some weight: the kind of wisdom that only comes from having been broken and rebuilt. You talk about hard things with a lightness that is not avoidance but genuine perspective, and both people leave those conversations feeling more whole than when they started.'
   },
 
   // Saturn-Uranus
@@ -1154,7 +1154,7 @@ const SYNASTRY_VOICE = {
   },
   'Saturn-Uranus|sextile': {
     feel: 'Constructive innovation; discipline and originality cooperate.',
-    detail: 'The sextile creates a productive link between Saturn\'s stability and Uranus\'s inventiveness. Both people feel that the other provides a useful counterbalance — Saturn grounds Uranus\'s wilder impulses, and Uranus keeps Saturn from becoming stagnant. This aspect supports partnerships where new ideas are tested and implemented rather than merely discussed or rigidly resisted. It provides the creative tension of Saturn-Uranus contacts without the polarization of harder aspects.'
+    detail: 'Saturn builds the framework and Uranus knows exactly which wall to knock out to let the light in -- and Saturn, instead of panicking, sees that the renovation actually improved the structure. You are good at updating how you do things as a couple: renegotiating routines that have gone stale, trying a new approach to an old problem, changing the system when the system stops working. The relationship stays current because Uranus keeps it evolving, and it stays functional because Saturn keeps it organized.'
   },
 
   // Saturn-Neptune
@@ -1176,7 +1176,7 @@ const SYNASTRY_VOICE = {
   },
   'Saturn-Neptune|sextile': {
     feel: 'Practical compassion; structure in service of a higher purpose.',
-    detail: 'The sextile creates a cooperative link between Saturn\'s realism and Neptune\'s idealism. Both people feel that the other adds something essential — Saturn provides accountability and form, Neptune provides vision and heart. This aspect supports partnerships where meaningful work is done with both discipline and compassion. It provides the best of Saturn-Neptune contacts without the disillusionment that harder aspects often produce.'
+    detail: 'Neptune dreams up the thing that matters -- the charity, the creative project, the way the home should feel -- and Saturn figures out how to actually make it happen without letting it evaporate into good intentions. Saturn, who can become dry and functional without realizing it, finds that Neptune restores a sense of meaning to the routines and responsibilities that would otherwise feel like drudgery. You build a life together that is both practical and beautiful, which is harder than it sounds and rarer than it should be.'
   },
 
   // Saturn-Pluto
@@ -1198,7 +1198,7 @@ const SYNASTRY_VOICE = {
   },
   'Saturn-Pluto|sextile': {
     feel: 'Disciplined depth; shared strength deployed with purpose.',
-    detail: 'The sextile links Saturn\'s structure with Pluto\'s transformative power in a constructive way. Both people feel that the other adds necessary strength — Saturn provides stability and accountability, Pluto provides depth and the willingness to confront what others avoid. This aspect supports partnerships where difficult realities are faced with both courage and practical wisdom. It provides the resilience of Saturn-Pluto contacts without the oppressive intensity of harder aspects.'
+    detail: 'When something is genuinely wrong -- a financial crisis, a family emergency, a situation that would send most couples into panic -- you two become more effective, not less. Saturn handles the logistics while Pluto handles the truth nobody else will say out loud, and between you the problem gets named, planned for, and dealt with. Outside of crisis, this same dynamic shows up as a shared refusal to pretend things are fine when they are not, combined with the discipline to actually fix what is broken rather than just acknowledging it.'
   },
 
   // Saturn-Chiron
@@ -1220,7 +1220,7 @@ const SYNASTRY_VOICE = {
   },
   'Saturn-Chiron|sextile': {
     feel: 'Gentle structure around the tender place; responsible caring.',
-    detail: 'The sextile creates a supportive link between Saturn\'s stability and Chiron\'s wound, allowing both people to approach vulnerability with maturity and care. The Saturn person provides practical support for Chiron\'s healing without being heavy-handed, and Chiron helps Saturn understand that strength includes the capacity to be gentle with what is broken. This aspect supports partnerships where difficult truths are faced with both realism and compassion.'
+    detail: 'Saturn shows up for the Chiron person in the most useful way possible: not with speeches about what they should do, but with quiet, steady acts of support -- driving them to the appointment, handling the errand they cannot face, sitting with them during the hard night without trying to fix it. Chiron, in return, softens something in Saturn that was becoming rigid, teaching them that being strong for someone is not the same as being closed off from your own tenderness. The bond between you is built on a kind of care that is more reliable than romantic and more sustaining than dramatic.'
   },
 
   // Sun-NorthNode
@@ -1242,7 +1242,7 @@ const SYNASTRY_VOICE = {
   },
   'Sun-NorthNode|sextile': {
     feel: 'A gentle sense of shared purpose; being together feels quietly right.',
-    detail: 'The Sun person supports the Node person\'s growth in practical, unforced ways. There is an easy sense of mutual encouragement without the intensity of harder aspects. The relationship provides steady forward momentum toward both people\'s larger goals.'
+    detail: 'The Sun person does something specific that the Node person needs for their growth: models a quality, opens a door, or simply demonstrates by example what it looks like to inhabit the identity the Node person is building toward. It is not dramatic or fated-feeling -- more like having a friend who happens to be good at the exact thing you are trying to learn, and whose presence makes you better at it without either of you making a big deal about it.'
   },
 
   // Moon-NorthNode
@@ -1264,7 +1264,7 @@ const SYNASTRY_VOICE = {
   },
   'Moon-NorthNode|sextile': {
     feel: 'Quiet emotional encouragement toward each other\'s future; caring without clinging.',
-    detail: 'The Moon person gently supports the Node person\'s growth without overwhelming them with emotional need. There is an ease to the emotional dynamic that allows both people to feel cared for while still pursuing their individual paths. The bond deepens through shared vulnerability and mutual respect for each other\'s direction.'
+    detail: 'The Moon person has a knack for knowing when the Node person needs encouragement and when they need to be left alone to figure it out -- and the care never comes with strings attached or an implicit demand to stay where they are. In practice, this looks like the Moon person cooking dinner on the night the Node person comes home drained from stretching into unfamiliar territory, or asking the right question at the right moment without needing to hear a particular answer.'
   },
 
   // Mercury-NorthNode
@@ -1286,7 +1286,7 @@ const SYNASTRY_VOICE = {
   },
   'Mercury-NorthNode|sextile': {
     feel: 'Helpful exchanges that gently support each other\'s direction.',
-    detail: 'The Mercury person offers practical ideas and perspectives that assist the Node person\'s development without overwhelming them. There is an easy intellectual rapport that serves both people\'s larger goals. Conversations are stimulating in a grounded, useful way.'
+    detail: 'The Mercury person says the thing that reframes the Node person\'s situation -- not a grand revelation, but a passing observation over coffee that rearranges the puzzle. They recommend the right book, forward the right article, or phrase the question the Node person did not know they needed to ask. The conversations between you have a way of producing clarity that neither person expected when they sat down.'
   },
 
   // Venus-NorthNode
@@ -1308,7 +1308,7 @@ const SYNASTRY_VOICE = {
   },
   'Venus-NorthNode|sextile': {
     feel: 'Gentle affection that encourages growth; love as quiet catalyst.',
-    detail: 'The Venus person supports the Node person\'s path through warmth and appreciation that feels natural rather than forced. There is an easy harmony between what both people value and where they are headed. The bond strengthens gradually through shared aesthetic pleasures and mutual encouragement.'
+    detail: 'The Venus person makes the Node person\'s growth feel like something worth wanting rather than something they should be doing out of obligation. A shared meal, a well-chosen gift, an afternoon spent in a beautiful place together -- these small pleasures function as rest stops on the Node person\'s developmental journey, reminding them that evolution does not have to be grim. The Venus person loves the version of the Node person that is becoming, and that love makes the becoming easier.'
   },
 
   // Mars-NorthNode
@@ -1330,7 +1330,7 @@ const SYNASTRY_VOICE = {
   },
   'Mars-NorthNode|sextile': {
     feel: 'Steady motivation toward shared growth; the push is gentle but persistent.',
-    detail: 'The Mars person provides practical energy and initiative that supports the Node person\'s path without overwhelming it. There is a healthy dynamic of mutual encouragement and constructive action. Both people feel capable of more when they work together.'
+    detail: 'The Mars person gives the Node person a well-timed shove when they are stalling at the edge of something they need to do but keep finding reasons not to. It is not aggressive -- more like the friend who says "just send the email" or "sign up already" and somehow their confidence is contagious enough to get you moving. Together you take concrete steps toward things that would remain abstract intentions if either of you were alone.'
   },
 
   // Jupiter-NorthNode
@@ -1352,7 +1352,7 @@ const SYNASTRY_VOICE = {
   },
   'Jupiter-NorthNode|sextile': {
     feel: 'Helpful opportunities that gently steer both people toward their purpose.',
-    detail: 'The Jupiter person brings modest but meaningful support to the Node person\'s growth, offering encouragement and resources without overwhelming the process. There is an easy sense of mutual benefit and shared good fortune. The relationship provides a steady stream of small openings that accumulate into real progress.'
+    detail: 'The Jupiter person keeps stumbling across exactly the opportunity, introduction, or piece of information that the Node person needs next -- and sharing it feels natural rather than calculated. Over time, the Node person notices that their world has expanded significantly since this person entered it: new interests, new contacts, new confidence. Jupiter benefits too, because supporting someone else\'s growth gives their natural generosity a worthy outlet.'
   },
 
   // Saturn-NorthNode
@@ -1374,7 +1374,7 @@ const SYNASTRY_VOICE = {
   },
   'Saturn-NorthNode|sextile': {
     feel: 'Practical guidance on the path; constructive discipline without heaviness.',
-    detail: 'The Saturn person provides useful structure and accountability that supports the Node person\'s growth without weighing it down. There is a healthy sense of shared responsibility and realistic planning. The relationship provides the kind of grounded support that turns aspiration into accomplishment.'
+    detail: 'The Saturn person is the one who asks "so what is the actual plan?" in a way that does not kill the dream but forces it into something workable. They hold the Node person accountable without being punishing about it -- a raised eyebrow when the deadline slips, a quiet "you said you were going to do that" that lands as reminder rather than criticism. The Node person accomplishes more in this relationship because Saturn transforms vague aspiration into a schedule.'
   },
 
   // Uranus-NorthNode
@@ -1396,7 +1396,7 @@ const SYNASTRY_VOICE = {
   },
   'Uranus-NorthNode|sextile': {
     feel: 'Gentle innovation that opens new possibilities on the path.',
-    detail: 'The Uranus person introduces fresh perspectives and unexpected ideas that support the Node person\'s growth without destabilizing it. There is an easy dynamic of creative experimentation that serves both people\'s evolution. The relationship provides just enough surprise to keep the path interesting.'
+    detail: 'The Uranus person casually suggests the thing the Node person would never have considered -- the career pivot, the unconventional approach, the completely different way of looking at the problem -- and instead of feeling destabilizing, it clicks into place like it was obvious all along. The Node person\'s growth accelerates because Uranus keeps introducing options that the Node person\'s conditioning would have filtered out. The relationship has an experimental quality that keeps both people from calcifying.'
   },
 
   // Neptune-NorthNode
@@ -1418,7 +1418,7 @@ const SYNASTRY_VOICE = {
   },
   'Neptune-NorthNode|sextile': {
     feel: 'Gentle inspiration and shared sensitivity that supports the path.',
-    detail: 'The Neptune person brings subtle creative and spiritual energy that supports the Node person\'s growth without overwhelming their sense of reality. There is an easy flow of compassion and imaginative thinking between them. The relationship nurtures both people\'s connection to beauty and meaning.'
+    detail: 'Neptune helps the Node person see their path as something beautiful and worth believing in, not just a set of developmental tasks to complete. The right song playing at the right moment, a shared meditation, a conversation that drifts into territory neither person planned to visit -- these are the moments where the Node person\'s sense of direction deepens from intellectual understanding into felt conviction. Neptune does not push; they inspire, and the inspiration is genuine.'
   },
 
   // Pluto-NorthNode
@@ -1440,7 +1440,7 @@ const SYNASTRY_VOICE = {
   },
   'Pluto-NorthNode|sextile': {
     feel: 'Subtle but persistent transformation that serves the path.',
-    detail: 'The Pluto person brings quiet but significant depth to the Node person\'s growth, helping them confront and release what no longer serves their direction. There is a manageable intensity that supports change without crisis. The relationship facilitates evolution through honest self-examination and mutual respect for the process.'
+    detail: 'The Pluto person has a way of asking the question that dismantles the Node person\'s excuse -- not cruelly, but with a precision that makes avoidance impossible. "Why are you really not doing that?" lands differently when Pluto says it, because they genuinely want the answer and will sit with whatever comes up. The Node person sheds old skin faster in this relationship because Pluto makes self-honesty feel like a relief rather than an attack.'
   },
 
   // Chiron-NorthNode
@@ -1462,7 +1462,7 @@ const SYNASTRY_VOICE = {
   },
   'Chiron-NorthNode|sextile': {
     feel: 'Gentle healing that supports the life direction; tenderness as quiet guide.',
-    detail: 'The Chiron person brings subtle insight into the Node person\'s growth, helping them approach their path with compassion and self-awareness. There is an easy exchange of vulnerability that serves both people\'s development. The relationship provides a safe space to be imperfect while still moving forward.'
+    detail: 'The Chiron person understands, from personal experience, the specific kind of fear that comes with growing into unfamiliar territory -- and their empathy for the Node person\'s struggle is not theoretical but earned through their own scars. In practice, this means the Node person can admit to being scared or confused without losing the Chiron person\'s respect. The permission to be imperfect while still moving forward is one of the most practically useful gifts one person can offer another.'
   },
 
   // NorthNode-NorthNode
@@ -1484,7 +1484,7 @@ const SYNASTRY_VOICE = {
   },
   'NorthNode-NorthNode|sextile': {
     feel: 'Gently compatible destinies; your paths run parallel and occasionally intersect helpfully.',
-    detail: 'Both people\'s growth directions support each other in practical, unforced ways. There is an easy sense of moving through life together without the intensity of conjunction or the challenge of square. The relationship provides steady, reliable encouragement toward each person\'s individual evolution.'
+    detail: 'Your destinies run in compatible directions without requiring you to walk the exact same road, which means you can support each other\'s growth without competing for the same territory. One person\'s breakthrough in their area of development tends to encourage the other to push forward in theirs. You are the kind of couple or friends who look up after a few years together and realize you have both changed significantly, and in directions that still fit.'
   },
 
   // Chiron-Chiron
@@ -1506,7 +1506,7 @@ const SYNASTRY_VOICE = {
   },
   'Chiron-Chiron|sextile': {
     feel: 'Gentle mutual understanding of each other\'s deepest vulnerability.',
-    detail: 'Both people\'s wounds relate to each other in a supportive way, creating a partnership where pain can be shared without overwhelming the bond. The sextile provides enough distance for perspective while maintaining genuine empathy. Conversations about suffering feel productive rather than draining.'
+    detail: 'Your wounds are different enough that neither person drowns in the other\'s pain, but similar enough that real understanding passes between you without much explanation. You can say "I had a bad day" and the other person hears what that actually means -- the specific flavor of difficulty, the old pattern it activated -- without needing a debriefing. This quiet comprehension makes the relationship a place where both people can rest from the performance of being fine.'
   },
 
   // Chiron-Uranus
@@ -1528,7 +1528,7 @@ const SYNASTRY_VOICE = {
   },
   'Chiron-Uranus|sextile': {
     feel: 'Gentle breakthroughs; small flashes of insight that ease old pain.',
-    detail: 'Uranus brings subtle but meaningful new perspectives to Chiron\'s wound without overwhelming the healing process. The Uranus person helps the Chiron person think differently about their suffering in manageable doses. There is an easy exchange of unconventional wisdom and emotional honesty that benefits both people.'
+    detail: 'Uranus says something offhand that reframes the Chiron person\'s wound in a way they had never considered -- a different angle on an old story, an unconventional suggestion that turns out to be exactly right. The insights arrive in small, digestible doses rather than overwhelming revelations, and the Chiron person finds their relationship to their own pain gradually shifting without the trauma of a forced breakthrough. Uranus benefits because Chiron gives their intellectual restlessness emotional stakes worth caring about.'
   },
 
   // Chiron-Neptune
@@ -1550,7 +1550,7 @@ const SYNASTRY_VOICE = {
   },
   'Chiron-Neptune|sextile': {
     feel: 'Subtle spiritual support for the healing process; gentle compassion without confusion.',
-    detail: 'Neptune brings quiet, intuitive understanding to Chiron\'s wound without overwhelming the process with illusion or escapism. The Neptune person offers the kind of compassion that actually reaches the hurt, and Chiron helps Neptune understand that real empathy requires seeing clearly. The relationship supports healing through creativity and shared moments of genuine tenderness.'
+    detail: 'Neptune does not try to fix the Chiron person\'s wound -- they sit with it, and somehow that sitting-with is the thing that helps. A shared piece of music, a moment of silence together, a look that says "I know" without any words -- these are the specific gestures through which healing happens in this relationship. Chiron, in return, anchors Neptune\'s compassion in something real: not abstract kindness toward the world in general, but focused tenderness toward one particular person\'s actual hurt.'
   },
 
   // Chiron-Pluto
@@ -1572,7 +1572,7 @@ const SYNASTRY_VOICE = {
   },
   'Chiron-Pluto|sextile': {
     feel: 'Quiet depth that supports healing; power applied with care to what is broken.',
-    detail: 'Pluto brings subtle but meaningful transformative energy to Chiron\'s wound without overwhelming the healing process. The Pluto person helps the Chiron person face difficult truths at a pace they can handle, and Chiron gives Pluto permission to use their depth for genuine good. The relationship facilitates growth through honest self-examination and mutual trust.'
+    detail: 'Pluto sees the root of the Chiron person\'s wound with a clarity that would be frightening coming from anyone else, but delivers the truth in doses the Chiron person can metabolize. A question here, an observation there -- and over months, the Chiron person realizes they have quietly dismantled a pattern they thought was permanent. Chiron, in turn, is one of the few people who can receive Pluto\'s intensity as care rather than intrusion, which gives Pluto the rare experience of their depth being welcomed rather than feared.'
   },
 
   // Uranus-Uranus
@@ -1594,6 +1594,6 @@ const SYNASTRY_VOICE = {
   },
   'Uranus-Uranus|sextile': {
     feel: 'Easy generational compatibility; different perspectives on change that complement each other.',
-    detail: 'The sextile connects people from neighboring generations whose approaches to independence and innovation support each other naturally. There is a comfortable exchange of ideas about progress and freedom that enriches both people without creating friction. The relationship benefits from fresh perspectives delivered with mutual respect.'
+    detail: 'You come from neighboring generations whose ideas about freedom and progress overlap enough to understand each other and differ enough to be interesting. The older person offers perspective the younger one has not lived yet, and the younger person offers a version of the future the older one finds genuinely exciting rather than threatening. Your conversations about technology, culture, and what matters tend to leave both people feeling that the world is in better hands than they feared.'
   },
 };

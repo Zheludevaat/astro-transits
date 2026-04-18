@@ -2038,7 +2038,20 @@ function compute7Day(baseJd){
     }}
     const v=vibeCalc(fTransits);
     const date=jdToDate(fJd);
-    days.push({offset:d,date,score:v.score,transits:fTransits,count:fTransits.length});
+    // Build a short blurb identifying the top transit driving this day's score
+    let blurb='';
+    const topList=v.score>=5?v.positives:v.negatives;
+    if(topList&&topList.length){
+      blurb=topList[0].label;
+    } else if(v.positives&&v.positives.length){
+      blurb=v.positives[0].label;
+    } else if(v.negatives&&v.negatives.length){
+      blurb=v.negatives[0].label;
+    } else if(v.dominant){
+      blurb=(v.dominant==='NorthNode'?'North Node':v.dominant)+' dominant';
+    }
+    if(blurb)blurb=blurb.replace('NorthNode','North Node').replace('SouthNode','South Node');
+    days.push({offset:d,date,score:v.score,transits:fTransits,count:fTransits.length,blurb});
   }
   return days;
 }
@@ -3900,7 +3913,8 @@ function renderApp(){
   h+=`</div>`;
   h+=`<div class="ts-panel ${tsOpenCell==='chapter'?'open':''}" id="ts-panel-chapter">`;
   if(curSpirit){
-    h+=`ZR Spirit: ${curSpirit.l1Sign||'--'} period (L1). `;
+    const _zrSV=typeof ZR_SIGN_VOICE!=='undefined'&&ZR_SIGN_VOICE[curSpirit.l1Sign]?ZR_SIGN_VOICE[curSpirit.l1Sign].spirit:null;
+    h+=`ZR Spirit: ${curSpirit.l1Sign||'--'} period (L1)${_zrSV?' — '+_zrSV.brief:''}. `;
     if(curSpirit.peak)h+=`This is a peak period — cardinal energy activates. `;
     if(curSpirit.lb)h+=`Loosing of the Bond: the theme shifts unexpectedly. `;
   }
@@ -4420,6 +4434,7 @@ function renderApp(){
     h+=`<div class="fd-num">${fd.date.getDate()}</div>`;
     h+=`<div class="fd-bar" style="height:${barH}px;background:${color};width:6px;border-radius:3px"></div>`;
     h+=`<div class="fd-score" style="color:${color}">${fd.score}</div>`;
+    if(fd.blurb)h+=`<div style="font-size:9px;color:var(--text2);margin-top:2px;line-height:1.15;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;width:100%">${fd.blurb}</div>`;
     h+=`</div>`;
   }
   h+=`</div>`;
@@ -5036,6 +5051,7 @@ function renderApp(){
       h+=`<div class="zr-now-period">L1 chapter · ${l1.lengthYears}y · ruled by ${l1.ruler}</div>`;
       h+=`<div class="zr-now-dates">${fmtZRDate(l1.startDate)} – ${fmtZRDate(l1.endDate)}</div>`;
       if(l2){h+=`<div class="zr-now-sub">Sub-chapter (L2): ${l2.sign} — ${fmtZRDate(l2.startDate)} – ${fmtZRDate(l2.endDate)}</div>`;}
+      if(typeof ZR_SIGN_VOICE!=='undefined'&&ZR_SIGN_VOICE[l1.sign]){h+=`<div style="font-size:11px;line-height:1.5;color:var(--text3);margin-top:4px;padding:4px 0;border-top:1px solid var(--border)">${ZR_SIGN_VOICE[l1.sign].spirit.desc}</div>`;}
       h+=`</div>`;
     }
     if(curFortune){
@@ -5046,6 +5062,7 @@ function renderApp(){
       h+=`<div class="zr-now-period">L1 chapter · ${l1.lengthYears}y · ruled by ${l1.ruler}</div>`;
       h+=`<div class="zr-now-dates">${fmtZRDate(l1.startDate)} – ${fmtZRDate(l1.endDate)}</div>`;
       if(l2){h+=`<div class="zr-now-sub">Sub-chapter (L2): ${l2.sign} — ${fmtZRDate(l2.startDate)} – ${fmtZRDate(l2.endDate)}</div>`;}
+      if(typeof ZR_SIGN_VOICE!=='undefined'&&ZR_SIGN_VOICE[l1.sign]){h+=`<div style="font-size:11px;line-height:1.5;color:var(--text3);margin-top:4px;padding:4px 0;border-top:1px solid var(--border)">${ZR_SIGN_VOICE[l1.sign].fortune.desc}</div>`;}
       h+=`</div>`;
     }
     h+=`</div>`;
@@ -5242,7 +5259,8 @@ function renderApp(){
     h+=`</div>`;
     h+=`</div>`;
     if(returnsExpanded){
-      h+=`<div class="ret-detail"><strong style="color:var(--gold)">Solar Return</strong> — ${dFmt(srDate)} governs through ${dFmt(srNextDate)}. ${srI.moonNote} The year's Ascendant (${srI.srAscSign}) colours the tone of everything undertaken; the SR Moon in house ${srI.srMoonHouse} marks where the emotional weather will pool.</div>`;
+      h+=`<div class="ret-detail"><strong style="color:var(--gold)">Solar Return Ascendant: ${srI.srAscSign}</strong> — ${srI.ascTheme}</div>`;
+      h+=`<div class="ret-detail"><strong style="color:var(--gold)">Solar Return</strong> — ${dFmt(srDate)} governs through ${dFmt(srNextDate)}. ${srI.moonNote} The SR Moon in house ${srI.srMoonHouse} marks where the emotional weather will pool.</div>`;
       h+=`<div class="ret-detail"><strong style="color:var(--gold)">Lunar Return</strong> — ${dFmt(lrDate)} governs through roughly ${dFmt(lrNextDate)}. ${lrI.note} The LR Sun in house ${lrI.lrSunHouse} points at the month's centre of gravity.</div>`;
       h+=`<div class="zr-note">Returns are sub-charts: a Solar Return is cast for the exact instant the Sun returns to its natal longitude each year, and describes the birthday-to-birthday theme. A Lunar Return repeats every ~27.3 days and describes the texture of the coming lunar month. Both are read against the natal chart, not in isolation.</div>`;
     }
@@ -5573,7 +5591,15 @@ function renderApp(){
           if(depth){
             h+=`<div style="font-size:12px;line-height:1.6;color:var(--violet)"><strong>${lbl1} ${nat.glyph||''} ${lbl2}:</strong> ${depth}</div>`;
           } else {
-            h+=`<div style="font-size:12px;line-height:1.6;color:var(--text2);font-style:italic">Apply the general ${a.aspect} nature above to the blend of ${lbl1}'s themes (${NATAL_VOICE[a.p1]?.title||a.p1}) with ${lbl2}'s themes (${NATAL_VOICE[a.p2]?.title||a.p2}).</div>`;
+            const _d1=SPHERE[a.p1]?.domain||a.p1,_d2=SPHERE[a.p2]?.domain||a.p2;
+            const _fb=a.aspect==='conjunction'?`${lbl1} and ${lbl2} fuse here — ${_d1} and ${_d2} merge into a single force in your chart, each inseparable from the other. You express both simultaneously, for better or worse.`
+              :a.aspect==='opposition'?`${lbl1} and ${lbl2} pull from opposite ends of your chart — ${_d1} on one side, ${_d2} on the other. You may project one outward and live the other inwardly until you learn to hold both.`
+              :a.aspect==='trine'?`${lbl1} and ${lbl2} flow together effortlessly — ${_d1} supports ${_d2} in a natural, almost unconscious harmony. This is an innate gift, though one you may take for granted.`
+              :a.aspect==='square'?`${lbl1} and ${lbl2} grind against each other — ${_d1} and ${_d2} clash in ways that generate friction and force growth. The tension is uncomfortable, but it is also where your greatest strength is forged.`
+              :a.aspect==='sextile'?`${lbl1} and ${lbl2} open a door between ${_d1} and ${_d2} — the cooperation is available but not automatic. When you consciously reach for it, these two themes strengthen each other.`
+              :a.aspect==='quincunx'?`${lbl1} and ${lbl2} speak different languages — ${_d1} and ${_d2} never quite align, requiring constant small adjustments. The awkwardness here is a quiet teacher, pushing you toward flexibility.`
+              :`${lbl1} and ${lbl2} sit in subtle discomfort — ${_d1} and ${_d2} rub against each other just enough to keep you aware of both, a low hum of tension that refines over time.`;
+            h+=`<div style="font-size:12px;line-height:1.6;color:var(--violet)">${_fb}</div>`;
           }
           h+=`</div></div></div>`;
         }

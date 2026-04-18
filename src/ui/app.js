@@ -6271,12 +6271,16 @@ function renderApp(){
   // Render floating chat
   const chatHost=document.getElementById('chat-host');
   if(chatHost&&typeof renderChatButton==='function'){
+    const chatHadFocus=chatOpen&&document.activeElement&&document.activeElement.id==='chat-input';
     switchChatContext();
     chatHost.innerHTML=renderChatPanel()+renderChatButton();
-    // Restore chat input value and focus
+    // Restore chat input value; only refocus if it had focus before render
     if(chatOpen){
       const ci=document.getElementById('chat-input');
-      if(ci){ci.value=chatInput||'';const len=ci.value.length;try{ci.setSelectionRange(len,len);}catch(e){}}
+      if(ci){
+        ci.value=chatInput||'';
+        if(chatHadFocus){const len=ci.value.length;try{ci.focus();ci.setSelectionRange(len,len);}catch(e){}}
+      }
     }
   }
 

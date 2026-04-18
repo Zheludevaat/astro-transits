@@ -350,28 +350,7 @@ async function registerServiceWorker(){
   if(!('serviceWorker' in navigator))return;
   if(_swReg)return _swReg;
   try{
-    // Prefer a same-origin /sw.js if one exists (hostable); else inline via blob.
-    const swSource=`
-      self.addEventListener('install',e=>self.skipWaiting());
-      self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));
-      self.addEventListener('message',async(e)=>{
-        const d=e.data||{};
-        if(d.type==='notify'){
-          try{ await self.registration.showNotification(d.title||'',{body:d.body||'',tag:d.tag||'',icon:d.icon,badge:d.badge,silent:!!d.silent}); }catch(err){}
-        }
-      });
-      self.addEventListener('notificationclick',e=>{
-        e.notification.close();
-        e.waitUntil((async()=>{
-          const all=await self.clients.matchAll({type:'window'});
-          for(const c of all){if('focus' in c)return c.focus();}
-          if(self.clients.openWindow)return self.clients.openWindow('/');
-        })());
-      });
-    `;
-    const blob=new Blob([swSource],{type:'text/javascript'});
-    const url=URL.createObjectURL(blob);
-    _swReg=await navigator.serviceWorker.register(url);
+    _swReg=await navigator.serviceWorker.register('./sw.js');
     return _swReg;
   }catch(e){return null;}
 }
@@ -3840,22 +3819,23 @@ function renderApp(){
   const pHoursHome=computePlanetaryHours(jd,OBSERVER.lat,OBSERVER.lon);
   let curHourHome=null;
   if(pHoursHome&&isToday){
-    const utNow=jd;
+    const utNow=now.getUTCHours()+now.getUTCMinutes()/60;
     const idxH=currentHourIndex(pHoursHome.hours,utNow);
     curHourHome=pHoursHome.hours[idxH];
-    curHourHome.minsLeft=Math.max(0,Math.round((curHourHome.end-utNow)*24*60));
+    curHourHome.minsLeft=Math.max(0,Math.round((curHourHome.end-utNow)*60));
   }
 
   // ZR + Firdaria (hoisted for time-scale strip)
   const birthDate=new Date(BIRTH.year,BIRTH.month-1,BIRTH.day);
   const ageYears=prof.ageYears;
-  const spiritLotLon=typeof lotLong==='function'?lotLong('Spirit'):norm(NATAL.Ascendant+NATAL.Sun-NATAL.Moon);
-  const fortuneLotLon=typeof lotLong==='function'?lotLong('Fortune'):norm(NATAL.Ascendant+NATAL.Moon-NATAL.Sun);
+  const _lots=typeof computeLots==='function'?computeLots(cur,NATAL.Ascendant,SECT.isNocturnal):null;
+  const spiritLotLon=_lots?_lots.Spirit:norm(NATAL.Ascendant+NATAL.Sun-NATAL.Moon);
+  const fortuneLotLon=_lots?_lots.Fortune:norm(NATAL.Ascendant+NATAL.Moon-NATAL.Sun);
   const spiritSignIdx=Math.floor(norm(spiritLotLon)/30);
   const fortuneSignIdx=Math.floor(norm(fortuneLotLon)/30);
   const zrSpirit=computeZR(spiritSignIdx,birthDate,40);
   const curSpirit=findCurrentZRPeriod(zrSpirit,ageYears);
-  const firdaria=computeFirdaria(birthDate);
+  const firdaria=computeFirdaria(birthDate,SECT.isNocturnal);
   const curFir=findCurrentFirdaria(firdaria,ageYears);
 
   // ── TIME-SCALE STRIP (replaces Lord of Year badge) ──
@@ -3887,7 +3867,7 @@ function renderApp(){
   h+=`<div class="ts-cell ${tsOpenCell==='chapter'?'open':''}" onclick="toggleTsCell('chapter')">`;
   h+=`<div class="ts-cell-label">Chapter</div>`;
   if(curSpirit){
-    h+=`<div class="ts-cell-val">${sSVG(curSpirit.l1Sign||'Aries',14,'var(--azure)')}</div>`;
+    h+=`<div class="ts-cell-val">${sSVG(curSpirit.l1.sign||'Aries',14,'var(--azure)')}</div>`;
     h+=`<div class="ts-cell-sub">${curFir?curFir.major.lord.substring(0,3):''}</div>`;
   } else {
     h+=`<div class="ts-cell-val">${curFir?pSVG(curFir.major.lord,14,'var(--azure)'):''}</div>`;
@@ -3913,10 +3893,10 @@ function renderApp(){
   h+=`</div>`;
   h+=`<div class="ts-panel ${tsOpenCell==='chapter'?'open':''}" id="ts-panel-chapter">`;
   if(curSpirit){
-    const _zrSV=typeof ZR_SIGN_VOICE!=='undefined'&&ZR_SIGN_VOICE[curSpirit.l1Sign]?ZR_SIGN_VOICE[curSpirit.l1Sign].spirit:null;
-    h+=`ZR Spirit: ${curSpirit.l1Sign||'--'} period (L1)${_zrSV?' — '+_zrSV.brief:''}. `;
-    if(curSpirit.peak)h+=`This is a peak period — cardinal energy activates. `;
-    if(curSpirit.lb)h+=`Loosing of the Bond: the theme shifts unexpectedly. `;
+    const _zrSV=typeof ZR_SIGN_VOICE!=='undefined'&&ZR_SIGN_VOICE[curSpirit.l1.sign]?ZR_SIGN_VOICE[curSpirit.l1.sign].spirit:null;
+    h+=`ZR Spirit: ${curSpirit.l1.sign||'--'} period (L1)${_zrSV?' — '+_zrSV.brief:''}. `;
+    if(curSpirit.l1.peak)h+=`This is a peak period — cardinal energy activates. `;
+    if(curSpirit.l1.lbFollows)h+=`Loosing of the Bond: the theme shifts unexpectedly. `;
   }
   if(curFir){
     const fv=typeof FIRDARIA_VOICE!=='undefined'?FIRDARIA_VOICE[curFir.major.lord]:null;
@@ -4005,10 +3985,10 @@ function renderApp(){
 
     // Factor 2: Active ZR period
     if(curSpirit){
-      const zrNote=curSpirit.peak?' Cardinal peak — active phase.':curSpirit.lb?' Loosing of the Bond — themes shift.':'';
+      const zrNote=curSpirit.l1.peak?' Cardinal peak — active phase.':curSpirit.l1.lbFollows?' Loosing of the Bond — themes shift.':'';
       h+=`<div class="factor-line" onclick="openMechanic('mech-zr','zr-spirit','')">`;
-      h+=`<div class="factor-icon">${sSVG(curSpirit.l1Sign||'Aries',16,'var(--azure)')}</div>`;
-      h+=`<div class="factor-text">ZR Spirit: ${curSpirit.l1Sign||'--'} period.${zrNote}${curSpirit.l2Sign?' L2: '+curSpirit.l2Sign+'.':''}</div>`;
+      h+=`<div class="factor-icon">${sSVG(curSpirit.l1.sign||'Aries',16,'var(--azure)')}</div>`;
+      h+=`<div class="factor-text">ZR Spirit: ${curSpirit.l1.sign||'--'} period.${zrNote}${curSpirit.l2&&curSpirit.l2.sign?' L2: '+curSpirit.l2.sign+'.':''}</div>`;
       h+=`<div class="factor-tag" style="background:var(--azure-soft,rgba(90,160,255,.12));color:var(--azure)">Arc</div>`;
       h+=`</div>`;
     }
@@ -6456,6 +6436,7 @@ document.addEventListener('scroll',()=>{
 });
 
 loadCharts();
+registerServiceWorker();
 renderApp();
 setInterval(()=>{if(dayOffset===0)renderApp();},10*60*1000);
 

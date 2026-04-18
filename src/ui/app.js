@@ -6268,6 +6268,18 @@ function renderApp(){
     }
   }
 
+  // Render floating chat
+  const chatHost=document.getElementById('chat-host');
+  if(chatHost&&typeof renderChatButton==='function'){
+    switchChatContext();
+    chatHost.innerHTML=renderChatPanel()+renderChatButton();
+    // Restore chat input value and focus
+    if(chatOpen){
+      const ci=document.getElementById('chat-input');
+      if(ci){ci.value=chatInput||'';const len=ci.value.length;try{ci.setSelectionRange(len,len);}catch(e){}}
+    }
+  }
+
   // Sync body data-zone for CSS filtering (only meaningful on Today tab)
   document.body.setAttribute('data-zone', activeTab==='today'?todayZone:'all');
 

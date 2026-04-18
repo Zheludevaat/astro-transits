@@ -1222,4 +1222,378 @@ const SYNASTRY_VOICE = {
     feel: 'Gentle structure around the tender place; responsible caring.',
     detail: 'The sextile creates a supportive link between Saturn\'s stability and Chiron\'s wound, allowing both people to approach vulnerability with maturity and care. The Saturn person provides practical support for Chiron\'s healing without being heavy-handed, and Chiron helps Saturn understand that strength includes the capacity to be gentle with what is broken. This aspect supports partnerships where difficult truths are faced with both realism and compassion.'
   },
+
+  // Sun-NorthNode
+  'Sun-NorthNode|conjunction': {
+    feel: 'A fated encounter; the Sun person feels like a beacon on the Node person\'s destined path.',
+    detail: 'The Sun person embodies qualities the North Node person is meant to develop in this lifetime. There is an immediate sense of recognition and purpose, as though the Sun person arrived to illuminate the direction the Node person needs to grow toward. The bond carries a feeling of destiny that is difficult to ignore.'
+  },
+  'Sun-NorthNode|opposition': {
+    feel: 'A pull toward the familiar past rather than the unknown future; comfort that can stall growth.',
+    detail: 'The Sun person activates the South Node, representing qualities the Node person has already mastered and may cling to. The relationship feels deeply comfortable but can keep both people anchored in old patterns. Growth requires the Sun person to encourage forward movement rather than settling into what feels safe.'
+  },
+  'Sun-NorthNode|trine': {
+    feel: 'Natural support for each other\'s life direction; the relationship feels like it was meant to happen.',
+    detail: 'The Sun person\'s identity harmonizes with the Node person\'s evolutionary direction, creating a partnership where growth feels effortless. Both people sense that being together moves them toward something important. The Sun person naturally encourages the Node person\'s development without forcing it.'
+  },
+  'Sun-NorthNode|square': {
+    feel: 'The relationship challenges both people\'s sense of purpose and direction.',
+    detail: 'The Sun person\'s way of being creates friction with the Node person\'s intended growth path. This tension forces both people to reconsider what they thought they wanted from life. The square is demanding but deeply catalytic -- it refuses to let either person coast.'
+  },
+  'Sun-NorthNode|sextile': {
+    feel: 'A gentle sense of shared purpose; being together feels quietly right.',
+    detail: 'The Sun person supports the Node person\'s growth in practical, unforced ways. There is an easy sense of mutual encouragement without the intensity of harder aspects. The relationship provides steady forward momentum toward both people\'s larger goals.'
+  },
+
+  // Moon-NorthNode
+  'Moon-NorthNode|conjunction': {
+    feel: 'Emotionally fated; the Moon person\'s care feels like exactly what the Node person needs to evolve.',
+    detail: 'The Moon person provides emotional nourishment that directly supports the North Node person\'s growth. There is a deep sense that this emotional bond exists for a reason beyond comfort. The Moon person may feel instinctively drawn to nurture the Node person\'s becoming, even when it requires emotional risk.'
+  },
+  'Moon-NorthNode|opposition': {
+    feel: 'Emotional habits from the past hold both people in familiar territory.',
+    detail: 'The Moon person\'s emotional patterns resonate with the Node person\'s South Node, creating a bond that feels like coming home but may prevent forward movement. The comfort is genuine but can become a refuge from necessary growth. Both people must consciously choose evolution over emotional safety.'
+  },
+  'Moon-NorthNode|trine': {
+    feel: 'Emotional support flows naturally toward growth; the heart and the path align.',
+    detail: 'The Moon person\'s emotional instincts harmonize with the Node person\'s life direction, creating a partnership where feeling safe and growing forward happen simultaneously. Nurturing in this relationship does not come at the expense of evolution. Both people feel emotionally at ease while still moving toward something larger.'
+  },
+  'Moon-NorthNode|square': {
+    feel: 'Emotional needs clash with the direction of growth; security and evolution pull in different directions.',
+    detail: 'The Moon person\'s instinct to comfort and protect creates tension with the Node person\'s need to develop in unfamiliar directions. The Node person may feel smothered or pulled backward by the Moon person\'s care. Working through this square means learning that genuine emotional support sometimes means encouraging risk rather than preventing discomfort.'
+  },
+  'Moon-NorthNode|sextile': {
+    feel: 'Quiet emotional encouragement toward each other\'s future; caring without clinging.',
+    detail: 'The Moon person gently supports the Node person\'s growth without overwhelming them with emotional need. There is an ease to the emotional dynamic that allows both people to feel cared for while still pursuing their individual paths. The bond deepens through shared vulnerability and mutual respect for each other\'s direction.'
+  },
+
+  // Mercury-NorthNode
+  'Mercury-NorthNode|conjunction': {
+    feel: 'Conversations that feel destined; the Mercury person\'s words open doors the Node person didn\'t know existed.',
+    detail: 'The Mercury person\'s thinking and communication style directly catalyzes the Node person\'s growth. Ideas exchanged between these two carry unusual weight, as though certain conversations were meant to happen. The Mercury person may serve as a messenger or teacher who articulates what the Node person needs to hear.'
+  },
+  'Mercury-NorthNode|opposition': {
+    feel: 'Mental patterns from the past dominate the conversation; familiar thinking prevents new understanding.',
+    detail: 'The Mercury person\'s communication activates the Node person\'s South Node intellect, reinforcing old ways of thinking rather than opening new ones. The dialogue feels natural but may keep both people circling ideas they have already exhausted. Growth requires the Mercury person to challenge the Node person\'s assumptions rather than confirming them.'
+  },
+  'Mercury-NorthNode|trine': {
+    feel: 'Ideas flow in the direction of growth; thinking together expands both people\'s horizons.',
+    detail: 'The Mercury person\'s mind harmonizes with the Node person\'s evolutionary path, creating conversations that naturally move toward insight and development. Both people feel intellectually stimulated in a way that also feels purposeful. Communication between them has a quality of unfolding something important.'
+  },
+  'Mercury-NorthNode|square': {
+    feel: 'Communication creates friction with the life path; words that challenge direction.',
+    detail: 'The Mercury person\'s thinking clashes with the Node person\'s growth trajectory, creating intellectual tension that forces both people to reexamine their assumptions. The square can feel like arguing about the future, but the friction sharpens both people\'s clarity about what they actually believe and where they are headed.'
+  },
+  'Mercury-NorthNode|sextile': {
+    feel: 'Helpful exchanges that gently support each other\'s direction.',
+    detail: 'The Mercury person offers practical ideas and perspectives that assist the Node person\'s development without overwhelming them. There is an easy intellectual rapport that serves both people\'s larger goals. Conversations are stimulating in a grounded, useful way.'
+  },
+
+  // Venus-NorthNode
+  'Venus-NorthNode|conjunction': {
+    feel: 'Love that feels fated; the Venus person embodies what the Node person is growing toward in relationship.',
+    detail: 'The Venus person\'s values, aesthetics, and way of loving align precisely with the North Node person\'s evolutionary direction. There is a powerful sense that this love exists for a purpose beyond personal satisfaction. The Venus person may feel that loving the Node person changes them in unexpected ways, and the Node person feels that this love pulls them toward their highest potential.'
+  },
+  'Venus-NorthNode|opposition': {
+    feel: 'Love that feels familiar but may anchor both people in comfortable patterns.',
+    detail: 'The Venus person\'s affection resonates with the Node person\'s past rather than their future, creating a relationship that feels deeply comfortable but may not challenge either person to grow. The love is real, but both people must be intentional about not using the relationship as a retreat from necessary evolution.'
+  },
+  'Venus-NorthNode|trine': {
+    feel: 'Affection and growth flow together naturally; love supports the life path.',
+    detail: 'The Venus person\'s way of loving harmonizes with the Node person\'s direction, creating a partnership where intimacy and personal development reinforce each other. Both people feel that being together enhances their individual journeys. The relationship has an easy, generous quality that makes growth feel like a shared pleasure.'
+  },
+  'Venus-NorthNode|square': {
+    feel: 'Desire and direction pull against each other; what you want versus where you need to go.',
+    detail: 'The Venus person\'s values create tension with the Node person\'s growth path, forcing both people to examine whether their relationship serves their evolution or distracts from it. This square demands that love become a conscious choice aligned with purpose rather than a comfortable default.'
+  },
+  'Venus-NorthNode|sextile': {
+    feel: 'Gentle affection that encourages growth; love as quiet catalyst.',
+    detail: 'The Venus person supports the Node person\'s path through warmth and appreciation that feels natural rather than forced. There is an easy harmony between what both people value and where they are headed. The bond strengthens gradually through shared aesthetic pleasures and mutual encouragement.'
+  },
+
+  // Mars-NorthNode
+  'Mars-NorthNode|conjunction': {
+    feel: 'A driving force toward destiny; the Mars person ignites the Node person\'s courage to act on their path.',
+    detail: 'The Mars person\'s energy and initiative land directly on the Node person\'s point of growth, creating a dynamic where action feels fated. The Mars person pushes the Node person to take risks they might otherwise avoid. The intensity of this conjunction can feel like being propelled forward by a force neither person fully controls.'
+  },
+  'Mars-NorthNode|opposition': {
+    feel: 'Action directed toward the past; the Mars person\'s drive reinforces old patterns.',
+    detail: 'The Mars person\'s energy activates the Node person\'s South Node, encouraging familiar behaviors rather than new growth. The drive between them is real, but it may channel into activities that keep both people stuck. Redirecting Mars\'s force toward the Node person\'s future rather than their past is the central challenge.'
+  },
+  'Mars-NorthNode|trine': {
+    feel: 'Energy and purpose align; together you act on what matters.',
+    detail: 'The Mars person\'s initiative flows naturally toward the Node person\'s evolutionary direction, creating a partnership where taking action feels purposeful and aligned. Both people feel more motivated together than apart. The Mars person\'s courage supports the Node person\'s growth without overwhelming it.'
+  },
+  'Mars-NorthNode|square': {
+    feel: 'Competing drives create friction with destiny; ambition clashes with direction.',
+    detail: 'The Mars person\'s assertiveness creates tension with the Node person\'s growth path, forcing both people to examine whether their actions serve their evolution or obstruct it. The square is uncomfortable but clarifying, demanding that energy be directed with intention rather than spent on impulse.'
+  },
+  'Mars-NorthNode|sextile': {
+    feel: 'Steady motivation toward shared growth; the push is gentle but persistent.',
+    detail: 'The Mars person provides practical energy and initiative that supports the Node person\'s path without overwhelming it. There is a healthy dynamic of mutual encouragement and constructive action. Both people feel capable of more when they work together.'
+  },
+
+  // Jupiter-NorthNode
+  'Jupiter-NorthNode|conjunction': {
+    feel: 'Expansive destiny; the Jupiter person amplifies the Node person\'s sense of purpose and direction.',
+    detail: 'Jupiter lands on the North Node like a blessing on the path, enlarging the Node person\'s vision of what is possible for their life. The Jupiter person brings faith, optimism, and opportunity that directly support the Node person\'s evolution. There is a sense that meeting this person opened doors that were meant to be opened.'
+  },
+  'Jupiter-NorthNode|opposition': {
+    feel: 'Generosity that may enable complacency; abundance directed toward the familiar rather than the new.',
+    detail: 'The Jupiter person\'s expansiveness activates the Node person\'s South Node, creating comfort and excess around patterns that no longer serve growth. The relationship may feel abundant but stagnant. Both people must resist the temptation to settle for what is easy when what is needed is what is difficult.'
+  },
+  'Jupiter-NorthNode|trine': {
+    feel: 'Faith and direction flow together; the relationship feels like a gift from providence.',
+    detail: 'Jupiter\'s optimism harmonizes with the Node person\'s evolutionary path, creating a partnership where growth feels expansive and natural. Both people sense that their connection serves something larger than themselves. Opportunities arise through the relationship that would not have appeared otherwise.'
+  },
+  'Jupiter-NorthNode|square': {
+    feel: 'Overconfidence meets the crossroads; big promises clash with the actual path.',
+    detail: 'Jupiter\'s expansiveness creates tension with the Node person\'s growth direction, inflating expectations or encouraging detours from the real work. The square demands that both people distinguish between genuine faith and wishful thinking. Growth requires tempering optimism with honest assessment of where the path actually leads.'
+  },
+  'Jupiter-NorthNode|sextile': {
+    feel: 'Helpful opportunities that gently steer both people toward their purpose.',
+    detail: 'The Jupiter person brings modest but meaningful support to the Node person\'s growth, offering encouragement and resources without overwhelming the process. There is an easy sense of mutual benefit and shared good fortune. The relationship provides a steady stream of small openings that accumulate into real progress.'
+  },
+
+  // Saturn-NorthNode
+  'Saturn-NorthNode|conjunction': {
+    feel: 'A serious, karmic bond; the Saturn person embodies the discipline the Node person\'s path demands.',
+    detail: 'Saturn on the North Node is one of the most distinctly karmic contacts in synastry. The Saturn person represents the hard lessons, structure, and commitment that the Node person must embrace in order to grow. The relationship may feel heavy or obligatory, but it carries genuine purpose. What Saturn asks is difficult, but it is exactly what the Node person needs.'
+  },
+  'Saturn-NorthNode|opposition': {
+    feel: 'The weight of the past; Saturn\'s authority reinforces patterns the Node person is meant to outgrow.',
+    detail: 'Saturn activates the South Node, creating a dynamic where responsibility, tradition, and obligation anchor the Node person in familiar territory. The Saturn person may represent an authority figure or a set of rules that the Node person has already internalized. Growth requires recognizing where duty has become a cage.'
+  },
+  'Saturn-NorthNode|trine': {
+    feel: 'Steady, reliable support for growth; the relationship ages well.',
+    detail: 'Saturn\'s discipline flows naturally toward the Node person\'s direction, providing structure and stability that support long-term evolution. The Saturn person helps the Node person build something lasting along their path. This trine often appears in partnerships where both people take the long view and are willing to invest in something that matures slowly.'
+  },
+  'Saturn-NorthNode|square': {
+    feel: 'Restriction and destiny at cross purposes; the rules don\'t fit the road.',
+    detail: 'Saturn\'s need for control creates friction with the Node person\'s growth path, producing a dynamic where structure feels like obstruction. The Node person may feel that the Saturn person is holding them back or imposing outdated standards. The square forces both people to examine which structures serve growth and which have become prisons.'
+  },
+  'Saturn-NorthNode|sextile': {
+    feel: 'Practical guidance on the path; constructive discipline without heaviness.',
+    detail: 'The Saturn person provides useful structure and accountability that supports the Node person\'s growth without weighing it down. There is a healthy sense of shared responsibility and realistic planning. The relationship provides the kind of grounded support that turns aspiration into accomplishment.'
+  },
+
+  // Uranus-NorthNode
+  'Uranus-NorthNode|conjunction': {
+    feel: 'A sudden awakening to destiny; the Uranus person disrupts everything the Node person thought they knew about their path.',
+    detail: 'Uranus electrifies the North Node, creating a relationship that arrives like lightning and permanently alters the Node person\'s trajectory. The Uranus person catalyzes radical change in the Node person\'s direction, often through unexpected events or revelations. The bond feels exciting and destabilizing in equal measure.'
+  },
+  'Uranus-NorthNode|opposition': {
+    feel: 'Rebellion against the past that may miss the point; disruption without direction.',
+    detail: 'Uranus activates the South Node, creating sudden upheaval around patterns the Node person has already outgrown. The disruption may feel liberating at first but can become chaotic if it lacks intentional direction. The challenge is to channel Uranus\'s revolutionary energy toward the North Node\'s future rather than simply dismantling the past.'
+  },
+  'Uranus-NorthNode|trine': {
+    feel: 'Innovation flows naturally toward growth; the unexpected serves the path.',
+    detail: 'Uranus\'s unconventional energy harmonizes with the Node person\'s direction, creating a partnership where surprise and growth work together. Both people feel that the relationship encourages individuality and authentic self-expression. The Uranus person helps the Node person see possibilities they could not have imagined alone.'
+  },
+  'Uranus-NorthNode|square': {
+    feel: 'Sudden changes clash with the intended direction; freedom and fate collide.',
+    detail: 'Uranus\'s need for independence and disruption creates tension with the Node person\'s growth path. The relationship may involve unexpected events that force both people to reconsider their direction. The square demands that both people learn to work with change rather than being overwhelmed by it.'
+  },
+  'Uranus-NorthNode|sextile': {
+    feel: 'Gentle innovation that opens new possibilities on the path.',
+    detail: 'The Uranus person introduces fresh perspectives and unexpected ideas that support the Node person\'s growth without destabilizing it. There is an easy dynamic of creative experimentation that serves both people\'s evolution. The relationship provides just enough surprise to keep the path interesting.'
+  },
+
+  // Neptune-NorthNode
+  'Neptune-NorthNode|conjunction': {
+    feel: 'A dreamlike sense of shared destiny; the Neptune person dissolves barriers on the Node person\'s path.',
+    detail: 'Neptune on the North Node creates a profoundly spiritual connection where the Node person feels that the Neptune person understands their deepest aspirations. The bond carries a sense of transcendence and shared vision that can be genuinely inspiring or dangerously delusional. Discernment is essential -- the dream must be tested against reality.'
+  },
+  'Neptune-NorthNode|opposition': {
+    feel: 'Illusion anchored in the past; spiritual comfort that prevents forward movement.',
+    detail: 'Neptune activates the South Node, creating a dynamic where fantasy, idealization, or escapism keeps the Node person attached to old patterns. The relationship may feel transcendent, but the transcendence serves avoidance rather than evolution. Both people must distinguish between genuine spiritual connection and mutual escapism.'
+  },
+  'Neptune-NorthNode|trine': {
+    feel: 'Spiritual inspiration flows toward growth; imagination serves the path.',
+    detail: 'Neptune\'s vision harmonizes with the Node person\'s direction, creating a partnership infused with creativity, compassion, and spiritual depth. Both people feel that the relationship connects them to something larger than themselves. The Neptune person\'s intuition naturally supports the Node person\'s evolution without distorting it.'
+  },
+  'Neptune-NorthNode|square': {
+    feel: 'Confusion clouds the path; dreams and direction work at cross purposes.',
+    detail: 'Neptune\'s tendency toward idealization and dissolution creates friction with the Node person\'s growth trajectory. The relationship may involve deception, disillusionment, or a persistent inability to see each other clearly. The square demands radical honesty and the willingness to love what is real rather than what is imagined.'
+  },
+  'Neptune-NorthNode|sextile': {
+    feel: 'Gentle inspiration and shared sensitivity that supports the path.',
+    detail: 'The Neptune person brings subtle creative and spiritual energy that supports the Node person\'s growth without overwhelming their sense of reality. There is an easy flow of compassion and imaginative thinking between them. The relationship nurtures both people\'s connection to beauty and meaning.'
+  },
+
+  // Pluto-NorthNode
+  'Pluto-NorthNode|conjunction': {
+    feel: 'A transformative encounter with destiny; nothing remains the same after this bond forms.',
+    detail: 'Pluto on the North Node creates one of the most intense and fated connections in synastry. The Pluto person catalyzes deep transformation in the Node person\'s life direction, often through experiences that feel like death and rebirth. The bond is obsessive, transformative, and impossible to dismiss. The Node person\'s entire trajectory shifts through this encounter.'
+  },
+  'Pluto-NorthNode|opposition': {
+    feel: 'Power dynamics rooted in the past; control and fate pull in opposite directions.',
+    detail: 'Pluto activates the South Node, creating a dynamic where intense psychological patterns from the past dominate the relationship. There may be a strong karmic sense of having known each other before, but the familiarity serves repetition rather than evolution. Breaking free requires both people to release control and trust the forward direction.'
+  },
+  'Pluto-NorthNode|trine': {
+    feel: 'Deep transformation flows naturally toward growth; power serves the path.',
+    detail: 'Pluto\'s transformative intensity harmonizes with the Node person\'s direction, creating a partnership where profound change feels purposeful rather than destructive. Both people sense that the relationship is doing important psychological work. The Pluto person\'s depth supports the Node person\'s evolution without overwhelming it.'
+  },
+  'Pluto-NorthNode|square': {
+    feel: 'Power struggles obstruct the life path; transformation demanded at a pace that feels impossible.',
+    detail: 'Pluto\'s intensity creates friction with the Node person\'s growth direction, producing crises that force both people to confront what they are most afraid to change. The square is excruciating but potentially the most transformative aspect in the chart. Growth requires surrendering the need to control the outcome.'
+  },
+  'Pluto-NorthNode|sextile': {
+    feel: 'Subtle but persistent transformation that serves the path.',
+    detail: 'The Pluto person brings quiet but significant depth to the Node person\'s growth, helping them confront and release what no longer serves their direction. There is a manageable intensity that supports change without crisis. The relationship facilitates evolution through honest self-examination and mutual respect for the process.'
+  },
+
+  // Chiron-NorthNode
+  'Chiron-NorthNode|conjunction': {
+    feel: 'The wound and the path converge; healing becomes inseparable from destiny.',
+    detail: 'Chiron on the North Node creates a bond where the Chiron person\'s core wound directly activates the Node person\'s growth direction. The Node person may feel that this relationship forces them to confront pain they would rather avoid, but that confrontation is precisely what their evolution requires. Healing and purpose become the same thing.'
+  },
+  'Chiron-NorthNode|opposition': {
+    feel: 'Old wounds anchor the path in the past; pain becomes a reason not to grow.',
+    detail: 'Chiron activates the South Node, creating a dynamic where both people\'s wounds reinforce familiar patterns rather than catalyzing change. The relationship may feel like a shared refuge from the world\'s harshness, but the refuge can become a hiding place. Growth requires using the wound as motivation rather than excuse.'
+  },
+  'Chiron-NorthNode|trine': {
+    feel: 'Healing flows naturally toward growth; vulnerability opens the path forward.',
+    detail: 'Chiron\'s wound harmonizes with the Node person\'s direction, creating a partnership where being honest about pain actually supports evolution. Both people sense that their shared vulnerability serves a larger purpose. The Chiron person helps the Node person understand that the path forward runs through tenderness, not around it.'
+  },
+  'Chiron-NorthNode|square': {
+    feel: 'Pain obstructs the path; wounds and direction clash painfully.',
+    detail: 'Chiron\'s vulnerability creates friction with the Node person\'s growth trajectory, producing a dynamic where healing feels at odds with moving forward. The Node person may feel that the Chiron person\'s needs hold them back, while Chiron feels that the Node person\'s drive ignores their suffering. The square demands that both people integrate healing into the journey rather than treating it as an obstacle.'
+  },
+  'Chiron-NorthNode|sextile': {
+    feel: 'Gentle healing that supports the life direction; tenderness as quiet guide.',
+    detail: 'The Chiron person brings subtle insight into the Node person\'s growth, helping them approach their path with compassion and self-awareness. There is an easy exchange of vulnerability that serves both people\'s development. The relationship provides a safe space to be imperfect while still moving forward.'
+  },
+
+  // NorthNode-NorthNode
+  'NorthNode-NorthNode|conjunction': {
+    feel: 'Walking the same road; two people destined to grow in the same direction.',
+    detail: 'When both people\'s North Nodes share the same sign and degree, they are working toward the same evolutionary lessons in this lifetime. The partnership feels deeply purposeful, as though you were meant to help each other reach the same destination. The bond carries a generational quality, linking both people to a shared karmic current.'
+  },
+  'NorthNode-NorthNode|opposition': {
+    feel: 'Opposite destinies that create a powerful axis of mutual growth.',
+    detail: 'One person\'s North Node sits on the other\'s South Node, creating a relationship where each person embodies what the other is growing toward or away from. This is one of the strongest karmic indicators in synastry. Both people serve as mirrors and teachers, reflecting the other\'s past and future simultaneously.'
+  },
+  'NorthNode-NorthNode|trine': {
+    feel: 'Compatible life directions that support each other\'s growth naturally.',
+    detail: 'Both people\'s evolutionary paths flow in harmonious directions, creating a partnership where individual growth and shared purpose reinforce each other. There is an easy sense that being together serves both people\'s destinies. The relationship encourages forward movement without demanding identical destinations.'
+  },
+  'NorthNode-NorthNode|square': {
+    feel: 'Growth paths that cross at difficult angles; your destinies challenge each other.',
+    detail: 'Both people\'s intended directions create friction when they intersect, forcing each person to reconsider whether their path accounts for the other\'s. The square demands that both people expand their vision of growth to include the tension. What feels like an obstruction is actually an invitation to a more comprehensive understanding of purpose.'
+  },
+  'NorthNode-NorthNode|sextile': {
+    feel: 'Gently compatible destinies; your paths run parallel and occasionally intersect helpfully.',
+    detail: 'Both people\'s growth directions support each other in practical, unforced ways. There is an easy sense of moving through life together without the intensity of conjunction or the challenge of square. The relationship provides steady, reliable encouragement toward each person\'s individual evolution.'
+  },
+
+  // Chiron-Chiron
+  'Chiron-Chiron|conjunction': {
+    feel: 'Shared wound; you carry the same hurt and recognize it instantly in each other.',
+    detail: 'When both people\'s Chirons share the same placement, they have endured similar core injuries and understand each other\'s pain without explanation. This creates profound empathy but also the risk of reopening wounds rather than healing them. The relationship works when both people have done enough individual healing to be present for each other without drowning in shared suffering.'
+  },
+  'Chiron-Chiron|opposition': {
+    feel: 'Complementary wounds that mirror each other from opposite sides.',
+    detail: 'Each person\'s wound illuminates the other\'s from a different angle, creating a dynamic where both people feel simultaneously understood and challenged. The opposition demands that each person look at their pain from a perspective they have been avoiding. Healing happens through the willingness to see yourself through someone else\'s suffering.'
+  },
+  'Chiron-Chiron|trine': {
+    feel: 'Wounds that resonate harmoniously; shared pain becomes shared wisdom.',
+    detail: 'Both people\'s core injuries flow together naturally, creating a partnership where vulnerability is met with intuitive understanding rather than judgment. The trine allows healing to happen through ordinary acts of care and recognition. Both people feel that their pain has purpose when witnessed by someone who genuinely understands.'
+  },
+  'Chiron-Chiron|square': {
+    feel: 'Wounds that aggravate each other; your pain triggers theirs and theirs triggers yours.',
+    detail: 'Each person\'s core injury clashes with the other\'s in a way that creates recurring hurt. The square forces both people to confront not only their own wound but the ways their suffering affects others. Growth requires the painful acknowledgment that being wounded does not exempt you from wounding someone else.'
+  },
+  'Chiron-Chiron|sextile': {
+    feel: 'Gentle mutual understanding of each other\'s deepest vulnerability.',
+    detail: 'Both people\'s wounds relate to each other in a supportive way, creating a partnership where pain can be shared without overwhelming the bond. The sextile provides enough distance for perspective while maintaining genuine empathy. Conversations about suffering feel productive rather than draining.'
+  },
+
+  // Chiron-Uranus
+  'Chiron-Uranus|conjunction': {
+    feel: 'The wound is electrified; sudden insight meets deep pain.',
+    detail: 'Uranus lands on Chiron\'s most sensitive point, creating flashes of awareness that are as destabilizing as they are liberating. The Uranus person disrupts the Chiron person\'s habitual relationship with their wound, which can feel like healing at the speed of lightning or like having a bandage ripped off. The conjunction demands that the Chiron person release old narratives about their pain and embrace a radically new understanding.'
+  },
+  'Chiron-Uranus|opposition': {
+    feel: 'Freedom and pain pull in opposite directions; the wound resists liberation.',
+    detail: 'Uranus\'s drive for freedom confronts Chiron\'s wound from across the chart, creating a dynamic where independence and vulnerability are at odds. The Uranus person may feel that the Chiron person\'s pain is a constraint on their freedom, while Chiron feels abandoned by Uranus\'s detachment. The opposition requires both people to understand that genuine freedom includes the freedom to be vulnerable.'
+  },
+  'Chiron-Uranus|trine': {
+    feel: 'Innovation heals the wound; unconventional solutions for deep pain.',
+    detail: 'Uranus\'s inventiveness flows naturally toward Chiron\'s hurt, offering fresh perspectives and unexpected approaches to old suffering. The Uranus person helps the Chiron person see their wound from an entirely new angle, and Chiron gives Uranus\'s brilliance emotional depth and purpose. Healing happens through insight rather than endurance.'
+  },
+  'Chiron-Uranus|square': {
+    feel: 'Disruption aggravates the wound; sudden changes reopen old hurt.',
+    detail: 'Uranus\'s unpredictability clashes with Chiron\'s vulnerability, creating a dynamic where the Chiron person feels destabilized by the Uranus person\'s need for change and independence. The square forces both people to examine whether Uranus\'s disruption serves genuine liberation or simply avoids the patient work of healing.'
+  },
+  'Chiron-Uranus|sextile': {
+    feel: 'Gentle breakthroughs; small flashes of insight that ease old pain.',
+    detail: 'Uranus brings subtle but meaningful new perspectives to Chiron\'s wound without overwhelming the healing process. The Uranus person helps the Chiron person think differently about their suffering in manageable doses. There is an easy exchange of unconventional wisdom and emotional honesty that benefits both people.'
+  },
+
+  // Chiron-Neptune
+  'Chiron-Neptune|conjunction': {
+    feel: 'The wound dissolves into something larger; pain becomes spiritual opening.',
+    detail: 'Neptune meets Chiron at the place of deepest hurt, dissolving the boundaries around the wound until it becomes indistinguishable from spiritual experience. The Neptune person may idealize the Chiron person\'s suffering or offer transcendent compassion that genuinely heals. The danger is that Neptune\'s dissolution prevents the wound from being addressed practically. The gift is that some wounds can only be healed by surrender.'
+  },
+  'Chiron-Neptune|opposition': {
+    feel: 'Illusion and pain face each other across the chart; fantasy obscures the real wound.',
+    detail: 'Neptune\'s tendency toward idealization confronts Chiron\'s raw vulnerability, creating a dynamic where the real hurt gets lost in projection and wishful thinking. The Neptune person may offer compassion that misses the point, while the Chiron person feels unseen despite being surrounded by apparent empathy. Healing requires cutting through illusion to reach genuine pain.'
+  },
+  'Chiron-Neptune|trine': {
+    feel: 'Compassion flows naturally toward the wound; spiritual understanding eases suffering.',
+    detail: 'Neptune\'s intuitive compassion harmonizes with Chiron\'s vulnerability, creating a partnership where pain is met with genuine spiritual presence. The Neptune person instinctively understands what the Chiron person needs without being told, and Chiron helps Neptune ground their compassion in something real and specific. Healing happens through art, music, prayer, or simple acts of grace.'
+  },
+  'Chiron-Neptune|square': {
+    feel: 'Compassion misfires; the attempt to heal through spiritual means creates confusion.',
+    detail: 'Neptune\'s dissolving energy clashes with Chiron\'s wound in a way that creates confusion about what actually hurts and what would actually help. The Neptune person may offer escape disguised as healing, while the Chiron person feels more lost rather than more found. The square demands honest discernment about the difference between transcendence and avoidance.'
+  },
+  'Chiron-Neptune|sextile': {
+    feel: 'Subtle spiritual support for the healing process; gentle compassion without confusion.',
+    detail: 'Neptune brings quiet, intuitive understanding to Chiron\'s wound without overwhelming the process with illusion or escapism. The Neptune person offers the kind of compassion that actually reaches the hurt, and Chiron helps Neptune understand that real empathy requires seeing clearly. The relationship supports healing through creativity and shared moments of genuine tenderness.'
+  },
+
+  // Chiron-Pluto
+  'Chiron-Pluto|conjunction': {
+    feel: 'The wound meets absolute power; transformation through the darkest material.',
+    detail: 'Pluto arrives at Chiron\'s place of deepest hurt with the full force of its transformative intensity. The Pluto person has the power to either heal or devastate the Chiron person\'s core wound, and the outcome depends entirely on how that power is wielded. This conjunction strips both people of pretense, forcing them to confront the relationship between vulnerability and power. The potential for healing is as extreme as the potential for harm.'
+  },
+  'Chiron-Pluto|opposition': {
+    feel: 'Power and vulnerability confront each other across the chart; the wound meets its match.',
+    detail: 'Pluto\'s intensity faces Chiron\'s pain from the opposite side, creating a dynamic where control and vulnerability are in constant dialogue. The Pluto person may use their psychological power to probe the Chiron person\'s wound in ways that feel invasive, while Chiron\'s vulnerability may trigger Pluto\'s deepest fears about their own lack of control. Growth requires both people to respect the boundary between healing and domination.'
+  },
+  'Chiron-Pluto|trine': {
+    feel: 'Deep transformation flows naturally through the wound; power heals what was broken.',
+    detail: 'Pluto\'s depth harmonizes with Chiron\'s vulnerability, creating a partnership where profound psychological work happens organically. The Pluto person helps the Chiron person access and transform their wound at its root, and Chiron gives Pluto\'s intensity a worthy purpose. This trine supports relationships where both people emerge fundamentally changed for the better.'
+  },
+  'Chiron-Pluto|square': {
+    feel: 'Power dynamics rip open the wound; transformation happens at a cost.',
+    detail: 'Pluto\'s compulsive intensity clashes with Chiron\'s vulnerability, creating a dynamic where the Chiron person\'s wound is repeatedly activated by the Pluto person\'s need for control or depth. The square forces both people to examine the relationship between power and pain in their own histories. Genuine growth requires the Pluto person to restrain their intensity and the Chiron person to assert boundaries without collapsing.'
+  },
+  'Chiron-Pluto|sextile': {
+    feel: 'Quiet depth that supports healing; power applied with care to what is broken.',
+    detail: 'Pluto brings subtle but meaningful transformative energy to Chiron\'s wound without overwhelming the healing process. The Pluto person helps the Chiron person face difficult truths at a pace they can handle, and Chiron gives Pluto permission to use their depth for genuine good. The relationship facilitates growth through honest self-examination and mutual trust.'
+  },
+
+  // Uranus-Uranus
+  'Uranus-Uranus|conjunction': {
+    feel: 'Generational kinship; you share the same instinct for rebellion and the same vision of the future.',
+    detail: 'When both people\'s Uranus placements align, they belong to the same generational wave of change and carry the same restless impulse toward innovation. This creates an immediate sense of shared values around freedom, individuality, and progress. The bond is less personal than planetary -- you recognize in each other the same revolutionary spirit that defines your generation.'
+  },
+  'Uranus-Uranus|opposition': {
+    feel: 'Generational tension; your visions of freedom and progress directly oppose each other.',
+    detail: 'Uranus opposite Uranus occurs at the Uranus opposition transit age, linking people from generations with fundamentally different ideas about change and independence. Each person\'s vision of the future challenges the other\'s assumptions. The opposition demands genuine curiosity about how someone else\'s radicalism differs from your own.'
+  },
+  'Uranus-Uranus|trine': {
+    feel: 'Harmonious generational resonance; different ages, compatible visions of change.',
+    detail: 'The trine connects people from different generations whose ideas about freedom and innovation complement rather than conflict. There is an easy sense of mutual respect for each other\'s individuality and an intuitive understanding of each other\'s need for independence. The relationship benefits from the creative tension of different life stages sharing compatible values.'
+  },
+  'Uranus-Uranus|square': {
+    feel: 'Generational friction; your ideas about freedom and change clash at fundamental levels.',
+    detail: 'Uranus square Uranus links people from generations whose revolutionary impulses work at cross purposes. What one person considers progress, the other may see as recklessness or irrelevance. The square demands that both people expand their understanding of what freedom and authenticity mean beyond their own generational lens.'
+  },
+  'Uranus-Uranus|sextile': {
+    feel: 'Easy generational compatibility; different perspectives on change that complement each other.',
+    detail: 'The sextile connects people from neighboring generations whose approaches to independence and innovation support each other naturally. There is a comfortable exchange of ideas about progress and freedom that enriches both people without creating friction. The relationship benefits from fresh perspectives delivered with mutual respect.'
+  },
 };

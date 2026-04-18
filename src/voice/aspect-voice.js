@@ -349,5 +349,247 @@ const NATAL_ASPECT_DEPTH={
   'Chiron-Saturn|opposition':'External structures or authority figures press on your deepest wound. Mastery comes when you stop seeking permission to heal and build your own framework for wholeness.',
   'Chiron-Saturn|square':'Discipline and old pain grind against each other. You may work relentlessly to prove the wound wrong, or freeze under its weight — real healing requires patience with yourself.',
   'Chiron-Saturn|trine':'Time and experience have quietly alchemized your suffering into competence. You carry your wound with dignity and offer others the steady ground they need to heal.',
-  'Chiron-Saturn|sextile':'Healing through structure, discipline, and slow commitment is available when you build routines that honor both your limitations and your resilience.'
+  'Chiron-Saturn|sextile':'Healing through structure, discipline, and slow commitment is available when you build routines that honor both your limitations and your resilience.',
+
+  // ── NorthNode aspects ────────────────────────────────────────────
+  // Chiron-NorthNode
+  'Chiron-NorthNode|conjunction':'Your wound is your destiny. The place where you hurt most is precisely where your evolutionary path leads — healing becomes your life direction.',
+  'Chiron-NorthNode|opposition':'Your wound pulls you back toward familiar comfort while your growth demands you move forward. Releasing the identity built around old pain opens the path ahead.',
+  'Chiron-NorthNode|square':'Healing and growth are in friction. Old pain resists the direction your soul needs to travel, and you must tend the wound without letting it steer your course.',
+  'Chiron-NorthNode|trine':'Your wound naturally feeds your evolution. Experiences of suffering have already prepared you for the path ahead, and mentoring others accelerates your own growth.',
+  'Chiron-NorthNode|sextile':'Opportunities for growth arrive through healing work when you choose to engage. Teaching from your scars moves you toward your destined direction.',
+
+  // Jupiter-NorthNode
+  'Jupiter-NorthNode|conjunction':'Faith and destiny converge. Your evolutionary direction is supported by expansive optimism, and following your growth edge brings abundance and meaning.',
+  'Jupiter-NorthNode|opposition':'Comfortable beliefs and inherited philosophies pull you away from your true path. Growth requires releasing the worldview you outgrew and trusting unfamiliar territory.',
+  'Jupiter-NorthNode|square':'Your faith and your destiny are at cross-purposes. Overconfidence or dogmatic conviction delays growth until you learn to believe in the direction that frightens you.',
+  'Jupiter-NorthNode|trine':'Natural luck supports your evolutionary path. Opportunities, teachers, and expansive experiences arrive easily when you move toward your destined direction.',
+  'Jupiter-NorthNode|sextile':'Growth through learning, travel, or philosophical exploration is available when you actively pursue your evolutionary direction rather than waiting for signs.',
+
+  // Mars-NorthNode
+  'Mars-NorthNode|conjunction':'Your drive and destiny are fused. Bold, decisive action propels you toward your evolutionary path, and courage is the primary virtue required for your growth.',
+  'Mars-NorthNode|opposition':'Familiar patterns of assertion and aggression pull you backward. Your growth demands a different relationship with anger, competition, and personal will.',
+  'Mars-NorthNode|square':'Action and destiny clash. Impulsive moves derail your evolutionary path until you learn to fight for what truly matters rather than what merely provokes you.',
+  'Mars-NorthNode|trine':'Initiative naturally supports your growth direction. Physical courage and willingness to act carry you toward your destiny without excessive struggle.',
+  'Mars-NorthNode|sextile':'Deliberate effort and healthy assertiveness advance your evolutionary path when you channel your drive toward the unfamiliar rather than the comfortable.',
+
+  // Mercury-NorthNode
+  'Mercury-NorthNode|conjunction':'Your mind is pointed toward your destiny. The way you think, speak, and learn is central to your evolutionary direction, and following your curiosity is the path.',
+  'Mercury-NorthNode|opposition':'Familiar mental habits and comfortable ideas pull you away from growth. Your evolution requires new ways of thinking, communicating, and processing information.',
+  'Mercury-NorthNode|square':'Thought patterns and evolutionary direction grind against each other. Overthinking or clinging to what you already know delays the growth your soul requires.',
+  'Mercury-NorthNode|trine':'Your intellect naturally serves your destiny. Learning, writing, and communication carry you toward your evolutionary direction with relative ease.',
+  'Mercury-NorthNode|sextile':'Opportunities for growth arrive through conversations, study, or new information when you actively engage your mind with unfamiliar subjects.',
+
+  // Moon-NorthNode
+  'Moon-NorthNode|conjunction':'Your emotional instincts are aligned with your destiny. Following what you feel rather than what you know leads you toward your evolutionary direction.',
+  'Moon-NorthNode|opposition':'Emotional comfort and familiar security pull you away from growth. Your evolution demands that you leave the nest — literally or figuratively — and risk vulnerability in new territory.',
+  'Moon-NorthNode|square':'Emotional needs and evolutionary direction are in tension. Clinging to what feels safe delays the growth your soul demands, and you must learn to nurture yourself through change.',
+  'Moon-NorthNode|trine':'Your instincts naturally support your growth direction. Emotional intelligence and receptivity carry you toward your destiny without forcing the process.',
+  'Moon-NorthNode|sextile':'Growth arrives through emotional openness and caring connection when you choose to feel rather than defend. Vulnerability in the right direction moves you forward.',
+
+  // Neptune-NorthNode
+  'Neptune-NorthNode|conjunction':'Your destiny is woven with the transcendent. Spiritual surrender, artistic vision, or compassionate service defines your evolutionary path, though fog may obscure the way.',
+  'Neptune-NorthNode|opposition':'Familiar illusions, escapism, or spiritual comfort pull you back from growth. Your evolution requires discernment — learning to dream forward rather than dissolving backward.',
+  'Neptune-NorthNode|square':'Imagination and destiny are at odds. Confusion, idealization, or escapism cloud your growth direction until you ground your vision in committed, real-world effort.',
+  'Neptune-NorthNode|trine':'Spiritual sensitivity and creative intuition naturally support your evolutionary path. Trusting the unseen and following subtle inner guidance moves you toward your destiny.',
+  'Neptune-NorthNode|sextile':'Growth through contemplative practice, artistic work, or compassionate service is available when you deliberately open to the numinous rather than waiting for revelation.',
+
+  // NorthNode-Pluto
+  'NorthNode-Pluto|conjunction':'Your destiny demands total transformation. The evolutionary path leads through death-and-rebirth experiences, and surrendering control is the price of growth.',
+  'NorthNode-Pluto|opposition':'Deep psychological patterns and power dynamics pull you away from your growth direction. Evolution requires releasing what you grip most tightly.',
+  'NorthNode-Pluto|square':'Compulsive intensity and your evolutionary path clash. Power struggles or obsessive attachments derail growth until you learn to transform rather than control.',
+  'NorthNode-Pluto|trine':'Deep regenerative power naturally supports your destiny. You shed old selves with relative ease and move toward your evolutionary direction through profound inner work.',
+  'NorthNode-Pluto|sextile':'Transformative experiences advance your growth when you engage them willingly. Psychological depth and willingness to face darkness serve your evolutionary path.',
+
+  // NorthNode-Saturn
+  'NorthNode-Saturn|conjunction':'Your destiny is bound to discipline and responsibility. The evolutionary path demands maturity, structure, and willingness to carry weight others set down.',
+  'NorthNode-Saturn|opposition':'Familiar duties and rigid structures pull you away from growth. Your evolution requires releasing the authority you hide behind and building a new framework from honest ground.',
+  'NorthNode-Saturn|square':'Duty and destiny grind against each other. Fear, caution, or excessive responsibility delays your evolutionary direction until you learn which burdens to carry and which to set down.',
+  'NorthNode-Saturn|trine':'Discipline and patience naturally support your growth path. Time is your ally, and steady commitment moves you toward your destiny without drama.',
+  'NorthNode-Saturn|sextile':'Structured effort and practical planning advance your evolutionary direction when applied deliberately. Maturity gained through experience serves your destined path.',
+
+  // NorthNode-Sun
+  'NorthNode-Sun|conjunction':'Your core identity aligns with your destiny. Being fully yourself — not performing, not hiding — is the evolutionary direction. The path and the person are one.',
+  'NorthNode-Sun|opposition':'Familiar self-expression and ego habits pull you back from growth. Your evolution demands that you become someone new rather than polishing who you already are.',
+  'NorthNode-Sun|square':'Identity and destiny are in friction. Who you think you are conflicts with who you are becoming, and the ego must bend toward the soul rather than the reverse.',
+  'NorthNode-Sun|trine':'Your sense of purpose naturally supports your evolutionary path. Confidence and self-expression carry you toward your destiny with creative momentum.',
+  'NorthNode-Sun|sextile':'Growth arrives through self-expression and creative leadership when you step forward deliberately. Aligning your will with your destiny requires conscious choice.',
+
+  // NorthNode-Uranus
+  'NorthNode-Uranus|conjunction':'Your destiny is radical individuation. The evolutionary path demands that you break from convention and follow the most authentic, unpredictable version of yourself.',
+  'NorthNode-Uranus|opposition':'Familiar rebellions or fixed ideologies pull you backward. Your growth requires a new kind of freedom — not reaction against the past, but genuine originality moving forward.',
+  'NorthNode-Uranus|square':'Liberation and destiny clash. Erratic independence or stubborn attachment to outdated revolutions delays your growth until you channel disruption toward your true direction.',
+  'NorthNode-Uranus|trine':'Innovation and originality naturally support your evolutionary path. Sudden insights, technological fluency, or unconventional choices carry you toward your destiny.',
+  'NorthNode-Uranus|sextile':'Growth through experimentation and progressive thinking is available when you deliberately step outside the familiar. Embracing change advances your evolutionary path.',
+
+  // NorthNode-Venus
+  'NorthNode-Venus|conjunction':'Your destiny runs through love, beauty, and relationship. The evolutionary path asks you to value connection, pleasure, and harmony as sacred directions rather than distractions.',
+  'NorthNode-Venus|opposition':'Comfortable relational patterns and aesthetic habits pull you away from growth. Your evolution requires a new understanding of what and whom you truly value.',
+  'NorthNode-Venus|square':'Desire and destiny are in tension. Clinging to old attachments or settling for shallow pleasure delays the growth your soul requires in matters of love and worth.',
+  'NorthNode-Venus|trine':'Grace and relational ease naturally support your evolutionary direction. Love, art, and beauty carry you toward your destiny with gentle momentum.',
+  'NorthNode-Venus|sextile':'Growth through relationship, creative expression, or deepening your values is available when you reach for connection rather than retreating into self-sufficiency.',
+
+  // ── Ascendant natal aspects ──────────────────────────────────────
+  // Ascendant-Sun (conjunction exists as Sun-Ascendant)
+  'Ascendant-Sun|opposition':'You project an image that contradicts your core self. Others meet your mask before your substance, and learning to unify the two is a lifelong task.',
+  'Ascendant-Sun|trine':'Your appearance and identity cooperate naturally. People perceive you accurately, and you move through the world with an easy self-consistency.',
+  'Ascendant-Sun|square':'How you come across clashes with who you actually are. First impressions mislead, and you must work to align outer presentation with inner truth.',
+  'Ascendant-Sun|sextile':'Your persona supports your purpose when you consciously cultivate it. Small adjustments in self-presentation unlock recognition you deserve.',
+
+  // Ascendant-Moon (conjunction exists as Moon-Ascendant)
+  'Ascendant-Moon|opposition':'Your emotional nature is projected onto others rather than worn openly. Partners mirror your feelings back to you before you recognize them yourself.',
+  'Ascendant-Moon|trine':'Feelings and appearance harmonize naturally. Your emotional state reads clearly on your face, and people trust your sincerity instinctively.',
+  'Ascendant-Moon|square':'Inner moods clash with outer composure. You appear calm when upset or seem distressed when content, creating misunderstandings until you learn emotional transparency.',
+  'Ascendant-Moon|sextile':'Emotional intelligence supports your public presence when you let it. Showing feeling at the right moment builds trust and warmth with others.',
+
+  // Ascendant-Mars (conjunction exists as Mars-Ascendant)
+  'Ascendant-Mars|opposition':'You attract combative people or project aggression you do not own. Others challenge you physically or energetically until you claim your own assertiveness.',
+  'Ascendant-Mars|trine':'Physical vitality and personal style cooperate. You come across as energetic, direct, and capable without trying, and your body serves your will naturally.',
+  'Ascendant-Mars|square':'Your drive and your image are at odds. You may appear more aggressive than you intend, or suppress your initiative to seem agreeable, neither of which serves you.',
+  'Ascendant-Mars|sextile':'Assertiveness enhances your presentation when you deploy it deliberately. Physical confidence supports the impression you make in competitive settings.',
+
+  // Ascendant-Mercury
+  'Ascendant-Mercury|conjunction':'Your mind and your appearance are fused. You come across as quick, curious, and youthful, and people associate you with your words and ideas above all else.',
+  'Ascendant-Mercury|opposition':'Others carry the intellectual energy you do not express outwardly. Partnerships sharpen your thinking and teach you to communicate what your persona conceals.',
+  'Ascendant-Mercury|trine':'Speech and presence cooperate effortlessly. You articulate yourself clearly, and your manner puts people at ease in conversation.',
+  'Ascendant-Mercury|square':'How you think and how you appear are in tension. Nervous energy shows physically, or your words contradict the image you project, until you integrate mind and mask.',
+  'Ascendant-Mercury|sextile':'Communication skills support your public image when consciously applied. Writing, speaking, or teaching enhances how others perceive you.',
+
+  // Ascendant-Venus
+  'Ascendant-Venus|conjunction':'Beauty, charm, and grace are woven into your physical presence. You attract others effortlessly and are identified with aesthetic sensibility and social warmth.',
+  'Ascendant-Venus|opposition':'You project charm onto partners or attract beauty you do not claim as your own. Relationships teach you to embody the grace you admire in others.',
+  'Ascendant-Venus|trine':'Natural attractiveness and social ease flow through your appearance without effort. People find you pleasant, and harmonious environments form around you.',
+  'Ascendant-Venus|square':'Your desire for approval clashes with your authentic presentation. You may over-accommodate or hide behind aesthetics until you learn that real charm comes from honesty.',
+  'Ascendant-Venus|sextile':'Social grace enhances your image when you engage it deliberately. Small gestures of warmth and attention to appearance open doors for you.',
+
+  // Ascendant-Jupiter
+  'Ascendant-Jupiter|conjunction':'You come across as expansive, optimistic, and larger than life. Your physical presence takes up space, and people expect generosity and wisdom from you on sight.',
+  'Ascendant-Jupiter|opposition':'Others embody the confidence or excess you do not display. Partnerships expand your worldview and teach you to project your own faith outward.',
+  'Ascendant-Jupiter|trine':'Natural buoyancy in your appearance and manner. You seem fortunate, approachable, and wise, and opportunities arrive partly because people trust your bearing.',
+  'Ascendant-Jupiter|square':'Your presentation overshoots or overpromises. You may appear more confident than you feel, or your expansiveness overwhelms smaller settings, until you learn proportion.',
+  'Ascendant-Jupiter|sextile':'Optimism and breadth of vision enhance your public image when you lean into them. Travel, education, or philosophy visibly shape how others perceive you.',
+
+  // Ascendant-Saturn (conjunction exists as Saturn-Ascendant)
+  'Ascendant-Saturn|opposition':'Authority figures or institutions mirror back the discipline you have not claimed. Others impose structure on you until you embody your own gravitas.',
+  'Ascendant-Saturn|trine':'Quiet dignity and competence mark your appearance. People take you seriously from the start, and your bearing conveys reliability without heaviness.',
+  'Ascendant-Saturn|square':'Your image and your sense of duty are at odds. You may appear rigid or burdened, or compensate by hiding your seriousness behind a lighter mask.',
+  'Ascendant-Saturn|sextile':'Discipline and maturity support your presentation when you allow them. A composed, professional image opens doors in hierarchical settings.',
+
+  // Ascendant-Neptune
+  'Ascendant-Neptune|conjunction':'Your appearance is elusive, glamorous, or hard to pin down. Others project their fantasies onto you, and your physical presence carries a dreamlike, chameleon quality.',
+  'Ascendant-Neptune|opposition':'Partners dissolve the boundaries of your self-image. You lose yourself in others until you learn to maintain your own outline while remaining compassionate.',
+  'Ascendant-Neptune|trine':'A gentle, artistic aura surrounds you without effort. People sense your sensitivity and imaginative nature, and you move through the world with a quiet ethereal grace.',
+  'Ascendant-Neptune|square':'Your image is clouded by confusion or others\' projections. You may be chronically misread or struggle to present yourself clearly until you ground your persona in honesty.',
+  'Ascendant-Neptune|sextile':'Imaginative and spiritual qualities enhance your presence when you cultivate them. Artistic self-expression or compassionate visibility serves you well.',
+
+  // Ascendant-Uranus
+  'Ascendant-Uranus|conjunction':'Your appearance signals rebellion, eccentricity, or radical individuality. People notice you immediately, and you cannot blend in even when you try.',
+  'Ascendant-Uranus|opposition':'Others embody the freedom or disruption you do not express outwardly. Relationships jolt you into authenticity and force you to stop performing normalcy.',
+  'Ascendant-Uranus|trine':'Originality flows through your appearance and manner effortlessly. You come across as independent and inventive without needing to provoke, and people find your uniqueness refreshing.',
+  'Ascendant-Uranus|square':'Your need for individuality clashes with how the world receives you. Sudden changes in appearance or approach to life reflect inner restlessness until you integrate freedom with stability.',
+  'Ascendant-Uranus|sextile':'Unconventional self-presentation works in your favor when you embrace it. Technological or progressive leanings visibly shape the impression you make.',
+
+  // Ascendant-Pluto
+  'Ascendant-Pluto|conjunction':'Intensity radiates from your physical presence. Others sense your depth and power immediately, and you cannot enter a room without shifting its atmosphere.',
+  'Ascendant-Pluto|opposition':'Partners or adversaries activate your deepest survival instincts. Power dynamics in one-on-one encounters force you to transform how you present yourself to the world.',
+  'Ascendant-Pluto|trine':'Magnetic presence and personal power flow naturally through your bearing. You command attention without demanding it, and people sense your resilience instinctively.',
+  'Ascendant-Pluto|square':'Your intensity and your image are in conflict. You may intimidate without meaning to, or suppress your power to seem approachable, until you own your depth openly.',
+  'Ascendant-Pluto|sextile':'Transformative energy enhances your public presence when you channel it. Reinventing your appearance or approach to life at key moments serves your evolution.',
+
+  // Ascendant-Chiron
+  'Ascendant-Chiron|conjunction':'Your wound is visible in your appearance or first impression. Others see your vulnerability before you speak, and your presence itself becomes a form of healing for those who recognize their own pain in you.',
+  'Ascendant-Chiron|opposition':'Partners or close others expose the wound you carry in your self-image. Healing comes through relationships that refuse to let you hide behind your mask.',
+  'Ascendant-Chiron|trine':'Your wound has become part of your natural presentation in a way that invites trust. People sense your lived experience and feel safe approaching you.',
+  'Ascendant-Chiron|square':'How you appear and where you hurt are in friction. You may overcompensate in your presentation or withdraw from visibility until you accept that your scar is also your signature.',
+  'Ascendant-Chiron|sextile':'Healing becomes visible in your self-presentation when you allow it. Showing your journey openly rather than hiding it earns you genuine respect.',
+
+  // Ascendant-NorthNode
+  'Ascendant-NorthNode|conjunction':'Your appearance and manner are aligned with your soul\'s evolutionary direction. Showing up authentically in the world is itself the path of growth.',
+  'Ascendant-NorthNode|opposition':'Your comfort zone in self-presentation holds you back from your destined growth. Partnerships push you toward a truer way of meeting the world.',
+  'Ascendant-NorthNode|trine':'Your natural style of engaging with life supports your evolutionary path. The persona you project aligns with where your soul is heading without forcing it.',
+  'Ascendant-NorthNode|square':'Your habitual approach to life and your growth direction are at cross-purposes. Adjusting how you present yourself to the world is necessary for fulfilling your deeper potential.',
+  'Ascendant-NorthNode|sextile':'Opportunities for growth arrive through shifts in self-presentation when you are willing to step outside your familiar image.',
+
+  // ── MC (Midheaven) natal aspects ─────────────────────────────────
+  // Chiron-MC (C < M)
+  'Chiron-MC|conjunction':'Your wound is visible in your public life and career. Professional identity is shaped by early pain, and your vocation becomes a form of healing for yourself and others.',
+  'Chiron-MC|opposition':'Private wounds interfere with public ambitions. Career crises force you to confront the pain you carry, and healing transforms your professional direction.',
+  'Chiron-MC|trine':'Your experience of suffering has quietly shaped your professional competence. The public recognizes your hard-won wisdom, and your career benefits from authenticity.',
+  'Chiron-MC|square':'Where you hurt and what you do publicly are in friction. Career setbacks reopen old wounds until you stop trying to prove yourself and start working from wholeness.',
+  'Chiron-MC|sextile':'Healing becomes part of your professional identity when you allow it. Sharing your experience of overcoming difficulty publicly earns respect and opens vocational doors.',
+
+  // Jupiter-MC (J < M)
+  'Jupiter-MC|conjunction':'Your career carries a larger-than-life quality. Public reputation involves teaching, travel, philosophy, or expansion, and you are known for your broad vision.',
+  'Jupiter-MC|opposition':'Faith and career ambition pull against each other. Your public role is tested by questions of meaning, and professional growth requires philosophical grounding.',
+  'Jupiter-MC|trine':'Optimism and good fortune support your public life naturally. Opportunities in career arrive through generosity, education, or cultural breadth.',
+  'Jupiter-MC|square':'Overexpansion or overconfidence threatens your reputation. Professional life demands you temper big vision with realistic planning and follow-through.',
+  'Jupiter-MC|sextile':'Opportunities for career growth arrive through education, travel, or broadening your horizons when you actively pursue them.',
+
+  // Mars-MC (Mars < MC)
+  'Mars-MC|conjunction':'Drive and ambition define your public identity. You are known for energy, competitiveness, and initiative, and your career demands decisive action.',
+  'Mars-MC|opposition':'Your assertive nature and your public role are in tension. Career advancement requires channeling combative energy into strategic professional action.',
+  'Mars-MC|trine':'Physical energy and ambition support your career naturally. You act decisively in professional life, and your reputation benefits from your courage and initiative.',
+  'Mars-MC|square':'Aggression or impatience disrupts your public standing. Professional life demands you learn to channel drive without creating unnecessary conflict.',
+  'Mars-MC|sextile':'Assertiveness supports your career when applied strategically. Taking initiative at the right moment in professional settings advances your reputation.',
+
+  // MC-Mercury
+  'MC-Mercury|conjunction':'Communication defines your public role. You are known for your ideas, voice, or intellectual output, and your reputation is built on what you say and write.',
+  'MC-Mercury|opposition':'Your thinking and your career direction pull apart. Professional life demands you integrate private intellectual life with public communication.',
+  'MC-Mercury|trine':'Your mind and your career cooperate naturally. Ideas flow into professional achievement, and you are recognized for clarity, wit, or expertise.',
+  'MC-Mercury|square':'How you think and what your career demands are in tension. Professional communication requires conscious refinement, and intellectual restlessness can scatter your public focus.',
+  'MC-Mercury|sextile':'Communication skills support your career when you invest in them. Speaking, writing, or teaching in your professional sphere raises your public standing.',
+
+  // MC-Moon
+  'MC-Moon|conjunction':'Your emotional nature is on public display. Career and reputation are tied to nurturing, intuition, or domestic themes, and the public sees your feelings clearly.',
+  'MC-Moon|opposition':'Private emotional needs and public responsibilities pull against each other. Home and career demand equal attention, and neglecting either creates crisis.',
+  'MC-Moon|trine':'Emotional instincts support your public life naturally. Your career benefits from your ability to read people, and the public responds to your warmth.',
+  'MC-Moon|square':'Inner feelings disrupt professional composure, or career demands override emotional needs. Integrating private vulnerability with public authority is the work.',
+  'MC-Moon|sextile':'Emotional intelligence enhances your reputation when you apply it. Showing genuine care in professional settings builds lasting trust and loyalty.',
+
+  // MC-Neptune
+  'MC-Neptune|conjunction':'Your public image is glamorous, elusive, or idealized. Career involves imagination, spirituality, or service, and the world may not see you clearly.',
+  'MC-Neptune|opposition':'Professional life is clouded by confusion or unrealistic expectations. Career clarity comes only after stripping away illusions about what success means to you.',
+  'MC-Neptune|trine':'Imagination and vision enrich your career naturally. You are drawn to creative, healing, or spiritual vocations, and your public image carries an inspiring quality.',
+  'MC-Neptune|square':'Career direction dissolves under shifting ideals or deception. Professional confusion persists until you commit to a vocation grounded in genuine service rather than fantasy.',
+  'MC-Neptune|sextile':'Creative vision and spiritual sensitivity support your public role when you channel them deliberately. Artistic or charitable work enhances your reputation.',
+
+  // MC-NorthNode
+  'MC-NorthNode|conjunction':'Your career path is aligned with your soul\'s evolutionary direction. Public life and vocation serve your deepest growth, and professional achievement carries karmic weight.',
+  'MC-NorthNode|opposition':'Your comfort zone pulls you away from your destined public role. Growth requires releasing attachment to private security and stepping into professional visibility.',
+  'MC-NorthNode|trine':'Your natural career trajectory supports your evolutionary path. Professional choices align with deeper purpose without requiring dramatic sacrifice.',
+  'MC-NorthNode|square':'Your habitual professional patterns and your soul\'s growth direction are at cross-purposes. Career changes that feel uncomfortable are often exactly what your development requires.',
+  'MC-NorthNode|sextile':'Opportunities for growth arrive through career shifts when you are willing to pursue vocational directions that stretch beyond your familiar professional identity.',
+
+  // MC-Pluto
+  'MC-Pluto|conjunction':'Power and intensity define your public life. You are known for depth, transformation, or control, and your career involves encounters with hidden forces.',
+  'MC-Pluto|opposition':'Power struggles shape your professional life. Career crises force transformation of your public identity, and you must learn to wield authority without being consumed by it.',
+  'MC-Pluto|trine':'Transformative power flows through your career naturally. You rise through crisis, and your public reputation is strengthened by your capacity to regenerate.',
+  'MC-Pluto|square':'Obsessive ambition or power conflicts disrupt your public life. Career demands you confront your relationship with control and learn to transform rather than dominate.',
+  'MC-Pluto|sextile':'Strategic depth and psychological insight support your career when you apply them. Professional reinvention at critical moments strengthens your public standing.',
+
+  // MC-Saturn (conjunction exists as Saturn-MC)
+  'MC-Saturn|opposition':'Career ambition is tested by structural obstacles or authority figures. Professional mastery is earned slowly through perseverance and honest self-assessment.',
+  'MC-Saturn|trine':'Discipline and endurance support your public role naturally. Your career benefits from patience, and your reputation grows steadily over time through consistent effort.',
+  'MC-Saturn|square':'Professional life feels burdened by excessive responsibility or blocked by authority. Career breakthroughs come only after you stop resenting the weight and learn to carry it wisely.',
+  'MC-Saturn|sextile':'Structured effort supports your career when you commit to it. Professional discipline and long-term planning yield slow but lasting results.',
+
+  // MC-Sun (conjunction exists as Sun-MC)
+  'MC-Sun|opposition':'Your public role and your private identity pull in opposite directions. Career fulfillment requires reconciling what the world demands with who you actually are.',
+  'MC-Sun|trine':'Your identity and your public direction cooperate naturally. Career and life purpose feel aligned, and recognition comes without excessive striving.',
+  'MC-Sun|square':'Who you are clashes with what you are expected to become publicly. Professional life requires conscious effort to honor both ambition and authenticity.',
+  'MC-Sun|sextile':'Your sense of self supports your career path when you act on it. Small moves toward authentic self-expression in public life yield disproportionate rewards.',
+
+  // MC-Uranus
+  'MC-Uranus|conjunction':'Your public identity is marked by sudden changes, innovation, or rebellion. Career path is unconventional, and you are known for disrupting the status quo.',
+  'MC-Uranus|opposition':'Your need for professional freedom clashes with private stability. Career disruptions force you to reinvent your public role until you find a path that honors your independence.',
+  'MC-Uranus|trine':'Originality and innovation enhance your career naturally. You thrive in unconventional professional roles, and sudden opportunities advance your public standing.',
+  'MC-Uranus|square':'Restlessness or sudden upheavals destabilize your career. Professional life demands you channel your need for freedom into innovation rather than mere disruption.',
+  'MC-Uranus|sextile':'Unconventional approaches support your career when you dare to use them. Technology, reform, or progressive ideas enhance your professional reputation.',
+
+  // MC-Venus
+  'MC-Venus|conjunction':'Beauty, art, or social grace define your public identity. You are known for aesthetic sensibility or relational skill, and your career involves creating harmony.',
+  'MC-Venus|opposition':'Personal values and public expectations are at odds. Career satisfaction requires aligning what you love with what the world rewards you for.',
+  'MC-Venus|trine':'Charm and aesthetic sense naturally enhance your reputation. Your career benefits from your taste, diplomacy, and ability to make things beautiful or pleasant.',
+  'MC-Venus|square':'What you value and what advances your career pull in different directions. Professional life demands you reconcile personal desires with public duty.',
+  'MC-Venus|sextile':'Social grace and creative sensibility support your public image when you cultivate them. Small acts of beauty or diplomacy in your career yield significant goodwill.'
 };

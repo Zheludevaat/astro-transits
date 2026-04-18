@@ -4,15 +4,15 @@
 // ══════════════════════════════════════════════════════════════
 
 const EVENT_TYPES={
-  conversation:{label:'Difficult conversation',icon:'Mercury'},
-  decision:{label:'Decision',icon:'Jupiter'},
-  message:{label:'Send a message',icon:'Mercury'},
-  meeting:{label:'Meeting / pitch',icon:'Jupiter'},
-  contract:{label:'Sign / commit',icon:'Saturn'},
-  journey:{label:'Travel / launch',icon:'Mars'},
-  social:{label:'Social / date',icon:'Venus'},
-  rest:{label:'Rest / retreat',icon:'Moon'},
-  creative:{label:'Creative work',icon:'Sun'}
+  conversation:{label:'Difficult conversation',icon:'Mercury',svg:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>'},
+  decision:{label:'Decision',icon:'Jupiter',svg:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="4"/></svg>'},
+  message:{label:'Send a message',icon:'Mercury',svg:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v12H5.17L4 17.17V4z"/><line x1="8" y1="9" x2="16" y2="9"/></svg>'},
+  meeting:{label:'Meeting / pitch',icon:'Jupiter',svg:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="3"/><circle cx="17" cy="7" r="3"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>'},
+  contract:{label:'Sign / commit',icon:'Saturn',svg:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="8" y1="13" x2="16" y2="13"/></svg>'},
+  journey:{label:'Travel / launch',icon:'Mars',svg:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 22h20L12 2z"/><line x1="12" y1="10" x2="12" y2="16"/></svg>'},
+  social:{label:'Social / date',icon:'Venus',svg:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z"/></svg>'},
+  rest:{label:'Rest / retreat',icon:'Moon',svg:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>'},
+  creative:{label:'Creative work',icon:'Sun',svg:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>'}
 };
 
 const CONSULT_SYSTEM_PROMPT=`You are a traditional astrologer giving a 30-second read on a specific moment for a specific purpose. Reply in 80-150 words, plain English, no glyphs, no jargon. Lead with whether the moment is favorable / mixed / unfavorable for the stated purpose. Give one specific timing recommendation if a clearly better window exists in the user's chosen scope. Hedge precisely: where you're confident, say so; where the chart is mixed, say it's mixed. Do not repeat the user's question back. Do not append "blessings" or pleasantries.`;

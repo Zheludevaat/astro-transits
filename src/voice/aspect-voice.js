@@ -74,12 +74,12 @@ const NATAL_ASPECT_DEPTH={
   'Saturn-Pluto|conjunction':'Heavy generational weight, endurance forged through loss.',
   'Uranus-Neptune|sextile':'Generational: your age group carries an instinct for merging technology with spiritual or artistic vision. The line between the mystical and the digital blurs naturally for you, and collective breakthroughs often emerge where imagination meets invention.',
   'Uranus-Pluto|square':'Generational: revolution, systemic upheaval. 1960s/2010s.',
-  'Sun-Ascendant|conjunction':'Identity matches presentation. What you are shows.',
-  'Moon-Ascendant|conjunction':'Feeling shows on the surface. Emotionally transparent body.',
-  'Mars-Ascendant|conjunction':'Assertive presence, athletic bearing, scar on the face common.',
-  'Saturn-Ascendant|conjunction':'Serious appearance, aged early, gravitas.',
-  'Sun-MC|conjunction':'Vocation aligned with identity. Publicly visible life.',
-  'Saturn-MC|conjunction':'Career-defining authority, slow-climbing ambition.',
+  'Ascendant-Sun|conjunction':'Identity matches presentation. What you are shows.',
+  'Ascendant-Moon|conjunction':'Feeling shows on the surface. Emotionally transparent body.',
+  'Ascendant-Mars|conjunction':'Assertive presence, athletic bearing, scar on the face common.',
+  'Ascendant-Saturn|conjunction':'Serious appearance, aged early, gravitas.',
+  'MC-Sun|conjunction':'Vocation aligned with identity. Publicly visible life.',
+  'MC-Saturn|conjunction':'Career-defining authority, slow-climbing ambition.',
 
   // ── Mercury aspects ──────────────────────────────────────────────
   // Mercury-Venus (conjunction already exists)
@@ -526,11 +526,11 @@ const NATAL_ASPECT_DEPTH={
   'Jupiter-MC|sextile':'Your career advances most when you invest in broadening yourself — a new degree, an international assignment, a philosophical framework that reshapes how you think about your work. Professional growth and personal education are the same activity for you, and the investments you make in learning compound visibly in your public standing.',
 
   // Mars-MC (Mars < MC)
-  'Mars-MC|conjunction':'Drive and ambition define your public identity. You are known for energy, competitiveness, and initiative, and your career demands decisive action.',
-  'Mars-MC|opposition':'Your assertive nature and your public role are in tension. Career advancement requires channeling combative energy into strategic professional action.',
-  'Mars-MC|trine':'Physical energy and ambition support your career naturally. You act decisively in professional life, and your reputation benefits from your courage and initiative.',
-  'Mars-MC|square':'Aggression or impatience disrupts your public standing. Professional life demands you learn to channel drive without creating unnecessary conflict.',
-  'Mars-MC|sextile':'You have good instincts for when to push in your career. Your assertiveness in professional settings reads as initiative rather than aggression, and taking the lead at the right moment — volunteering for the hard project, speaking up in the meeting — advances your reputation more than quiet competence alone.',
+  'MC-Mars|conjunction':'Drive and ambition define your public identity. You are known for energy, competitiveness, and initiative, and your career demands decisive action.',
+  'MC-Mars|opposition':'Your assertive nature and your public role are in tension. Career advancement requires channeling combative energy into strategic professional action.',
+  'MC-Mars|trine':'Physical energy and ambition support your career naturally. You act decisively in professional life, and your reputation benefits from your courage and initiative.',
+  'MC-Mars|square':'Aggression or impatience disrupts your public standing. Professional life demands you learn to channel drive without creating unnecessary conflict.',
+  'MC-Mars|sextile':'You have good instincts for when to push in your career. Your assertiveness in professional settings reads as initiative rather than aggression, and taking the lead at the right moment — volunteering for the hard project, speaking up in the meeting — advances your reputation more than quiet competence alone.',
 
   // MC-Mercury
   'MC-Mercury|conjunction':'Communication defines your public role. You are known for your ideas, voice, or intellectual output, and your reputation is built on what you say and write.',

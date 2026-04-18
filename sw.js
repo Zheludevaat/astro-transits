@@ -13,7 +13,7 @@ const URLS_TO_CACHE = [
   './src/synthesis/prompts.js', './src/synthesis/claude-client.js',
   './src/synthesis/context-builder.js', './src/synthesis/deterministic.js',
   './src/synthesis/synthesizer.js', './src/synthesis/citations.js', './src/synthesis/consult.js',
-  './src/ui/glyphs.js', './src/ui/widgets/biwheel.js', './src/ui/widgets/synth-card.js',
+  './src/ui/glyphs.js', './src/ui/widgets/biwheel.js', './src/ui/widgets/synth-card.js', './src/ui/widgets/chat.js',
   './src/data/chart-storage.js', './src/ui/app.js'
 ];
 

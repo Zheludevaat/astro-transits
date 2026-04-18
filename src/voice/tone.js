@@ -21,7 +21,7 @@ const TONE_PLANET_MID={
   Sun:'Your identity and will are in a mixed field today. Assert yourself where it matters, but pick your moments rather than pushing on everything.',
   Moon:'Emotions are active but uneven. Some connections will flow, others will need patience. Check in with yourself before reacting.',
   Mercury:'Communication is possible but requires care. Double-check details, clarify assumptions, and avoid sending anything in frustration.',
-  Venus:'Relationships and pleasures have both friction and reward. Don\'t force social situations — lean into what\'s easy and defer what isn\'t.',
+  Venus:'Relationships and pleasures have friction and reward in unequal measure today. Don\'t force social situations — go where the warmth already is and postpone what feels stiff.',
   Mars:'Energy is present but volatile. Channel the drive into physical or productive outlets. Avoid confrontations that don\'t serve you.',
   Jupiter:'Some doors open, others stick. Growth is possible but not guaranteed. Don\'t overcommit — selective optimism beats blind expansion.',
   Saturn:'Pressure is real but manageable. Focus on obligations and structure — the day rewards discipline but punishes overreach.',

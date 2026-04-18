@@ -1,5 +1,5 @@
 // Service Worker for Alexander's Transits PWA
-const CACHE_NAME = 'transits-v64';
+const CACHE_NAME = 'transits-v65';
 const URLS_TO_CACHE = [
   './', './index.html', './manifest.json', './icon.svg', './icon-192.png', './icon-512.png', './apple-touch-icon.png',
   './src/engine/ephemeris.js', './src/engine/motion.js', './src/engine/voc.js', './src/engine/aspects.js',
@@ -7,14 +7,14 @@ const URLS_TO_CACHE = [
   './src/hellenistic/lots.js', './src/hellenistic/zr.js', './src/hellenistic/firdaria.js',
   './src/hellenistic/decans.js', './src/hellenistic/mansions.js', './src/hellenistic/fixedstars.js',
   './src/hellenistic/returns.js', './src/hellenistic/liturgy.js', './src/hellenistic/electional.js',
-  './src/voice/house-voice.js', './src/voice/natal-voice.js', './src/voice/aspect-voice.js?v=63',
-  './src/voice/hard-brings.js', './src/voice/ingress-notes.js?v=63', './src/voice/tone.js?v=63',
-  './src/voice/synastry-voice.js?v=63', './src/voice/astrocarto-voice.js', './src/voice/references.js',
+  './src/voice/house-voice.js', './src/voice/natal-voice.js', './src/voice/aspect-voice.js?v=65',
+  './src/voice/hard-brings.js', './src/voice/ingress-notes.js?v=65', './src/voice/tone.js?v=65',
+  './src/voice/synastry-voice.js?v=65', './src/voice/astrocarto-voice.js', './src/voice/references.js',
   './src/synthesis/prompts.js', './src/synthesis/claude-client.js',
   './src/synthesis/context-builder.js', './src/synthesis/deterministic.js',
   './src/synthesis/synthesizer.js', './src/synthesis/citations.js', './src/synthesis/consult.js',
   './src/ui/glyphs.js', './src/ui/widgets/biwheel.js', './src/ui/widgets/synth-card.js', './src/ui/widgets/chat.js',
-  './src/data/chart-storage.js', './src/ui/app.js'
+  './src/data/chart-storage.js', './src/ui/app.js?v=65'
 ];
 
 self.addEventListener('install', event => {
@@ -47,4 +47,25 @@ self.addEventListener('fetch', event => {
       return cached || fetch(event.request);
     })
   );
+});
+
+// Notification support (so PWA can show notifications in background)
+self.addEventListener('message', async (e) => {
+  const d = e.data || {};
+  if (d.type === 'notify') {
+    try {
+      await self.registration.showNotification(d.title || '', {
+        body: d.body || '', tag: d.tag || '', icon: d.icon, badge: d.badge, silent: !!d.silent
+      });
+    } catch (err) {}
+  }
+});
+
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  e.waitUntil((async () => {
+    const all = await self.clients.matchAll({ type: 'window' });
+    for (const c of all) { if ('focus' in c) return c.focus(); }
+    if (self.clients.openWindow) return self.clients.openWindow('/');
+  })());
 });

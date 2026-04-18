@@ -585,6 +585,314 @@ const SYNASTRY_VOICE = {
     detail: 'The sextile provides a manageable channel for Plutonian intensity in the love relationship. Venus feels that Pluto adds richness and meaning to their romantic life, and Pluto feels that Venus is worth opening up for. Shared intimacy deepens gradually through honest conversation and genuine vulnerability. This aspect lacks the dramatic compulsion of harder Venus-Pluto contacts but provides lasting depth that makes the relationship feel substantial and irreplaceable.'
   },
 
+  // Sun-Uranus
+  'Sun-Uranus|conjunction': {
+    feel: 'Electric recognition; this person jolts your sense of self awake in ways you never expected.',
+    detail: 'Uranus lands directly on the Sun person\'s identity, creating a relationship that feels exciting, destabilizing, and utterly unlike anything else. The Sun person is shaken out of routine self-expression, while Uranus feels genuinely seen for their eccentricity. The bond thrives on freedom and novelty. It struggles when either person tries to pin the other down or when the Sun person needs consistency that Uranus simply cannot provide.'
+  },
+  'Sun-Uranus|opposition': {
+    feel: 'Fascination with someone who lives by completely different rules than you do.',
+    detail: 'The Sun person finds Uranus thrilling and unnerving in equal measure. Uranus sees the Sun person as either a stabilizing anchor or a constraint on their freedom, depending on the day. The opposition creates a push-pull between togetherness and independence that never fully resolves. It works when both people grant genuine autonomy without interpreting space as rejection. It fails when either demands the other become more predictable or more spontaneous than they naturally are.'
+  },
+  'Sun-Uranus|trine': {
+    feel: 'Natural ease with each other\'s individuality; you encourage freedom rather than fearing it.',
+    detail: 'Uranus supports the Sun person\'s self-expression with stimulating ideas and genuine respect for independence. The Sun person gives Uranus a warm center that doesn\'t threaten their autonomy. Together you create space where both people can be fully themselves without apology. The trine makes unconventionality feel natural rather than threatening, and the relationship stays fresh because neither person tries to domesticate the other.'
+  },
+  'Sun-Uranus|square': {
+    feel: 'Disruptive tension between who you are and what the other person needs you to become.',
+    detail: 'Uranus destabilizes the Sun person\'s sense of self through unpredictable behavior, sudden changes of plan, or refusal to conform to expectations. The Sun person feels jerked around; Uranus feels suffocated by the Sun person\'s need for consistency. Breakups and reconciliations are common. This square demands that both people develop tolerance for genuine difference without sacrificing their core needs. Compromise here means expanding your definition of normal, not abandoning your identity.'
+  },
+  'Sun-Uranus|sextile': {
+    feel: 'Stimulating individuality; you keep each other interesting without the shock of harder aspects.',
+    detail: 'The sextile provides a gentle current of excitement and mutual respect for independence. The Sun person finds Uranus refreshing and intellectually stimulating; Uranus appreciates the Sun person\'s willingness to try new things. The relationship benefits from shared unconventional interests, experiments, and a willingness to let each other grow in unexpected directions. It keeps the bond lively without making it volatile.'
+  },
+
+  // Sun-Chiron
+  'Sun-Chiron|conjunction': {
+    feel: 'This person touches your deepest wound simply by being who they are.',
+    detail: 'Chiron sits on the Sun person\'s identity, which means the relationship inevitably activates the Sun person\'s core insecurity about who they are and whether they are enough. The Chiron person may unconsciously embody the Sun person\'s wound, or may serve as a healer who helps the Sun person accept their most vulnerable self. The bond is tender and painful in equal measure. It works when both people approach the wounding with compassion rather than blame.'
+  },
+  'Sun-Chiron|opposition': {
+    feel: 'You mirror each other\'s deepest pain around identity and belonging.',
+    detail: 'The Sun person and Chiron person stand on opposite sides of a wound that both carry in different forms. The Sun person feels exposed and judged; the Chiron person feels that their own pain is ignored while they attend to the Sun person\'s. The opposition creates a dynamic where healing is possible but only if both people take turns being vulnerable and being the one who holds space. One-sided emotional labor kills this aspect.'
+  },
+  'Sun-Chiron|trine': {
+    feel: 'A natural capacity to heal each other\'s self-doubt through acceptance and gentle encouragement.',
+    detail: 'Chiron supports the Sun person\'s identity with compassionate understanding of their vulnerabilities. The Sun person helps Chiron feel that their wound has purpose and that their sensitivity is a gift. Healing happens organically through the relationship without forcing confrontation. This trine creates a bond where both people feel safer being imperfect together than performing perfection apart.'
+  },
+  'Sun-Chiron|square': {
+    feel: 'The relationship keeps pressing on a bruise you thought had healed.',
+    detail: 'Chiron aggravates the Sun person\'s core wound through friction that feels personal even when it isn\'t intentional. The Sun person may feel diminished or inadequate around the Chiron person; Chiron may feel that the Sun person dismisses their sensitivity. The square forces both people to confront self-worth issues they would rather avoid. Growth requires acknowledging the pain without making the other person responsible for fixing it.'
+  },
+  'Sun-Chiron|sextile': {
+    feel: 'Quiet mutual understanding of each other\'s vulnerabilities and a gentle willingness to help.',
+    detail: 'The sextile creates an opportunity for healing through the relationship without the intensity of harder Chiron aspects. The Sun person feels that the Chiron person understands their struggles without judgment, and Chiron feels that the Sun person values their depth and sensitivity. Shared conversations about past wounds and personal growth activate this aspect. The healing is subtle but cumulative.'
+  },
+
+  // Moon-Uranus
+  'Moon-Uranus|conjunction': {
+    feel: 'Emotionally electrifying; your inner world gets rewired by this person\'s presence.',
+    detail: 'Uranus lands on the Moon person\'s emotional core, creating excitement and instability in equal measure. The Moon person feels emotionally awakened but also unsettled, never quite sure what to expect. Uranus feels that the Moon person provides emotional depth they didn\'t know they needed. The bond is never boring but it can be exhausting. It works when the Moon person develops enough internal security to enjoy the ride, and when Uranus learns that emotional consistency is not the same as emotional captivity.'
+  },
+  'Moon-Uranus|opposition': {
+    feel: 'Emotional needs and the need for freedom pull in opposite directions, creating chronic tension.',
+    detail: 'The Moon person craves emotional closeness and security; Uranus craves space and autonomy. Each person\'s deepest need directly threatens the other\'s. The Moon person feels abandoned by Uranus\'s emotional detachment, while Uranus feels suffocated by the Moon person\'s need for reassurance. This opposition requires both people to stretch beyond their comfort zones. Uranus must learn that showing up emotionally is not surrender, and the Moon must accept that space is not abandonment.'
+  },
+  'Moon-Uranus|trine': {
+    feel: 'Emotional freedom and excitement flow naturally; you feel liberated rather than destabilized.',
+    detail: 'Uranus refreshes the Moon person\'s emotional life without threatening their security. The Moon person feels excited and emotionally alive around Uranus, and Uranus feels that the Moon person accepts their unconventionality without trying to change it. The trine supports a relationship where emotional honesty includes the freedom to be unpredictable. Both people grow emotionally because the bond encourages authenticity over conformity.'
+  },
+  'Moon-Uranus|square': {
+    feel: 'Emotional disruption that feels thrilling and destabilizing in turns you cannot predict.',
+    detail: 'Uranus jolts the Moon person\'s emotional world at unpredictable intervals, creating a pattern of excitement followed by anxiety. The Moon person never quite feels settled; Uranus feels that the Moon person\'s emotional reactions are attempts to control them. Sudden separations or emotional withdrawals are common. The square demands that both people build tolerance for emotional unpredictability without normalizing chaos. Stability and excitement must coexist, not alternate.'
+  },
+  'Moon-Uranus|sextile': {
+    feel: 'A lively emotional connection that keeps things fresh without the instability of harder aspects.',
+    detail: 'The sextile provides enough Uranian stimulation to prevent emotional stagnation without creating chronic disruption. The Moon person finds Uranus emotionally refreshing, and Uranus appreciates the Moon person\'s emotional responsiveness. Trying new things together, breaking routines, and sharing unconventional interests strengthen the bond. The emotional tone stays curious and open.'
+  },
+
+  // Moon-Chiron
+  'Moon-Chiron|conjunction': {
+    feel: 'Emotional vulnerability is immediate and unavoidable; this person reaches your oldest wounds.',
+    detail: 'Chiron sits directly on the Moon person\'s emotional core, activating their deepest hurts around nurturing, safety, and belonging. The Moon person may feel profoundly understood or profoundly reinjured, often both simultaneously. The Chiron person carries their own wound around emotional care and may struggle to provide what the Moon person needs. Healing is possible when both people honor the pain without trying to fix it, and when neither person uses vulnerability as a weapon.'
+  },
+  'Moon-Chiron|opposition': {
+    feel: 'Each person\'s emotional wounds trigger the other\'s, creating a painful but potentially healing mirror.',
+    detail: 'The Moon person\'s emotional needs activate the Chiron person\'s wound, and Chiron\'s pain activates the Moon person\'s deepest insecurities about being enough. The opposition creates a dynamic where both people alternate between healer and wounded. It works when both people can hold space for pain without drowning in it. It fails when one person becomes the permanent patient and the other the permanent caretaker.'
+  },
+  'Moon-Chiron|trine': {
+    feel: 'Emotional healing happens naturally through the tenderness you share.',
+    detail: 'Chiron supports the Moon person\'s emotional life with intuitive understanding of their vulnerabilities. The Moon person provides Chiron with the emotional safety needed to process old wounds. Healing happens through quiet acts of care rather than dramatic confrontation. This trine creates a relationship where both people feel emotionally safer over time, not because pain disappears but because it is witnessed and held with compassion.'
+  },
+  'Moon-Chiron|square': {
+    feel: 'Emotional sore spots get pressed repeatedly; tenderness and pain coexist uncomfortably.',
+    detail: 'Chiron inadvertently triggers the Moon person\'s deepest emotional wounds through patterns that neither person fully understands at first. The Moon person feels emotionally raw and may withdraw; the Chiron person feels guilty or frustrated by their inability to help. The square forces both people to examine childhood emotional patterns and family wounds that play out in the relationship. Growth requires patience and a willingness to sit with discomfort without assigning blame.'
+  },
+  'Moon-Chiron|sextile': {
+    feel: 'A gentle emotional understanding that makes space for vulnerability without forcing it.',
+    detail: 'The sextile provides an opening for emotional healing through the relationship in manageable doses. The Moon person feels that the Chiron person understands their emotional sensitivities, and Chiron feels that the Moon person creates a safe environment for their own healing process. Shared conversations about emotional history and family patterns strengthen the bond. The healing is quiet but real.'
+  },
+
+  // Moon-Mercury
+  'Moon-Mercury|conjunction': {
+    feel: 'Thoughts and feelings merge; you understand each other\'s inner world through conversation.',
+    detail: 'Mercury lands on the Moon person\'s emotional core, creating a connection where talking about feelings comes naturally. The Moon person feels heard and understood by Mercury\'s attentiveness, while Mercury feels emotionally engaged by the Moon person\'s depth. Communication is the primary love language here. The bond thrives when both people prioritize honest dialogue and struggles when either goes silent or dismissive.'
+  },
+  'Moon-Mercury|opposition': {
+    feel: 'The way you think and the way your partner feels seem to operate on different frequencies.',
+    detail: 'Mercury\'s rational approach to communication can feel dismissive to the Moon person\'s emotional reality, while the Moon person\'s feelings can seem illogical to Mercury. The opposition creates misunderstandings where one person thinks they are being clear while the other feels unheard. Resolution comes when Mercury learns to validate feelings before analyzing them, and the Moon person learns to articulate emotions in terms Mercury can engage with.'
+  },
+  'Moon-Mercury|trine': {
+    feel: 'Easy emotional communication; you naturally find the right words for what the other feels.',
+    detail: 'Mercury and the Moon operate in natural harmony, making conversation about feelings effortless and productive. The Moon person feels that Mercury gives language to emotions they struggle to articulate, and Mercury feels emotionally enriched by the Moon person\'s depth. This trine supports a relationship where emotional processing happens through talking, and where both people feel genuinely understood in their inner worlds.'
+  },
+  'Moon-Mercury|square': {
+    feel: 'Emotional communication misfires; what you say and what your partner hears diverge painfully.',
+    detail: 'Mercury\'s communication style rubs against the Moon person\'s emotional triggers, creating a pattern where conversations about feelings escalate rather than resolve. The Moon person feels that Mercury is cold, dismissive, or overly analytical; Mercury feels that the Moon person is irrational or refuses to engage logically. The square demands that both people develop new communication skills. Mercury must learn to lead with empathy, and the Moon must learn to name feelings specifically rather than expecting them to be intuited.'
+  },
+  'Moon-Mercury|sextile': {
+    feel: 'Comfortable emotional dialogue; you talk through feelings with gentle ease.',
+    detail: 'The sextile provides a reliable channel for emotional communication without the intensity of harder aspects. Mercury helps the Moon person articulate what they feel, and the Moon gives Mercury\'s words emotional weight and sincerity. Daily conversation, check-ins, and shared journaling or reflection strengthen this bond. It supports a relationship where emotional intelligence grows through practice and mutual patience.'
+  },
+
+  // Mercury-Venus
+  'Mercury-Venus|conjunction': {
+    feel: 'Conversation itself becomes a form of affection; you charm each other with words.',
+    detail: 'Mercury and Venus merge intellectual and aesthetic sensibilities, creating a connection where talking is a pleasure in itself. The Mercury person finds Venus\'s values and tastes genuinely interesting, and Venus feels intellectually appreciated by Mercury\'s curiosity. Flirtation comes naturally, and you share an easy rapport around art, culture, and ideas about beauty. The bond is light and enjoyable, though it needs deeper aspects to sustain through difficulty.'
+  },
+  'Mercury-Venus|opposition': {
+    feel: 'Intellectual attraction tinged with disagreement about values and taste.',
+    detail: 'Mercury and Venus approach beauty, pleasure, and values from opposite perspectives, creating stimulating debate or frustrating incompatibility depending on the couple. The Mercury person finds Venus\'s preferences fascinating but sometimes baffling; Venus feels that Mercury overanalyzes what should simply be enjoyed. The opposition works when both people treat differences in taste as opportunities for expansion rather than threats to compatibility.'
+  },
+  'Mercury-Venus|trine': {
+    feel: 'Graceful conversation and natural aesthetic harmony; you enjoy the same things and talk about them well.',
+    detail: 'Mercury and Venus flow together effortlessly, making shared cultural experiences, creative collaboration, and everyday conversation genuinely pleasurable. The Mercury person articulates what Venus feels about beauty and love, and Venus softens Mercury\'s communication with warmth and charm. This trine supports a relationship rich in shared pleasures, good conversation, and mutual appreciation of each other\'s minds and tastes.'
+  },
+  'Mercury-Venus|square': {
+    feel: 'What you find beautiful and how your partner thinks about it don\'t quite align.',
+    detail: 'Mercury\'s communication style clashes with Venus\'s values or aesthetic sensibilities, creating friction around topics like spending, taste, and how affection should be expressed verbally. The Mercury person may feel that Venus is superficial or indulgent; Venus may feel that Mercury is critical or unromantic. The square requires both people to appreciate that intelligence and beauty speak different languages and that neither is more valid than the other.'
+  },
+  'Mercury-Venus|sextile': {
+    feel: 'Pleasant intellectual rapport and shared appreciation for culture, art, and good conversation.',
+    detail: 'The sextile creates an easy bridge between mind and heart. Mercury finds Venus\'s perspective on beauty and values enriching, and Venus enjoys Mercury\'s way of articulating ideas with wit and precision. Shared outings to galleries, bookstores, and restaurants activate this aspect. It provides a steady source of enjoyment and mutual admiration that keeps the relationship culturally and conversationally alive.'
+  },
+
+  // Mercury-Mars
+  'Mercury-Mars|conjunction': {
+    feel: 'Words carry force; conversation between you is passionate, direct, and sometimes combative.',
+    detail: 'Mercury and Mars merge thought and action, creating a dynamic where ideas are expressed with unusual intensity. The Mercury person feels energized and challenged by Mars\'s directness, while Mars feels that Mercury gives their impulses intelligent direction. Debate is a form of bonding. The risk is that arguments become personal and words are used as weapons. This conjunction works when both people enjoy intellectual combat and know when to stop before real damage is done.'
+  },
+  'Mercury-Mars|opposition': {
+    feel: 'Mental sparring that either sharpens you both or leaves one of you feeling attacked.',
+    detail: 'Mercury and Mars face off across an axis of thought versus action, creating arguments where one person wants to talk it through and the other wants to do something about it. The Mercury person feels that Mars is aggressive or impatient with nuance; Mars feels that Mercury talks when action is needed. The opposition is productive when both people respect the other\'s approach. It becomes destructive when debate turns into verbal warfare with a winner and a loser.'
+  },
+  'Mercury-Mars|trine': {
+    feel: 'Stimulating intellectual rapport; you sharpen each other\'s thinking and enjoy spirited discussion.',
+    detail: 'Mercury\'s ideas flow naturally into Mars\'s drive, creating a partnership where thoughts lead to action and action informs new thinking. Conversation is lively without being combative. The Mercury person feels that Mars gives their ideas momentum, and Mars feels that Mercury provides strategic clarity. This trine is excellent for couples who work together, plan together, or share competitive intellectual interests.'
+  },
+  'Mercury-Mars|square': {
+    feel: 'Constant mental friction; arguments start easily and escalate before either of you means them to.',
+    detail: 'Mercury\'s communication style triggers Mars\'s combativeness, and Mars\'s directness triggers Mercury\'s defensiveness. Discussions about even minor topics can become heated quickly. The Mercury person feels bulldozed; Mars feels nitpicked. The square requires both people to develop rules of engagement for disagreements. Learning to argue without attacking character or raising voices transforms this aspect from a liability into a source of genuine intellectual growth.'
+  },
+  'Mercury-Mars|sextile': {
+    feel: 'Lively conversation and mutual mental stimulation without the edge of harder aspects.',
+    detail: 'The sextile provides a constructive link between thought and action. Mercury enjoys Mars\'s directness and energy, and Mars appreciates Mercury\'s ability to articulate ideas clearly. Friendly competition, shared puzzles, and active discussions keep the bond engaging. It supports a relationship where both people feel intellectually respected and mentally alive around each other.'
+  },
+
+  // Mercury-Jupiter
+  'Mercury-Jupiter|conjunction': {
+    feel: 'Conversations expand into big ideas; you think larger together than either of you does alone.',
+    detail: 'Jupiter amplifies Mercury\'s mind, creating a partnership where intellectual exploration feels limitless. The Mercury person feels that Jupiter gives their ideas scope and meaning, while Jupiter feels that Mercury gives their vision articulate form. Shared learning, travel, and philosophical discussion are natural expressions. The risk is all talk and no follow-through, or inflating ideas past the point of practical application. Grounding the vision in action keeps this conjunction productive.'
+  },
+  'Mercury-Jupiter|opposition': {
+    feel: 'Different intellectual scales; one thinks in details while the other thinks in grand themes.',
+    detail: 'Mercury focuses on specifics and Jupiter focuses on meaning, creating a tension between precision and vision. The Mercury person feels that Jupiter is vague or overreaching; Jupiter feels that Mercury misses the forest for the trees. The opposition works beautifully when both people respect what the other brings. Mercury provides the facts; Jupiter provides the framework. Without that mutual respect, every conversation becomes a debate about scope.'
+  },
+  'Mercury-Jupiter|trine': {
+    feel: 'Natural intellectual harmony; big ideas and clear thinking reinforce each other effortlessly.',
+    detail: 'Mercury and Jupiter flow together to create a partnership rich in shared learning, philosophical alignment, and expansive conversation. The Mercury person feels that Jupiter makes their mind bolder, and Jupiter feels that Mercury makes their vision more precise. Teaching each other, traveling together, and exploring new subjects are the best expressions of this trine. It sustains long-term intellectual companionship that keeps both people growing.'
+  },
+  'Mercury-Jupiter|square': {
+    feel: 'Intellectual restlessness; you push each other\'s thinking but often past the point of usefulness.',
+    detail: 'Jupiter inflates Mercury\'s ideas into impractical territory, and Mercury deflates Jupiter\'s vision with excessive criticism or detail. Disagreements about beliefs, education, or the right way to think about problems are recurring themes. The square generates intellectual energy that must be channeled into projects, study, or shared goals to avoid becoming mere friction. Both people benefit from learning when to think big and when to think precisely.'
+  },
+  'Mercury-Jupiter|sextile': {
+    feel: 'Friendly intellectual encouragement and shared curiosity about the world.',
+    detail: 'The sextile creates a gentle bridge between Mercury\'s analytical mind and Jupiter\'s expansive vision. Conversation is enjoyable and educational without becoming overwhelming. The Mercury person feels that Jupiter broadens their perspective, and Jupiter appreciates Mercury\'s ability to engage with ideas concretely. Shared reading, courses, and travel bring out the best in this aspect.'
+  },
+
+  // Mercury-Saturn
+  'Mercury-Saturn|conjunction': {
+    feel: 'Communication takes on weight and seriousness; every word feels consequential.',
+    detail: 'Saturn sits on Mercury\'s mind, adding discipline, depth, and sometimes heaviness to how the couple communicates. The Mercury person may feel that their ideas are constantly being tested or corrected by Saturn, while Saturn feels that Mercury needs more rigor. At its best this conjunction produces extraordinarily thoughtful communication and shared intellectual projects of real substance. At its worst, Mercury feels silenced and Saturn feels intellectually superior.'
+  },
+  'Mercury-Saturn|opposition': {
+    feel: 'One person speaks freely while the other edits; the dynamic feels like teacher and student.',
+    detail: 'Mercury and Saturn face off across a communication axis where one person\'s openness meets the other\'s restraint. The Mercury person feels judged or intellectually inadequate; Saturn feels that Mercury is careless with words or ideas. The opposition recreates authority dynamics around knowledge and expression. It works when Saturn shares its wisdom without condescension and Mercury respects Saturn\'s depth without feeling diminished by it.'
+  },
+  'Mercury-Saturn|trine': {
+    feel: 'Mature, productive communication and shared respect for careful thinking.',
+    detail: 'Saturn supports Mercury\'s mind with structure and seriousness that enhances rather than suppresses. The Mercury person feels that Saturn helps them think more clearly and express ideas with greater precision. Saturn feels that Mercury provides intellectual companionship worthy of genuine investment. This trine is excellent for partnerships that involve shared work, planning, or any endeavor requiring sustained mental effort.'
+  },
+  'Mercury-Saturn|square': {
+    feel: 'Communication feels restricted; one person\'s ideas are perpetually met with skepticism or criticism.',
+    detail: 'Saturn blocks or criticizes Mercury\'s expression, creating a pattern where the Mercury person feels intellectually stifled or afraid to speak freely. Saturn feels that Mercury is undisciplined or superficial. Conversations become guarded, and important things go unsaid to avoid criticism. The square demands that Saturn examine whether its corrections are genuine wisdom or control, and that Mercury develop enough confidence to speak even when judged.'
+  },
+  'Mercury-Saturn|sextile': {
+    feel: 'Steady intellectual partnership; you help each other think more carefully and communicate more clearly.',
+    detail: 'The sextile provides a constructive channel between Mercury\'s curiosity and Saturn\'s discipline. Communication improves over time as both people learn from each other\'s style. Mercury gains depth and precision from Saturn, while Saturn gains flexibility and openness from Mercury. Shared projects, planning, and long-term goal-setting bring out the best in this aspect.'
+  },
+
+  // Mercury-Pluto
+  'Mercury-Pluto|conjunction': {
+    feel: 'Conversations go deep immediately; surface talk is impossible between you.',
+    detail: 'Pluto transforms Mercury\'s mind, creating a connection where both people are drawn to uncover hidden truths, psychological patterns, and unspoken realities. The Mercury person feels that Pluto sees through their words to their real meaning, while Pluto feels that Mercury can articulate what they keep buried. The bond thrives on honesty and shared investigation. It becomes toxic when Pluto uses psychological insight as leverage or when Mercury feels mentally dominated.'
+  },
+  'Mercury-Pluto|opposition': {
+    feel: 'An intellectual power struggle where both people probe for the truth the other is hiding.',
+    detail: 'Mercury and Pluto face each other across an axis of disclosure and concealment. The Mercury person feels interrogated by Pluto\'s intensity; Pluto feels that Mercury deflects with logic or humor to avoid going deep. Conversations about trust, secrets, and the real motivations behind behavior dominate. The opposition works when both people use their investigative gifts to understand rather than control each other. It fails when knowledge becomes a weapon.'
+  },
+  'Mercury-Pluto|trine': {
+    feel: 'Natural depth in conversation; you trust each other with your most private thoughts.',
+    detail: 'Pluto supports Mercury\'s mind with penetrating insight that enhances rather than threatens. The Mercury person feels that Pluto helps them understand things they couldn\'t access alone, and Pluto feels that Mercury provides safe, articulate space for their intensity. Shared research, psychological exploration, and conversations about taboo or hidden subjects strengthen the bond. This trine creates intellectual intimacy of unusual depth and staying power.'
+  },
+  'Mercury-Pluto|square': {
+    feel: 'Mental intensity that borders on obsession; conversations become interrogations without warning.',
+    detail: 'Pluto pressures Mercury\'s mind at points of vulnerability, creating conversations that feel invasive or psychologically threatening. The Mercury person may feel that Pluto twists their words or reads malicious intent where none exists. Pluto feels that Mercury is evasive or dishonest. The square forces both people to examine their own tendencies toward mental manipulation. When both develop genuine transparency, the depth of understanding becomes the relationship\'s greatest asset.'
+  },
+  'Mercury-Pluto|sextile': {
+    feel: 'A quiet depth to conversation that reveals more over time.',
+    detail: 'The sextile provides manageable access to Pluto\'s investigative depth through Mercury\'s communication. Both people gradually share more of their inner world as trust builds. The Mercury person feels that Pluto adds psychological richness to their thinking, and Pluto feels that Mercury creates a safe outlet for intense thoughts. Shared interest in psychology, mystery, or research activates this aspect without overwhelming the partnership.'
+  },
+
+  // Venus-Jupiter
+  'Venus-Jupiter|conjunction': {
+    feel: 'Love feels abundant and generous; together you create an atmosphere of joy and indulgence.',
+    detail: 'Jupiter amplifies Venus\'s capacity for pleasure, affection, and aesthetic enjoyment, creating a relationship that feels like a celebration. The Venus person feels adored and spoiled; Jupiter feels that Venus makes life worth enjoying. Generosity flows naturally in both directions. The risk is excess in all its forms: overspending, overcommitting, or avoiding difficult conversations because things feel too good to disrupt. Reality eventually intrudes, and the couple that can handle it thrives.'
+  },
+  'Venus-Jupiter|opposition': {
+    feel: 'Grand romantic gestures and inflated expectations; the love is real but the promises may exceed capacity.',
+    detail: 'Venus and Jupiter face each other across an axis of desire and expansion, creating a dynamic where both people promise more than they can deliver. The Venus person feels alternately cherished and disappointed; Jupiter feels that Venus never appreciates the big picture. Disagreements about money, lifestyle, and how much is enough are common. The opposition works when both people calibrate generosity to reality. It fails when love becomes a competition of who gives more.'
+  },
+  'Venus-Jupiter|trine': {
+    feel: 'Effortless enjoyment together; shared pleasures and values align beautifully.',
+    detail: 'Venus and Jupiter in trine create one of the most pleasant aspects to live with. Shared taste, generosity, and optimism flow naturally. The Venus person feels that Jupiter expands their capacity for joy, and Jupiter feels that Venus adds beauty and grace to their vision. Social life, travel, and cultural experiences together are especially rewarding. The ease of this trine is genuine, though it benefits from being directed toward something meaningful rather than purely comfortable.'
+  },
+  'Venus-Jupiter|square': {
+    feel: 'Too much of a good thing; love and generosity inflate past what the relationship can sustain.',
+    detail: 'Jupiter overinflates Venus\'s desires, creating expectations that no real relationship can consistently meet. The Venus person wants more romance, more beauty, more pleasure than Jupiter can provide, while Jupiter promises more than it can deliver. Financial excess and lifestyle disagreements are common. The square requires both people to find genuine contentment within realistic bounds. Unchecked, it produces a cycle of indulgence and disappointment.'
+  },
+  'Venus-Jupiter|sextile': {
+    feel: 'Warm generosity and shared enjoyment that builds steadily over time.',
+    detail: 'The sextile provides a reliable source of mutual pleasure and appreciation without the excess of harder aspects. Venus feels that Jupiter adds optimism and breadth to their life, and Jupiter feels that Venus adds warmth and beauty. Shared meals, cultural outings, and small acts of generosity are where this aspect shines. It sustains a relationship that feels genuinely good to be in on a daily basis.'
+  },
+
+  // Venus-Uranus
+  'Venus-Uranus|conjunction': {
+    feel: 'Instant, electric attraction that defies your usual type and breaks your usual patterns.',
+    detail: 'Uranus electrifies Venus\'s experience of love and attraction, creating a bond that feels thrilling, unconventional, and unpredictable. The Venus person is drawn to something in Uranus that they cannot fully explain or control. Uranus feels that Venus appreciates their uniqueness without trying to normalize it. The relationship often starts suddenly and intensely. The challenge is sustaining the connection when the initial electricity settles into daily life. Freedom within commitment is the key.'
+  },
+  'Venus-Uranus|opposition': {
+    feel: 'Attraction and instability alternate; you want closeness but the connection keeps shifting.',
+    detail: 'Venus craves consistency in love while Uranus insists on freedom, creating a push-pull dynamic where closeness triggers withdrawal and distance triggers pursuit. The Venus person feels that Uranus is emotionally unreliable; Uranus feels that Venus is possessive or conventional. The opposition demands that both people redefine what commitment means. It can work beautifully in relationships with unconventional structures, but it fails when either person pretends to want something they don\'t.'
+  },
+  'Venus-Uranus|trine': {
+    feel: 'Love feels free and exciting without the instability; you appreciate each other\'s uniqueness naturally.',
+    detail: 'Uranus supports Venus\'s capacity for love with stimulation and genuine respect for individuality. The Venus person feels that Uranus keeps the relationship fresh and prevents romantic stagnation. Uranus feels that Venus appreciates their eccentricity as attractive rather than threatening. This trine favors relationships with an unconventional element that both people genuinely enjoy, whether that involves unusual living arrangements, creative collaboration, or simply refusing to be boring.'
+  },
+  'Venus-Uranus|square': {
+    feel: 'Disruptive attraction; the relationship oscillates between exciting and destabilizing.',
+    detail: 'Uranus destabilizes Venus\'s sense of romantic security through unpredictable behavior, sudden changes in availability, or attraction to other people. The Venus person feels that they can never fully relax into the love; Uranus feels that Venus\'s need for stability is suffocating. Breakups and reconciliations are common. The square demands radical honesty about what both people actually need from love and whether those needs are compatible. Pretending otherwise extends the pain.'
+  },
+  'Venus-Uranus|sextile': {
+    feel: 'A pleasant spark of unconventionality that keeps the romance interesting.',
+    detail: 'The sextile provides enough Uranian stimulation to prevent romantic routine without creating instability. Venus finds Uranus refreshingly different, and Uranus appreciates that Venus is open to new experiences in love and aesthetics. Trying new things together, maintaining individual interests, and allowing the relationship to evolve keep this aspect alive. It supports a love that grows more interesting rather than more predictable over time.'
+  },
+
+  // Mars-Uranus
+  'Mars-Uranus|conjunction': {
+    feel: 'Explosive, unpredictable energy; together you are a force of sudden, decisive action.',
+    detail: 'Uranus electrifies Mars\'s drive, creating a partnership defined by impulsive action, excitement, and volatility. The Mars person feels supercharged and unpredictable around Uranus; Uranus feels that Mars gives their revolutionary impulses physical force. Together you take risks neither would take alone. The danger is recklessness, sudden anger, and accidents caused by acting before thinking. This conjunction needs a constructive outlet or the energy turns destructive through sheer excess.'
+  },
+  'Mars-Uranus|opposition': {
+    feel: 'One person acts while the other disrupts; the timing between you is chronically off.',
+    detail: 'Mars and Uranus face each other across an axis of action and rebellion, creating a dynamic where one person\'s initiative is undermined by the other\'s unpredictability. The Mars person feels that Uranus sabotages their plans; Uranus feels that Mars is too forceful or conventional. The opposition generates enormous restless energy that can power remarkable shared achievements when directed or produce spectacular conflicts when undirected. Clear agreements about shared goals channel this aspect productively.'
+  },
+  'Mars-Uranus|trine': {
+    feel: 'Exhilarating shared energy; you take bold action together and inspire each other\'s courage.',
+    detail: 'Mars and Uranus flow together to create a partnership that excels at taking decisive, unconventional action. The Mars person feels that Uranus provides brilliant, unexpected strategies, and Uranus feels that Mars provides the courage to execute them. Physical activities, adventures, and shared projects that require both boldness and innovation bring out the best in this trine. The energy is exciting without being destabilizing.'
+  },
+  'Mars-Uranus|square': {
+    feel: 'Volatile energy that erupts without warning; arguments and accidents are both common.',
+    detail: 'Uranus destabilizes Mars\'s drive through sudden disruptions, provocative behavior, or refusal to cooperate with plans. The Mars person feels chronically frustrated; Uranus feels that Mars is controlling or aggressive. Conflicts escalate rapidly and unpredictably. The square demands that both people develop awareness of their triggers and agree to cooling-off protocols before the energy spirals. Physical outlets for the tension are not optional; they are essential safety valves.'
+  },
+  'Mars-Uranus|sextile': {
+    feel: 'Stimulating shared energy and a taste for adventure that keeps the relationship dynamic.',
+    detail: 'The sextile provides a constructive channel between Mars\'s drive and Uranus\'s inventiveness. The Mars person feels that Uranus helps them act more creatively, and Uranus appreciates Mars\'s willingness to try bold approaches. Shared physical activities, experiments, and projects that break routine activate this aspect. It keeps the partnership energized without the volatility of harder Mars-Uranus contacts.'
+  },
+
+  // Mars-Neptune
+  'Mars-Neptune|conjunction': {
+    feel: 'Desire and fantasy merge; passion is dreamlike, consuming, and not entirely grounded in reality.',
+    detail: 'Neptune dissolves Mars\'s directness, creating a dynamic where action is inspired by imagination, compassion, or illusion. The Mars person feels that their drive becomes diffused or spiritualized around Neptune; Neptune feels that Mars gives their fantasies physical form. Sexual chemistry is highly imaginative and potentially transcendent. The danger is that Mars cannot act clearly when Neptune clouds the motivation, leading to passive-aggression, deception, or misdirected energy. Honesty about intentions is the essential discipline.'
+  },
+  'Mars-Neptune|opposition': {
+    feel: 'One person pursues while the other dissolves; desire and evasion are locked in a frustrating dance.',
+    detail: 'Mars drives forward while Neptune retreats into ambiguity, creating a dynamic where direct action is met with confusion or avoidance. The Mars person feels that Neptune is dishonest, elusive, or passive; Neptune feels that Mars is too aggressive and insensitive to subtlety. Sexual dynamics may involve fantasy projection or unspoken disappointment. The opposition demands that both people be explicit about what they want. Mars must accept that not everything can be forced, and Neptune must stop hiding behind vagueness when directness is needed.'
+  },
+  'Mars-Neptune|trine': {
+    feel: 'Passion is inspired and gentle; desire flows through imagination, creativity, and compassion.',
+    detail: 'Mars and Neptune operate in natural harmony, allowing passion and sensitivity to coexist without friction. The Mars person feels that Neptune adds beauty and meaning to their drive, and Neptune feels that Mars provides the courage to manifest their visions. Sexual connection has a tender, almost spiritual quality. Creative collaboration is especially powerful. This trine supports a partnership where both people feel that desire serves something larger than appetite.'
+  },
+  'Mars-Neptune|square': {
+    feel: 'Desire is confused by fantasy; what you want and what you actually pursue keep diverging.',
+    detail: 'Neptune undermines Mars\'s ability to act clearly, creating chronic confusion about what both people actually want from each other and from the relationship. The Mars person feels misled or energetically drained; Neptune feels that Mars is crude or misunderstands their intentions. Passive-aggression, martyr dynamics, and sexual misunderstanding are common expressions. The square requires radical honesty about desire and motivation. What feels like spiritual surrender may actually be avoidance, and what feels like directness may actually be insensitivity.'
+  },
+  'Mars-Neptune|sextile': {
+    feel: 'Gentle passion and inspired action; you bring out each other\'s idealism without losing ground.',
+    detail: 'The sextile creates a constructive link between Mars\'s drive and Neptune\'s imagination. The Mars person feels that Neptune adds a compassionate dimension to their ambitions, and Neptune feels that Mars helps turn dreams into action. Shared creative projects, acts of service, and physical activities with a spiritual dimension bring out the best in this aspect. It provides inspiration without the confusion of harder Mars-Neptune contacts.'
+  },
+
   // Mars-Pluto
   'Mars-Pluto|conjunction': {
     feel: 'Raw, primal intensity; the combination of willpower is either unstoppable or mutually annihilating.',

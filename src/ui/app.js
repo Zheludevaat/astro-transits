@@ -3906,7 +3906,8 @@ function renderApp(){
   }
   if(curFir){
     const fv=typeof FIRDARIA_VOICE!=='undefined'?FIRDARIA_VOICE[curFir.major.lord]:null;
-    h+=`Firdaria: ${curFir.major.lord} major period. ${fv?fv.theme||fv.brief||'':''}`;
+    const firText=fv?(fv.theme||(Array.isArray(fv.brief)?pick(fv.brief,todaySeed()):fv.brief)||''):'';
+    h+=`Firdaria: ${curFir.major.lord} major period. ${firText}`;
   }
   h+=`</div>`;
 
@@ -5955,7 +5956,7 @@ function renderApp(){
 
     // Current hour card
     if(curHrHome){
-      const hrPurpose=typeof HOUR_PURPOSES!=='undefined'&&HOUR_PURPOSES[curHrHome.ruler]?HOUR_PURPOSES[curHrHome.ruler]:{};
+      const hrPurpose=typeof HOUR_PURPOSE!=='undefined'&&HOUR_PURPOSE[curHrHome.ruler]?HOUR_PURPOSE[curHrHome.ruler]:{};
       h+=`<div style="background:var(--card);border:1px solid var(--hairline);border-radius:var(--r-md);padding:16px;margin-bottom:12px;cursor:pointer" onclick="switchTab('today')">`;
       h+=`<div style="display:flex;justify-content:space-between;align-items:center">`;
       h+=`<div style="display:flex;align-items:center;gap:8px">`;

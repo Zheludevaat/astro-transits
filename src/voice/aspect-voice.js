@@ -318,5 +318,36 @@ const NATAL_ASPECT_DEPTH={
   'Moon-Chiron|trine':'Instinctive healer — your emotional wounds have composted into compassion. You create safety for others naturally.',
   'Moon-Chiron|sextile':'Emotional healing available through deliberate self-care and allowing others to witness your vulnerability.',
   'Venus-Chiron|conjunction':'Love itself is the wound and the medicine. Attraction pulls you toward what hurts — and through it, toward wholeness.',
-  'Venus-Chiron|square':'Desire and old pain collide. Relationships repeat wounding patterns until you stop choosing from the wound and start choosing from worth.'
+  'Venus-Chiron|square':'Desire and old pain collide. Relationships repeat wounding patterns until you stop choosing from the wound and start choosing from worth.',
+  'Venus-Chiron|opposition':'Partners expose the place where you feel unlovable. Healing comes when you let someone stay after they have seen the scar.',
+  'Venus-Chiron|trine':'Your experience of heartbreak has given you a rare tenderness. You love with depth because you know what it costs, and others feel safe in your care.',
+  'Venus-Chiron|sextile':'Opportunities for healing arrive through art, beauty, or gentle connection when you allow yourself to receive pleasure without guilt.',
+
+  // Mercury-Chiron
+  'Mercury-Chiron|conjunction':'Mind and wound are fused — you may have been silenced early or told your thoughts were wrong. Your voice becomes medicine once you trust it.',
+  'Mercury-Chiron|opposition':'Others challenge or dismiss your ideas in ways that reopen old intellectual wounds. Teaching what once hurt you to learn is the path to integration.',
+  'Mercury-Chiron|square':'Painful friction between what you know and how you communicate it. Words fail at the worst moments until you stop performing intelligence and speak from honest uncertainty.',
+  'Mercury-Chiron|trine':'Your mind naturally translates suffering into understanding. Writing, counseling, or teaching flows from wounds you have already composted into insight.',
+  'Mercury-Chiron|sextile':'Healing through language is available when you choose it. Naming what hurts — in conversation, in writing — releases its hold on you.',
+
+  // Mars-Chiron
+  'Mars-Chiron|conjunction':'Your drive is tangled with a core wound around assertion, anger, or masculinity. Action itself can feel dangerous until you reclaim your right to fight for yourself.',
+  'Mars-Chiron|opposition':'Others\' aggression or competitiveness reopens a wound around your own power. Healing comes when you stop retreating and stand your ground without becoming what hurt you.',
+  'Mars-Chiron|square':'Anger and old pain collide — you either overcompensate with force or collapse into passivity. Learning to act from wholeness rather than woundedness is the lifelong work.',
+  'Mars-Chiron|trine':'Your experience of struggle has given you a warrior\'s compassion. You defend the vulnerable instinctively because you remember what it felt like to be undefended.',
+  'Mars-Chiron|sextile':'Healing is available through physical effort, competition, or courageous action when you channel your drive deliberately rather than reactively.',
+
+  // Jupiter-Chiron
+  'Jupiter-Chiron|conjunction':'Faith and wound are fused. Your search for meaning is driven by early encounters with suffering — you become a teacher or healer precisely because you needed one.',
+  'Jupiter-Chiron|opposition':'Others\' certainty or abundance highlights your own crisis of faith. Wisdom arrives when you stop looking for answers outside and trust the knowledge your pain has given you.',
+  'Jupiter-Chiron|square':'Belief and woundedness clash. Overcompensating with forced optimism or collapsing into cynicism are both traps — genuine hope is earned through honest reckoning with loss.',
+  'Jupiter-Chiron|trine':'Your wounds have naturally deepened into philosophy. You offer perspective that only someone who has suffered and found meaning can provide.',
+  'Jupiter-Chiron|sextile':'Opportunities for healing arrive through travel, study, or encounters with foreign perspectives when you remain open to growth beyond your comfort zone.',
+
+  // Saturn-Chiron
+  'Saturn-Chiron|conjunction':'Authority and woundedness are fused. You carry heavy responsibility around your pain — healing feels like a duty, and you may become the mentor you never had.',
+  'Saturn-Chiron|opposition':'External structures or authority figures press on your deepest wound. Mastery comes when you stop seeking permission to heal and build your own framework for wholeness.',
+  'Saturn-Chiron|square':'Discipline and old pain grind against each other. You may work relentlessly to prove the wound wrong, or freeze under its weight — real healing requires patience with yourself.',
+  'Saturn-Chiron|trine':'Time and experience have quietly alchemized your suffering into competence. You carry your wound with dignity and offer others the steady ground they need to heal.',
+  'Saturn-Chiron|sextile':'Healing through structure, discipline, and slow commitment is available when you build routines that honor both your limitations and your resilience.'
 };

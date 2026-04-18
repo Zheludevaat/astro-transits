@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#05081a">
@@ -24,6 +24,7 @@
   --amber:#f0a030;--amber-soft:rgba(240,160,48,.14);--amber-line:rgba(240,160,48,.38);
   --pearl:#e8e0d0;
   --text:#d0cae0;--text2:#9089ab;--text3:#5a5478;--bright:#ffffff;--hairline:rgba(255,255,255,.07);
+  --overlay:rgba(0,0,0,.2);--border:rgba(255,255,255,.06);--inset:rgba(255,255,255,.03);
   /* Locked type scale — 7 sizes. Do not introduce new sizes. */
   --fs-label:10px;--fs-ui:11px;--fs-meta:12px;--fs-body:13px;--fs-card:14px;--fs-sub:16px;--fs-metric:20px;
   --r-sm:10px;--r-md:16px;--r-lg:22px;
@@ -670,11 +671,15 @@ body[data-zone="depth"] .t-zone:not(.t-depth){display:none}
 .zr-body{margin-top:12px}
 .zr-gantt{margin:12px 0}
 .zr-gantt-label{font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:var(--gold);margin-bottom:4px;font-weight:700}
-.zr-timeline{position:relative;height:32px;background:rgba(0,0,0,.15);border-radius:4px;overflow:hidden;margin-bottom:8px}
+.zr-timeline{position:relative;height:32px;background:rgba(0,0,0,.15);border-radius:4px;overflow:visible;margin-bottom:8px}
 .zr-segment{position:absolute;top:0;bottom:0;display:flex;align-items:center;justify-content:center;
   font-size:9px;font-weight:600;color:rgba(255,255,255,.85);border-right:1px solid rgba(0,0,0,.2);
-  overflow:hidden;white-space:nowrap;cursor:pointer;transition:opacity .15s}
+  overflow:hidden;white-space:nowrap;cursor:pointer;transition:opacity .15s;min-width:0}
 .zr-segment:hover{opacity:.85}
+.zr-segment-tip{display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);
+  background:var(--card);border:1px solid var(--gold-line);border-radius:6px;padding:6px 10px;
+  font-size:11px;color:var(--bright);white-space:nowrap;z-index:10;box-shadow:0 4px 12px rgba(0,0,0,.5);pointer-events:none}
+.zr-segment.tip-open .zr-segment-tip{display:block}
 .zr-segment.current{box-shadow:inset 0 0 0 2px var(--gold),inset 0 0 10px rgba(212,168,67,.2)}
 .zr-segment.peak::after{content:'★';position:absolute;top:1px;right:2px;font-size:8px;color:rgba(255,255,255,.9)}
 .zr-segment.lb{border-right:2px dashed #fff}
@@ -1010,6 +1015,7 @@ html.light{
   --pearl:#3a3450;
   --text:#3a3450;--text2:#6e6880;--text3:#9e98a8;--bright:#1a1530;--hairline:rgba(0,0,0,.08);
   --shadow:0 1px 4px rgba(0,0,0,.08),0 0 0 1px rgba(0,0,0,.04);
+  --overlay:rgba(0,0,0,.04);--border:rgba(0,0,0,.08);--inset:rgba(0,0,0,.03);
 }
 html.light body::before{background:radial-gradient(ellipse at 50% 0%,#f8f4ec 0%,#f0ebe0 70%);animation:none}
 html.light body::after{opacity:.02}
@@ -1681,6 +1687,9 @@ html.light .guidance-preview:not(.expanded)::after{background:linear-gradient(tr
 .factor-line:active{background:var(--gold-soft)}
 .factor-icon{flex-shrink:0;width:20px;display:flex;align-items:center;justify-content:center;padding-top:1px}
 .factor-text{font-size:12.5px;line-height:1.6;color:var(--text);flex:1}
+.factor-body{flex:1;min-width:0}
+.factor-primary{font-size:12.5px;font-weight:600;color:var(--bright);line-height:1.3}
+.factor-secondary{font-size:11px;color:var(--text2);line-height:1.4;margin-top:1px}
 .factor-tag{font-size:9px;padding:2px 6px;border-radius:8px;font-weight:600;white-space:nowrap;flex-shrink:0}
 
 /* ══ Phase 1: Layer 3 mechanics ══ */
@@ -1785,6 +1794,17 @@ function dismissSplash(){
   if(!loader)return;
   loader.classList.add('hide');
   setTimeout(function(){loader.remove();},900);
+  // First-launch onboarding: if user has never visited, show the Guide walkthrough
+  try{
+    if(!localStorage.getItem('astro_onboarded')){
+      localStorage.setItem('astro_onboarded','1');
+      setTimeout(function(){
+        if(typeof switchTab==='function'){
+          activeTab='guide';guideMode='walkthrough';guideWalkthroughStep=0;renderApp();
+        }
+      },1000);
+    }
+  }catch(e){}
 }
 </script>
 <div id="app" class="container"></div>
@@ -1812,11 +1832,11 @@ function dismissSplash(){
 <!-- Voice corpora (no code dependencies, just data) -->
 <script src="src/voice/house-voice.js"></script>
 <script src="src/voice/natal-voice.js"></script>
-<script src="src/voice/aspect-voice.js?v=65"></script>
+<script src="src/voice/aspect-voice.js?v=66"></script>
 <script src="src/voice/hard-brings.js"></script>
-<script src="src/voice/ingress-notes.js?v=65"></script>
-<script src="src/voice/tone.js?v=65"></script>
-<script src="src/voice/synastry-voice.js?v=65"></script>
+<script src="src/voice/ingress-notes.js?v=66"></script>
+<script src="src/voice/tone.js?v=66"></script>
+<script src="src/voice/synastry-voice.js?v=66"></script>
 <script src="src/voice/astrocarto-voice.js"></script>
 <script src="src/voice/references.js"></script>
 
@@ -1827,9 +1847,9 @@ function dismissSplash(){
 <script src="src/hellenistic/zr.js"></script>
 <script src="src/hellenistic/firdaria.js"></script>
 <script src="src/hellenistic/decans.js"></script>
-<script src="src/hellenistic/mansions.js?v=65"></script>
+<script src="src/hellenistic/mansions.js?v=66"></script>
 <script src="src/hellenistic/fixedstars.js"></script>
-<script src="src/hellenistic/returns.js?v=65"></script>
+<script src="src/hellenistic/returns.js?v=66"></script>
 <script src="src/hellenistic/liturgy.js"></script>
 <script src="src/hellenistic/electional.js"></script>
 
@@ -1852,7 +1872,7 @@ function dismissSplash(){
 <script src="src/data/chart-storage.js"></script>
 
 <!-- Main app (depends on everything above) -->
-<script src="src/ui/app.js?v=65"></script>
+<script src="src/ui/app.js?v=66"></script>
 
 
 </body>

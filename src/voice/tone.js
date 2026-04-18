@@ -10,7 +10,12 @@ const TONE_PLANET_HIGH={
   Venus:'Pleasure, charm, and social grace are amplified. Relationships, creative projects, and financial negotiations are strongly favored.',
   Mars:'Physical energy and drive are high and well-directed. Compete, exercise, initiate, and push through obstacles — the fire is working for you.',
   Jupiter:'Expansion and opportunity are active. Take the bigger risk, say yes to the invitation, and think about what you want to grow. Luck is available.',
-  Saturn:'Structure and discipline pay off today. The energy is serious but productive — build, commit, and do the work that compounds over time.'
+  Saturn:'Structure and discipline pay off today. The energy is serious but productive — build, commit, and do the work that compounds over time.',
+  Uranus:'Expect the unexpected — breakthroughs, sudden clarity, and liberation from patterns you did not realize were holding you. Lean into change rather than resisting it.',
+  Neptune:'Intuition and imagination are heightened. Creative and spiritual work is deeply supported. Trust what you sense but verify anything that requires facts.',
+  Pluto:'Deep power is available. Confront what you have been avoiding — the truth that surfaces today has the force to transform everything downstream. Use it wisely.',
+  Chiron:'Your sensitivity is your instrument today. Healing work, honest conversations, and vulnerability all carry unusual weight. What hurts is also what teaches.',
+  NorthNode:'Fate is in the room. Encounters, decisions, and redirections today carry a quality of inevitability. Follow the synchronicities — they are not coincidental.'
 };
 const TONE_PLANET_MID={
   Sun:'Your identity and will are in a mixed field today. Assert yourself where it matters, but pick your moments rather than pushing on everything.',
@@ -19,7 +24,12 @@ const TONE_PLANET_MID={
   Venus:'Relationships and pleasures have both friction and reward. Don\'t force social situations — lean into what\'s easy and defer what isn\'t.',
   Mars:'Energy is present but volatile. Channel the drive into physical or productive outlets. Avoid confrontations that don\'t serve you.',
   Jupiter:'Some doors open, others stick. Growth is possible but not guaranteed. Don\'t overcommit — selective optimism beats blind expansion.',
-  Saturn:'Pressure is real but manageable. Focus on obligations and structure — the day rewards discipline but punishes overreach.'
+  Saturn:'Pressure is real but manageable. Focus on obligations and structure — the day rewards discipline but punishes overreach.',
+  Uranus:'Restlessness and innovation compete. Some disruptions are productive, others are noise. Distinguish between genuine insight and reactive impulse before acting.',
+  Neptune:'The boundary between imagination and confusion is thin today. Creative and empathic work benefits; decisions requiring precision do not. Sleep on anything important.',
+  Pluto:'Power dynamics are in play but the direction is unclear. Avoid forcing outcomes. Observe what is surfacing — transformation is underway but not yet ripe for action.',
+  Chiron:'Old wounds are activated but not overwhelming. You can choose to engage the healing or let it pass. Teaching, counseling, and honest reflection are all available but optional.',
+  NorthNode:'Subtle course corrections are happening. Nothing dramatic, but the choices you make today nudge your trajectory. Pay attention to what pulls you forward versus what pulls you back.'
 };
 const TONE_PLANET_LOW={
   Sun:'Your vitality and confidence are under pressure. Conserve energy, avoid ego battles, and don\'t make identity-level decisions under this cloud.',
@@ -28,7 +38,12 @@ const TONE_PLANET_LOW={
   Venus:'Relationships and finances are strained. Don\'t make major purchases, start new relationships, or force social harmony. Let beauty wait.',
   Mars:'Anger, accidents, and impulsive decisions threaten. Move your body, avoid confrontation, and don\'t send the email. The fire is destructive today.',
   Jupiter:'Overconfidence and excess are the traps. What looks like opportunity may be inflation. Don\'t overcommit, overspend, or overpromise.',
-  Saturn:'The weight is heavy. Accept limitations rather than fighting them. Rest, reduce commitments, and do only what is truly load-bearing.'
+  Saturn:'The weight is heavy. Accept limitations rather than fighting them. Rest, reduce commitments, and do only what is truly load-bearing.',
+  Uranus:'Instability is high and the disruption is not productive yet. Avoid making permanent decisions from a temporary state of chaos. Ground yourself and wait for the static to clear.',
+  Neptune:'Confusion, deception, and escapism dominate. Do not sign anything, trust anyone new, or make decisions based on how you feel rather than what you know. Protect your clarity.',
+  Pluto:'Power struggles, compulsions, and the weight of things that refuse to stay buried. Do not try to control what is beyond your grip. Surrender is not defeat — it is strategy.',
+  Chiron:'The wound is raw today. Old inadequacies, rejections, or failures resurface with fresh sting. Do not make decisions from the pain. Rest, retreat, and remember that this passes.',
+  NorthNode:'The path forward is obscured and old habits are louder than new directions. Do not force growth. Sometimes the most aligned thing you can do is rest until the compass recalibrates.'
 };
 const TONE_GENERIC_HIGH=['The energy supports bold action. Schedule important conversations, pitches, or creative work today.','This is a strong day to initiate. Move forward on things that matter.','Favorable conditions for making things happen. Aim for what matters.'];
 const TONE_GENERIC_MID=['A mixed day — some support, some friction. Lead with your strengths.','Pick your battles today. Some efforts will flow, others will meet resistance.','Moderate energy. Focus on steady progress rather than breakthroughs.'];
